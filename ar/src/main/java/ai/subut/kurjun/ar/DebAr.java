@@ -26,11 +26,4 @@ public interface DebAr
      * @return the extracted md5sums file
      */
     File getMd5Sums();
-
-    /**
-     * Checks to see if this DebAr is a version 2.0 archive file.
-     *
-     * @return true if version 2, false otherwise
-     */
-    boolean isVersion2();
 }

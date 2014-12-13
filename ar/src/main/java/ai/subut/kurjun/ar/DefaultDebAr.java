@@ -2,15 +2,14 @@ package ai.subut.kurjun.ar;
 
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.compress.archivers.ar.ArArchiveEntry;
-import org.apache.commons.compress.utils.IOUtils;
-import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
+import org.apache.commons.compress.archivers.ar.ArArchiveEntry;
+import org.apache.commons.io.FileUtils;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkPositionIndexes;
@@ -26,8 +25,10 @@ public class DefaultDebAr implements DebAr
     public static final String DEBIAN_VERSION = "2.0";
     public static final String DEBIAN_CONTROL = "control.tar";
 
-    private final DefaultAr ar;
-    private final File tmpDir;
+    private final File controlFile;
+    private final File md5sumsFile;
+
+    private static final Logger LOG = LoggerFactory.getLogger( DefaultDebAr.class );
 
 
     /**
@@ -40,11 +41,15 @@ public class DefaultDebAr implements DebAr
     {
         // check proper temp directory
         checkNotNull( tmpDir, "The extraction tmpDir must not be null." );
-        this.tmpDir = tmpDir;
+
+        if ( ! tmpDir.exists() )
+        {
+            checkState( tmpDir.mkdirs() );
+        }
 
         // check proper archive: (1) check that we have required entry count
         checkNotNull( debFile, "The debian archive file cannot be null." );
-        ar = new DefaultAr( debFile );
+        final DefaultAr ar = new DefaultAr( debFile );
         List<ArArchiveEntry> entries = ar.list();
         checkPositionIndexes( 0, 2, entries.size() );
 
@@ -54,7 +59,8 @@ public class DefaultDebAr implements DebAr
                 "The first Debian archive entry must be " + DEBIAN_BINARY );
         File debBinFile = new File( tmpDir, DEBIAN_BINARY );
         ar.extract( debBinFile, debBinEntry );
-        checkState( DEBIAN_VERSION.equals( FileUtils.readFileToString( debBinFile ) ) );
+        String contents = FileUtils.readFileToString( debBinFile ).trim();
+        checkState( DEBIAN_VERSION.equals( contents ) );
 
         // check proper archive: (3) check that second entry is control tarball
         ArArchiveEntry debCtrlEntry = entries.get( 1 );
@@ -67,7 +73,11 @@ public class DefaultDebAr implements DebAr
 
         // decompress and extract the control tarball
         DefaultTar tar = new DefaultTar( debCtrlTarball );
-
+        tar.extract( debCtrlTarball.getParentFile() );
+        controlFile = new File( debCtrlTarball.getParentFile(), "control" );
+        checkState( controlFile.exists() );
+        md5sumsFile = new File( debCtrlTarball.getParentFile(), "md5sums" );
+        checkState( md5sumsFile.exists() );
     }
 
 
@@ -88,20 +98,13 @@ public class DefaultDebAr implements DebAr
     @Override
     public File getControlFile()
     {
-        return null;
+        return controlFile;
     }
 
 
     @Override
     public File getMd5Sums()
     {
-        return null;
-    }
-
-
-    @Override
-    public boolean isVersion2()
-    {
-        return false;
+        return md5sumsFile;
     }
 }
