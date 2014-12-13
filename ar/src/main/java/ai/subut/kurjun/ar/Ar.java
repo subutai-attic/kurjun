@@ -10,6 +10,6 @@ import java.util.List;
  * Interface for Ar (archive) commands.
  */
 public interface Ar {
-    public List<ArArchiveEntry> list() throws IOException;
-    public void extract( File extractTo, ArArchiveEntry entry ) throws IOException;
+    List<ArArchiveEntry> list() throws IOException;
+    void extract( File extractTo, ArArchiveEntry entry ) throws IOException;
 }

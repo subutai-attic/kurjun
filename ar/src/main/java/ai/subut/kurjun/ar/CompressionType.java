@@ -51,9 +51,21 @@ public enum  CompressionType
 
     public static CompressionType getCompressionType( String filename )
     {
-        return extensionMap.get( getExtension( filename ) );
+        CompressionType type = extensionMap.get( getExtension( filename ) );
+
+        if ( type == null )
+        {
+            return NONE;
+        }
+
+        return type;
     }
 
+
+    public static boolean isCompressed( File file )
+    {
+        return getCompressionType( file ) != NONE;
+    }
 
     public static CompressionType getCompressionType( File file )
     {
