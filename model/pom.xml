@@ -12,5 +12,5 @@
   <artifactId>model</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>Kurjan Model</name>
+  <name>Kurjun Model</name>
 </project>

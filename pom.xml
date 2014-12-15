@@ -18,6 +18,7 @@
   <modules>
     <module>ar</module>
     <module>model</module>
+    <module>cfparser</module>
   </modules>
 
   <description>
