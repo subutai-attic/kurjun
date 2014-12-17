@@ -4,7 +4,7 @@ package ai.subut.kurjun.model;
 /**
  * Architecture enumeration.
  */
-public enum Arch
+public enum Architecture
 {
     amd64;
 }
