@@ -53,7 +53,7 @@ public interface PackageMetadata
 
     String getMaintainer();
 
-    Arch getArchitecture();
+    Architecture getArchitecture();
 
     /**
      * Installed size in kilobytes. Corresponds to the Installed-Size field in the control file.

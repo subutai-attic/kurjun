@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vafer.jdeb.debian.BinaryPackageControlFile;
 
-import ai.subut.kurjun.model.Arch;
+import ai.subut.kurjun.model.Architecture;
 import ai.subut.kurjun.model.Dependency;
 import ai.subut.kurjun.model.Priority;
 
@@ -51,9 +51,9 @@ class BinaryPackageMetadata extends AbstractPackageMetadata
 
 
     @Override
-    public Arch getArchitecture()
+    public Architecture getArchitecture()
     {
-        return Arch.valueOf( controlFile.get( ARCHITECTURE_FIELD ) );
+        return Architecture.valueOf( controlFile.get( ARCHITECTURE_FIELD ) );
     }
 
 
