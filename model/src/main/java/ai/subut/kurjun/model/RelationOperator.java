@@ -4,13 +4,13 @@ package ai.subut.kurjun.model;
 /**
  * Dependency comparison operators used in the Depends attribute of control files.
  */
-public enum DepOp
+public enum RelationOperator
 {
     StrictlyEarlier( "<<" ), EarlierEqual( "<=" ), Equal( "="), LaterEqual( ">=" ), StrictlyLater( ">>" );
 
     private final String symbol;
 
-    private DepOp( String symbol )
+    private RelationOperator( String symbol )
     {
         this.symbol = symbol;
     }
@@ -20,7 +20,7 @@ public enum DepOp
         return this.symbol;
     }
 
-    public static DepOp fromSymbol( String symbol )
+    public static RelationOperator fromSymbol( String symbol )
     {
         switch ( symbol )
         {

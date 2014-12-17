@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ai.subut.kurjun.model.DepOp;
+import ai.subut.kurjun.model.RelationOperator;
 import ai.subut.kurjun.model.Dependency;
 
 import static org.junit.Assert.assertEquals;
@@ -220,7 +220,7 @@ public class DependencyParserTest
                             depList.get( 1 ).getDependencyOperator().getSymbol() );
                     assertEquals( "alt2", depList.get( 1 ).getAlternatives().get( 0 ).getPackage() );
                     assertEquals( "2.1.0", depList.get( 1 ).getAlternatives().get( 0 ).getVersion() );
-                    assertEquals( DepOp.LaterEqual, depList.get( 1 ).getAlternatives().get( 0 ).getDependencyOperator() );
+                    assertEquals( RelationOperator.LaterEqual, depList.get( 1 ).getAlternatives().get( 0 ).getDependencyOperator() );
                     break;
                 case "foo (>= 2.2.1) | alt1, bar (<= 5.6.0) | alt2 (>= 2.1.0) | alt3, cat (= 2.4.1), rat (>> 9.1.10) | alt4, dog (<< 3.12.23)":
                     assertEquals( "The size of the dependency list should be 5.", 5, depList.size() );

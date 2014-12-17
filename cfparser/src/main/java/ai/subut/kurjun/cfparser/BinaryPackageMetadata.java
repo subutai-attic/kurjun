@@ -3,6 +3,7 @@ package ai.subut.kurjun.cfparser;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -11,78 +12,76 @@ import org.vafer.jdeb.debian.BinaryPackageControlFile;
 
 import ai.subut.kurjun.model.Arch;
 import ai.subut.kurjun.model.Dependency;
-import ai.subut.kurjun.model.PkgMeta;
 import ai.subut.kurjun.model.Priority;
 
 
 /**
  * A wrapper around a BinaryPackageControlFile that implements the PkgMeta interface.
  */
-class BinaryPkgMeta implements PkgMeta
+class BinaryPackageMetadata extends AbstractPackageMetadata
 {
-    private static final Logger LOG = LoggerFactory.getLogger( BinaryPkgMeta.class );
-    private BinaryPackageControlFile controlFile;
+    private static final Logger LOG = LoggerFactory.getLogger( BinaryPackageMetadata.class );
 
 
-    BinaryPkgMeta( BinaryPackageControlFile controlFile )
+    BinaryPackageMetadata( byte[] md5, String filename, BinaryPackageControlFile controlFile )
     {
-        this.controlFile = controlFile;
+        super( md5, filename, controlFile );
     }
 
 
     @Override
     public String getPackage()
     {
-        return controlFile.get( "Package" );
+        return controlFile.get( PACKAGE_FIELD );
     }
 
 
     @Override
     public String getVersion()
     {
-        return controlFile.get( "Version" );
+        return controlFile.get( VERSION_FIELD );
     }
 
 
     @Override
     public String getMaintainer()
     {
-        return controlFile.get( "Maintainer" );
+        return controlFile.get( MAINTAINER_FIELD );
     }
 
 
     @Override
     public Arch getArchitecture()
     {
-        return Arch.valueOf( controlFile.get( "Architecture" ) );
+        return Arch.valueOf( controlFile.get( ARCHITECTURE_FIELD ) );
     }
 
 
     @Override
     public int getInstalledSize()
     {
-        return Integer.parseInt( controlFile.get( "Installed-Size" ) );
+        return Integer.parseInt( controlFile.get( INSTALLED_SIZE_FIELD ) );
     }
 
 
     @Override
     public String getSection()
     {
-        return controlFile.get( "Section" );
+        return controlFile.get( SECTION_FIELD );
     }
 
 
     @Override
     public Priority getPriority()
     {
-        return Priority.valueOf( controlFile.get( "Priority" ) );
+        return Priority.valueOf( controlFile.get( PRIORITY_FIELD ) );
     }
 
 
     @Override
     public URL getHomepage()
     {
-        String field = controlFile.get( "Homepage" );
+        String field = controlFile.get( HOMEPAGE_FIELD );
 
         if ( field == null )
         {
@@ -104,7 +103,7 @@ class BinaryPkgMeta implements PkgMeta
     @Override
     public String getDescription()
     {
-        return controlFile.getShortDescription();
+        return ( ( BinaryPackageControlFile ) controlFile ).getShortDescription();
     }
 
 
@@ -116,7 +115,7 @@ class BinaryPkgMeta implements PkgMeta
     @Override
     public List<Dependency> getDependencies()
     {
-        return null;
+        return getCached( DEPENDS_FIELD );
     }
 
 
@@ -124,7 +123,7 @@ class BinaryPkgMeta implements PkgMeta
     // Build-Depends
     public List<Dependency> getBuildDependencies()
     {
-        return null;
+        return getCached( BUILD_DEPENDS_FIELD );
     }
 
 
@@ -132,40 +131,40 @@ class BinaryPkgMeta implements PkgMeta
     // Build-Depends-Indep
     public List<Dependency> getIndependentBuildDependencies()
     {
-        return null;
+        return getCached( BUILD_DEPENDS_INDEP_FIELD );
     }
 
 
     public List<Dependency> getPreDependencies()
     {
-        return null;
+        return getCached( PRE_DEPENDS_FIELD );
     }
 
 
     public List<Dependency> getRecommends()
     {
-        return null;
+        return getCached( RECOMMENDS_FIELD );
     }
 
 
     @Override
     public List<Dependency> getSuggests()
     {
-        return null;
+        return getCached( SUGGESTS_FIELD );
     }
 
 
     @Override
     public List<Dependency> getBreaks()
     {
-        return null;
+        return getCached( BREAKS_FIELD );
     }
 
 
     @Override
     public List<Dependency> getConflicts()
     {
-        return null;
+        return getCached( CONFLICTS_FIELD );
     }
 
 
@@ -173,19 +172,20 @@ class BinaryPkgMeta implements PkgMeta
     @Override
     public List<String> getProvides()
     {
-        return null;
+        String[] parts = controlFile.get( PROVIDES_FIELD ).split( "," );
+        return Arrays.asList( parts );
     }
 
 
     @Override
     public List<Dependency> getReplaces()
     {
-        return null;
+        return getCached( REPLACES_FIELD );
     }
 
 
     public List<Dependency> getEnhances()
     {
-        return null;
+        return getCached( ENHANCES_FIELD );
     }
 }

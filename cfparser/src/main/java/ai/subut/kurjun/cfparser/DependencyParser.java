@@ -8,7 +8,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ai.subut.kurjun.model.DepOp;
+import ai.subut.kurjun.model.RelationOperator;
 import ai.subut.kurjun.model.Dependency;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -81,16 +81,16 @@ public class DependencyParser
 
         String pkg = parts[0];
         String version;
-        DepOp op;
+        RelationOperator op;
 
         if ( parts[1].charAt( 0 ) == '=' )
         {
-            op = DepOp.Equal;
+            op = RelationOperator.Equal;
             version = parts[1].substring( 1, parts[1].length() - 1 ).trim();
         }
         else
         {
-            op = DepOp.fromSymbol( parts[1].substring( 0, 2 ).trim() );
+            op = RelationOperator.fromSymbol( parts[1].substring( 0, 2 ).trim() );
             version = parts[1].substring( 2, parts[1].length() - 1 ).trim();
         }
 
@@ -138,7 +138,7 @@ public class DependencyParser
     {
         String pkg;
         String version;
-        DepOp  op;
+        RelationOperator op;
         List<Dependency> alternatives;
 
 
@@ -148,7 +148,7 @@ public class DependencyParser
         }
 
 
-        public Dep( final String pkg, final DepOp op, final String version )
+        public Dep( final String pkg, final RelationOperator op, final String version )
         {
             this.pkg = pkg;
             this.op  = op;
@@ -189,7 +189,7 @@ public class DependencyParser
 
 
         @Override
-        public DepOp getDependencyOperator()
+        public RelationOperator getDependencyOperator()
         {
             return op;
         }

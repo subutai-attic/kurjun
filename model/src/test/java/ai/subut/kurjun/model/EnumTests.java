@@ -16,25 +16,25 @@ public class EnumTests
     @Test
     public void testDepOp() throws Exception
     {
-        assertEquals( DepOp.Equal, DepOp.fromSymbol( "=" ) );
-        assertEquals( DepOp.LaterEqual, DepOp.fromSymbol( ">=" ) );
-        assertEquals( DepOp.StrictlyLater, DepOp.fromSymbol( ">>" ) );
-        assertEquals( DepOp.StrictlyEarlier, DepOp.fromSymbol( "<<" ) );
-        assertEquals( DepOp.EarlierEqual, DepOp.fromSymbol( "<=" ) );
+        assertEquals( RelationOperator.Equal, RelationOperator.fromSymbol( "=" ) );
+        assertEquals( RelationOperator.LaterEqual, RelationOperator.fromSymbol( ">=" ) );
+        assertEquals( RelationOperator.StrictlyLater, RelationOperator.fromSymbol( ">>" ) );
+        assertEquals( RelationOperator.StrictlyEarlier, RelationOperator.fromSymbol( "<<" ) );
+        assertEquals( RelationOperator.EarlierEqual, RelationOperator.fromSymbol( "<=" ) );
     }
 
 
     @Test( expected = IllegalStateException.class )
     public void testDepOpBadInput() throws Exception
     {
-        DepOp.fromSymbol( "asdf" );
+        RelationOperator.fromSymbol( "asdf" );
     }
 
 
     @Test( expected = NullPointerException.class )
     public void testDepOpNull() throws Exception
     {
-        DepOp.fromSymbol( null );
+        RelationOperator.fromSymbol( null );
     }
 
 

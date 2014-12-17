@@ -28,5 +28,5 @@ public interface Dependency
 
 
     String getVersion();
-    DepOp  getDependencyOperator();
+    RelationOperator getDependencyOperator();
 }
