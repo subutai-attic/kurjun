@@ -1,6 +1,7 @@
 package ai.subut.kurjun.model;
 
 
+import java.net.URI;
 import java.util.List;
 
 
@@ -72,7 +73,7 @@ public interface Distribution
 
 
     /**
-     * Gets a list of all the indices in the order they appear. From the resource one
+     * Gets a list of all the indices in the order they appear: breath first alphabetical. From the resource one
      * can acquire the desired checksum.
      *
      * @return the index resources
@@ -95,4 +96,11 @@ public interface Distribution
      * @return the component with the specified name or null if no such component exists
      */
     Component getComponent( String compName );
+
+
+    /**
+     * Gets the URI to the release file.
+     * @return the URI to the release file
+     */
+    URI getReleaseFile();
 }

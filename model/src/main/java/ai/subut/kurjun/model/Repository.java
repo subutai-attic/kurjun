@@ -1,6 +1,7 @@
 package ai.subut.kurjun.model;
 
 
+import java.net.URL;
 import java.util.Set;
 
 
@@ -8,6 +9,20 @@ import java.util.Set;
  * Interface to represent a Repository.
  */
 public interface Repository {
+
+    /**
+     * Gets this Repository's URL which is composed from the protocol, port, server, and path components.
+     * @return the URL to this Repository
+     */
+    URL getUrl();
+
+    /**
+     * Gets the Repository's path after the server's hostname and port in the URL.
+     *
+     * @return the path component of the Repository URL
+     */
+    String getPath();
+
 
     /**
      * Gets the server host serving this Repository.
