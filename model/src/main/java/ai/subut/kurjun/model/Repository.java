@@ -1,6 +1,9 @@
 package ai.subut.kurjun.model;
 
 
+import java.util.Set;
+
+
 /**
  * Interface to represent a Repository.
  */
@@ -46,4 +49,12 @@ public interface Repository {
      * @return true if of Kurjun type, false otherwise
      */
     boolean isKurjun();
+
+
+    /**
+     * Gets the set of release distributions in this repository.
+     *
+     * @return a set of release distributions
+     */
+    Set<Distribution> getDistributions();
 }
