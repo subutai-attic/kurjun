@@ -1,7 +1,7 @@
 package ai.subut.kurjun.model.index;
 
 
-import java.net.URI;
+import java.net.URL;
 import java.util.List;
 
 import ai.subut.kurjun.model.metadata.Architecture;
@@ -101,8 +101,8 @@ public interface Distribution
 
 
     /**
-     * Gets the URI to the release file.
-     * @return the URI to the release file
+     * Gets the URL to the release file.
+     * @return the URL to the release file
      */
-    URI getReleaseFile();
+    URL getReleaseFile();
 }
