@@ -5,9 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Map;
-import java.util.Objects;
 
-import ai.subut.kurjun.model.PackageMetadata;
+import ai.subut.kurjun.model.metadata.PackageMetadata;
 
 
 /**

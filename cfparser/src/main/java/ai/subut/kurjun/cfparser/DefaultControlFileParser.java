@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vafer.jdeb.debian.BinaryPackageControlFile;
 
-import ai.subut.kurjun.model.PackageMetadata;
+import ai.subut.kurjun.model.metadata.PackageMetadata;
 
 
 /**

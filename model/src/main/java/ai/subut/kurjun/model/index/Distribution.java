@@ -1,8 +1,10 @@
-package ai.subut.kurjun.model;
+package ai.subut.kurjun.model.index;
 
 
 import java.net.URI;
 import java.util.List;
+
+import ai.subut.kurjun.model.metadata.Architecture;
 
 
 /**

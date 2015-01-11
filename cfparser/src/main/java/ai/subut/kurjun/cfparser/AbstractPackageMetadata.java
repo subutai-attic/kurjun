@@ -10,8 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vafer.jdeb.debian.ControlFile;
 
-import ai.subut.kurjun.model.Dependency;
-import ai.subut.kurjun.model.PackageMetadata;
+import ai.subut.kurjun.model.metadata.Dependency;
+import ai.subut.kurjun.model.metadata.PackageMetadata;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

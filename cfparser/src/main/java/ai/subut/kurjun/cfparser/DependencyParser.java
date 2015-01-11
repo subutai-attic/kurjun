@@ -8,8 +8,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ai.subut.kurjun.model.RelationOperator;
-import ai.subut.kurjun.model.Dependency;
+import ai.subut.kurjun.model.metadata.RelationOperator;
+import ai.subut.kurjun.model.metadata.Dependency;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;

@@ -1,8 +1,10 @@
-package ai.subut.kurjun.model;
+package ai.subut.kurjun.model.repository;
 
 
 import java.net.URL;
 import java.util.Set;
+
+import ai.subut.kurjun.model.index.Distribution;
 
 
 /**

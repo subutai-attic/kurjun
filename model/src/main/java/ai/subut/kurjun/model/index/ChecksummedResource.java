@@ -1,4 +1,7 @@
-package ai.subut.kurjun.model;
+package ai.subut.kurjun.model.index;
+
+
+import ai.subut.kurjun.model.index.Checksum;
 
 
 /**

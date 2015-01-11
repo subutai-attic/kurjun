@@ -1,4 +1,4 @@
-package ai.subut.kurjun.model;
+package ai.subut.kurjun.model.metadata;
 
 
 import java.net.URL;

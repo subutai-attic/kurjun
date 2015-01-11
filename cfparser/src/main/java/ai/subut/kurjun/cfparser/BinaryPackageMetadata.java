@@ -10,9 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vafer.jdeb.debian.BinaryPackageControlFile;
 
-import ai.subut.kurjun.model.Architecture;
-import ai.subut.kurjun.model.Dependency;
-import ai.subut.kurjun.model.Priority;
+import ai.subut.kurjun.model.metadata.Architecture;
+import ai.subut.kurjun.model.metadata.Dependency;
+import ai.subut.kurjun.model.metadata.Priority;
 
 
 /**

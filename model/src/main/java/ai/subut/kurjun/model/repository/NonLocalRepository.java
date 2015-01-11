@@ -1,4 +1,7 @@
-package ai.subut.kurjun.model;
+package ai.subut.kurjun.model.repository;
+
+
+import ai.subut.kurjun.model.repository.Repository;
 
 
 /**
