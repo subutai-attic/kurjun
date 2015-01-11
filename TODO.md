@@ -15,5 +15,5 @@
 * We need a REST API for this
 * Might be nice to make a plugin later do do some things?
 
-* Setup project resources including sonar, jira, confluence
+* Setup project resources including sonar, jira
 

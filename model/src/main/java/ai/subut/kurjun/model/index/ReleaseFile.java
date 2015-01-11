@@ -10,7 +10,7 @@ import ai.subut.kurjun.model.metadata.Architecture;
 /**
  * One of potentially many release distributions contained in a Repository.
  */
-public interface Distribution
+public interface ReleaseFile
 {
     String[] PROPERTY_ORDER = {
         "Origin", "Label", "Suite", "Version", "Codename", "Date", "Architectures",
@@ -104,5 +104,5 @@ public interface Distribution
      * Gets the URL to the release file.
      * @return the URL to the release file
      */
-    URL getReleaseFile();
+    URL getSource();
 }

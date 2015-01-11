@@ -16,9 +16,11 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>ar</module>
+    <module>utils</module>
     <module>model</module>
-    <module>cfparser</module>
+    <module>parsers</module>
+    <module>file-stores</module>
+    <module>meta-stores</module>
   </modules>
 
   <description>

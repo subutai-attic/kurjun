@@ -4,7 +4,7 @@ package ai.subut.kurjun.model.repository;
 import java.net.URL;
 import java.util.Set;
 
-import ai.subut.kurjun.model.index.Distribution;
+import ai.subut.kurjun.model.index.ReleaseFile;
 
 
 /**
@@ -73,5 +73,5 @@ public interface Repository {
      *
      * @return a set of release distributions
      */
-    Set<Distribution> getDistributions();
+    Set<ReleaseFile> getDistributions();
 }
