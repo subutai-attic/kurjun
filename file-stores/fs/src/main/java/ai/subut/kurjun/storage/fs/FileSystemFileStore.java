@@ -62,7 +62,7 @@ public class FileSystemFileStore implements FileStore
     {
         try ( MapDb db = new MapDb( rootLocation ) )
         {
-            return db.getMap().containsKey( md5 );
+            return db.getMap().containsKey( Hex.encodeHexString( md5 ) );
         }
     }
 
@@ -72,7 +72,7 @@ public class FileSystemFileStore implements FileStore
     {
         try ( MapDb db = new MapDb( rootLocation ) )
         {
-            String path = db.getMap().get( md5 );
+            String path = db.getMap().get( Hex.encodeHexString( md5 ) );
             return path != null ? new FileInputStream( path ) : null;
         }
     }
@@ -138,7 +138,7 @@ public class FileSystemFileStore implements FileStore
         {
             // clean up target file in catch clause if copying fails
             Files.copy( source, target, StandardCopyOption.REPLACE_EXISTING );
-            db.getMap().put( checksum, target.toAbsolutePath().toString() );
+            db.getMap().put( Hex.encodeHexString( checksum ), target.toAbsolutePath().toString() );
         }
         catch ( IOException ex )
         {
@@ -152,14 +152,15 @@ public class FileSystemFileStore implements FileStore
     @Override
     public boolean remove( byte[] md5 ) throws IOException
     {
+        String hex = Hex.encodeHexString( md5 );
         try ( MapDb db = new MapDb( rootLocation ) )
         {
-            String p = db.getMap().get( md5 );
+            String p = db.getMap().get( hex );
             if ( p != null )
             {
                 Path path = Paths.get( p );
-                Files.delete( path );
-                db.getMap().remove( md5 );
+                Files.deleteIfExists( path );
+                db.getMap().remove( hex );
                 return true;
             }
         }

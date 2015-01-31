@@ -58,7 +58,7 @@ class MapDb implements Closeable
     }
 
 
-    public HTreeMap<byte[], String> getMap()
+    public HTreeMap<String, String> getMap()
     {
         return db.getHashMap( MAP_NAME );
     }
