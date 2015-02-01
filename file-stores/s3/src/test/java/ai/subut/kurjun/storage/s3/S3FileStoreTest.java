@@ -33,12 +33,14 @@ import java.util.UUID;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 
@@ -49,6 +51,7 @@ public class S3FileStoreTest
     public TemporaryFolder tempDir = new TemporaryFolder();
 
     private static S3FileStore s3;
+    private static boolean ready;
 
     private File sampleFile;
     private String sampleData = "sample data";
@@ -58,33 +61,48 @@ public class S3FileStoreTest
     @BeforeClass
     public static void setUpClass() throws Exception
     {
-        s3 = new S3FileStore( UUID.randomUUID().toString() );
+        try
+        {
+            s3 = new S3FileStore( UUID.randomUUID().toString() );
+            s3.s3client.listBuckets();
+            ready = true;
+        }
+        catch ( AmazonClientException ex )
+        {
+            ready = false;
+        }
     }
 
 
     @AfterClass
     public static void tearDownClass() throws Exception
     {
-        // delete all objects
-        ObjectListing listing = s3.s3client.listObjects( s3.bucketName );
-        for ( S3ObjectSummary obj : listing.getObjectSummaries() )
+        if ( ready )
         {
-            s3.s3client.deleteObject( s3.bucketName, obj.getKey() );
+            // delete all objects
+            ObjectListing listing = s3.s3client.listObjects( s3.bucketName );
+            for ( S3ObjectSummary obj : listing.getObjectSummaries() )
+            {
+                s3.s3client.deleteObject( s3.bucketName, obj.getKey() );
+            }
+            // delete bucket
+            s3.s3client.deleteBucket( s3.bucketName );
         }
-        // delete bucket
-        s3.s3client.deleteBucket( s3.bucketName );
     }
 
 
     @Before
     public void setUp() throws IOException, NoSuchAlgorithmException
     {
-        sampleFile = tempDir.newFile();
-        try ( OutputStream os = new FileOutputStream( sampleFile ) )
+        if ( ready )
         {
-            os.write( sampleData.getBytes( StandardCharsets.UTF_8 ) );
+            sampleFile = tempDir.newFile();
+            try ( OutputStream os = new FileOutputStream( sampleFile ) )
+            {
+                os.write( sampleData.getBytes( StandardCharsets.UTF_8 ) );
+            }
+            sampleMd5 = s3.put( sampleFile );
         }
-        sampleMd5 = s3.put( sampleFile );
     }
 
 
@@ -97,6 +115,7 @@ public class S3FileStoreTest
     @Test
     public void testContains() throws Exception
     {
+        Assume.assumeTrue( ready );
         Assert.assertTrue( s3.contains( sampleMd5 ) );
 
         byte[] otherMd5 = checksum( new ByteArrayInputStream( "12345".getBytes( StandardCharsets.UTF_8 ) ) );
@@ -107,6 +126,7 @@ public class S3FileStoreTest
     @Test
     public void testGet() throws Exception
     {
+        Assume.assumeTrue( ready );
         try ( InputStream is = s3.get( sampleMd5 ) )
         {
             Assert.assertNotNull( is );
@@ -118,6 +138,7 @@ public class S3FileStoreTest
     @Test
     public void testGetWithInvalidKey() throws IOException, NoSuchAlgorithmException
     {
+        Assume.assumeTrue( ready );
         byte[] checksum = checksum( new ByteArrayInputStream( "abc".getBytes() ) );
         Assert.assertNull( s3.get( checksum ) );
     }
@@ -126,6 +147,8 @@ public class S3FileStoreTest
     @Test
     public void testGetWithTarget() throws Exception
     {
+        Assume.assumeTrue( ready );
+
         File target = tempDir.newFile();
         Assert.assertTrue( s3.get( sampleMd5, target ) );
 
@@ -144,6 +167,8 @@ public class S3FileStoreTest
     @Test
     public void testPut_File() throws Exception
     {
+        Assume.assumeTrue( ready );
+
         byte[] checksum = s3.put( sampleFile );
         Assert.assertArrayEquals( sampleMd5, checksum );
         Assert.assertTrue( s3.contains( checksum ) );
@@ -153,6 +178,8 @@ public class S3FileStoreTest
     @Test
     public void testPut_URL() throws Exception
     {
+        Assume.assumeTrue( ready );
+
         byte[] checksum = s3.put( new URL( "http://example.com" ) );
         Assert.assertNotNull( checksum );
         Assert.assertTrue( s3.contains( checksum ) );
@@ -162,6 +189,7 @@ public class S3FileStoreTest
     @Test( expected = IOException.class )
     public void testPutWithInvalidURL() throws Exception
     {
+        Assume.assumeTrue( ready );
         s3.put( new URL( "with://inval.id/path" ) );
     }
 
@@ -169,6 +197,8 @@ public class S3FileStoreTest
     @Test
     public void testPutWithFilenameAndInputStream() throws Exception
     {
+        Assume.assumeTrue( ready );
+
         byte[] checksum = s3.put( "my-filename", new FileInputStream( sampleFile ) );
         Assert.assertArrayEquals( sampleMd5, checksum );
         Assert.assertTrue( s3.contains( checksum ) );
@@ -178,6 +208,7 @@ public class S3FileStoreTest
     @Test
     public void testRemove() throws Exception
     {
+        Assume.assumeTrue( ready );
         Assert.assertTrue( s3.remove( sampleMd5 ) );
         Assert.assertFalse( s3.remove( sampleMd5 ) );
         Assert.assertFalse( s3.contains( sampleMd5 ) );
