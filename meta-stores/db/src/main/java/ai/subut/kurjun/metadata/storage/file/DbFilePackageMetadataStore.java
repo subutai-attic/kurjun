@@ -17,6 +17,7 @@ package ai.subut.kurjun.metadata.storage.file;
 
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -24,17 +25,37 @@ import org.apache.commons.codec.binary.Hex;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.InstanceCreator;
 
+import ai.subut.kurjun.metadata.common.DependencyImpl;
 import ai.subut.kurjun.metadata.common.PackageMetadataImpl;
+import ai.subut.kurjun.model.metadata.Dependency;
 import ai.subut.kurjun.model.metadata.PackageMetadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 
 
 public class DbFilePackageMetadataStore implements PackageMetadataStore
 {
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson GSON;
 
     Path location;
+
+
+    static
+    {
+        GsonBuilder gb = new GsonBuilder().setPrettyPrinting();
+        InstanceCreator<Dependency> depInstanceCreator = new InstanceCreator<Dependency>()
+        {
+            @Override
+            public Dependency createInstance( Type type )
+            {
+                return new DependencyImpl();
+            }
+        };
+        gb.registerTypeAdapter( Dependency.class, depInstanceCreator );
+
+        GSON = gb.create();
+    }
 
 
     public DbFilePackageMetadataStore( String location )

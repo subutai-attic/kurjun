@@ -26,6 +26,8 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -34,10 +36,13 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import ai.subut.kurjun.metadata.common.DependencyImpl;
 import ai.subut.kurjun.metadata.common.PackageMetadataImpl;
 import ai.subut.kurjun.model.metadata.Architecture;
+import ai.subut.kurjun.model.metadata.Dependency;
 import ai.subut.kurjun.model.metadata.PackageMetadata;
 import ai.subut.kurjun.model.metadata.Priority;
+import ai.subut.kurjun.model.metadata.RelationOperator;
 
 
 public class DbFilePackageMetadataStoreTest
@@ -76,6 +81,15 @@ public class DbFilePackageMetadataStoreTest
         pm.setMaintainer( "Maintainer" );
         pm.setMd5( checksum( new ByteArrayInputStream( "contents".getBytes() ) ) );
         pm.setPriority( Priority.important );
+
+        DependencyImpl dep = new DependencyImpl();
+        dep.setPackage( "Package" );
+        dep.setVersion( "1.0.0" );
+        dep.setRelationOperator( RelationOperator.StrictlyLater );
+
+        List<Dependency> ls = new ArrayList<>();
+        ls.add( dep );
+        pm.setDependencies( ls );
 
         meta = pm;
         store.put( meta );
