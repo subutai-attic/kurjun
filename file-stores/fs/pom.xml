@@ -14,7 +14,6 @@
 
   <properties>
     <mapdb.version>1.0.6</mapdb.version>
-    <commons-codec.version>1.9</commons-codec.version>
   </properties>
 
   <build>
@@ -41,11 +40,6 @@
       <groupId>org.mapdb</groupId>
       <artifactId>mapdb</artifactId>
       <version>${mapdb.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-      <version>${commons-codec.version}</version>
     </dependency>
 
     <!-- Test Scope Dependencies -->
