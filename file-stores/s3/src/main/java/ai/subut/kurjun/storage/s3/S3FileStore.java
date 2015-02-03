@@ -45,6 +45,8 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.Upload;
 
 import ai.subut.kurjun.model.storage.FileStore;
 
@@ -53,6 +55,8 @@ public class S3FileStore implements FileStore
 {
 
     public static final String BUCKET_NAME = "subutai-kurjun";
+    public static final long MULTIPART_THRESHOLD_BYTES = 1024 * 1024 * 100;
+
     private static final Logger LOGGER = LoggerFactory.getLogger( S3FileStore.class );
     private static final int BUFFER_SIZE = 1024 * 8;
 
@@ -77,15 +81,16 @@ public class S3FileStore implements FileStore
     public boolean contains( byte[] md5 ) throws IOException
     {
         String hex = Hex.encodeHexString( md5 );
+        String key = makeKey( hex );
 
         ListObjectsRequest lor = new ListObjectsRequest();
         lor.setBucketName( bucketName );
-        lor.setPrefix( makeKey( hex ) );
+        lor.setPrefix( key );
 
         ObjectListing listing = s3client.listObjects( lor );
         for ( S3ObjectSummary obj : listing.getObjectSummaries() )
         {
-            if ( obj.getETag().equalsIgnoreCase( hex ) )
+            if ( obj.getKey().equalsIgnoreCase( key ) )
             {
                 return true;
             }
@@ -95,7 +100,7 @@ public class S3FileStore implements FileStore
             listing = s3client.listNextBatchOfObjects( listing );
             for ( S3ObjectSummary obj : listing.getObjectSummaries() )
             {
-                if ( obj.getETag().equalsIgnoreCase( hex ) )
+                if ( obj.getKey().equalsIgnoreCase( key ) )
                 {
                     return true;
                 }
@@ -153,7 +158,27 @@ public class S3FileStore implements FileStore
         String hex = Hex.encodeHexString( md5 );
 
         PutObjectRequest por = new PutObjectRequest( bucketName, makeKey( hex ), source );
-        s3client.putObject( por );
+        if ( source.length() < MULTIPART_THRESHOLD_BYTES )
+        {
+            s3client.putObject( por );
+        }
+        else
+        {
+            TransferManager tm = new TransferManager( s3client );
+            Upload upload = tm.upload( por );
+            try
+            {
+                upload.waitForCompletion();
+            }
+            catch ( AmazonClientException | InterruptedException ex )
+            {
+                throw new IOException( "Failed to upload large file", ex );
+            }
+            finally
+            {
+                tm.shutdownNow( false );
+            }
+        }
         return md5;
     }
 
