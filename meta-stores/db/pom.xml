@@ -14,7 +14,6 @@
 
   <properties>
     <mapdb.version>1.0.6</mapdb.version>
-    <gson.version>2.3.1</gson.version>
   </properties>
 
   <build>
@@ -45,11 +44,6 @@
       <groupId>org.mapdb</groupId>
       <artifactId>mapdb</artifactId>
       <version>${mapdb.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>${gson.version}</version>
     </dependency>
 
     <!-- Test Scope Dependencies -->
