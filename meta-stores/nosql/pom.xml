@@ -13,6 +13,8 @@
   <name>Kurjun NoSQL Store</name>
 
   <properties>
+    <gson.version>2.3.1</gson.version>
+    <cassandra-driver-core.version>2.1.0</cassandra-driver-core.version>
   </properties>
 
   <build>
@@ -33,6 +35,21 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>model</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>metadata-common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>${gson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.datastax.cassandra</groupId>
+      <artifactId>cassandra-driver-core</artifactId>
+      <version>${cassandra-driver-core.version}</version>
     </dependency>
 
     <!-- Test Scope Dependencies -->
