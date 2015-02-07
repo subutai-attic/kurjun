@@ -14,7 +14,7 @@ import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 
 
-public class CassandraConnector
+class CassandraConnector
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( CassandraConnector.class );
 
@@ -79,8 +79,14 @@ public class CassandraConnector
 
     public void close()
     {
-        session.close();
-        cluster.close();
+        if ( session != null )
+        {
+            session.close();
+        }
+        if ( cluster != null )
+        {
+            cluster.close();
+        }
     }
 
 

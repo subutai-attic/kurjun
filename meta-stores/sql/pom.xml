@@ -15,6 +15,13 @@
   <properties>
     <hikariCp.version>2.3.2</hikariCp.version>
     <mariadb-java-client.version>1.1.8</mariadb-java-client.version>
+
+    <test.db.className>org.mariadb.jdbc.MySQLDataSource</test.db.className>
+    <test.db.server>localhost</test.db.server>
+    <test.db.dbName>kurjun_metadata</test.db.dbName>
+    <test.db.user>kurjun-metadata</test.db.user>
+    <test.db.pass>kurjun-metadata</test.db.pass>
+    
   </properties>
 
   <build>

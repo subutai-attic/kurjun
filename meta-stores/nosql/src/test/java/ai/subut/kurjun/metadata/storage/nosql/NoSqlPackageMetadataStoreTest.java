@@ -8,14 +8,18 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.UUID;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ai.subut.kurjun.metadata.common.DependencyImpl;
 import ai.subut.kurjun.metadata.common.PackageMetadataImpl;
@@ -30,6 +34,7 @@ import ai.subut.kurjun.model.metadata.RelationOperator;
 public class NoSqlPackageMetadataStoreTest
 {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger( NoSqlPackageMetadataStoreTest.class );
     private static PackageMetadataStore store;
 
     private PackageMetadata meta;
@@ -39,7 +44,17 @@ public class NoSqlPackageMetadataStoreTest
     @BeforeClass
     public static void setUpClass() throws IOException
     {
-        store = new NoSqlPackageMetadataStore( "localhost", 0 );
+        try ( InputStream is = ClassLoader.getSystemResourceAsStream( "cassandra.properties" ) )
+        {
+            Properties prop = new Properties();
+            prop.load( is );
+            store = new NoSqlPackageMetadataStore( prop.getProperty( "test.cassandra.node" ),
+                                                   Integer.parseInt( prop.getProperty( "test.cassandra.port" ) ) );
+        }
+        catch ( Exception ex )
+        {
+            LOGGER.error( "Failed to initialize Cassandra connection", ex );
+        }
     }
 
 
@@ -72,7 +87,10 @@ public class NoSqlPackageMetadataStoreTest
         pm.setDependencies( ls );
 
         meta = pm;
-        store.put( meta );
+        if ( store != null )
+        {
+            store.put( meta );
+        }
 
         otherMd5 = checksum( new ByteArrayInputStream( "other content".getBytes() ) );
     }
@@ -81,13 +99,17 @@ public class NoSqlPackageMetadataStoreTest
     @After
     public void tearDown() throws IOException
     {
-        store.remove( meta.getMd5Sum() );
+        if ( store != null )
+        {
+            store.remove( meta.getMd5Sum() );
+        }
     }
 
 
     @Test
     public void testContains() throws Exception
     {
+        Assume.assumeNotNull( store );
         Assert.assertTrue( store.contains( meta.getMd5Sum() ) );
         Assert.assertFalse( store.contains( otherMd5 ) );
     }
@@ -96,6 +118,8 @@ public class NoSqlPackageMetadataStoreTest
     @Test
     public void testGet() throws Exception
     {
+        Assume.assumeNotNull( store );
+
         PackageMetadata res = store.get( meta.getMd5Sum() );
         Assert.assertEquals( meta, res );
         Assert.assertNull( store.get( otherMd5 ) );
@@ -105,6 +129,7 @@ public class NoSqlPackageMetadataStoreTest
     @Test
     public void testPut() throws Exception
     {
+        Assume.assumeNotNull( store );
         // already exists
         Assert.assertFalse( store.put( meta ) );
     }
@@ -113,6 +138,7 @@ public class NoSqlPackageMetadataStoreTest
     @Test
     public void testRemove() throws Exception
     {
+        Assume.assumeNotNull( store );
         // does not exist
         Assert.assertFalse( store.remove( otherMd5 ) );
 

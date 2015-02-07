@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
+import java.util.Properties;
 
 import org.apache.commons.codec.binary.Hex;
 
@@ -46,6 +47,12 @@ public class SqlDbPackageMetadataStore implements PackageMetadataStore
         gb.registerTypeAdapter( Dependency.class, depInstanceCreator );
 
         GSON = gb.create();
+    }
+
+
+    public SqlDbPackageMetadataStore( Properties properties )
+    {
+        ConnectionFactory.getInstance().init( properties );
     }
 
 

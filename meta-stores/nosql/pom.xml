@@ -14,6 +14,9 @@
 
   <properties>
     <cassandra-driver-core.version>2.1.0</cassandra-driver-core.version>
+
+    <test.cassandra.node>localhost</test.cassandra.node>
+    <test.cassandra.port>0</test.cassandra.port>
   </properties>
 
   <build>

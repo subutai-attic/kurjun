@@ -1,7 +1,6 @@
 package ai.subut.kurjun.metadata.storage.sql;
 
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -16,16 +15,16 @@ import com.zaxxer.hikari.HikariDataSource;
 
 
 /**
- * This class provides connections to database. Connection properties should be properly set in {@code db.properties}
- * file. Data source class name specified in that properties file shall have a corresponding dependency in
+ * This class provides connections to database. Connection properties are taken from {@link Properties} instance in
+ * {@link init()} method. That properties instance should use property name as specified in
+ * {@link ConnectionPropertyName}. There is sample {@code db.properties} file that can be loaded into {@link Properties}
+ * instance. Data source class name specified in that properties file shall have a corresponding dependency in
  * {@code pom.xml} file.
  *
  */
-public class ConnectionFactory
+class ConnectionFactory
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( ConnectionFactory.class );
-
-    String DB_CONNECTION_PROPERTIES = "db.properties";
 
     private DataSource dataSource;
 
@@ -38,25 +37,25 @@ public class ConnectionFactory
 
     private ConnectionFactory()
     {
-        Properties properties = new Properties();
-        try
-        {
-            properties.load( ClassLoader.getSystemResourceAsStream( DB_CONNECTION_PROPERTIES ) );
-        }
-        catch ( IOException ex )
-        {
-            LOGGER.error( "Failed to load DB properties", ex );
-            return;
-        }
-
-        HikariConfig config = new HikariConfig( properties );
-        dataSource = new HikariDataSource( config );
     }
 
 
     public static ConnectionFactory getInstance()
     {
         return ConnectionFactoryHolder.INSTANCE;
+    }
+
+
+    /**
+     * Initiates connection pool to DB.
+     *
+     * @param properties connection properties, property names specified in {@link ConnectionPropertyName} must be used
+     */
+    public void init( Properties properties )
+    {
+        HikariConfig config = new HikariConfig( properties );
+        dataSource = new HikariDataSource( config );
+        LOGGER.info( "Kurjun SQL DB metadata store successfully initialized" );
     }
 
 

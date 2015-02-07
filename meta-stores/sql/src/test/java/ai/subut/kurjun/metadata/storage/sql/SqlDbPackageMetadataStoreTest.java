@@ -8,14 +8,18 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.UUID;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ai.subut.kurjun.metadata.common.DependencyImpl;
 import ai.subut.kurjun.metadata.common.PackageMetadataImpl;
@@ -29,6 +33,7 @@ import ai.subut.kurjun.model.metadata.RelationOperator;
 
 public class SqlDbPackageMetadataStoreTest
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger( SqlDbPackageMetadataStoreTest.class );
     private static PackageMetadataStore store;
 
     private PackageMetadata meta;
@@ -38,7 +43,16 @@ public class SqlDbPackageMetadataStoreTest
     @BeforeClass
     public static void setUpClass() throws IOException
     {
-        store = new SqlDbPackageMetadataStore();
+        try ( InputStream is = ClassLoader.getSystemResourceAsStream( "conn.properties" ) )
+        {
+            Properties properties = new Properties();
+            properties.load( is );
+            store = new SqlDbPackageMetadataStore( properties );
+        }
+        catch ( Exception ex )
+        {
+            LOGGER.error( "Failed to init SQL DB store", ex );
+        }
     }
 
 
@@ -71,7 +85,10 @@ public class SqlDbPackageMetadataStoreTest
         pm.setDependencies( ls );
 
         meta = pm;
-        store.put( meta );
+        if ( store != null )
+        {
+            store.put( meta );
+        }
 
         otherMd5 = checksum( new ByteArrayInputStream( "other content".getBytes() ) );
     }
@@ -80,13 +97,18 @@ public class SqlDbPackageMetadataStoreTest
     @After
     public void tearDown() throws IOException
     {
-        store.remove( meta.getMd5Sum() );
+        if ( store != null )
+        {
+            store.remove( meta.getMd5Sum() );
+        }
     }
 
 
     @Test
     public void testContains() throws Exception
     {
+        Assume.assumeNotNull( store );
+
         Assert.assertTrue( store.contains( meta.getMd5Sum() ) );
         Assert.assertFalse( store.contains( otherMd5 ) );
     }
@@ -95,6 +117,8 @@ public class SqlDbPackageMetadataStoreTest
     @Test
     public void testGet() throws Exception
     {
+        Assume.assumeNotNull( store );
+
         PackageMetadata res = store.get( meta.getMd5Sum() );
         Assert.assertEquals( meta, res );
         Assert.assertNull( store.get( otherMd5 ) );
@@ -104,6 +128,7 @@ public class SqlDbPackageMetadataStoreTest
     @Test
     public void testPut() throws Exception
     {
+        Assume.assumeNotNull( store );
         // already exists
         Assert.assertFalse( store.put( meta ) );
     }
@@ -112,6 +137,7 @@ public class SqlDbPackageMetadataStoreTest
     @Test
     public void testRemove() throws Exception
     {
+        Assume.assumeNotNull( store );
         // does not exist
         Assert.assertFalse( store.remove( otherMd5 ) );
 
