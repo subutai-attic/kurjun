@@ -1,16 +1,12 @@
 package ai.subut.kurjun.metadata.storage.file;
 
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +16,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import org.apache.commons.codec.digest.DigestUtils;
 
 import ai.subut.kurjun.metadata.common.DependencyImpl;
 import ai.subut.kurjun.metadata.common.PackageMetadataImpl;
@@ -56,7 +54,7 @@ public class DbFilePackageMetadataStoreTest
 
 
     @Before
-    public void setUp() throws IOException, NoSuchAlgorithmException
+    public void setUp() throws IOException
     {
         PackageMetadataImpl pm = new PackageMetadataImpl();
         pm.setArchitecture( Architecture.amd64 );
@@ -64,7 +62,7 @@ public class DbFilePackageMetadataStoreTest
         pm.setFilename( "package-name-ver-arch.deb" );
         pm.setInstalledSize( 1234 );
         pm.setMaintainer( "Maintainer" );
-        pm.setMd5( checksum( new ByteArrayInputStream( "contents".getBytes() ) ) );
+        pm.setMd5( DigestUtils.md5( "contents" ) );
         pm.setPriority( Priority.important );
 
         DependencyImpl dep = new DependencyImpl();
@@ -79,7 +77,7 @@ public class DbFilePackageMetadataStoreTest
         meta = pm;
         store.put( meta );
 
-        otherMd5 = checksum( new ByteArrayInputStream( "other content".getBytes() ) );
+        otherMd5 = DigestUtils.md5( "other content" );
     }
 
 
@@ -123,19 +121,6 @@ public class DbFilePackageMetadataStoreTest
         // removed first then does not exist anymore
         Assert.assertTrue( store.remove( meta.getMd5Sum() ) );
         Assert.assertFalse( store.remove( meta.getMd5Sum() ) );
-    }
-
-
-    public static byte[] checksum( InputStream is ) throws NoSuchAlgorithmException, IOException
-    {
-        MessageDigest md = MessageDigest.getInstance( "MD5" );
-        int len;
-        byte[] buf = new byte[1024];
-        while ( ( len = is.read( buf ) ) != -1 )
-        {
-            md.update( buf, 0, len );
-        }
-        return md.digest();
     }
 
 

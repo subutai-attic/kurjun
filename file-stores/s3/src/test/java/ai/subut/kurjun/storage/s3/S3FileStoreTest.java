@@ -1,7 +1,6 @@
 package ai.subut.kurjun.storage.s3;
 
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,7 +10,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
@@ -24,6 +22,8 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
+import org.apache.commons.codec.digest.DigestUtils;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.s3.model.ObjectListing;
@@ -103,7 +103,7 @@ public class S3FileStoreTest
         Assume.assumeTrue( ready );
         Assert.assertTrue( s3.contains( sampleMd5 ) );
 
-        byte[] otherMd5 = checksum( new ByteArrayInputStream( "12345".getBytes( StandardCharsets.UTF_8 ) ) );
+        byte[] otherMd5 = DigestUtils.md5( "12345" );
         Assert.assertFalse( s3.contains( otherMd5 ) );
     }
 
@@ -124,7 +124,7 @@ public class S3FileStoreTest
     public void testGetWithInvalidKey() throws IOException, NoSuchAlgorithmException
     {
         Assume.assumeTrue( ready );
-        byte[] checksum = checksum( new ByteArrayInputStream( "abc".getBytes() ) );
+        byte[] checksum = DigestUtils.md5( "abc" );
         Assert.assertNull( s3.get( checksum ) );
     }
 
@@ -144,7 +144,7 @@ public class S3FileStoreTest
         }
 
         // with invalid key
-        byte[] checksum = checksum( new ByteArrayInputStream( "abc".getBytes() ) );
+        byte[] checksum = DigestUtils.md5( "abc" );
         Assert.assertFalse( s3.get( checksum, target ) );
     }
 
@@ -213,20 +213,6 @@ public class S3FileStoreTest
             return os.toString( StandardCharsets.UTF_8.name() );
         }
     }
-
-
-    private byte[] checksum( InputStream is ) throws NoSuchAlgorithmException, IOException
-    {
-        MessageDigest md = MessageDigest.getInstance( "MD5" );
-        int len;
-        byte[] buf = new byte[1024];
-        while ( ( len = is.read( buf ) ) != -1 )
-        {
-            md.update( buf, 0, len );
-        }
-        return md.digest();
-    }
-
 
 }
 

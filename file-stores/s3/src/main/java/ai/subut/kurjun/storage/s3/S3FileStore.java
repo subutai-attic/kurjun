@@ -10,14 +10,13 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.s3.AmazonS3;
@@ -138,7 +137,7 @@ public class S3FileStore implements FileStore
         byte[] md5;
         try ( InputStream is = new FileInputStream( source ) )
         {
-            md5 = checksum( is );
+            md5 = DigestUtils.md5( is );
         }
         String hex = Hex.encodeHexString( md5 );
 
@@ -237,25 +236,6 @@ public class S3FileStore implements FileStore
         return s.substring( 0, 2 ) + "/" + s;
     }
 
-
-    private static byte[] checksum( InputStream is ) throws IOException
-    {
-        int len;
-        byte[] buf = new byte[BUFFER_SIZE];
-        try
-        {
-            MessageDigest md = MessageDigest.getInstance( "MD5" );
-            while ( ( len = is.read( buf ) ) != -1 )
-            {
-                md.update( buf, 0, len );
-            }
-            return md.digest();
-        }
-        catch ( NoSuchAlgorithmException ex )
-        {
-            throw new IOException( "Failed to calculate checksum of file", ex );
-        }
-    }
 
 }
 

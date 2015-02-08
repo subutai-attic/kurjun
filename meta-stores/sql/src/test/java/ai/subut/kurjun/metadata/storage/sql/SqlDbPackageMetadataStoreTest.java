@@ -1,10 +1,8 @@
 package ai.subut.kurjun.metadata.storage.sql;
 
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +18,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.apache.commons.codec.digest.DigestUtils;
 
 import ai.subut.kurjun.metadata.common.DependencyImpl;
 import ai.subut.kurjun.metadata.common.PackageMetadataImpl;
@@ -72,7 +72,7 @@ public class SqlDbPackageMetadataStoreTest
         pm.setFilename( "package-name-ver-arch.deb" );
         pm.setInstalledSize( 1234 );
         pm.setMaintainer( "Maintainer" );
-        pm.setMd5( checksum( new ByteArrayInputStream( UUID.randomUUID().toString().getBytes() ) ) );
+        pm.setMd5( DigestUtils.md5( UUID.randomUUID().toString() ) );
         pm.setPriority( Priority.important );
 
         DependencyImpl dep = new DependencyImpl();
@@ -90,7 +90,7 @@ public class SqlDbPackageMetadataStoreTest
             store.put( meta );
         }
 
-        otherMd5 = checksum( new ByteArrayInputStream( "other content".getBytes() ) );
+        otherMd5 = DigestUtils.md5( "other content" );
     }
 
 
@@ -144,19 +144,6 @@ public class SqlDbPackageMetadataStoreTest
         // removed first then does not exist anymore
         Assert.assertTrue( store.remove( meta.getMd5Sum() ) );
         Assert.assertFalse( store.remove( meta.getMd5Sum() ) );
-    }
-
-
-    public static byte[] checksum( InputStream is ) throws NoSuchAlgorithmException, IOException
-    {
-        MessageDigest md = MessageDigest.getInstance( "MD5" );
-        int len;
-        byte[] buf = new byte[1024];
-        while ( ( len = is.read( buf ) ) != -1 )
-        {
-            md.update( buf, 0, len );
-        }
-        return md.digest();
     }
 
 }

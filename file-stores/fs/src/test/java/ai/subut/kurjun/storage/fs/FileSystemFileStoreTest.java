@@ -1,7 +1,6 @@
 package ai.subut.kurjun.storage.fs;
 
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,7 +10,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -20,7 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import ai.subut.kurjun.storage.fs.util.FileHelpers;
+import org.apache.commons.codec.digest.DigestUtils;
 
 
 public class FileSystemFileStoreTest
@@ -37,14 +35,14 @@ public class FileSystemFileStoreTest
 
 
     @Before
-    public void setUp() throws IOException, NoSuchAlgorithmException
+    public void setUp() throws IOException
     {
         sampleFile = tempDir.newFile();
         try ( OutputStream os = new FileOutputStream( sampleFile ) )
         {
             os.write( sampleData.getBytes( StandardCharsets.UTF_8 ) );
         }
-        sampleMd5 = FileHelpers.checksum( sampleFile, MD5 );
+        sampleMd5 = DigestUtils.md5( sampleData );
 
         fs = new FileSystemFileStore( tempDir.newFolder().getAbsolutePath() );
         fs.put( sampleFile );
@@ -62,8 +60,11 @@ public class FileSystemFileStoreTest
     {
         Assert.assertTrue( fs.contains( sampleMd5 ) );
 
-        byte[] otherMd5 = FileHelpers.checksum( tempDir.newFile(), MD5 );
-        Assert.assertFalse( fs.contains( otherMd5 ) );
+        try ( InputStream is = new FileInputStream( tempDir.newFile() ) )
+        {
+            byte[] otherMd5 = DigestUtils.md5( is );
+            Assert.assertFalse( fs.contains( otherMd5 ) );
+        }
     }
 
 
@@ -79,9 +80,9 @@ public class FileSystemFileStoreTest
 
 
     @Test
-    public void testGetWithInvalidKey() throws IOException, NoSuchAlgorithmException
+    public void testGetWithInvalidKey() throws IOException
     {
-        byte[] checksum = FileHelpers.checksum( new ByteArrayInputStream( "abc".getBytes() ), MD5 );
+        byte[] checksum = DigestUtils.md5( "abc" );
         Assert.assertNull( fs.get( checksum ) );
     }
 
@@ -99,7 +100,7 @@ public class FileSystemFileStoreTest
         }
 
         // with invalid key
-        byte[] checksum = FileHelpers.checksum( new ByteArrayInputStream( "abc".getBytes() ), MD5 );
+        byte[] checksum = DigestUtils.md5( "abc" );
         Assert.assertFalse( fs.get( checksum, target ) );
     }
 
