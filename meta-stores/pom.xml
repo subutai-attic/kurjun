@@ -18,6 +18,7 @@
     <module>sql</module>
     <module>nosql</module>
     <module>db</module>
+    <module>common</module>
   </modules>
 
   <description>

@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>kurjun-parent</artifactId>
+    <artifactId>kurjun-meta-stores</artifactId>
     <groupId>ai.subut.kurjun</groupId>
     <version>1.0-SNAPSHOT</version>
   </parent>
@@ -13,6 +13,15 @@
   <name>Kurjun SQL DB Store</name>
 
   <properties>
+    <hikariCp.version>2.3.2</hikariCp.version>
+    <mariadb-java-client.version>1.1.8</mariadb-java-client.version>
+
+    <test.db.className>org.mariadb.jdbc.MySQLDataSource</test.db.className>
+    <test.db.server>localhost</test.db.server>
+    <test.db.dbName>kurjun_metadata</test.db.dbName>
+    <test.db.user>kurjun-metadata</test.db.user>
+    <test.db.pass>kurjun-metadata</test.db.pass>
+    
   </properties>
 
   <build>
@@ -34,7 +43,23 @@
       <artifactId>model</artifactId>
       <version>${project.version}</version>
     </dependency>
-
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>metadata-common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+      <version>${hikariCp.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mariadb.jdbc</groupId>
+      <artifactId>mariadb-java-client</artifactId>
+      <version>${mariadb-java-client.version}</version>
+    </dependency>
+    
     <!-- Test Scope Dependencies -->
 
     <dependency>
@@ -43,5 +68,6 @@
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
+
   </dependencies>
 </project>

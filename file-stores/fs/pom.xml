@@ -13,6 +13,7 @@
   <name>Kurjun FS File Store</name>
 
   <properties>
+    <mapdb.version>1.0.6</mapdb.version>
   </properties>
 
   <build>
@@ -35,6 +36,12 @@
       <version>${project.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.mapdb</groupId>
+      <artifactId>mapdb</artifactId>
+      <version>${mapdb.version}</version>
+    </dependency>
+
     <!-- Test Scope Dependencies -->
 
     <dependency>
@@ -44,4 +51,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
 </project>
