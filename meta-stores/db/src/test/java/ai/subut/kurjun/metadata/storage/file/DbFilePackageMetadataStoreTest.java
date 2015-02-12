@@ -9,6 +9,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -21,9 +22,11 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 import ai.subut.kurjun.metadata.common.DependencyImpl;
 import ai.subut.kurjun.metadata.common.PackageMetadataImpl;
+import ai.subut.kurjun.metadata.common.PackageMetadataListingImpl;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.Dependency;
 import ai.subut.kurjun.model.metadata.PackageMetadata;
+import ai.subut.kurjun.model.metadata.PackageMetadataListing;
 import ai.subut.kurjun.model.metadata.Priority;
 import ai.subut.kurjun.model.metadata.RelationOperator;
 
@@ -34,6 +37,7 @@ public class DbFilePackageMetadataStoreTest
     private static DbFilePackageMetadataStore store;
 
     private PackageMetadata meta;
+    private List<PackageMetadata> extraItems;
     private byte[] otherMd5;
 
 
@@ -56,27 +60,10 @@ public class DbFilePackageMetadataStoreTest
     @Before
     public void setUp() throws IOException
     {
-        PackageMetadataImpl pm = new PackageMetadataImpl();
-        pm.setArchitecture( Architecture.amd64 );
-        pm.setDescription( "Description here" );
-        pm.setFilename( "package-name-ver-arch.deb" );
-        pm.setInstalledSize( 1234 );
-        pm.setMaintainer( "Maintainer" );
-        pm.setMd5( DigestUtils.md5( "contents" ) );
-        pm.setPriority( Priority.important );
-
-        DependencyImpl dep = new DependencyImpl();
-        dep.setPackage( "Package" );
-        dep.setVersion( "1.0.0" );
-        dep.setRelationOperator( RelationOperator.StrictlyLater );
-
-        List<Dependency> ls = new ArrayList<>();
-        ls.add( dep );
-        pm.setDependencies( ls );
-
-        meta = pm;
+        meta = createPackageMetadata();
         store.put( meta );
 
+        extraItems = new ArrayList<>();
         otherMd5 = DigestUtils.md5( "other content" );
     }
 
@@ -121,6 +108,71 @@ public class DbFilePackageMetadataStoreTest
         // removed first then does not exist anymore
         Assert.assertTrue( store.remove( meta.getMd5Sum() ) );
         Assert.assertFalse( store.remove( meta.getMd5Sum() ) );
+    }
+
+
+    @Test
+    public void testList() throws Exception
+    {
+        store.batchSize = 10;
+
+        // put twice of the batch size
+        for ( int i = 0; i < store.batchSize * 2; i++ )
+        {
+            PackageMetadata pm = createPackageMetadata();
+            store.put( pm );
+            extraItems.add( pm );
+        }
+
+        PackageMetadataListing ls = store.list();
+
+        Assert.assertNotNull( ls );
+        Assert.assertTrue( ls.isTruncated() );
+        Assert.assertEquals( store.batchSize, ls.getPackageMetadata().size() );
+
+        PackageMetadataListing next = store.listNextBatch( ls );
+        Assert.assertNotNull( next );
+    }
+
+
+    @Test( expected = IllegalStateException.class )
+    public void testListNextBatchWithInvalidInput() throws Exception
+    {
+        PackageMetadataListingImpl listing = new PackageMetadataListingImpl();
+        listing.setTruncated( false );
+
+        store.listNextBatch( listing );
+    }
+
+
+    @Test( expected = IllegalStateException.class )
+    public void testListNextBatchWithoutMarker() throws IOException
+    {
+        store.listNextBatch( new PackageMetadataListingImpl() );
+    }
+
+
+    private PackageMetadata createPackageMetadata()
+    {
+        PackageMetadataImpl pm = new PackageMetadataImpl();
+        pm.setArchitecture( Architecture.amd64 );
+        pm.setDescription( "Description here" );
+        pm.setFilename( UUID.randomUUID().toString() + "-ver-arch.deb" );
+        pm.setInstalledSize( 1234 );
+        pm.setMaintainer( "Maintainer" );
+        pm.setMd5( DigestUtils.md5( pm.getFilename() ) );
+        pm.setPriority( Priority.important );
+
+        DependencyImpl dep = new DependencyImpl();
+        dep.setPackage( "Package" );
+        dep.setVersion( "1.0.0" );
+        dep.setRelationOperator( RelationOperator.StrictlyLater );
+
+        List<Dependency> ls = new ArrayList<>();
+        ls.add( dep );
+        pm.setDependencies( ls );
+
+        return pm;
     }
 
 
