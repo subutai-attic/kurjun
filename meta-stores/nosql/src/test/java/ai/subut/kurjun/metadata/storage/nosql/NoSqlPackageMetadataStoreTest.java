@@ -22,10 +22,11 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 import ai.subut.kurjun.metadata.common.DependencyImpl;
 import ai.subut.kurjun.metadata.common.PackageMetadataImpl;
+import ai.subut.kurjun.metadata.common.PackageMetadataListingImpl;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.Dependency;
 import ai.subut.kurjun.model.metadata.PackageMetadata;
-import ai.subut.kurjun.model.metadata.PackageMetadataStore;
+import ai.subut.kurjun.model.metadata.PackageMetadataListing;
 import ai.subut.kurjun.model.metadata.Priority;
 import ai.subut.kurjun.model.metadata.RelationOperator;
 
@@ -34,9 +35,10 @@ public class NoSqlPackageMetadataStoreTest
 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger( NoSqlPackageMetadataStoreTest.class );
-    private static PackageMetadataStore store;
+    private static NoSqlPackageMetadataStore store;
 
     private PackageMetadata meta;
+    private List<PackageMetadata> extraItems;
     private byte[] otherMd5;
 
 
@@ -67,30 +69,12 @@ public class NoSqlPackageMetadataStoreTest
     @Before
     public void setUp() throws IOException
     {
-        PackageMetadataImpl pm = new PackageMetadataImpl();
-        pm.setArchitecture( Architecture.amd64 );
-        pm.setDescription( "Description here" );
-        pm.setFilename( "package-name-ver-arch.deb" );
-        pm.setInstalledSize( 1234 );
-        pm.setMaintainer( "Maintainer" );
-        pm.setMd5( DigestUtils.md5( UUID.randomUUID().toString() ) );
-        pm.setPriority( Priority.important );
-
-        DependencyImpl dep = new DependencyImpl();
-        dep.setPackage( "Package" );
-        dep.setVersion( "1.0.0" );
-        dep.setRelationOperator( RelationOperator.StrictlyLater );
-
-        List<Dependency> ls = new ArrayList<>();
-        ls.add( dep );
-        pm.setDependencies( ls );
-
-        meta = pm;
+        meta = createPackageMetadata();
         if ( store != null )
         {
             store.put( meta );
         }
-
+        extraItems = new ArrayList<>();
         otherMd5 = DigestUtils.md5( "other content" );
     }
 
@@ -101,6 +85,10 @@ public class NoSqlPackageMetadataStoreTest
         if ( store != null )
         {
             store.remove( meta.getMd5Sum() );
+            for ( PackageMetadata item : extraItems )
+            {
+                store.remove( item.getMd5Sum() );
+            }
         }
     }
 
@@ -146,5 +134,74 @@ public class NoSqlPackageMetadataStoreTest
         Assert.assertFalse( store.remove( meta.getMd5Sum() ) );
     }
 
+
+    @Test
+    public void testList() throws Exception
+    {
+        Assume.assumeNotNull( store );
+
+        store.batchSize = 10;
+
+        // put twice of the batch size
+        for ( int i = 0; i < store.batchSize * 2; i++ )
+        {
+            PackageMetadata pm = createPackageMetadata();
+            store.put( pm );
+            extraItems.add( pm );
+        }
+
+        PackageMetadataListing ls = store.list();
+
+        Assert.assertNotNull( ls );
+        Assert.assertTrue( ls.isTruncated() );
+        Assert.assertEquals( store.batchSize, ls.getPackageMetadata().size() );
+
+        PackageMetadataListing next = store.listNextBatch( ls );
+        Assert.assertNotNull( next );
+    }
+
+
+    @Test( expected = IllegalStateException.class )
+    public void testListNextBatchWithInvalidInput() throws Exception
+    {
+        Assume.assumeNotNull( store );
+
+        PackageMetadataListingImpl listing = new PackageMetadataListingImpl();
+        listing.setTruncated( false );
+
+        store.listNextBatch( listing );
+    }
+
+
+    @Test( expected = IllegalStateException.class )
+    public void testListNextBatchWithoutMarker() throws IOException
+    {
+        Assume.assumeNotNull( store );
+        store.listNextBatch( new PackageMetadataListingImpl() );
+    }
+
+
+    private PackageMetadata createPackageMetadata()
+    {
+        PackageMetadataImpl pm = new PackageMetadataImpl();
+        pm.setArchitecture( Architecture.amd64 );
+        pm.setDescription( "Description here" );
+        pm.setFilename( UUID.randomUUID().toString() + "-ver-arch.deb" );
+        pm.setInstalledSize( 1234 );
+        pm.setMaintainer( "Maintainer" );
+        pm.setMd5( DigestUtils.md5( pm.getFilename() ) );
+        pm.setPriority( Priority.important );
+
+        DependencyImpl dep = new DependencyImpl();
+        dep.setPackage( "Package" );
+        dep.setVersion( "1.0.0" );
+        dep.setRelationOperator( RelationOperator.StrictlyLater );
+
+        List<Dependency> ls = new ArrayList<>();
+        ls.add( dep );
+        pm.setDependencies( ls );
+
+        return pm;
+    }
 }
 

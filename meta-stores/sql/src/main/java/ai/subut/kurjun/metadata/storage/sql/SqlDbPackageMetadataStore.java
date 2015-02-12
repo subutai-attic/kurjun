@@ -18,8 +18,10 @@ import com.google.gson.InstanceCreator;
 
 import ai.subut.kurjun.metadata.common.DependencyImpl;
 import ai.subut.kurjun.metadata.common.PackageMetadataImpl;
+import ai.subut.kurjun.metadata.common.PackageMetadataListingImpl;
 import ai.subut.kurjun.model.metadata.Dependency;
 import ai.subut.kurjun.model.metadata.PackageMetadata;
+import ai.subut.kurjun.model.metadata.PackageMetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 
 
@@ -31,6 +33,8 @@ import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 public class SqlDbPackageMetadataStore implements PackageMetadataStore
 {
     private static final Gson GSON;
+
+    int batchSize = 1000;
 
 
     static
@@ -137,6 +141,57 @@ public class SqlDbPackageMetadataStore implements PackageMetadataStore
         {
             throw makeIOException( ex );
         }
+    }
+
+
+    @Override
+    public PackageMetadataListing list() throws IOException
+    {
+        return listPackageMetadata( null );
+    }
+
+
+    @Override
+    public PackageMetadataListing listNextBatch( PackageMetadataListing listing ) throws IOException
+    {
+        if ( listing.isTruncated() && listing.getMarker() != null )
+        {
+            return listPackageMetadata( listing.getMarker().toString() );
+        }
+        throw new IllegalStateException( "Listing is not truncated or no marker specified" );
+    }
+
+
+    private PackageMetadataListing listPackageMetadata( String marker ) throws IOException
+    {
+        PackageMetadataListingImpl pml = new PackageMetadataListingImpl();
+        try ( Connection conn = ConnectionFactory.getInstance().getConnection() )
+        {
+            PreparedStatement ps;
+            if ( marker != null && !marker.isEmpty() )
+            {
+                ps = conn.prepareStatement( SqlStatements.SELECT_NEXT_ORDERED );
+                ps.setString( 1, marker );
+            }
+            else
+            {
+                ps = conn.prepareStatement( SqlStatements.SELECT_ORDERED );
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while ( rs.next() && pml.getPackageMetadata().size() < batchSize )
+            {
+                PackageMetadataImpl meta = GSON.fromJson( rs.getString( 1 ), PackageMetadataImpl.class );
+                pml.getPackageMetadata().add( meta );
+                pml.setMarker( Hex.encodeHexString( meta.getMd5Sum() ) );
+            }
+            pml.setTruncated( rs.next() );
+        }
+        catch ( SQLException ex )
+        {
+            throw makeIOException( ex );
+        }
+        return pml;
     }
 
 

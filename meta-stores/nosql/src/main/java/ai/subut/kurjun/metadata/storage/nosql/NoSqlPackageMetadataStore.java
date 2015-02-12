@@ -4,6 +4,7 @@ package ai.subut.kurjun.metadata.storage.nosql;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.Iterator;
 
 import org.apache.commons.codec.binary.Hex;
 
@@ -18,9 +19,15 @@ import com.google.gson.InstanceCreator;
 
 import ai.subut.kurjun.metadata.common.DependencyImpl;
 import ai.subut.kurjun.metadata.common.PackageMetadataImpl;
+import ai.subut.kurjun.metadata.common.PackageMetadataListingImpl;
 import ai.subut.kurjun.model.metadata.Dependency;
 import ai.subut.kurjun.model.metadata.PackageMetadata;
+import ai.subut.kurjun.model.metadata.PackageMetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
+
+import static com.datastax.driver.core.querybuilder.QueryBuilder.fcall;
+import static com.datastax.driver.core.querybuilder.QueryBuilder.gt;
+import static com.datastax.driver.core.querybuilder.QueryBuilder.token;
 
 
 /**
@@ -36,6 +43,8 @@ public class NoSqlPackageMetadataStore implements PackageMetadataStore
 {
 
     private static final Gson GSON;
+
+    int batchSize = 1000;
 
 
     static
@@ -140,6 +149,49 @@ public class NoSqlPackageMetadataStore implements PackageMetadataStore
             return true;
         }
         return false;
+    }
+
+
+    @Override
+    public PackageMetadataListing list() throws IOException
+    {
+        return listPackageMetadata( null );
+    }
+
+
+    @Override
+    public PackageMetadataListing listNextBatch( PackageMetadataListing listing ) throws IOException
+    {
+        if ( listing.isTruncated() && listing.getMarker() != null )
+        {
+            return listPackageMetadata( listing.getMarker().toString() );
+        }
+        throw new IllegalStateException( "Listing is not truncated or no marker specified" );
+    }
+
+
+    private PackageMetadataListing listPackageMetadata( String marker )
+    {
+        PackageMetadataListingImpl res = new PackageMetadataListingImpl();
+
+        Statement st = QueryBuilder.select().from( SchemaInfo.KEYSPACE, SchemaInfo.TABLE )
+                .where( gt( token( SchemaInfo.CHECKSUM_COLUMN ), fcall( "token", marker != null ? marker : "" ) ) )
+                .limit( batchSize + 1 );
+        // (*) limit with one more item to detect whether there are more results to fetch
+
+        Session session = CassandraConnector.getInstance().getSession();
+        ResultSet rs = session.execute( st );
+
+        Iterator<Row> it = rs.iterator();
+        while ( it.hasNext() && res.getPackageMetadata().size() < batchSize )
+        {
+            Row row = it.next();
+            String json = row.getString( SchemaInfo.METADATA_COLUMN );
+            res.getPackageMetadata().add( GSON.fromJson( json, PackageMetadataImpl.class ) );
+            res.setMarker( row.getString( SchemaInfo.CHECKSUM_COLUMN ) );
+        }
+        res.setTruncated( it.hasNext() );
+        return res;
     }
 
 }
