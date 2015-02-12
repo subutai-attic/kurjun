@@ -14,7 +14,6 @@ import java.util.UUID;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -115,8 +114,6 @@ public class DbFilePackageMetadataStoreTest
     @Test
     public void testList() throws Exception
     {
-        Assume.assumeNotNull( store );
-
         store.batchSize = 10;
 
         // put twice of the batch size
@@ -141,8 +138,6 @@ public class DbFilePackageMetadataStoreTest
     @Test( expected = IllegalStateException.class )
     public void testListNextBatchWithInvalidInput() throws Exception
     {
-        Assume.assumeNotNull( store );
-
         PackageMetadataListingImpl listing = new PackageMetadataListingImpl();
         listing.setTruncated( false );
 
@@ -153,7 +148,6 @@ public class DbFilePackageMetadataStoreTest
     @Test( expected = IllegalStateException.class )
     public void testListNextBatchWithoutMarker() throws IOException
     {
-        Assume.assumeNotNull( store );
         store.listNextBatch( new PackageMetadataListingImpl() );
     }
 

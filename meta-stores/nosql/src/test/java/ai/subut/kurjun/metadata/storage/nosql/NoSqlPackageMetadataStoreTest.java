@@ -69,11 +69,11 @@ public class NoSqlPackageMetadataStoreTest
     @Before
     public void setUp() throws IOException
     {
+        Assume.assumeNotNull( store );
+
         meta = createPackageMetadata();
-        if ( store != null )
-        {
-            store.put( meta );
-        }
+        store.put( meta );
+
         extraItems = new ArrayList<>();
         otherMd5 = DigestUtils.md5( "other content" );
     }
@@ -96,7 +96,6 @@ public class NoSqlPackageMetadataStoreTest
     @Test
     public void testContains() throws Exception
     {
-        Assume.assumeNotNull( store );
         Assert.assertTrue( store.contains( meta.getMd5Sum() ) );
         Assert.assertFalse( store.contains( otherMd5 ) );
     }
@@ -105,8 +104,6 @@ public class NoSqlPackageMetadataStoreTest
     @Test
     public void testGet() throws Exception
     {
-        Assume.assumeNotNull( store );
-
         PackageMetadata res = store.get( meta.getMd5Sum() );
         Assert.assertEquals( meta, res );
         Assert.assertNull( store.get( otherMd5 ) );
@@ -116,7 +113,6 @@ public class NoSqlPackageMetadataStoreTest
     @Test
     public void testPut() throws Exception
     {
-        Assume.assumeNotNull( store );
         // already exists
         Assert.assertFalse( store.put( meta ) );
     }
@@ -125,7 +121,6 @@ public class NoSqlPackageMetadataStoreTest
     @Test
     public void testRemove() throws Exception
     {
-        Assume.assumeNotNull( store );
         // does not exist
         Assert.assertFalse( store.remove( otherMd5 ) );
 
@@ -138,8 +133,6 @@ public class NoSqlPackageMetadataStoreTest
     @Test
     public void testList() throws Exception
     {
-        Assume.assumeNotNull( store );
-
         store.batchSize = 10;
 
         // put twice of the batch size
@@ -164,8 +157,6 @@ public class NoSqlPackageMetadataStoreTest
     @Test( expected = IllegalStateException.class )
     public void testListNextBatchWithInvalidInput() throws Exception
     {
-        Assume.assumeNotNull( store );
-
         PackageMetadataListingImpl listing = new PackageMetadataListingImpl();
         listing.setTruncated( false );
 
@@ -176,7 +167,6 @@ public class NoSqlPackageMetadataStoreTest
     @Test( expected = IllegalStateException.class )
     public void testListNextBatchWithoutMarker() throws IOException
     {
-        Assume.assumeNotNull( store );
         store.listNextBatch( new PackageMetadataListingImpl() );
     }
 
