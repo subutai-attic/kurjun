@@ -69,7 +69,13 @@ public interface PackageMetadata
      */
     List<Dependency> getDependencies();
 
+    List<Dependency> getRecommends();
+
     List<Dependency> getSuggests();
+
+    List<Dependency> getEnhances();
+
+    List<Dependency> getPreDepends();
 
     List<Dependency> getConflicts();
 

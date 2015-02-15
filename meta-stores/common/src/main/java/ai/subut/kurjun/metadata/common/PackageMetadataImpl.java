@@ -26,7 +26,10 @@ public class PackageMetadataImpl implements PackageMetadata
     private Architecture architecture;
     private int installedSize;
     private List<Dependency> dependencies;
+    private List<Dependency> recommends;
     private List<Dependency> suggests;
+    private List<Dependency> enhances;
+    private List<Dependency> preDepends;
     private List<Dependency> conflicts;
     private List<Dependency> breaks;
     private List<Dependency> replaces;
@@ -143,6 +146,19 @@ public class PackageMetadataImpl implements PackageMetadata
 
 
     @Override
+    public List<Dependency> getRecommends()
+    {
+        return recommends;
+    }
+
+
+    public void setRecommends( List<Dependency> recommends )
+    {
+        this.recommends = recommends;
+    }
+
+
+    @Override
     public List<Dependency> getSuggests()
     {
         return suggests;
@@ -152,6 +168,32 @@ public class PackageMetadataImpl implements PackageMetadata
     public void setSuggests( List<Dependency> suggests )
     {
         this.suggests = suggests;
+    }
+
+
+    @Override
+    public List<Dependency> getEnhances()
+    {
+        return enhances;
+    }
+
+
+    public void setEnhances( List<Dependency> enhances )
+    {
+        this.enhances = enhances;
+    }
+
+
+    @Override
+    public List<Dependency> getPreDepends()
+    {
+        return preDepends;
+    }
+
+
+    public void setPreDepends( List<Dependency> preDepends )
+    {
+        this.preDepends = preDepends;
     }
 
 

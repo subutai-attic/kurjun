@@ -39,7 +39,7 @@ public interface IndexPackageMetaData extends PackageMetadata
     /**
      * The field holding the MD5 checksum for the Debian archive file in the repository.
      */
-    String MD5SUM_FIELD = "MD5Sum";
+    String MD5SUM_FIELD = "MD5sum";
 
     /**
      * The field holding the SHA1 hash for the Debian archive file in the repository.

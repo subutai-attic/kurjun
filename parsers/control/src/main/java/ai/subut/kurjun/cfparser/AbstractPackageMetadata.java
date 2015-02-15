@@ -57,7 +57,10 @@ public abstract class AbstractPackageMetadata implements PackageMetadata
         checkNotNull( key );
 
         String raw = controlFile.get( key );
-        checkNotNull( raw );
+        if ( raw == null || raw.isEmpty() )
+        {
+            return null;
+        }
 
         List<Dependency> dependencies = depCache.get( key );
 
