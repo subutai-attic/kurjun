@@ -30,6 +30,13 @@
     <test.pkg.url.2>
       http://archive.ubuntu.com/ubuntu/pool/main/b/bc/bc_1.06.95-9_amd64.deb
     </test.pkg.url.2>
+
+    <test.pkg.index.url.gz>
+      http://archive.ubuntu.com/ubuntu/dists/trusty/main/binary-amd64/Packages.gz
+    </test.pkg.index.url.gz>
+    <test.pkg.index.url.bz2>
+      http://archive.ubuntu.com/ubuntu/dists/trusty/main/binary-amd64/Packages.bz2
+    </test.pkg.index.url.bz2>
     
   </properties>
 
@@ -71,6 +78,12 @@
       <version>${jdeb.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-compress</artifactId>
+      <version>${commons-compress.version}</version>
+    </dependency>
+    
     <!-- Test Scope Dependencies -->
 
     <dependency>
