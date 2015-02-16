@@ -78,14 +78,10 @@ public class PackagesIndexParserImpl implements PackagesIndexParser
     private InputStream openStream( File indexFile ) throws IOException
     {
         InputStream fis = new FileInputStream( indexFile );
-        if ( !CompressionType.isCompressed( indexFile ) )
-        {
-            return fis;
-        }
         switch ( CompressionType.getCompressionType( indexFile ) )
         {
             case NONE:
-                throw new IllegalStateException( "Unknown compression type" );
+                return fis;
             case GZIP:
                 return new GZIPInputStream( fis );
             case BZIP2:

@@ -37,13 +37,6 @@ public class IndexPackageMetadataImpl implements IndexPackageMetaData
 
 
     @Override
-    public String toString()
-    {
-        return controlFile.toString( PackageIndexFieldsParser.FIELDS );
-    }
-
-
-    @Override
     public byte[] getSHA1()
     {
         String sha1 = controlFile.get( IndexPackageMetaData.SHA1_FIELD );
@@ -291,5 +284,11 @@ public class IndexPackageMetadataImpl implements IndexPackageMetaData
         return controlFile.get( IndexPackageMetaData.DESCRIPTION_FIELD );
     }
 
+
+    @Override
+    public String toString()
+    {
+        return controlFile.toString( PackageIndexFieldsParser.FIELDS );
+    }
 }
 
