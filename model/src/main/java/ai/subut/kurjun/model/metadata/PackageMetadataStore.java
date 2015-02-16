@@ -51,4 +51,24 @@ public interface PackageMetadataStore
      * @throws IOException if there are problems accessing the store
      */
     boolean remove( byte[] md5 ) throws IOException;
+
+
+    /**
+     * Lists metadata stored in the store.
+     *
+     * @return {@link PackageMetadataListing} instance that contains first batch of a result set, never {@code null}
+     * @throws IOException if there are problems accessing the store
+     */
+    PackageMetadataListing list() throws IOException;
+
+
+    /**
+     * Lists next batch of metadata when previous retrieval returned a truncated result.
+     *
+     * @param listing listing result from the previous query
+     * @return {@link PackageMetadataListing} instance that contains next batch of a result set, never {@code null}
+     * @throws IOException if there are problems accessing the store
+     */
+    PackageMetadataListing listNextBatch( PackageMetadataListing listing ) throws IOException;
+
 }

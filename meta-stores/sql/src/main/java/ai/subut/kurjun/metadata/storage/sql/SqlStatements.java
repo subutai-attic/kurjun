@@ -18,6 +18,8 @@ class SqlStatements
     //
     public static final String SELECT_COUNT;
     public static final String SELECT_DATA;
+    public static final String SELECT_ORDERED;
+    public static final String SELECT_NEXT_ORDERED;
     public static final String INSERT;
     public static final String DELETE;
 
@@ -26,6 +28,9 @@ class SqlStatements
     {
         SELECT_COUNT = String.format( "SELECT COUNT(*) FROM %s WHERE %s = ?", TABLE_NAME, CHECKSUM_COLUMN );
         SELECT_DATA = String.format( "SELECT %s FROM %s WHERE %s = ?", METADATA_COLUMN, TABLE_NAME, CHECKSUM_COLUMN );
+        SELECT_ORDERED = String.format( "SELECT %s FROM %s ORDER BY %s", METADATA_COLUMN, TABLE_NAME, CHECKSUM_COLUMN );
+        SELECT_NEXT_ORDERED = String.format( "SELECT %s FROM %s WHERE %s > ? ORDER BY %s", METADATA_COLUMN, TABLE_NAME,
+                                             CHECKSUM_COLUMN, CHECKSUM_COLUMN );
         INSERT = String.format( "INSERT INTO %s(%s,%s) VALUES(?, ?)", TABLE_NAME, CHECKSUM_COLUMN, METADATA_COLUMN );
         DELETE = String.format( "DELETE FROM %s WHERE %s = ?", TABLE_NAME, CHECKSUM_COLUMN );
     }
