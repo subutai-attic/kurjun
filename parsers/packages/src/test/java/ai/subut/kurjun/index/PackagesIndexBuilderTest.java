@@ -14,6 +14,7 @@ import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -70,6 +71,7 @@ public class PackagesIndexBuilderTest
 
         for ( int i = 0; i < filesCount; i++ )
         {
+            boolean skip = false;
             URL url = new URL( prop.getProperty( "test.pkg.url." + ( i + 1 ) ) );
             File file = new File( prop.getProperty( "test.pkg.file." + ( i + 1 ) ) );
 
@@ -80,16 +82,24 @@ public class PackagesIndexBuilderTest
                 {
                     Files.copy( is, file.toPath() );
                 }
+                catch ( IOException ex )
+                {
+                    LOGGER.error( "Failed to download package from {}", url );
+                    skip = true;
+                }
             }
             else
             {
                 LOGGER.debug( "Test package {} exists, will not download", file );
             }
 
-            PackageMetadata pm = createPackageMetadata( file );
-            String md5hex = Hex.encodeHexString( pm.getMd5Sum() );
-            metadata.put( md5hex, pm );
-            testPackageFiles.put( md5hex, file );
+            if ( !skip )
+            {
+                PackageMetadata pm = createPackageMetadata( file );
+                String md5hex = Hex.encodeHexString( pm.getMd5Sum() );
+                metadata.put( md5hex, pm );
+                testPackageFiles.put( md5hex, file );
+            }
         }
     }
 
@@ -97,6 +107,10 @@ public class PackagesIndexBuilderTest
     @Before
     public void setUp() throws IOException
     {
+        Assume.assumeFalse( metadata.isEmpty() );
+        Assume.assumeFalse( testPackageFiles.isEmpty() );
+        Assume.assumeTrue( metadata.size() == testPackageFiles.size() );
+
         PackageMetadataListing listing = Mockito.mock( PackageMetadataListing.class );
         Mockito.when( listing.getPackageMetadata() ).thenReturn( metadata.values() );
         Mockito.when( listing.isTruncated() ).thenReturn( false );

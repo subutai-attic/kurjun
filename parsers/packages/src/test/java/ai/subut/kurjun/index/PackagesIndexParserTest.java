@@ -12,6 +12,7 @@ import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -23,7 +24,7 @@ import ai.subut.kurjun.model.index.IndexPackageMetaData;
 
 public class PackagesIndexParserTest
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PackagesIndexParserTest.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( PackagesIndexParserTest.class );
     private static File gzIndexFile;
     private static File bz2IndexFile;
 
@@ -47,6 +48,10 @@ public class PackagesIndexParserTest
             {
                 Files.copy( is, gzIndexFile.toPath() );
             }
+            catch ( IOException ex )
+            {
+                LOGGER.error( "Failed to download package index from ", gzUrl );
+            }
         }
         else
         {
@@ -61,6 +66,10 @@ public class PackagesIndexParserTest
             try ( InputStream is = bz2url.openStream() )
             {
                 Files.copy( is, bz2IndexFile.toPath() );
+            }
+            catch ( IOException ex )
+            {
+                LOGGER.error( "Failed to download package index from {}", bz2url );
             }
         }
         else
@@ -85,6 +94,7 @@ public class PackagesIndexParserTest
     @Test
     public void testParseGz() throws Exception
     {
+        Assume.assumeTrue( gzIndexFile.exists() );
         List<IndexPackageMetaData> items = parser.parse( gzIndexFile );
 
         // TODO: do real assertions
@@ -95,6 +105,7 @@ public class PackagesIndexParserTest
     @Test
     public void testParseBz2() throws Exception
     {
+        Assume.assumeTrue( bz2IndexFile.exists() );
         List<IndexPackageMetaData> items = parser.parse( bz2IndexFile );
 
         // TODO: do real assertions
