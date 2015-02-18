@@ -110,8 +110,6 @@ class BinaryPackageMetadata extends AbstractPackageMetadata
     // ------------------------------------------------------------------------
     // Fields for Package Interrelationships
     // ------------------------------------------------------------------------
-
-
     @Override
     public List<Dependency> getDependencies()
     {
@@ -141,6 +139,7 @@ class BinaryPackageMetadata extends AbstractPackageMetadata
     }
 
 
+    @Override
     public List<Dependency> getRecommends()
     {
         return getCached( RECOMMENDS_FIELD );
@@ -172,8 +171,13 @@ class BinaryPackageMetadata extends AbstractPackageMetadata
     @Override
     public List<String> getProvides()
     {
-        String[] parts = controlFile.get( PROVIDES_FIELD ).split( "," );
-        return Arrays.asList( parts );
+        String provides = controlFile.get( PROVIDES_FIELD );
+        if ( provides != null )
+        {
+            String[] parts = provides.split( "," );
+            return Arrays.asList( parts );
+        }
+        return null;
     }
 
 
@@ -184,8 +188,17 @@ class BinaryPackageMetadata extends AbstractPackageMetadata
     }
 
 
+    @Override
     public List<Dependency> getEnhances()
     {
         return getCached( ENHANCES_FIELD );
     }
+
+
+    @Override
+    public List<Dependency> getPreDepends()
+    {
+        return getCached( PRE_DEPENDS_FIELD );
+    }
 }
+

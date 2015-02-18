@@ -6,5 +6,5 @@ package ai.subut.kurjun.model.metadata;
  */
 public enum Priority
 {
-    important;
+    required, important, standard, optional, extra;
 }
