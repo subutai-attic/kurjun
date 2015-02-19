@@ -1,4 +1,4 @@
-package ai.subut.kurjun.storage.s3;
+package ai.subut.kurjun.storage.s3.impl;
 
 
 import java.io.File;

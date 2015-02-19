@@ -1,5 +1,7 @@
-package ai.subut.kurjun.storage.s3;
+package ai.subut.kurjun.storage.s3.impl;
 
+
+import ai.subut.kurjun.storage.s3.impl.S3FileStore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
