@@ -1,4 +1,4 @@
-package ai.subut.kurjun.metadata.storage.sql;
+package ai.subut.kurjun.metadata.storage.sql.impl;
 
 
 import java.sql.Connection;

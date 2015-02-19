@@ -3,6 +3,8 @@ package ai.subut.kurjun.metadata.storage.sql;
 
 import java.util.Properties;
 
+import ai.subut.kurjun.metadata.storage.sql.impl.SqlDbPackageMetadataStore;
+
 
 /**
  * Property names to be used in {@link Properties} instance given to {@link SqlDbPackageMetadataStore} constructor. All
@@ -33,5 +35,8 @@ public class ConnectionPropertyName
     public static final String OPT_IDLE_TIMEOUT = "idleTimeout";
     public static final String OPT_MINIMUM_IDLE = "minimumIdle";
     public static final String OPT_MAX_POOL_SIZE = "maximumPoolSize ";
+
+    public static final String SERVICE_PID = SqlDbPackageMetadataStore.class.getName();
+
 }
 

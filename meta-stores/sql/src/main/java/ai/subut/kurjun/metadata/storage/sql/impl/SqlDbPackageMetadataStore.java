@@ -1,5 +1,7 @@
-package ai.subut.kurjun.metadata.storage.sql;
+package ai.subut.kurjun.metadata.storage.sql.impl;
 
+
+import ai.subut.kurjun.metadata.storage.sql.impl.SqlStatements;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
