@@ -1,5 +1,7 @@
-package ai.subut.kurjun.storage.fs;
+package ai.subut.kurjun.storage.fs.impl;
 
+
+import ai.subut.kurjun.storage.fs.impl.FileSystemFileStore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

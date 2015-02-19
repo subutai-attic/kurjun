@@ -1,4 +1,4 @@
-package ai.subut.kurjun.storage.fs;
+package ai.subut.kurjun.storage.fs.impl;
 
 
 import java.io.Closeable;

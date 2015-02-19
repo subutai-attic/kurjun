@@ -20,6 +20,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.PropertiesCredentials;
 
 import ai.subut.kurjun.model.storage.FileStore;
+import ai.subut.kurjun.storage.s3.ServiceConstants;
 
 
 /**
@@ -28,10 +29,6 @@ import ai.subut.kurjun.model.storage.FileStore;
  */
 public class S3FileStoreActivator implements BundleActivator, ManagedService
 {
-    public static final String BUCKET_NAME = "bucketName";
-    public static final String ACCESS_KEY = "accessKey";
-    public static final String SECRET_KEY = "secretKey";
-    public static final String CREDENTIALS_FILE = "credentialsFile";
 
     private static final Logger LOGGER = LoggerFactory.getLogger( S3FileStoreActivator.class );
 
@@ -46,7 +43,7 @@ public class S3FileStoreActivator implements BundleActivator, ManagedService
         this.context = context;
 
         Dictionary<String, Object> properties = new Hashtable<>();
-        properties.put( Constants.SERVICE_PID, FileStore.class.getName() );
+        properties.put( Constants.SERVICE_PID, ServiceConstants.SERVICE_PID );
 
         managedService = context.registerService( ManagedService.class, this, properties );
     }
@@ -71,14 +68,14 @@ public class S3FileStoreActivator implements BundleActivator, ManagedService
             LOGGER.warn( "No config for S3 file store activator" );
             return;
         }
-        String bucketName = ( String ) config.get( BUCKET_NAME );
+        String bucketName = ( String ) config.get( ServiceConstants.BUCKET_NAME );
         if ( bucketName == null || bucketName.isEmpty() )
         {
-            throw new ConfigurationException( BUCKET_NAME, "must be specified" );
+            throw new ConfigurationException( ServiceConstants.BUCKET_NAME, "must be specified" );
         }
 
         AWSCredentials credentials = null;
-        String credentialsFile = ( String ) config.get( CREDENTIALS_FILE );
+        String credentialsFile = ( String ) config.get( ServiceConstants.CREDENTIALS_FILE );
         if ( credentialsFile != null )
         {
             try
@@ -87,20 +84,20 @@ public class S3FileStoreActivator implements BundleActivator, ManagedService
             }
             catch ( IOException | IllegalArgumentException ex )
             {
-                throw new ConfigurationException( CREDENTIALS_FILE, "read failure", ex );
+                throw new ConfigurationException( ServiceConstants.CREDENTIALS_FILE, "read failure", ex );
             }
         }
         else
         {
-            String accessKey = ( String ) config.get( ACCESS_KEY );
-            String secretKey = ( String ) config.get( SECRET_KEY );
+            String accessKey = ( String ) config.get( ServiceConstants.ACCESS_KEY );
+            String secretKey = ( String ) config.get( ServiceConstants.SECRET_KEY );
             if ( accessKey == null || accessKey.isEmpty() )
             {
-                throw new ConfigurationException( ACCESS_KEY, "must have value" );
+                throw new ConfigurationException( ServiceConstants.ACCESS_KEY, "must have value" );
             }
             if ( secretKey == null || secretKey.isEmpty() )
             {
-                throw new ConfigurationException( SECRET_KEY, "must have value" );
+                throw new ConfigurationException( ServiceConstants.SECRET_KEY, "must have value" );
             }
             credentials = new BasicAWSCredentials( accessKey, secretKey );
         }
@@ -114,7 +111,7 @@ public class S3FileStoreActivator implements BundleActivator, ManagedService
         FileStore fs = new S3FileStore( bucketName, credentials );
 
         Dictionary serviceProperties = new Hashtable();
-        serviceProperties.put( BUCKET_NAME, bucketName );
+        serviceProperties.put( ServiceConstants.BUCKET_NAME, bucketName );
 
         s3Service = context.registerService( FileStore.class, fs, serviceProperties );
     }

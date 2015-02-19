@@ -14,6 +14,10 @@
 
   <properties>
     <mapdb.version>1.0.6</mapdb.version>
+
+    <osgi.bundle-activator>
+      ai.subut.kurjun.storage.fs.impl.FileSystemStoreActivator
+    </osgi.bundle-activator>
   </properties>
 
   <build>
