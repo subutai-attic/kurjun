@@ -1,4 +1,4 @@
-package ai.subut.kurjun.metadata.storage.file;
+package ai.subut.kurjun.metadata.storage.file.impl;
 
 
 import java.io.Closeable;
