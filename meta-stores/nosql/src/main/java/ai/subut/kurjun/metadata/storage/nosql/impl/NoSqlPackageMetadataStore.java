@@ -1,4 +1,4 @@
-package ai.subut.kurjun.metadata.storage.nosql;
+package ai.subut.kurjun.metadata.storage.nosql.impl;
 
 
 import java.io.File;

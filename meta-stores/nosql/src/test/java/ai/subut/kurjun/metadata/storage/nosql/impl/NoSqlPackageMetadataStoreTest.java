@@ -1,5 +1,7 @@
-package ai.subut.kurjun.metadata.storage.nosql;
+package ai.subut.kurjun.metadata.storage.nosql.impl;
 
+
+import ai.subut.kurjun.metadata.storage.nosql.impl.NoSqlPackageMetadataStore;
 
 import java.io.IOException;
 import java.io.InputStream;
