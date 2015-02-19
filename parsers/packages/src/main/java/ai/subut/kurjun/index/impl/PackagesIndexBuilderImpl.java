@@ -32,14 +32,9 @@ public class PackagesIndexBuilderImpl implements PackagesIndexBuilder
     private FileStore fileStore;
 
 
-    public void setMetadataStore( PackageMetadataStore metadataStore )
+    public PackagesIndexBuilderImpl( PackageMetadataStore metadataStore, FileStore fileStore )
     {
         this.metadataStore = metadataStore;
-    }
-
-
-    public void setFileStore( FileStore fileStore )
-    {
         this.fileStore = fileStore;
     }
 

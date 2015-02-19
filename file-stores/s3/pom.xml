@@ -14,6 +14,11 @@
 
   <properties>
     <aws-java-sdk-s3.version>1.9.17</aws-java-sdk-s3.version>
+
+    <osgi.bundle-activator>ai.subut.kurjun.storage.s3.S3FileStoreActivator</osgi.bundle-activator>
+
+    <test.aws.accessKey></test.aws.accessKey>
+    <test.aws.secretKey></test.aws.secretKey>
   </properties>
 
   <build>

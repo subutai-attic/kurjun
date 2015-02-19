@@ -19,6 +19,7 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import com.amazonaws.AmazonClientException;
+import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.Bucket;
@@ -48,10 +49,10 @@ public class S3FileStore implements FileStore
     AmazonS3 s3client;
 
 
-    public S3FileStore( String bucketName )
+    public S3FileStore( String bucketName, AWSCredentials credentials )
     {
         this.bucketName = bucketName;
-        this.s3client = new AmazonS3Client( new KurjunAWSCredentialsProvider() );
+        this.s3client = new AmazonS3Client( credentials );
 
         if ( !s3client.doesBucketExist( bucketName ) )
         {
