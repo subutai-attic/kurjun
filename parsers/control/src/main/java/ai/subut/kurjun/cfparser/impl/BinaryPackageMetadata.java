@@ -1,4 +1,4 @@
-package ai.subut.kurjun.cfparser;
+package ai.subut.kurjun.cfparser.impl;
 
 
 import java.net.MalformedURLException;

@@ -1,6 +1,8 @@
 package ai.subut.kurjun.cfparser;
 
 
+import ai.subut.kurjun.cfparser.impl.DependencyParser;
+
 import java.util.List;
 
 import org.junit.Before;

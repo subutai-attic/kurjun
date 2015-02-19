@@ -1,4 +1,4 @@
-package ai.subut.kurjun.index;
+package ai.subut.kurjun.index.impl;
 
 
 import java.net.MalformedURLException;
@@ -13,7 +13,7 @@ import org.vafer.jdeb.debian.ControlFile;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 
-import ai.subut.kurjun.cfparser.DependencyParser;
+import ai.subut.kurjun.cfparser.impl.DependencyParser;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
 import ai.subut.kurjun.model.index.TagItem;
 import ai.subut.kurjun.model.metadata.Architecture;

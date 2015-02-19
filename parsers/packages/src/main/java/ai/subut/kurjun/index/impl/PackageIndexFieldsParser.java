@@ -1,4 +1,4 @@
-package ai.subut.kurjun.index;
+package ai.subut.kurjun.index.impl;
 
 
 import org.vafer.jdeb.debian.ControlField;

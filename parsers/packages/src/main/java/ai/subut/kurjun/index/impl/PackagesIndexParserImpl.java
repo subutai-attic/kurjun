@@ -1,4 +1,4 @@
-package ai.subut.kurjun.index;
+package ai.subut.kurjun.index.impl;
 
 
 import java.io.BufferedInputStream;
@@ -20,6 +20,7 @@ import org.apache.commons.compress.compressors.lzma.LZMACompressorInputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 
 import ai.subut.kurjun.ar.CompressionType;
+import ai.subut.kurjun.index.PackagesIndexParser;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
 
 
