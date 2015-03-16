@@ -71,7 +71,7 @@
     <commons-codec.version>1.9</commons-codec.version>
     <org.osgi.version>5.0.0</org.osgi.version>
 
-    <!-- OSGi properties -->
+    <!-- default OSGi properties - set values in child pom files -->
     <osgi.classpath></osgi.classpath>
     <osgi.export-package>{local-packages}</osgi.export-package>
     <osgi.bundle-directives></osgi.bundle-directives>
