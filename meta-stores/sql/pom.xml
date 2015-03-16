@@ -16,6 +16,10 @@
     <hikariCp.version>2.3.2</hikariCp.version>
     <mariadb-java-client.version>1.1.8</mariadb-java-client.version>
 
+    <osgi.bundle-activator>
+      ai.subut.kurjun.metadata.storage.sql.impl.SqlDbMetadataStoreActivator
+    </osgi.bundle-activator>
+
     <test.db.className>org.mariadb.jdbc.MySQLDataSource</test.db.className>
     <test.db.server>localhost</test.db.server>
     <test.db.dbName>kurjun_metadata</test.db.dbName>
@@ -65,7 +69,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
 

@@ -15,6 +15,10 @@
   <properties>
     <cassandra-driver-core.version>2.1.0</cassandra-driver-core.version>
 
+    <osgi.bundle-activator>
+      ai.subut.kurjun.metadata.storage.nosql.impl.NoSqlStoreActivator
+    </osgi.bundle-activator>
+
     <test.cassandra.node>localhost</test.cassandra.node>
     <test.cassandra.port>0</test.cassandra.port>
   </properties>
@@ -56,7 +60,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

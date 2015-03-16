@@ -34,7 +34,8 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 import ai.subut.kurjun.ar.DebAr;
 import ai.subut.kurjun.ar.DefaultDebAr;
-import ai.subut.kurjun.cfparser.DefaultControlFileParser;
+import ai.subut.kurjun.cfparser.impl.DefaultControlFileParser;
+import ai.subut.kurjun.index.impl.PackagesIndexBuilderImpl;
 import ai.subut.kurjun.model.metadata.PackageMetadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
@@ -57,7 +58,7 @@ public class PackagesIndexBuilderTest
     private PackageMetadataStore metadataStore;
 
     @InjectMocks
-    private PackagesIndexBuilder indexBuilder;
+    private PackagesIndexBuilderImpl indexBuilder;
 
 
     @BeforeClass

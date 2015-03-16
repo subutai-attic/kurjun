@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ai.subut.kurjun.index.impl.PackagesIndexParserImpl;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
 
 
