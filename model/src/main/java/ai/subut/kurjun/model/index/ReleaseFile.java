@@ -12,10 +12,18 @@ import ai.subut.kurjun.model.metadata.Architecture;
  */
 public interface ReleaseFile
 {
-    String[] PROPERTY_ORDER = {
-        "Origin", "Label", "Suite", "Version", "Codename", "Date", "Architectures",
-        "Components", "Description", "MD5Sum", "SHA1", "SHA256"
-    };
+    String ORIGIN_FIELD = "Origin";
+    String LABEL_FILED = "Label";
+    String SUITE_FILED = "Suite";
+    String VERSION_FILED = "Version";
+    String CODENAME_FILED = "Codename";
+    String DATE_FILED = "Date";
+    String ARCHITECTURES_FILED = "Architectures";
+    String COMPONENTS_FILED = "Components";
+    String DESCRIPTION_FILED = "Description";
+    String MD5SUM_FILED = "MD5Sum";
+    String SHA1_FILED = "SHA1";
+    String SHA256_FILED = "SHA256";
 
 
     /**
