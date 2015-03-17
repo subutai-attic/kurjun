@@ -63,20 +63,20 @@ public class ReleaseIndexParserImpl implements ReleaseIndexParser
         while ( ( line = br.readLine() ) != null )
         {
             String[] arr = line.trim().split( " " );
+            String path = arr[2];
             // format: checksum size relativePath
             if ( arr.length == 3 )
             {
-                ReleaseChecksummedResource res = accumulated.get( arr[2] );
+                ReleaseChecksummedResource res = accumulated.get( path );
                 if ( res != null )
                 {
                     res.checksums.put( checksumType, arr[0] );
                 }
                 else
                 {
-                    res = new ReleaseChecksummedResource();
+                    res = new ReleaseChecksummedResource( path );
                     res.checksums.put( checksumType, arr[0] );
                     res.size = Long.parseLong( arr[1] );
-                    res.path = arr[2];
                     accumulated.put( res.path, res );
                 }
             }
