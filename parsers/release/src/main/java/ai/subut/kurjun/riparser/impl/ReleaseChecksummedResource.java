@@ -2,6 +2,7 @@ package ai.subut.kurjun.riparser.impl;
 
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -14,7 +15,7 @@ public class ReleaseChecksummedResource implements ChecksummedResource
 
     final String path;
     long size;
-    Map<Checksum, String> checksums;
+    Map<Checksum, String> checksums = new HashMap<>();
 
 
     public ReleaseChecksummedResource( String path )
