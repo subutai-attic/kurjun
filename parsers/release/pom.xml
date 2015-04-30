@@ -14,6 +14,19 @@
   <name>Kurjun Release Index Parser</name>
 
   <properties>
+    <jdeb.version>1.3</jdeb.version>
+
+    <test.release.codename>utopic</test.release.codename>
+    <test.release.url>
+      http://archive.ubuntu.com/ubuntu/dists/utopic/Release
+    </test.release.url>
+    <test.release.sign.url>
+      http://archive.ubuntu.com/ubuntu/dists/utopic/Release.gpg
+    </test.release.sign.url>
+    <test.keyring.url>
+      http://archive.ubuntu.com/ubuntu/project/ubuntu-archive-keyring.gpg
+    </test.keyring.url>
+    
   </properties>
 
   <build>
@@ -36,6 +49,12 @@
       <version>${project.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.vafer</groupId>
+      <artifactId>jdeb</artifactId>
+      <version>${jdeb.version}</version>
+    </dependency>
+
     <!-- Test Scope Dependencies -->
 
     <dependency>
@@ -44,5 +63,6 @@
       <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
+
   </dependencies>
 </project>

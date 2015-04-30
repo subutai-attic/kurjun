@@ -7,6 +7,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
 import ai.subut.kurjun.index.PackagesIndexBuilder;
+import ai.subut.kurjun.index.PackagesIndexParser;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.storage.FileStore;
 
@@ -16,14 +17,14 @@ import ai.subut.kurjun.model.storage.FileStore;
  */
 public class PackagesIndexActivator implements BundleActivator
 {
-    private ServiceRegistration<PackagesIndexParserImpl> parserService;
+    private ServiceRegistration<PackagesIndexParser> parserService;
     private ServiceRegistration<PackagesIndexBuilder> builderService;
 
 
     @Override
     public void start( BundleContext context ) throws Exception
     {
-        parserService = context.registerService( PackagesIndexParserImpl.class, new PackagesIndexParserImpl(), null );
+        parserService = context.registerService( PackagesIndexParser.class, new PackagesIndexParserImpl(), null );
 
 
         // get index builder dependencies
