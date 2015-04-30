@@ -19,7 +19,7 @@
       apt-transport-https_1.0.9.3ubuntu1_amd64.deb
     </test.pkg.filename>
     <test.pkg.url>
-      http://tr.archive.ubuntu.com/ubuntu/pool/main/a/apt/apt-transport-https_1.0.9.3ubuntu1_amd64.deb
+      http://tr.archive.ubuntu.com/ubuntu/pool/main/a/apt/apt-transport-https_1.0.9.7ubuntu4_amd64.deb
     </test.pkg.url>
   </properties>
 
