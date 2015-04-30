@@ -68,8 +68,7 @@ public class ReleaseIndexParserImpl implements ReleaseIndexParser
         }
         catch ( PGPException | SignatureException ex )
         {
-            LOGGER.error( "Failed to verify release file", ex );
-            return null;
+            throw new IOException( "Release file not verified", ex );
         }
     }
 
@@ -92,8 +91,7 @@ public class ReleaseIndexParserImpl implements ReleaseIndexParser
         {
             return parse( new ByteArrayInputStream( data.toByteArray() ) );
         }
-        LOGGER.info( "Release data not verified" );
-        return null;
+        throw new IOException( "Release file not verified" );
     }
 
 

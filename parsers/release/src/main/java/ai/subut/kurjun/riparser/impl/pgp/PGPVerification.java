@@ -37,7 +37,7 @@ public class PGPVerification
 
 
     /**
-     * Verified data in given input stream against the given detached signature stream.
+     * Verifies data in given input stream against the given detached signature stream.
      *
      * @param dataStream data input stream against which verification is done
      * @param signStream input stream of the detached signature

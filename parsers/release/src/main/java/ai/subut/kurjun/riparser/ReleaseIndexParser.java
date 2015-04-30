@@ -25,7 +25,7 @@ public interface ReleaseIndexParser
      *
      * @param is clear-signed data stream
      * @param keyStream public key stream
-     * @return release file instance if successfully verified and parsed, {@code null} otherwise
+     * @return release file instance if successfully verified and parsed
      * @throws IOException
      */
     ReleaseFile parseClearSigned( InputStream is, InputStream keyStream ) throws IOException;
@@ -37,7 +37,7 @@ public interface ReleaseIndexParser
      * @param is data input stream
      * @param signStream detached signature stream
      * @param keyStream public key stream
-     * @return release file instance if successfully verified and parsed, {@code null} otherwise
+     * @return release file instance if successfully verified and parsed
      * @throws IOException
      */
     ReleaseFile parseWithSignature( InputStream is, InputStream signStream, InputStream keyStream ) throws IOException;
