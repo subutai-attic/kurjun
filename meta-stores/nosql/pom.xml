@@ -13,7 +13,6 @@
   <name>Kurjun NoSQL Store</name>
 
   <properties>
-    <cassandra-driver-core.version>2.1.0</cassandra-driver-core.version>
 
     <osgi.bundle-activator>
       ai.subut.kurjun.metadata.storage.nosql.impl.NoSqlStoreActivator
@@ -39,12 +38,6 @@
 
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>model</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>${project.groupId}</groupId>
       <artifactId>metadata-common</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -52,16 +45,7 @@
     <dependency>
       <groupId>com.datastax.cassandra</groupId>
       <artifactId>cassandra-driver-core</artifactId>
-      <version>${cassandra-driver-core.version}</version>
     </dependency>
 
-    <!-- Test Scope Dependencies -->
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 </project>

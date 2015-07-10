@@ -13,7 +13,6 @@
   <name>Kurjun FS File Store</name>
 
   <properties>
-    <mapdb.version>1.0.6</mapdb.version>
 
     <osgi.bundle-activator>
       ai.subut.kurjun.storage.fs.impl.FileSystemStoreActivator
@@ -43,17 +42,8 @@
     <dependency>
       <groupId>org.mapdb</groupId>
       <artifactId>mapdb</artifactId>
-      <version>${mapdb.version}</version>
     </dependency>
 
-    <!-- Test Scope Dependencies -->
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
 </project>
