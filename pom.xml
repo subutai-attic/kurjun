@@ -63,13 +63,24 @@
     <maven.compiler.target>1.7</maven.compiler.target>
     <encoding>UTF-8</encoding>
 
-    <slf4j.version>1.6.1</slf4j.version>
-    <junit.version>4.11</junit.version>
+    <!-- dependency versions -->
+    <slf4j.version>1.7.12</slf4j.version>
+    <junit.version>4.12</junit.version>
     <guava.version>18.0</guava.version>
     <gson.version>2.3.1</gson.version>
-    <mockito.version>1.9.5</mockito.version>
-    <commons-codec.version>1.9</commons-codec.version>
-    <org.osgi.version>5.0.0</org.osgi.version>
+    <mockito.version>1.10.19</mockito.version>
+    <commons-codec.version>1.10</commons-codec.version>
+    <commons-compress.version>1.9</commons-compress.version>
+    <commons-io.version>2.4</commons-io.version>
+    <xz.version>1.5</xz.version>
+    <jdeb.version>1.4</jdeb.version>
+    <org.osgi.core.version>6.0.0</org.osgi.core.version>
+    <org.osgi.compendium.version>5.0.0</org.osgi.compendium.version>
+    <aws-java-sdk-s3.version>1.10.4</aws-java-sdk-s3.version>
+    <mapdb.version>1.0.8</mapdb.version>
+    <hikariCp.version>2.3.9</hikariCp.version>
+    <mariadb-java-client.version>1.1.8</mariadb-java-client.version>
+    <cassandra-driver-core.version>2.1.6</cassandra-driver-core.version>
 
     <!-- default OSGi properties - set values in child pom files -->
     <osgi.classpath></osgi.classpath>
@@ -228,19 +239,104 @@
     </profile>
   </profiles>
 
-  <dependencies>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>${guava.version}</version>
-    </dependency>
 
-    <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>${gson.version}</version>
-    </dependency>
+  <dependencyManagement>
+    <dependencies>
+
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-compress</artifactId>
+        <version>${commons-compress.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>${commons-io.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.tukaani</groupId>
+        <artifactId>xz</artifactId>
+        <version>${xz.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.vafer</groupId>
+        <artifactId>jdeb</artifactId>
+        <version>${jdeb.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>${gson.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${guava.version}</version>
+      </dependency>
     
+      <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-java-sdk-s3</artifactId>
+        <version>${aws-java-sdk-s3.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.mapdb</groupId>
+        <artifactId>mapdb</artifactId>
+        <version>${mapdb.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.zaxxer</groupId>
+        <artifactId>HikariCP</artifactId>
+        <version>${hikariCp.version}</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.mariadb.jdbc</groupId>
+        <artifactId>mariadb-java-client</artifactId>
+        <version>${mariadb-java-client.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.datastax.cassandra</groupId>
+        <artifactId>cassandra-driver-core</artifactId>
+        <version>${cassandra-driver-core.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.core</artifactId>
+        <version>${org.osgi.core.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.compendium</artifactId>
+        <version>${org.osgi.compendium.version}</version>
+      </dependency>
+
+      <!-- ===== begin Test scope dependencies ===== -->
+
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>${mockito.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <!-- ===== end Test scope dependencies ===== -->
+
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -251,24 +347,18 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
       <version>${slf4j.version}</version>
+      <scope>test</scope>
+      <!--
+          Kurjun is a Slf4j-enabled project which means any preferred logging
+          framework can deployed. This Log4j binding is included in test scope
+          to be used in projects tests.
+      -->
     </dependency>
 
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
       <version>${commons-codec.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.core</artifactId>
-      <version>${org.osgi.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.compendium</artifactId>
-      <version>${org.osgi.version}</version>
     </dependency>
 
     <dependency>
@@ -279,4 +369,5 @@
     </dependency>
 
   </dependencies>
+
 </project>
