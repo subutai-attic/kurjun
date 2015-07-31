@@ -20,6 +20,12 @@ public class DefaultReleaseFile implements ReleaseFile
 {
 
     private final ControlFile cf;
+
+    /**
+     * This map holds all resources for all components in this release, the keys are the relative paths of resources.
+     *
+     * @see ChecksummedResource#getRelativePath()
+     */
     private final Map<String, ChecksummedResource> indexResources = new HashMap<>();
 
 
@@ -139,7 +145,12 @@ public class DefaultReleaseFile implements ReleaseFile
     @Override
     public Component getComponent( String compName )
     {
-        throw new UnsupportedOperationException( "Not supported yet." );
+        List<String> components = getComponents();
+        if ( components.contains( compName ) )
+        {
+            return new DefaultComponent( compName, indexResources );
+        }
+        return null;
     }
 
 
