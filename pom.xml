@@ -21,6 +21,7 @@
     <module>parsers</module>
     <module>file-stores</module>
     <module>meta-stores</module>
+    <module>core</module>
   </modules>
 
   <description>
@@ -68,6 +69,8 @@
     <junit.version>4.12</junit.version>
     <guava.version>18.0</guava.version>
     <gson.version>2.3.1</gson.version>
+    <guice.version>4.0</guice.version>
+    <peaberry.version>1.1.1</peaberry.version>
     <mockito.version>1.10.19</mockito.version>
     <commons-codec.version>1.10</commons-codec.version>
     <commons-compress.version>1.9</commons-compress.version>
@@ -81,6 +84,7 @@
     <hikariCp.version>2.3.9</hikariCp.version>
     <mariadb-java-client.version>1.1.8</mariadb-java-client.version>
     <cassandra-driver-core.version>2.1.6</cassandra-driver-core.version>
+    <jetty.version>9.3.0.v20150612</jetty.version>
 
     <!-- default OSGi properties - set values in child pom files -->
     <osgi.classpath></osgi.classpath>
@@ -265,6 +269,12 @@
         <groupId>org.vafer</groupId>
         <artifactId>jdeb</artifactId>
         <version>${jdeb.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.sonatype.sisu</groupId>
+            <artifactId>sisu-guice</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
@@ -277,6 +287,18 @@
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>${guava.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.inject</groupId>
+        <artifactId>guice</artifactId>
+        <version>${guice.version}</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.ops4j</groupId>
+        <artifactId>peaberry</artifactId>
+        <version>${peaberry.version}</version>
       </dependency>
     
       <dependency>
@@ -319,6 +341,18 @@
         <groupId>org.osgi</groupId>
         <artifactId>org.osgi.compendium</artifactId>
         <version>${org.osgi.compendium.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-server</artifactId>
+        <version>${jetty.version}</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-servlet</artifactId>
+        <version>${jetty.version}</version>
       </dependency>
 
       <!-- ===== begin Test scope dependencies ===== -->

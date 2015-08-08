@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ai.subut.kurjun.model.index.ReleaseFile;
-import ai.subut.kurjun.riparser.impl.ReleaseIndexParserImpl;
+import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
 
 
 public class ReleaseIndexParserTest

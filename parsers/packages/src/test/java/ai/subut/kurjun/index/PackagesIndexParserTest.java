@@ -1,6 +1,8 @@
 package ai.subut.kurjun.index;
 
 
+import ai.subut.kurjun.index.service.PackagesIndexParser;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +21,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ai.subut.kurjun.index.impl.PackagesIndexParserImpl;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
 
 
