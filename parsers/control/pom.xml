@@ -15,6 +15,7 @@
   <name>Kurjun Control File Parser</name>
 
   <properties>
+    <osgi.export-package>ai.subut.kurjun.riparser.service</osgi.export-package>
   </properties>
 
   <build>
@@ -40,6 +41,11 @@
     <dependency>
       <groupId>org.vafer</groupId>
       <artifactId>jdeb</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
     </dependency>
 
     <dependency>

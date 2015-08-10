@@ -1,9 +1,6 @@
 package ai.subut.kurjun.metadata.storage.nosql;
 
 
-import ai.subut.kurjun.metadata.storage.nosql.impl.NoSqlPackageMetadataStore;
-
-
 
 public class ServiceConstants
 {

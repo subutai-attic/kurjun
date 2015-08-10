@@ -15,8 +15,9 @@
   <properties>
 
     <osgi.bundle-activator>
-      ai.subut.kurjun.storage.fs.impl.FileSystemStoreActivator
+      ai.subut.kurjun.storage.fs.Activator
     </osgi.bundle-activator>
+    
   </properties>
 
   <build>
