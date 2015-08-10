@@ -1,10 +1,7 @@
 package ai.subut.kurjun.repo;
 
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -12,13 +9,10 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,31 +75,22 @@ class LocalRepositoryImpl extends RepositoryBase implements LocalRepository
             throw new IllegalStateException( "Invalid apt repo" );
         }
 
-        List<String> releases = new ArrayList<>();
-        Pattern pattern = Pattern.compile( "Codename:\\s*(\\w+)" );
-        try ( BufferedReader br = new BufferedReader( new FileReader( file ) ) )
+        List<String> releases;
+        try
         {
-            String line;
-            while ( ( line = br.readLine() ) != null )
-            {
-                Matcher matcher = pattern.matcher( line );
-                if ( matcher.matches() )
-                {
-                    releases.add( matcher.group( 1 ) );
-                }
-            }
+            releases = readAptReleases();
         }
         catch ( IOException ex )
         {
-            LOGGER.error( "Failed to read distributions file", ex );
+            LOGGER.error( "Failed to read releases", ex );
             return Collections.emptySet();
         }
 
         Set<ReleaseFile> result = new HashSet<>();
         for ( String release : releases )
         {
-            File releaseFile = baseDirectory.resolve( "dists/" + release + "/Release" ).toFile();
-            try ( InputStream is = new FileInputStream( releaseFile ) )
+            URL releaseIndexUrl = makeReleaseIndexUrl( release, false );
+            try ( InputStream is = releaseIndexUrl.openStream() )
             {
                 ReleaseFile rf = releaseIndexParser.parse( is );
                 result.add( rf );
