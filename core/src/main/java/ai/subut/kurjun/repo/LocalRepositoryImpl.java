@@ -89,8 +89,7 @@ class LocalRepositoryImpl extends RepositoryBase implements LocalRepository
         Set<ReleaseFile> result = new HashSet<>();
         for ( String release : releases )
         {
-            URL releaseIndexUrl = makeReleaseIndexUrl( release, false );
-            try ( InputStream is = releaseIndexUrl.openStream() )
+            try ( InputStream is = httpHandler.streamReleaseIndexFile( release, false ) )
             {
                 ReleaseFile rf = releaseIndexParser.parse( is );
                 result.add( rf );
