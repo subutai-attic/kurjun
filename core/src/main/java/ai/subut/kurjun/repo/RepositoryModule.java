@@ -5,8 +5,11 @@ import com.google.inject.AbstractModule;
 
 import ai.subut.kurjun.model.repository.LocalRepository;
 
-
-public class ConfigModule extends AbstractModule
+/**
+ * Guice module to initialize repository type bindings.
+ *
+ */
+public class RepositoryModule extends AbstractModule
 {
 
     @Override

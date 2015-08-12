@@ -29,9 +29,10 @@ class LocalRepositoryImpl extends RepositoryBase implements LocalRepository
     {
         this.releaseIndexParser = releaseIndexParser;
 
+        // TODO: set correct localhost url
         try
         {
-            this.url = new URL( "http", "localhost", null );
+            this.url = new URL( "http", "localhost", "" );
         }
         catch ( MalformedURLException ex )
         {
