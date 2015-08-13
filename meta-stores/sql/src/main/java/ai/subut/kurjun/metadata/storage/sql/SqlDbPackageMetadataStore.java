@@ -15,6 +15,7 @@ import org.apache.commons.codec.binary.Hex;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
+import com.google.inject.name.Named;
 
 import ai.subut.kurjun.metadata.common.DependencyImpl;
 import ai.subut.kurjun.metadata.common.PackageMetadataImpl;
@@ -23,6 +24,8 @@ import ai.subut.kurjun.model.metadata.Dependency;
 import ai.subut.kurjun.model.metadata.PackageMetadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
+
+import static ai.subut.kurjun.metadata.storage.sql.SqlDbPackageMetadataStoreModule.CONN_PROPERTIES_NAME;
 
 
 /**
@@ -55,11 +58,12 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
 
 
     /**
-     * Initializes metadata store.
+     * Constructs a metadata store backed by a SQL DB whose properties are provided by an {@link Properties} instance
+     * annotated with {@link SqlDbPackageMetadataStoreModule#CONN_PROPERTIES_NAME} name.
      *
      * @param properties
      */
-    public void init( Properties properties )
+    public SqlDbPackageMetadataStore( @Named( CONN_PROPERTIES_NAME ) Properties properties )
     {
         ConnectionFactory.getInstance().init( properties );
     }

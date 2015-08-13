@@ -16,6 +16,8 @@ import org.apache.commons.codec.binary.Hex;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 import ai.subut.kurjun.metadata.common.DependencyImpl;
 import ai.subut.kurjun.metadata.common.PackageMetadataImpl;
@@ -24,6 +26,8 @@ import ai.subut.kurjun.model.metadata.Dependency;
 import ai.subut.kurjun.model.metadata.PackageMetadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
+
+import static ai.subut.kurjun.metadata.storage.file.DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME;
 
 
 class DbFilePackageMetadataStore implements PackageMetadataStore
@@ -52,11 +56,14 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
 
     /**
-     * Initializes metadata store to a specified location in a file system.
+     * Constructs a package metadata store backed by a file db. A directory should be given where file db will be
+     * created or there should be a binding of {@link String} instance annotated with name
+     * {@link DbFilePackageMetadataStoreModule#DB_FILE_LOCATION_NAME}.
      *
-     * @param location
+     * @param location parent directory
      */
-    public void init( String location )
+    @Inject
+    public DbFilePackageMetadataStore( @Named( DB_FILE_LOCATION_NAME ) String location )
     {
         this.location = Paths.get( location );
     }

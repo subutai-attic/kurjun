@@ -84,8 +84,7 @@ public class Activator implements BundleActivator, ManagedService
             properties.put( key, config.get( key ) );
         }
 
-        SqlDbPackageMetadataStore pms = new SqlDbPackageMetadataStore();
-        pms.init( properties );
+        SqlDbPackageMetadataStore pms = new SqlDbPackageMetadataStore( properties );
         sqldbService = context.registerService( PackageMetadataStore.class, pms, null );
     }
 

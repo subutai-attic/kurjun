@@ -13,6 +13,9 @@ import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 public class DbFilePackageMetadataStoreModule extends AbstractModule
 {
 
+    public static final String DB_FILE_LOCATION_NAME = "metadata.storage.file.location";
+
+
     @Override
     protected void configure()
     {

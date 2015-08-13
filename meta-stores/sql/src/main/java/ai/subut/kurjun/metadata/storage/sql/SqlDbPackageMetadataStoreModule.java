@@ -13,6 +13,9 @@ import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 public class SqlDbPackageMetadataStoreModule extends AbstractModule
 {
 
+    public static final String CONN_PROPERTIES_NAME = "metadata.storage.sql.properties";
+
+
     @Override
     protected void configure()
     {
