@@ -58,8 +58,7 @@ public class Activator implements BundleActivator, ManagedService
             Dictionary properties = new Hashtable();
             properties.put( ServiceConstants.FILE_LOCATION, location );
 
-            DbFilePackageMetadataStore pms = new DbFilePackageMetadataStore();
-            pms.init( location );
+            DbFilePackageMetadataStore pms = new DbFilePackageMetadataStore( location );
             dbFileStoreService = context.registerService( PackageMetadataStore.class, pms, properties );
         }
     }

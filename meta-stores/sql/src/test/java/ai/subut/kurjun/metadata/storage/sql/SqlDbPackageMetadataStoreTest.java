@@ -49,8 +49,7 @@ public class SqlDbPackageMetadataStoreTest
         {
             Properties properties = new Properties();
             properties.load( is );
-            store = new SqlDbPackageMetadataStore();
-            store.init( properties );
+            store = new SqlDbPackageMetadataStore( properties );
         }
         catch ( Exception ex )
         {
