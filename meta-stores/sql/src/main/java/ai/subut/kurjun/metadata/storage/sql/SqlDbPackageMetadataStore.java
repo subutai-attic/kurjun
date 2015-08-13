@@ -54,7 +54,12 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
     }
 
 
-    public SqlDbPackageMetadataStore( Properties properties )
+    /**
+     * Initializes metadata store.
+     *
+     * @param properties
+     */
+    public void init( Properties properties )
     {
         ConnectionFactory.getInstance().init( properties );
     }

@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import ai.subut.kurjun.model.index.ChecksummedResource;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
@@ -63,14 +65,16 @@ public class HttpHandler
 
     private URL makeUrlWithPath( String path ) throws IOException
     {
+        Path appneded = Paths.get( repository.getUrl().getPath(), path );
         try
         {
-            return repository.getUrl().toURI().resolve( path ).toURL();
+            return repository.getUrl().toURI().resolve( appneded.toString() ).toURL();
         }
         catch ( URISyntaxException ex )
         {
             throw new IOException( "Repo URL is not strictly formatted according to RFC2396", ex );
         }
     }
+
 }
 

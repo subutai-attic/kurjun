@@ -1,6 +1,9 @@
 package ai.subut.kurjun.repo;
 
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -13,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 
 import ai.subut.kurjun.model.repository.LocalRepository;
+import ai.subut.kurjun.repo.http.PathBuilder;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
 
 
@@ -29,9 +33,10 @@ class LocalRepositoryImpl extends RepositoryBase implements LocalRepository
     {
         this.releaseIndexParser = releaseIndexParser;
 
+        // TODO: set correct localhost url
         try
         {
-            this.url = new URL( "http", "localhost", null );
+            this.url = new URL( "http", "localhost", "" );
         }
         catch ( MalformedURLException ex )
         {
@@ -59,6 +64,13 @@ class LocalRepositoryImpl extends RepositoryBase implements LocalRepository
 
 
     @Override
+    public Path getBaseDirectoryPath()
+    {
+        return baseDirectory;
+    }
+
+
+    @Override
     protected Logger getLogger()
     {
         return LOGGER;
@@ -70,6 +82,24 @@ class LocalRepositoryImpl extends RepositoryBase implements LocalRepository
     {
         return releaseIndexParser;
     }
+
+
+    @Override
+    protected InputStream openDistributionsFileStream() throws IOException
+    {
+        Path path = baseDirectory.resolve( "conf/distributions" );
+        return new FileInputStream( path.toFile() );
+    }
+
+
+    @Override
+    protected InputStream openReleaseIndexFileStream( String release ) throws IOException
+    {
+        String path = PathBuilder.instance().setRelease( release ).forReleaseIndexFile().build();
+        Path p = baseDirectory.resolve( path );
+        return new FileInputStream( p.toFile() );
+    }
+
 
 }
 

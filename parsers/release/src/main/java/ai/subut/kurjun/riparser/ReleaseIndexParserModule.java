@@ -6,8 +6,11 @@ import com.google.inject.AbstractModule;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
 
 
-
-public class ConfigModule extends AbstractModule
+/**
+ * Guice module to initialize release index parser bindings.
+ *
+ */
+public class ReleaseIndexParserModule extends AbstractModule
 {
 
     @Override

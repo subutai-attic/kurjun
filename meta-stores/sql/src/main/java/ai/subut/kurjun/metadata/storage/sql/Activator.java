@@ -13,7 +13,6 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
 
-import ai.subut.kurjun.metadata.storage.sql.ConnectionPropertyName;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 
 
@@ -85,7 +84,8 @@ public class Activator implements BundleActivator, ManagedService
             properties.put( key, config.get( key ) );
         }
 
-        PackageMetadataStore pms = new SqlDbPackageMetadataStore( properties );
+        SqlDbPackageMetadataStore pms = new SqlDbPackageMetadataStore();
+        pms.init( properties );
         sqldbService = context.registerService( PackageMetadataStore.class, pms, null );
     }
 

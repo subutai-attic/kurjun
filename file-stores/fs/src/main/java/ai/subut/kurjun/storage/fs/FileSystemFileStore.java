@@ -41,7 +41,12 @@ class FileSystemFileStore implements FileStore
     private Path rootLocation;
 
 
-    public FileSystemFileStore( String rootLocation )
+    /**
+     * Initializes this file system backed file store to specified location of a file system.
+     *
+     * @param rootLocation file system location which will be managed by this file store
+     */
+    public void init( String rootLocation )
     {
         this.rootLocation = Paths.get( rootLocation );
     }

@@ -11,7 +11,6 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
 
-import ai.subut.kurjun.metadata.storage.file.ServiceConstants;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 
 
@@ -59,7 +58,8 @@ public class Activator implements BundleActivator, ManagedService
             Dictionary properties = new Hashtable();
             properties.put( ServiceConstants.FILE_LOCATION, location );
 
-            PackageMetadataStore pms = new DbFilePackageMetadataStore( location );
+            DbFilePackageMetadataStore pms = new DbFilePackageMetadataStore();
+            pms.init( location );
             dbFileStoreService = context.registerService( PackageMetadataStore.class, pms, properties );
         }
     }
