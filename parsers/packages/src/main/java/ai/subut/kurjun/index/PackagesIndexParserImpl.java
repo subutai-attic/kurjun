@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,9 +31,19 @@ class PackagesIndexParserImpl implements PackagesIndexParser
     @Override
     public List<IndexPackageMetaData> parse( File indexFile ) throws IOException
     {
+        CompressionType compressionType = CompressionType.getCompressionType( indexFile );
+        try ( InputStream is = new FileInputStream( indexFile ) )
+        {
+            return parse( is, compressionType );
+        }
+    }
+
+
+    @Override
+    public List<IndexPackageMetaData> parse( InputStream is, CompressionType compressionType ) throws IOException
+    {
         List<IndexPackageMetaData> res = new LinkedList<>();
-        try ( InputStream is = openStream( indexFile );
-              BufferedReader br = new BufferedReader( new InputStreamReader( is ) ) )
+        try ( BufferedReader br = new BufferedReader( wrapStream( is, compressionType ) ) )
         {
             String batch;
             while ( !( batch = readNextMetadataBatch( br ) ).isEmpty() )
@@ -76,24 +87,30 @@ class PackagesIndexParserImpl implements PackagesIndexParser
     }
 
 
-    private InputStream openStream( File indexFile ) throws IOException
+    private Reader wrapStream( InputStream fis, CompressionType compressionType ) throws IOException
     {
-        InputStream fis = new FileInputStream( indexFile );
-        switch ( CompressionType.getCompressionType( indexFile ) )
+        InputStream is = null;
+        switch ( compressionType )
         {
             case NONE:
-                return fis;
+                is = fis;
+                break;
             case GZIP:
-                return new GZIPInputStream( fis );
+                is = new GZIPInputStream( fis );
+                break;
             case BZIP2:
-                return new BZip2CompressorInputStream( new BufferedInputStream( fis ) );
+                is = new BZip2CompressorInputStream( new BufferedInputStream( fis ) );
+                break;
             case XZ:
-                return new XZCompressorInputStream( new BufferedInputStream( fis ) );
+                is = new XZCompressorInputStream( new BufferedInputStream( fis ) );
+                break;
             case LZMA:
-                return new LZMACompressorInputStream( new BufferedInputStream( fis ) );
+                is = new LZMACompressorInputStream( new BufferedInputStream( fis ) );
+                break;
             default:
-                throw new AssertionError( CompressionType.getCompressionType( indexFile ).name() );
+                throw new AssertionError( compressionType.name() );
         }
+        return new InputStreamReader( is );
     }
 
 
