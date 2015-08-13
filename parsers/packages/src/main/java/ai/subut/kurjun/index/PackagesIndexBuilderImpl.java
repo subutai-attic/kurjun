@@ -16,6 +16,8 @@ import org.vafer.jdeb.debian.ControlFile;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 
+import com.google.inject.Inject;
+
 import ai.subut.kurjun.index.service.PackagesIndexBuilder;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
 import ai.subut.kurjun.model.metadata.Dependency;
@@ -32,6 +34,7 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
     private FileStore fileStore;
 
 
+    @Inject
     public PackagesIndexBuilderImpl( PackageMetadataStore metadataStore, FileStore fileStore )
     {
         this.metadataStore = metadataStore;

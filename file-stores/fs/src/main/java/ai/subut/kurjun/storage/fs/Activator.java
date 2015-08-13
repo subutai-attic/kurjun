@@ -12,7 +12,6 @@ import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
 
 import ai.subut.kurjun.model.storage.FileStore;
-import ai.subut.kurjun.storage.fs.ServiceConstants;
 
 
 /**
@@ -62,7 +61,8 @@ public class Activator implements BundleActivator, ManagedService
             throw new ConfigurationException( ServiceConstants.LOCATION, "must be a valid file system location" );
         }
 
-        FileStore fs = new FileSystemFileStore( location );
+        FileSystemFileStore fs = new FileSystemFileStore();
+        fs.init( location );
 
         Dictionary properties = new Hashtable();
         properties.put( ServiceConstants.LOCATION, location );
