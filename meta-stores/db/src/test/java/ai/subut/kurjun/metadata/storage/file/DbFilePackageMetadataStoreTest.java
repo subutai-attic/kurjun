@@ -44,7 +44,8 @@ public class DbFilePackageMetadataStoreTest
     @BeforeClass
     public static void setUpClass() throws IOException
     {
-        store = new DbFilePackageMetadataStore( Files.createTempDirectory( null ).toString() );
+        store = new DbFilePackageMetadataStore();
+        store.init( Files.createTempDirectory( null ).toString() );
     }
 
 

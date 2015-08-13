@@ -12,9 +12,14 @@ import org.slf4j.LoggerFactory;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
+import com.google.inject.Provider;
 
 
-class CassandraConnector
+/**
+ * Provider class for {@link Session} instance. Needs to be initialized first, otherwise {@code null} is returned.
+ *
+ */
+class CassandraConnector implements Provider<Session>
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( CassandraConnector.class );
 
@@ -34,7 +39,8 @@ class CassandraConnector
     }
 
 
-    public Session getSession()
+    @Override
+    public Session get()
     {
         return this.session;
     }

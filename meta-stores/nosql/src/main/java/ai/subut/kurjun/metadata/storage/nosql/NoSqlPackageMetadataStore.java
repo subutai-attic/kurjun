@@ -16,6 +16,7 @@ import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
+import com.google.inject.Inject;
 
 import ai.subut.kurjun.metadata.common.DependencyImpl;
 import ai.subut.kurjun.metadata.common.PackageMetadataImpl;
@@ -45,6 +46,7 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
     private static final Gson GSON;
 
     int batchSize = 1000;
+    private Session session;
 
 
     static
@@ -61,6 +63,13 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
         gb.registerTypeAdapter( Dependency.class, depInstanceCreator );
 
         GSON = gb.create();
+    }
+
+
+    @Inject
+    public NoSqlPackageMetadataStore( Session session )
+    {
+        this.session = session;
     }
 
 
@@ -90,11 +99,13 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
      */
     public NoSqlPackageMetadataStore( String node, int port, File replicationConfig ) throws IOException
     {
+        CassandraConnector connector = CassandraConnector.getInstance();
         if ( replicationConfig != null )
         {
-            CassandraConnector.getInstance().setReplicationConfigFile( replicationConfig );
+            connector.setReplicationConfigFile( replicationConfig );
         }
-        CassandraConnector.getInstance().init( node, port );
+        connector.init( node, port );
+        this.session = connector.get();
     }
 
 
@@ -110,7 +121,6 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
     {
         Statement st = QueryBuilder.select().from( SchemaInfo.KEYSPACE, SchemaInfo.TABLE )
                 .where( QueryBuilder.eq( SchemaInfo.CHECKSUM_COLUMN, Hex.encodeHexString( md5 ) ) );
-        Session session = CassandraConnector.getInstance().getSession();
         ResultSet rs = session.execute( st );
         Row row = rs.one();
         if ( row != null )
@@ -129,7 +139,6 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
             Statement st = QueryBuilder.insertInto( SchemaInfo.KEYSPACE, SchemaInfo.TABLE )
                     .value( SchemaInfo.CHECKSUM_COLUMN, Hex.encodeHexString( meta.getMd5Sum() ) )
                     .value( SchemaInfo.METADATA_COLUMN, GSON.toJson( meta ) );
-            Session session = CassandraConnector.getInstance().getSession();
             session.execute( st );
             return true;
         }
@@ -144,7 +153,6 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
         {
             Statement st = QueryBuilder.delete().from( SchemaInfo.KEYSPACE, SchemaInfo.TABLE )
                     .where( QueryBuilder.eq( SchemaInfo.CHECKSUM_COLUMN, Hex.encodeHexString( md5 ) ) );
-            Session session = CassandraConnector.getInstance().getSession();
             session.execute( st );
             return true;
         }
@@ -179,7 +187,6 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
                 .limit( batchSize + 1 );
         // (*) limit with one more item to detect whether there are more results to fetch
 
-        Session session = CassandraConnector.getInstance().getSession();
         ResultSet rs = session.execute( st );
 
         Iterator<Row> it = rs.iterator();

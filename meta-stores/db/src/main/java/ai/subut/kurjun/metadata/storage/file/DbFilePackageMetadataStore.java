@@ -51,7 +51,12 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
     }
 
 
-    public DbFilePackageMetadataStore( String location )
+    /**
+     * Initializes metadata store to a specified location in a file system.
+     *
+     * @param location
+     */
+    public void init( String location )
     {
         this.location = Paths.get( location );
     }
