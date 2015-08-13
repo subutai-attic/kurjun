@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.repository.Protocol;
 import ai.subut.kurjun.model.repository.Repository;
-import ai.subut.kurjun.repo.http.HttpHandler;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
 
 
@@ -26,7 +25,6 @@ abstract class RepositoryBase implements Repository
 {
 
     protected URL url;
-    protected HttpHandler httpHandler = new HttpHandler( this );
 
 
     @Override
@@ -95,7 +93,7 @@ abstract class RepositoryBase implements Repository
             List<String> releases = readAptReleases();
             for ( String release : releases )
             {
-                try ( InputStream is = httpHandler.streamReleaseIndexFile( release, false ) )
+                try ( InputStream is = openReleaseIndexFileStream( release ) )
                 {
                     ReleaseFile rf = getReleaseIndexParser().parse( is );
                     result.add( rf );
@@ -135,6 +133,24 @@ abstract class RepositoryBase implements Repository
 
 
     /**
+     * Returns an input stream to read "distributions" file of the repository.
+     *
+     * @return
+     * @throws IOException
+     */
+    protected abstract InputStream openDistributionsFileStream() throws IOException;
+
+
+    /**
+     * Returns an input stream to read release index file contents from.
+     *
+     * @param release release name
+     * @return the java.io.InputStream
+     */
+    protected abstract InputStream openReleaseIndexFileStream( String release ) throws IOException;
+
+
+    /**
      * Reads releases from {@code conf/distributions} file of this apt repository.
      *
      * @throws IOException on any read failures
@@ -145,7 +161,7 @@ abstract class RepositoryBase implements Repository
         Pattern pattern = Pattern.compile( "Codename:\\s*(\\w+)" );
 
         List<String> releases = new ArrayList<>();
-        try ( BufferedReader br = new BufferedReader( new InputStreamReader( httpHandler.streamDistributionsFile() ) ) )
+        try ( BufferedReader br = new BufferedReader( new InputStreamReader( openDistributionsFileStream() ) ) )
         {
             String line;
             while ( ( line = br.readLine() ) != null )

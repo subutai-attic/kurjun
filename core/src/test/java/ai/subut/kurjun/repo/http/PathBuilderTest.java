@@ -72,16 +72,16 @@ public class PathBuilderTest
         String path;
 
         path = PathBuilder.instance().setRelease( releaseFile ).forReleaseIndexFile().build();
-        Assert.assertEquals( "/dists/trusty/Release", path );
+        Assert.assertEquals( "dists/trusty/Release", path );
 
         path = PathBuilder.instance().setRelease( releaseFile ).forReleaseIndexFileSigned().build();
-        Assert.assertEquals( "/dists/trusty/InRelease", path );
+        Assert.assertEquals( "dists/trusty/InRelease", path );
 
         path = PathBuilder.instance().setRelease( releaseFile ).setResource( resource ).build();
-        Assert.assertEquals( "/dists/trusty/main/binary-amd64/Packages", path );
+        Assert.assertEquals( "dists/trusty/main/binary-amd64/Packages", path );
 
         path = PathBuilder.instance().setPackageMetaData( packageMetaData ).build();
-        Assert.assertEquals( "/pool/main/a/ark/ark-dbg_4.8.5-0ubuntu0.1_amd64.deb", path );
+        Assert.assertEquals( "pool/main/a/ark/ark-dbg_4.8.5-0ubuntu0.1_amd64.deb", path );
 
     }
 

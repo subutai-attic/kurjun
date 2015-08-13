@@ -8,7 +8,8 @@ import ai.subut.kurjun.model.index.ReleaseFile;
 
 /**
  * Utility class to build paths for apt repository items like release index files, package index files, and artifact
- * files.
+ * files. Note that the result path of this class does not gave slash ("/") in the beginning because the paths returned
+ * are not absolute paths.
  *
  */
 public class PathBuilder
@@ -71,7 +72,6 @@ public class PathBuilder
     }
 
 
-
     /**
      * Sets a release to build path for.
      *
@@ -132,6 +132,10 @@ public class PathBuilder
      * Builds a path according to set release, package metadata, and resource items. This methods throws an exception if
      * there are no enough data.
      *
+     * <p>
+     * Note that the resultant path does not start with a slash ("/") because returned paths are not absolute paths
+     * </p>
+     *
      * @return a path to apt repository item corresponding to provided data by setters
      */
     public String build()
@@ -139,13 +143,13 @@ public class PathBuilder
         StringBuilder sb = new StringBuilder();
         if ( packageMetaData != null )
         {
-            sb.append( "/" ).append( packageMetaData.getFilename() );
+            sb.append( packageMetaData.getFilename() );
             return sb.toString();
         }
 
         if ( release != null )
         {
-            sb.append( "/dists/" ).append( release ).append( "/" );
+            sb.append( "dists/" ).append( release ).append( "/" );
         }
         else
         {
