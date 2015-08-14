@@ -22,6 +22,7 @@
     <module>file-stores</module>
     <module>meta-stores</module>
     <module>core</module>
+    <module>http</module>
   </modules>
 
   <description>
@@ -292,6 +293,12 @@
       <dependency>
         <groupId>com.google.inject</groupId>
         <artifactId>guice</artifactId>
+        <version>${guice.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.inject.extensions</groupId>
+        <artifactId>guice-servlet</artifactId>
         <version>${guice.version}</version>
       </dependency>
       
