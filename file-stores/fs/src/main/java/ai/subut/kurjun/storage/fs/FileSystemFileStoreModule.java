@@ -13,6 +13,9 @@ import ai.subut.kurjun.model.storage.FileStore;
 public class FileSystemFileStoreModule extends AbstractModule
 {
 
+    public static final String ROOT_DIRECTORY = "storage.fs.root.directory";
+
+
     @Override
     protected void configure()
     {

@@ -23,7 +23,11 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.commons.codec.binary.Hex;
 
+import com.google.inject.name.Named;
+
 import ai.subut.kurjun.model.storage.FileStore;
+
+import static ai.subut.kurjun.storage.fs.FileSystemFileStoreModule.ROOT_DIRECTORY;
 
 
 /**
@@ -42,11 +46,10 @@ class FileSystemFileStore implements FileStore
 
 
     /**
-     * Initializes this file system backed file store to specified location of a file system.
+     * Constructs file system backed file store to a specified location in a file system.
      *
-     * @param rootLocation file system location which will be managed by this file store
      */
-    public void init( String rootLocation )
+    public FileSystemFileStore( @Named( ROOT_DIRECTORY ) String rootLocation )
     {
         this.rootLocation = Paths.get( rootLocation );
     }
