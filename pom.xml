@@ -76,6 +76,7 @@
     <commons-codec.version>1.10</commons-codec.version>
     <commons-compress.version>1.9</commons-compress.version>
     <commons-io.version>2.4</commons-io.version>
+    <snakeyaml.version>1.15</snakeyaml.version>
     <xz.version>1.5</xz.version>
     <jdeb.version>1.4</jdeb.version>
     <org.osgi.core.version>6.0.0</org.osgi.core.version>
@@ -282,6 +283,12 @@
             <artifactId>sisu-guice</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>org.yaml</groupId>
+        <artifactId>snakeyaml</artifactId>
+        <version>${snakeyaml.version}</version>
       </dependency>
 
       <dependency>
