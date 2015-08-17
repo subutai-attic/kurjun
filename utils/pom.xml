@@ -16,6 +16,7 @@
 
   <modules>
     <module>archive</module>
+    <module>db-file</module>
   </modules>
 
   <description>
