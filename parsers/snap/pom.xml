@@ -12,6 +12,11 @@
   <artifactId>snap</artifactId>
   <packaging>jar</packaging>
 
+  <properties>
+    <osgi.export-package>ai.subut.kurjun.snap.service</osgi.export-package>
+    <osgi.bundle-activator>ai.subut.kurjun.snap.Activator</osgi.bundle-activator>
+  </properties>
+  
   <build>
 
     <testResources>
@@ -44,7 +49,17 @@
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
     </dependency>
-    
+
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.compendium</artifactId>
+    </dependency>
+      
     <dependency>
       <groupId>org.yaml</groupId>
       <artifactId>snakeyaml</artifactId>

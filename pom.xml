@@ -90,7 +90,7 @@
 
     <!-- default OSGi properties - set values in child pom files -->
     <osgi.classpath></osgi.classpath>
-    <osgi.export-package>{local-packages}</osgi.export-package>
+    <osgi.export-package></osgi.export-package>
     <osgi.bundle-directives></osgi.bundle-directives>
     <osgi.bundle-activator></osgi.bundle-activator>
     <osgi.bundle-activationpolicy></osgi.bundle-activationpolicy>
