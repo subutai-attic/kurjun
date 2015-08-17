@@ -1,11 +1,16 @@
 package ai.subut.kurjun.http;
 
 
+/**
+ * Utility methods to work with servlets.
+ *
+ */
 public class ServletUtils
 {
 
     private ServletUtils()
     {
+        // no need to construct utility class
     }
 
 
