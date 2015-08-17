@@ -9,7 +9,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.yaml.snakeyaml.Yaml;
 
-import ai.subut.kurjun.snap.service.SnappyMetadataParser;
+import ai.subut.kurjun.snap.service.SnapMetadataParser;
 
 
 /**
@@ -32,7 +32,7 @@ public class Activator implements BundleActivator
         parser.yaml = context.getService( yamlRef );
 
         Dictionary properties = new Properties();
-        context.registerService( SnappyMetadataParser.class, parser, properties );
+        context.registerService(SnapMetadataParser.class, parser, properties );
     }
 
 

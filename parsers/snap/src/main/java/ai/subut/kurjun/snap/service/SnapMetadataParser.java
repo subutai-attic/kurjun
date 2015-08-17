@@ -8,7 +8,7 @@ import java.io.InputStream;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
 
 
-public interface SnappyMetadataParser
+public interface SnapMetadataParser
 {
 
     /**

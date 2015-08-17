@@ -22,7 +22,7 @@ public class SnappyMetadataParserImplTest
     @Before
     public void setUp()
     {
-        parser.yaml = new SnappyMetadataParserModule().makeYamlParser();
+        parser.yaml = new SnapMetadataParserModule().makeYamlParser();
         packageMetadataStream = ClassLoader.getSystemResourceAsStream( "package.yaml" );
     }
 

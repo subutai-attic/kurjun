@@ -19,10 +19,10 @@ import ai.subut.kurjun.ar.DefaultTar;
 import ai.subut.kurjun.ar.Tar;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
 import ai.subut.kurjun.model.metadata.snap.SnapUtils;
-import ai.subut.kurjun.snap.service.SnappyMetadataParser;
+import ai.subut.kurjun.snap.service.SnapMetadataParser;
 
 
-class SnappyMetadataParserImpl implements SnappyMetadataParser
+class SnappyMetadataParserImpl implements SnapMetadataParser
 {
 
     @Inject

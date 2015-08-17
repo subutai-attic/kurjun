@@ -9,7 +9,7 @@
   </parent>
 
   <name>Kurjun Snappy Metadata Parser</name>
-  <artifactId>snap</artifactId>
+  <artifactId>snap-parser</artifactId>
   <packaging>jar</packaging>
 
   <properties>

@@ -8,16 +8,16 @@ import org.yaml.snakeyaml.representer.Representer;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
-import ai.subut.kurjun.snap.service.SnappyMetadataParser;
+import ai.subut.kurjun.snap.service.SnapMetadataParser;
 
 
-public class SnappyMetadataParserModule extends AbstractModule
+public class SnapMetadataParserModule extends AbstractModule
 {
 
     @Override
     protected void configure()
     {
-        bind( SnappyMetadataParser.class ).to( SnappyMetadataParserImpl.class );
+        bind(SnapMetadataParser.class ).to( SnappyMetadataParserImpl.class );
     }
 
 
