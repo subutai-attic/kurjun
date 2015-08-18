@@ -5,7 +5,7 @@ import java.util.List;
 
 
 /**
- * Interface for Snappy package metadata.
+ * Interface for Ubuntu Core snap package metadata.
  *
  * Refer to https://developer.ubuntu.com/en/snappy/guides/packaging-format-apps/ for more information about snap package
  * metadata.
@@ -13,6 +13,14 @@ import java.util.List;
  */
 public interface SnapMetadata
 {
+
+    /**
+     * Gets the md5 checksum of the corresponding package.
+     *
+     * @return
+     */
+    byte[] getMd5();
+
 
     /**
      * Gets the name of the snap package.

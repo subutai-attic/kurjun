@@ -2,6 +2,7 @@ package ai.subut.kurjun.db.file;
 
 
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,6 +29,7 @@ public class FileDb implements Closeable
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( FileDb.class );
 
+    private final File file;
     protected final TxMaker txMaker;
 
 
@@ -56,13 +58,15 @@ public class FileDb implements Closeable
             {
                 Files.createDirectories( path.getParent() );
             }
-            dbMaker = DBMaker.newFileDB( path.toFile() );
+            this.file = path.toFile();
         }
         else
         {
             LOGGER.warn( "DB file not supplied. Using temporary file!!!" );
-            dbMaker = DBMaker.newTempFileDB();
+            this.file = File.createTempFile( "mapdb-temp", ".db" );
         }
+
+        dbMaker = DBMaker.newFileDB( file );
 
         if ( readOnly )
         {
@@ -72,6 +76,17 @@ public class FileDb implements Closeable
                 .closeOnJvmShutdown()
                 .mmapFileEnableIfSupported()
                 .makeTxMaker();
+    }
+
+
+    /**
+     * Gets underlying db file.
+     *
+     * @return file to underlying db file
+     */
+    public File getFile()
+    {
+        return file;
     }
 
 

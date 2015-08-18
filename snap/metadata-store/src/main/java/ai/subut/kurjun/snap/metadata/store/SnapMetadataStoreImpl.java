@@ -1,0 +1,81 @@
+package ai.subut.kurjun.snap.metadata.store;
+
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.codec.binary.Hex;
+
+import com.google.inject.Inject;
+
+import ai.subut.kurjun.db.file.FileDb;
+import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
+import ai.subut.kurjun.model.metadata.snap.SnapMetadataFilter;
+import ai.subut.kurjun.model.metadata.snap.SnapMetadataStore;
+
+
+/**
+ * Snap metadata store that is backed by a file db.
+ *
+ */
+class SnapMetadataStoreImpl implements SnapMetadataStore
+{
+
+    private static final String MAP_NAME = "snap-metadata";
+    private FileDb fileDb;
+
+
+    @Inject
+    public SnapMetadataStoreImpl( FileDb fileDb )
+    {
+        this.fileDb = fileDb;
+    }
+
+
+    @Override
+    public boolean contains( byte[] md5 ) throws IOException
+    {
+        String md5hex = Hex.encodeHexString( md5 );
+        return fileDb.contains( MAP_NAME, md5hex );
+    }
+
+
+    @Override
+    public SnapMetadata get( byte[] md5 ) throws IOException
+    {
+        String md5hex = Hex.encodeHexString( md5 );
+        return fileDb.get( MAP_NAME, md5hex, SnapMetadata.class );
+    }
+
+
+    @Override
+    public List<SnapMetadata> list( SnapMetadataFilter filter ) throws IOException
+    {
+        Map<String, SnapMetadata> map = fileDb.get( MAP_NAME );
+        SnapMetadata[] items = ( SnapMetadata[] ) map.values().stream().filter( filter ).toArray();
+        return Arrays.asList( items );
+    }
+
+
+    @Override
+    public boolean put( SnapMetadata metadata ) throws IOException
+    {
+        if ( contains( metadata.getMd5() ) )
+        {
+            return false;
+        }
+        fileDb.put( MAP_NAME, Hex.encodeHexString( metadata.getMd5() ), metadata );
+        return true;
+    }
+
+
+    @Override
+    public boolean remove( byte[] md5 ) throws IOException
+    {
+        return fileDb.remove( MAP_NAME, Hex.encodeHexString( md5 ) ) != null;
+    }
+
+}
+
