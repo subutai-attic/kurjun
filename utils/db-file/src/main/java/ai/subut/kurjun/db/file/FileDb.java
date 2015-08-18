@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
@@ -117,12 +120,37 @@ public class FileDb implements Closeable
 
 
     /**
+     * Gets a readonly snapshot view of the map with supplied name.
+     *
+     * @param <K> type of map keys
+     * @param <V> type of map values
+     * @param mapName name of the map to get
+     * @return readonly view of the map
+     */
+    public <K, V> Map<K, V> get( String mapName )
+    {
+        Map<K, V> result = new HashMap<>();
+        DB db = txMaker.makeTx();
+        try
+        {
+            Map<K, V> snapshot = ( Map<K, V> ) db.getHashMap( mapName ).snapshot();
+            result.putAll( snapshot );
+        }
+        finally
+        {
+            db.close();
+        }
+        return Collections.unmodifiableMap( result );
+    }
+
+
+    /**
      * Associated the key to the given value in a map with supplied name.
      *
-     * @param <T>
+     * @param <T> type of the value
      * @param mapName name of the map to put mapping to
-     * @param key
-     * @param value
+     * @param key key value
+     * @param value value to be associated with the key
      * @return the previous value associated with key, or null if there was no mapping for key
      */
     public <T> T put( String mapName, Object key, T value )

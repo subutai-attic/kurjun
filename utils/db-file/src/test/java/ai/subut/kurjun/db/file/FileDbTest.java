@@ -2,6 +2,7 @@ package ai.subut.kurjun.db.file;
 
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -57,6 +58,15 @@ public class FileDbTest
 
 
     @Test
+    public void testGetMapView()
+    {
+        Map<String, Integer> m = fileDb.get( map );
+        Assert.assertEquals( 1, m.size() );
+        Assert.assertTrue( m.containsKey( key ) );
+    }
+
+
+    @Test
     public void testPut()
     {
         Assert.assertEquals( value, fileDb.put( map, key, 33 ) );
@@ -71,6 +81,7 @@ public class FileDbTest
         Assert.assertNull( fileDb.remove( map, key ) );
         Assert.assertNull( fileDb.get( map, key, Integer.class ) );
     }
+
 
 }
 
