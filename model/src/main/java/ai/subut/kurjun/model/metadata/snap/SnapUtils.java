@@ -42,5 +42,20 @@ public class SnapUtils
     {
         return versionPattern.matcher( version ).matches();
     }
+
+
+    /**
+     * Makes a meaningful file name for supplied snap metadata. Usually it contains snap package name and version.
+     *
+     * @param metadata snap metadata to make name for
+     * @return file name for metadata
+     */
+    public static String makeFileName( SnapMetadata metadata )
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append( metadata.getName() ).append( "-" ).append( metadata.getVersion() );
+        sb.append( ".snap" );
+        return sb.toString();
+    }
 }
 
