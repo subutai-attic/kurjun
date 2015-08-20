@@ -12,10 +12,10 @@ import org.junit.Test;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
 
 
-public class SnappyMetadataParserImplTest
+public class SnapMetadataParserImplTest
 {
 
-    private SnappyMetadataParserImpl parser = new SnappyMetadataParserImpl();
+    private SnapMetadataParserImpl parser = new SnapMetadataParserImpl();
     private InputStream packageMetadataStream;
 
 

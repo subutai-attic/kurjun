@@ -11,6 +11,7 @@ import java.nio.file.StandardCopyOption;
 
 import org.yaml.snakeyaml.Yaml;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 
 import com.google.inject.Inject;
@@ -22,7 +23,7 @@ import ai.subut.kurjun.model.metadata.snap.SnapUtils;
 import ai.subut.kurjun.snap.service.SnapMetadataParser;
 
 
-class SnappyMetadataParserImpl implements SnapMetadataParser
+class SnapMetadataParserImpl implements SnapMetadataParser
 {
 
     @Inject
@@ -32,13 +33,19 @@ class SnappyMetadataParserImpl implements SnapMetadataParser
     @Override
     public SnapMetadata parse( File packageFile ) throws IOException
     {
+        byte[] md5 = calculateMd5Checksum( packageFile );
+
         Path target = Files.createTempDirectory( null );
         try
         {
             Tar tar = new DefaultTar( packageFile );
             tar.extract( target.toFile() );
+
             Path pathToPackageMetadata = target.resolve( "meta/package.yaml" );
-            return parseMetadata( pathToPackageMetadata.toFile() );
+            try ( InputStream is = new FileInputStream( pathToPackageMetadata.toFile() ) )
+            {
+                return parse( is, md5 );
+            }
         }
         finally
         {
@@ -76,7 +83,13 @@ class SnappyMetadataParserImpl implements SnapMetadataParser
     @Override
     public SnapMetadata parseMetadata( InputStream metadataFileStream ) throws IOException
     {
-        DefaultSnapMetadata m = yaml.loadAs( metadataFileStream, DefaultSnapMetadata.class );
+        return parse( metadataFileStream, null );
+    }
+
+
+    private DefaultSnapMetadata parse( InputStream stream, byte[] md5 )
+    {
+        DefaultSnapMetadata m = yaml.loadAs( stream, DefaultSnapMetadata.class );
 
         if ( !SnapUtils.isValidName( m.getName() ) )
         {
@@ -87,9 +100,22 @@ class SnappyMetadataParserImpl implements SnapMetadataParser
             throw new IllegalArgumentException( "Invalid package version: " + m.getVersion() );
         }
 
+        if ( md5 != null )
+        {
+            m.setMd5( md5 );
+        }
+
         return m;
     }
 
+
+    private byte[] calculateMd5Checksum( File file ) throws IOException
+    {
+        try ( InputStream is = new FileInputStream( file ) )
+        {
+            return DigestUtils.md5( is );
+        }
+    }
 
 }
 

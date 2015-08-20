@@ -16,6 +16,7 @@ public interface SnapMetadataParser
      *
      * @param packageFile the package file
      * @return
+     * @throws IOException if file reading or parsing errors occur
      */
     SnapMetadata parse( File packageFile ) throws IOException;
 
@@ -25,6 +26,7 @@ public interface SnapMetadataParser
      *
      * @param packageStream the package stream
      * @return
+     * @throws IOException if stream reading or parsing errors occur
      */
     SnapMetadata parse( InputStream packageStream ) throws IOException;
 
@@ -34,6 +36,7 @@ public interface SnapMetadataParser
      *
      * @param metadataFile metadata file of a snap package
      * @return
+     * @throws IOException if file reading or parsing errors occur
      */
     SnapMetadata parseMetadata( File metadataFile ) throws IOException;
 
@@ -43,6 +46,7 @@ public interface SnapMetadataParser
      *
      * @param metadataFileStream
      * @return
+     * @throws IOException if stream reading or parsing errors occur
      */
     SnapMetadata parseMetadata( InputStream metadataFileStream ) throws IOException;
 }

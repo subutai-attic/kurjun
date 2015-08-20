@@ -28,7 +28,7 @@ public class Activator implements BundleActivator
             throw new IllegalStateException( "Yaml service reference not found" );
         }
 
-        SnappyMetadataParserImpl parser = new SnappyMetadataParserImpl();
+        SnapMetadataParserImpl parser = new SnapMetadataParserImpl();
         parser.yaml = context.getService( yamlRef );
 
         Dictionary properties = new Properties();

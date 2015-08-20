@@ -106,6 +106,7 @@ public class FileDb implements Closeable
         }
         finally
         {
+            db.commit();
             db.close();
         }
     }
@@ -129,6 +130,7 @@ public class FileDb implements Closeable
         }
         finally
         {
+            db.commit();
             db.close();
         }
     }
@@ -153,6 +155,7 @@ public class FileDb implements Closeable
         }
         finally
         {
+            db.commit();
             db.close();
         }
         return Collections.unmodifiableMap( result );

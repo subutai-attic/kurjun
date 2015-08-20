@@ -1,6 +1,7 @@
 package ai.subut.kurjun.model.metadata.snap;
 
 
+import java.io.Serializable;
 import java.util.List;
 
 
@@ -11,7 +12,7 @@ import java.util.List;
  * metadata.
  *
  */
-public interface SnapMetadata
+public interface SnapMetadata extends Serializable
 {
 
     /**

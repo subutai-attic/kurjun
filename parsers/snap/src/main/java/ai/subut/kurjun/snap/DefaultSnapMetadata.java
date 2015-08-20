@@ -1,6 +1,7 @@
 package ai.subut.kurjun.snap;
 
 
+import java.util.Arrays;
 import java.util.List;
 
 import ai.subut.kurjun.model.metadata.snap.Framework;
@@ -10,11 +11,25 @@ import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
 public class DefaultSnapMetadata implements SnapMetadata
 {
 
+    private byte[] md5;
     private String name;
     private String version;
     private String vendor;
     private String source;
     private List<Framework> frameworks;
+
+
+    @Override
+    public byte[] getMd5()
+    {
+        return md5 != null ? Arrays.copyOf( md5, md5.length ) : null;
+    }
+
+
+    public void setMd5( byte[] md5 )
+    {
+        this.md5 = Arrays.copyOf( md5, md5.length );
+    }
 
 
     @Override

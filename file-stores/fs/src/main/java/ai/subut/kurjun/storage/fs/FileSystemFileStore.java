@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.commons.codec.binary.Hex;
 
+import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import ai.subut.kurjun.model.storage.FileStore;
@@ -49,6 +50,7 @@ class FileSystemFileStore implements FileStore
      * Constructs file system backed file store to a specified location in a file system.
      *
      */
+    @Inject
     public FileSystemFileStore( @Named( ROOT_DIRECTORY ) String rootLocation )
     {
         this.rootLocation = Paths.get( rootLocation );

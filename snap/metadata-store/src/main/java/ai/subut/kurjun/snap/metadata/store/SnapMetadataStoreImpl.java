@@ -2,6 +2,7 @@ package ai.subut.kurjun.snap.metadata.store;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -54,8 +55,11 @@ class SnapMetadataStoreImpl implements SnapMetadataStore
     public List<SnapMetadata> list( SnapMetadataFilter filter ) throws IOException
     {
         Map<String, SnapMetadata> map = fileDb.get( MAP_NAME );
-        SnapMetadata[] items = ( SnapMetadata[] ) map.values().stream().filter( filter ).toArray();
-        return Arrays.asList( items );
+        SnapMetadata[] items = map.values().stream().filter( filter ).toArray( SnapMetadata[]::new );
+
+        List<SnapMetadata> ls = new ArrayList<>( items.length );
+        ls.addAll( Arrays.asList( items ) );
+        return ls;
     }
 
 
