@@ -44,8 +44,7 @@ public class FileSystemFileStoreTest
         }
         sampleMd5 = DigestUtils.md5( sampleData );
 
-        fs = new FileSystemFileStore();
-        fs.init( tempDir.newFolder().getAbsolutePath() );
+        fs = new FileSystemFileStore( tempDir.newFolder().getAbsolutePath() );
         fs.put( sampleFile );
     }
 

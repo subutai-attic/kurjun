@@ -19,10 +19,13 @@ import com.google.inject.name.Names;
 import com.google.inject.servlet.GuiceFilter;
 
 import ai.subut.kurjun.http.local.LocalAptRepoServletModule;
+import ai.subut.kurjun.http.snap.SnapServletModule;
 import ai.subut.kurjun.index.PackagesIndexParserModule;
 import ai.subut.kurjun.metadata.storage.file.DbFilePackageMetadataStoreModule;
 import ai.subut.kurjun.repo.RepositoryModule;
 import ai.subut.kurjun.riparser.ReleaseIndexParserModule;
+import ai.subut.kurjun.snap.SnapMetadataParserModule;
+import ai.subut.kurjun.snap.metadata.store.SnapMetadataStoreModule;
 import ai.subut.kurjun.storage.fs.FileSystemFileStoreModule;
 
 
@@ -56,8 +59,13 @@ public class HttpServer
         Collection<Module> modules = new ArrayList<>();
         modules.add( new ReleaseIndexParserModule() );
         modules.add( new PackagesIndexParserModule() );
+
+        modules.add( new SnapMetadataParserModule() );
+        modules.add( new SnapMetadataStoreModule( "/tmp/kurjun/snaps/metadata" ) );
+        modules.add( new SnapServletModule().setServletPath( "/snap" ) );
+
         modules.add( new RepositoryModule() );
-        modules.add( new FileSystemFileStoreModule() );
+        modules.add( new FileSystemFileStoreModule().setRootLocation( "/tmp/kurjun/snaps/files" ) );
         modules.add( new DbFilePackageMetadataStoreModule() );
 
         LocalAptRepoServletModule servletModule = new LocalAptRepoServletModule();

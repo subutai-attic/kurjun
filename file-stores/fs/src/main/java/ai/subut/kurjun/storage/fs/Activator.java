@@ -61,8 +61,7 @@ public class Activator implements BundleActivator, ManagedService
             throw new ConfigurationException( ServiceConstants.LOCATION, "must be a valid file system location" );
         }
 
-        FileSystemFileStore fs = new FileSystemFileStore();
-        fs.init( location );
+        FileSystemFileStore fs = new FileSystemFileStore( location );
 
         Dictionary properties = new Hashtable();
         properties.put( ServiceConstants.LOCATION, location );

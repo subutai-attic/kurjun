@@ -1,0 +1,18 @@
+name: go-example-webserver
+vendor: Alexander Sack <asac@canonical.com>
+architecture: amd64
+icon: meta/go.svg
+version: 1.0.1
+services:
+ - name: webserver
+   description: "snappy example: golang mini webserver"
+   start: ./go-example-webserver
+   ports:
+      internal:
+          localcomm1:
+             port: 3306/tcp
+             negotiable: yes
+      external:
+          ui:
+             port: 8080/tcp
+             negotiable: no

@@ -23,6 +23,7 @@
     <module>meta-stores</module>
     <module>core</module>
     <module>http</module>
+    <module>snap</module>
   </modules>
 
   <description>
@@ -76,6 +77,7 @@
     <commons-codec.version>1.10</commons-codec.version>
     <commons-compress.version>1.9</commons-compress.version>
     <commons-io.version>2.4</commons-io.version>
+    <snakeyaml.version>1.15</snakeyaml.version>
     <xz.version>1.5</xz.version>
     <jdeb.version>1.4</jdeb.version>
     <org.osgi.core.version>6.0.0</org.osgi.core.version>
@@ -89,7 +91,7 @@
 
     <!-- default OSGi properties - set values in child pom files -->
     <osgi.classpath></osgi.classpath>
-    <osgi.export-package>{local-packages}</osgi.export-package>
+    <osgi.export-package></osgi.export-package>
     <osgi.bundle-directives></osgi.bundle-directives>
     <osgi.bundle-activator></osgi.bundle-activator>
     <osgi.bundle-activationpolicy></osgi.bundle-activationpolicy>
@@ -115,8 +117,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.1</version>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.8</source>
+          <target>1.8</target>
           <optimize>true</optimize>
           <showDeprecation>true</showDeprecation>
           <debug>true</debug>
@@ -285,6 +287,12 @@
       </dependency>
 
       <dependency>
+        <groupId>org.yaml</groupId>
+        <artifactId>snakeyaml</artifactId>
+        <version>${snakeyaml.version}</version>
+      </dependency>
+
+      <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
         <version>${gson.version}</version>
@@ -313,7 +321,13 @@
         <artifactId>peaberry</artifactId>
         <version>${peaberry.version}</version>
       </dependency>
-    
+
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-simple</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      
       <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-java-sdk-s3</artifactId>
