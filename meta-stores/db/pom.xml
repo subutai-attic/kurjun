@@ -42,14 +42,15 @@
     </dependency>
 
     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>db-file</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
     </dependency>
     
-    <dependency>
-      <groupId>org.mapdb</groupId>
-      <artifactId>mapdb</artifactId>
-    </dependency>
-
   </dependencies>
 </project>

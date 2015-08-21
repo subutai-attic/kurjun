@@ -1,13 +1,14 @@
 package ai.subut.kurjun.model.metadata;
 
 
+import java.io.Serializable;
 import java.util.List;
 
 
 /**
  * A dependency specified in the Depends list of a control file.
  */
-public interface Dependency
+public interface Dependency extends Serializable
 {
     String getPackage();
 

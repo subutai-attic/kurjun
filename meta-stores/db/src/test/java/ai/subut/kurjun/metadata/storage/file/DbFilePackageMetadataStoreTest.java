@@ -2,21 +2,16 @@ package ai.subut.kurjun.metadata.storage.file;
 
 
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -36,30 +31,18 @@ public class DbFilePackageMetadataStoreTest
 
     private static DbFilePackageMetadataStore store;
 
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
     private PackageMetadata meta;
     private List<PackageMetadata> extraItems;
     private byte[] otherMd5;
 
 
-    @BeforeClass
-    public static void setUpClass() throws IOException
-    {
-        store = new DbFilePackageMetadataStore( Files.createTempDirectory( null ).toString() );
-    }
-
-
-    @AfterClass
-    public static void tearDownClass() throws IOException
-    {
-        // clean up specified location
-        Files.walkFileTree( store.location, new FileDeleter() );
-        Files.delete( store.location );
-    }
-
-
     @Before
     public void setUp() throws IOException
     {
+        store = new DbFilePackageMetadataStore( temporaryFolder.newFolder().toString() );
         meta = createPackageMetadata();
         store.put( meta );
 
@@ -155,9 +138,10 @@ public class DbFilePackageMetadataStoreTest
     private PackageMetadata createPackageMetadata()
     {
         PackageMetadataImpl pm = new PackageMetadataImpl();
+        pm.setPackage( UUID.randomUUID().toString() );
         pm.setArchitecture( Architecture.amd64 );
         pm.setDescription( "Description here" );
-        pm.setFilename( UUID.randomUUID().toString() + "-ver-arch.deb" );
+        pm.setFilename( pm.getPackage() + "-ver-arch.deb" );
         pm.setInstalledSize( 1234 );
         pm.setMaintainer( "Maintainer" );
         pm.setMd5( DigestUtils.md5( pm.getFilename() ) );
@@ -173,20 +157,6 @@ public class DbFilePackageMetadataStoreTest
         pm.setDependencies( ls );
 
         return pm;
-    }
-
-
-    private static class FileDeleter extends SimpleFileVisitor<Path>
-    {
-        @Override
-        public FileVisitResult visitFile( Path file, BasicFileAttributes attrs ) throws IOException
-        {
-            if ( file.toFile().isFile() )
-            {
-                Files.delete( file );
-            }
-            return FileVisitResult.CONTINUE;
-        }
     }
 
 
