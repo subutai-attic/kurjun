@@ -8,13 +8,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -22,10 +21,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.model.storage.FileStore;
 
 import static ai.subut.kurjun.storage.fs.FileSystemFileStoreModule.ROOT_DIRECTORY;
@@ -38,12 +39,13 @@ import static ai.subut.kurjun.storage.fs.FileSystemFileStoreModule.ROOT_DIRECTOR
  */
 class FileSystemFileStore implements FileStore
 {
-    public static final String MD5 = "MD5";
 
     private static final Logger LOGGER = LoggerFactory.getLogger( FileSystemFileStore.class );
     private static final int BUFFER_SIZE = 1024 * 8;
+    private static final String MAP_NAME = "checksum-to-filepath";
 
     private Path rootLocation;
+    private FileDb fileDb;
 
 
     /**
@@ -54,27 +56,30 @@ class FileSystemFileStore implements FileStore
     public FileSystemFileStore( @Named( ROOT_DIRECTORY ) String rootLocation )
     {
         this.rootLocation = Paths.get( rootLocation );
+        try
+        {
+            this.fileDb = new FileDb( this.rootLocation.resolve( "checksum.db" ).toString() );
+        }
+        catch ( IOException ex )
+        {
+            LOGGER.error( "Failed to initialize db file", ex );
+            throw new IllegalArgumentException( "Failed to initialize db file" );
+        }
     }
 
 
     @Override
     public boolean contains( byte[] md5 ) throws IOException
     {
-        try ( MapDb db = new MapDb( rootLocation ) )
-        {
-            return db.getMap().containsKey( Hex.encodeHexString( md5 ) );
-        }
+        return fileDb.contains( MAP_NAME, Hex.encodeHexString( md5 ) );
     }
 
 
     @Override
     public InputStream get( byte[] md5 ) throws IOException
     {
-        try ( MapDb db = new MapDb( rootLocation ) )
-        {
-            String path = db.getMap().get( Hex.encodeHexString( md5 ) );
-            return path != null ? new FileInputStream( path ) : null;
-        }
+        String path = fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), String.class );
+        return path != null ? new FileInputStream( path ) : null;
     }
 
 
@@ -98,7 +103,7 @@ class FileSystemFileStore implements FileStore
     {
         try ( InputStream is = new FileInputStream( source ) )
         {
-            String filename = UUID.randomUUID().toString();
+            String filename = UUID.randomUUID().toString().replace( "-", "" );
             return put( filename, is );
         }
     }
@@ -109,7 +114,7 @@ class FileSystemFileStore implements FileStore
     {
         try ( InputStream is = source.openStream() )
         {
-            String filename = UUID.randomUUID().toString();
+            String filename = UUID.randomUUID().toString().replace( "-", "" );
             return put( filename, is );
         }
     }
@@ -119,57 +124,56 @@ class FileSystemFileStore implements FileStore
     public byte[] put( String filename, InputStream source ) throws IOException
     {
         Objects.requireNonNull( filename, "Filename" );
-        Path target = rootLocation.resolve( filename.substring( 0, 1 ) ).resolve( filename );
-        Files.createDirectories( target.getParent() );
 
-        Path sourceDump = null;
-        try ( MapDb db = new MapDb( rootLocation ) )
-        {
-            sourceDump = Files.createTempFile( rootLocation, null, null );
-            byte[] checksum = dumpStreamAndCalculateChecksum( source, sourceDump );
+        // distribute files into subdirectories by their first letter(s)
+        Path subDir = rootLocation.resolve( filename.substring( 0, 2 ) );
+        Files.createDirectory( subDir );
 
-            // clean up target file in catch clause if operation fails
-            Files.move( sourceDump, target, StandardCopyOption.REPLACE_EXISTING );
-            db.getMap().put( Hex.encodeHexString( checksum ), target.toAbsolutePath().toString() );
-            return checksum;
-        }
-        catch ( IOException ex )
+        Path target = Files.createTempFile( subDir, filename, null );
+        byte[] md5 = copyStream( source, target );
+
+        // check if we already have a file with the calculated md5 checksum, if so just replace the old file
+        String existingPath = fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), String.class );
+        if ( existingPath != null )
         {
-            target.toFile().delete();
-            throw ex;
+            Files.move( target, Paths.get( existingPath ), StandardCopyOption.REPLACE_EXISTING );
+            // clean up
+            deleteDirIfEmpty( subDir );
         }
-        finally
+        else
         {
-            if ( sourceDump != null )
-            {
-                sourceDump.toFile().delete();
-            }
+            fileDb.put( MAP_NAME, Hex.encodeHexString( md5 ), target.toAbsolutePath().toString() );
         }
+        return md5;
     }
 
 
     @Override
     public boolean remove( byte[] md5 ) throws IOException
     {
-        String hex = Hex.encodeHexString( md5 );
-        try ( MapDb db = new MapDb( rootLocation ) )
+        String hexMd5 = Hex.encodeHexString( md5 );
+        String path = fileDb.get( MAP_NAME, hexMd5, String.class );
+        if ( path != null )
         {
-            String p = db.getMap().get( hex );
-            if ( p != null )
-            {
-                Path path = Paths.get( p );
-                Files.deleteIfExists( path );
-                db.getMap().remove( hex );
-                return true;
-            }
+            Files.deleteIfExists( Paths.get( path ) );
+            fileDb.remove( MAP_NAME, hexMd5 );
+            return true;
         }
         return false;
     }
 
 
-    private byte[] dumpStreamAndCalculateChecksum( InputStream source, Path dest ) throws IOException
+    /**
+     * Copies the stream to the file system location specified by path argument.
+     *
+     * @param source stream to copy
+     * @param dest destination path to copy stream to
+     * @return MD5 checksum of the stream
+     * @throws IOException if i/o errors occur
+     */
+    private byte[] copyStream( InputStream source, Path dest ) throws IOException
     {
-        try ( DigestInputStream is = new DigestInputStream( source, MessageDigest.getInstance( MD5 ) );
+        try ( DigestInputStream is = new DigestInputStream( source, DigestUtils.getMd5Digest() );
               OutputStream os = new FileOutputStream( dest.toFile() ) )
         {
             int n;
@@ -180,12 +184,22 @@ class FileSystemFileStore implements FileStore
             }
             return is.getMessageDigest().digest();
         }
-        catch ( NoSuchAlgorithmException ex )
-        {
-            // should not happen - handle anyways
-            throw new IOException( "Failed to open digest input stream", ex );
-        }
     }
+
+
+    private void deleteDirIfEmpty( Path dir ) throws IOException
+    {
+        try ( DirectoryStream ds = Files.newDirectoryStream( dir ) )
+        {
+            if ( ds.iterator().hasNext() )
+            {
+                // this directory is not empty, go back
+                return;
+            }
+        }
+        Files.delete( dir );
+    }
+
 
 }
 

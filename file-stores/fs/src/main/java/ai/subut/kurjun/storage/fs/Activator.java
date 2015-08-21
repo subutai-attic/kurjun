@@ -2,7 +2,7 @@ package ai.subut.kurjun.storage.fs;
 
 
 import java.util.Dictionary;
-import java.util.Hashtable;
+import java.util.Properties;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -30,7 +30,7 @@ public class Activator implements BundleActivator, ManagedService
     {
         this.context = context;
 
-        Dictionary properties = new Hashtable();
+        Dictionary properties = new Properties();
         properties.put( Constants.SERVICE_PID, ServiceConstants.SERVICE_PID );
 
         managedService = context.registerService( ManagedService.class, this, properties );
@@ -63,7 +63,7 @@ public class Activator implements BundleActivator, ManagedService
 
         FileSystemFileStore fs = new FileSystemFileStore( location );
 
-        Dictionary properties = new Hashtable();
+        Dictionary properties = new Properties();
         properties.put( ServiceConstants.LOCATION, location );
         fsService = context.registerService( FileStore.class, fs, properties );
     }
