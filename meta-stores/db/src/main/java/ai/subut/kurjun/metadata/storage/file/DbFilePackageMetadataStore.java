@@ -2,27 +2,19 @@ package ai.subut.kurjun.metadata.storage.file;
 
 
 import java.io.IOException;
-import java.lang.reflect.Type;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Comparator;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.apache.commons.codec.binary.Hex;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.InstanceCreator;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-import ai.subut.kurjun.metadata.common.DependencyImpl;
-import ai.subut.kurjun.metadata.common.PackageMetadataImpl;
+import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.metadata.common.PackageMetadataListingImpl;
-import ai.subut.kurjun.model.metadata.Dependency;
 import ai.subut.kurjun.model.metadata.PackageMetadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
@@ -32,27 +24,11 @@ import static ai.subut.kurjun.metadata.storage.file.DbFilePackageMetadataStoreMo
 
 class DbFilePackageMetadataStore implements PackageMetadataStore
 {
-    private static final Gson GSON;
+    private static final String MAP_NAME = "checksum-to-metadata";
 
-    Path location;
     int batchSize = 1000;
 
-
-    static
-    {
-        GsonBuilder gb = new GsonBuilder().setPrettyPrinting();
-        InstanceCreator<Dependency> depInstanceCreator = new InstanceCreator<Dependency>()
-        {
-            @Override
-            public Dependency createInstance( Type type )
-            {
-                return new DependencyImpl();
-            }
-        };
-        gb.registerTypeAdapter( Dependency.class, depInstanceCreator );
-
-        GSON = gb.create();
-    }
+    private FileDb fileDb;
 
 
     /**
@@ -63,51 +39,42 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
      * @param location parent directory
      */
     @Inject
-    public DbFilePackageMetadataStore( @Named( DB_FILE_LOCATION_NAME ) String location )
+    public DbFilePackageMetadataStore( @Named( DB_FILE_LOCATION_NAME ) String location ) throws IOException
     {
-        this.location = Paths.get( location );
+        this.fileDb = new FileDb( Paths.get( location, "metadata" ).toString() );
     }
 
 
     @Override
     public boolean contains( byte[] md5 ) throws IOException
     {
-        try ( MapDb db = new MapDb( location ) )
-        {
-            return db.getMap().containsKey( Hex.encodeHexString( md5 ) );
-        }
+        return fileDb.contains( MAP_NAME, Hex.encodeHexString( md5 ) );
     }
 
 
     @Override
     public PackageMetadata get( byte[] md5 ) throws IOException
     {
-        try ( MapDb db = new MapDb( location ) )
-        {
-            String metadata = db.getMap().get( Hex.encodeHexString( md5 ) );
-            return GSON.fromJson( metadata, PackageMetadataImpl.class );
-        }
+        return fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), PackageMetadata.class );
     }
 
 
     @Override
     public boolean put( PackageMetadata meta ) throws IOException
     {
-        String hex = Hex.encodeHexString( meta.getMd5Sum() );
-        try ( MapDb db = new MapDb( location ) )
+        if ( !contains( meta.getMd5Sum() ) )
         {
-            return db.getMap().putIfAbsent( hex, GSON.toJson( meta ) ) == null;
+            fileDb.put( MAP_NAME, Hex.encodeHexString( meta.getMd5Sum() ), meta );
+            return true;
         }
+        return false;
     }
 
 
     @Override
     public boolean remove( byte[] md5 ) throws IOException
     {
-        try ( MapDb db = new MapDb( location ) )
-        {
-            return db.getMap().remove( Hex.encodeHexString( md5 ) ) != null;
-        }
+        return fileDb.remove( MAP_NAME, Hex.encodeHexString( md5 ) ) != null;
     }
 
 
@@ -131,45 +98,36 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
     private PackageMetadataListing listPackageMetadata( final String marker ) throws IOException
     {
-        PackageMetadataListingImpl pml = new PackageMetadataListingImpl();
-        try ( MapDb db = new MapDb( location ) )
+        Map<String, PackageMetadata> map = fileDb.get( MAP_NAME );
+        Collection<PackageMetadata> items = map.values();
+
+        // sort items by names
+        Stream<PackageMetadata> stream = items.stream().sorted(
+                (m1, m2) -> m1.getPackage().compareTo( m2.getPackage() ) );
+
+        // filter items if marker is set
+        if ( marker != null )
         {
-            // first sort by keys
-            Comparator<Map.Entry<String, String>> comparator = new Comparator<Map.Entry<String, String>>()
-            {
-                @Override
-                public int compare( Map.Entry<String, String> e1, Map.Entry<String, String> e2 )
-                {
-                    return e1.getKey().compareToIgnoreCase( e2.getKey() );
-                }
-            };
-            Stream<Map.Entry<String, String>> stream = db.getMap().entrySet().stream().sorted( comparator );
+            stream = stream.filter( m -> m.getPackage().compareTo( marker ) > 0 );
+        }
 
-            // if marker is given filter result set
-            if ( marker != null && !marker.isEmpty() )
-            {
-                Predicate<Map.Entry<String, String>> predicate = new Predicate<Map.Entry<String, String>>()
-                {
-                    @Override
-                    public boolean test( Map.Entry<String, String> e )
-                    {
-                        return e.getKey().compareToIgnoreCase( marker ) > 0;
-                    }
-                };
-                stream = stream.filter( predicate );
-            }
+        PackageMetadataListingImpl pml = new PackageMetadataListingImpl();
 
-            // terminate stream limiting result set to (batch size + 1)
-            // one more item is used to determine whether there is more result to fetch
-            Iterator<Map.Entry<String, String>> it = stream.limit( batchSize + 1 ).iterator();
-            while ( it.hasNext() && pml.getPackageMetadata().size() < batchSize )
+        // terminate stream limiting result set to (batch size + 1)
+        // one more item is used to determine whether there is more result to fetch
+        Iterator<PackageMetadata> it = stream.limit( batchSize + 1 ).iterator();
+        while ( it.hasNext() )
+        {
+            PackageMetadata item = it.next();
+            if ( pml.getPackageMetadata().size() < batchSize )
             {
-                Map.Entry<String, String> item = it.next();
-                PackageMetadataImpl meta = GSON.fromJson( item.getValue(), PackageMetadataImpl.class );
-                pml.getPackageMetadata().add( meta );
-                pml.setMarker( item.getKey() );
+                pml.getPackageMetadata().add( item );
+                pml.setMarker( item.getPackage() );
             }
-            pml.setTruncated( it.hasNext() );
+            else
+            {
+                pml.setTruncated( true );
+            }
         }
         return pml;
     }

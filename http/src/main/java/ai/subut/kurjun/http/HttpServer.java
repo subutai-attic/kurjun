@@ -1,9 +1,17 @@
 package ai.subut.kurjun.http;
 
 
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.Properties;
 
 import javax.servlet.DispatcherType;
 
@@ -31,10 +39,15 @@ import ai.subut.kurjun.storage.fs.FileSystemFileStoreModule;
 
 public class HttpServer
 {
+    public static final String SNAPS_ROOT_LOCATION_KEY = "snaps.store.location";
+
+
     public static void main( String[] args ) throws Exception
     {
 
-        Injector injector = bootstrapDI();
+        Properties properties = readProperties();
+
+        Injector injector = bootstrapDI( properties );
 
         FilterHolder f = new FilterHolder( injector.getInstance( GuiceFilter.class ) );
 
@@ -50,23 +63,47 @@ public class HttpServer
     }
 
 
+    private static Properties readProperties() throws IOException
+    {
+        Properties properties = new Properties();
+        Path path = Paths.get( "app.properties" );
+        if ( Files.exists( path ) )
+        {
+            try ( Reader reader = new FileReader( path.toFile() ) )
+            {
+                properties.load( reader );
+            }
+        }
+        else
+        {
+            try ( Reader reader = new InputStreamReader( ClassLoader.getSystemResourceAsStream( path.toString() ) ) )
+            {
+                properties.load( reader );
+            }
+        }
+        return properties;
+    }
+
+
     /**
      * Starts and configures Guice DI.
      */
-    private static Injector bootstrapDI()
+    private static Injector bootstrapDI( Properties properties )
     {
 
         Collection<Module> modules = new ArrayList<>();
         modules.add( new ReleaseIndexParserModule() );
         modules.add( new PackagesIndexParserModule() );
 
+        String snapsDir = properties.getProperty( SNAPS_ROOT_LOCATION_KEY );
         modules.add( new SnapMetadataParserModule() );
-        modules.add( new SnapMetadataStoreModule( "/tmp/kurjun/snaps/metadata" ) );
+        modules.add( new SnapMetadataStoreModule( Paths.get( snapsDir, "metadata" ).toString() ) );
         modules.add( new SnapServletModule().setServletPath( "/snap" ) );
 
-        modules.add( new RepositoryModule() );
-        modules.add( new FileSystemFileStoreModule().setRootLocation( "/tmp/kurjun/snaps/files" ) );
+        modules.add( new FileSystemFileStoreModule().setRootLocation( Paths.get( snapsDir, "files" ).toString() ) );
         modules.add( new DbFilePackageMetadataStoreModule() );
+
+        modules.add( new RepositoryModule() );
 
         LocalAptRepoServletModule servletModule = new LocalAptRepoServletModule();
         servletModule.setServletPath( "/apt" );
