@@ -146,7 +146,7 @@ public class PackagesIndexBuilderTest
     public void testBuildIndex() throws Exception
     {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        indexBuilder.buildIndex( os );
+        indexBuilder.buildIndex( "main", os );
 
         String s = new String( os.toByteArray() );
         LOGGER.info( "Packages index:\n{}", s );

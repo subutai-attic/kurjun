@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,9 +16,13 @@ import org.vafer.jdeb.debian.ControlFile;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
+import org.apache.commons.compress.compressors.xz.XZCompressorOutputStream;
 
 import com.google.inject.Inject;
 
+import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.index.service.PackagesIndexBuilder;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
 import ai.subut.kurjun.model.metadata.Dependency;
@@ -43,31 +48,86 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
 
 
     @Override
-    public void buildIndex( OutputStream os ) throws IOException
+    public void buildIndex( String component, OutputStream os ) throws IOException
+    {
+        buildIndex( component, os, CompressionType.NONE );
+    }
+
+
+    @Override
+    public void buildIndex( String component, OutputStream out, CompressionType compressionType ) throws IOException
     {
         Objects.requireNonNull( fileStore, "File store" );
         Objects.requireNonNull( metadataStore, "Package metadata store" );
+        Objects.requireNonNull( component, "component to build packages index for" );
 
         Charset utf8 = StandardCharsets.UTF_8;
         byte[] newLineBytes = System.lineSeparator().getBytes( utf8 );
 
-        PackageMetadataListing list = metadataStore.list();
-        for ( PackageMetadata pm : list.getPackageMetadata() )
+        try ( OutputStream os = wrapStream( out, compressionType ) )
         {
-            String s = formatPackageMetadata( pm );
-            os.write( s.getBytes( utf8 ) );
-            os.write( newLineBytes );
-        }
-        while ( list.isTruncated() )
-        {
-            list = metadataStore.listNextBatch( list );
-            for ( PackageMetadata pm : list.getPackageMetadata() )
+            PackageMetadataListing list = metadataStore.list();
+            List<PackageMetadata> filtered = filterByComponent( component, list );
+            for ( PackageMetadata pm : filtered )
             {
                 String s = formatPackageMetadata( pm );
                 os.write( s.getBytes( utf8 ) );
                 os.write( newLineBytes );
             }
+            while ( list.isTruncated() )
+            {
+                list = metadataStore.listNextBatch( list );
+                filtered = filterByComponent( component, list );
+                for ( PackageMetadata pm : filtered )
+                {
+                    String s = formatPackageMetadata( pm );
+                    os.write( s.getBytes( utf8 ) );
+                    os.write( newLineBytes );
+                }
+            }
         }
+    }
+
+
+    private OutputStream wrapStream( OutputStream os, CompressionType compressionType ) throws IOException
+    {
+        OutputStream wrapped = null;
+        switch ( compressionType )
+        {
+            case NONE:
+                wrapped = os;
+                break;
+            case GZIP:
+                wrapped = new GzipCompressorOutputStream( os );
+                break;
+            case BZIP2:
+                wrapped = new BZip2CompressorOutputStream( os );
+                break;
+            case XZ:
+                wrapped = new XZCompressorOutputStream( os );
+                break;
+            case LZMA:
+                // TODO: no lzma output stream impl in common-compress
+                wrapped = os;
+                break;
+            default:
+                throw new AssertionError( compressionType.name() );
+        }
+        return wrapped;
+    }
+
+
+    private List<PackageMetadata> filterByComponent( String component, PackageMetadataListing ls )
+    {
+        List<PackageMetadata> res = new LinkedList<>();
+        for ( PackageMetadata m : ls.getPackageMetadata() )
+        {
+            if ( component.equals( m.getComponent() ) )
+            {
+                res.add( m );
+            }
+        }
+        return res;
     }
 
 
@@ -220,6 +280,7 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
         }
         return sb.toString();
     }
+
 
 }
 

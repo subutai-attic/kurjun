@@ -42,6 +42,18 @@ public interface PackageMetadata extends Serializable
 
 
     /**
+     * Gets component or area of the repository this package metadata comes from. For example, main, contrib, non-free
+     * are common components in Debian ecosystem.
+     * <p>
+     * Binary package indices of component $COMP are located under dists/$DIST/$COMP/binary-$arch subdirectory.
+     * <p>
+     * Refer to https://www.debian.org/doc/debian-policy/ch-archive.html#s-subsections for more info.
+     *
+     * @return component name this package belongs to
+     */
+    String getComponent();
+
+    /**
      * Gets the file name of the Debian package file.
      *
      * @return the file name of the Debian package file

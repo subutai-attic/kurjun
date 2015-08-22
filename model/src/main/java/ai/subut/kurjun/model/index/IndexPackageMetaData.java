@@ -99,15 +99,4 @@ public interface IndexPackageMetaData extends PackageMetadata
      */
     List<TagItem> getTag();
 
-
-    /**
-     * Gets component or area of the repository this package metadata comes from. For example, main, contrib, non-free
-     * are common components in Debian ecosystem.
-     * <p>
-     * Binary package indices of component $COMP are located under dists/$DIST/$COMP/binary-$arch subdirectory.
-     *
-     * @return component name this package belongs to
-     */
-    String getComponent();
-
 }
