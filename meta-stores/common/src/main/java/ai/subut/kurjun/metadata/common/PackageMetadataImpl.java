@@ -19,6 +19,7 @@ public class PackageMetadataImpl implements PackageMetadata
 {
 
     private byte[] md5;
+    private String component;
     private String filename;
     private String packageName;
     private String version;
@@ -51,6 +52,19 @@ public class PackageMetadataImpl implements PackageMetadata
     {
 
         this.md5 = Arrays.copyOf( md5, md5.length );
+    }
+
+
+    @Override
+    public String getComponent()
+    {
+        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+    }
+
+
+    public void setComponent( String component )
+    {
+        this.component = component;
     }
 
 

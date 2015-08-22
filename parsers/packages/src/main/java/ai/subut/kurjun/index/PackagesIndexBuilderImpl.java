@@ -25,6 +25,7 @@ import com.google.inject.Inject;
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.index.service.PackagesIndexBuilder;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
+import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.Dependency;
 import ai.subut.kurjun.model.metadata.PackageMetadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataListing;
@@ -48,14 +49,15 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
 
 
     @Override
-    public void buildIndex( String component, OutputStream os ) throws IOException
+    public void buildIndex( String component, Architecture arch, OutputStream os ) throws IOException
     {
-        buildIndex( component, os, CompressionType.NONE );
+        buildIndex( component, arch, os, CompressionType.NONE );
     }
 
 
     @Override
-    public void buildIndex( String component, OutputStream out, CompressionType compressionType ) throws IOException
+    public void buildIndex( String component, Architecture arch, OutputStream out, CompressionType compressionType )
+            throws IOException
     {
         Objects.requireNonNull( fileStore, "File store" );
         Objects.requireNonNull( metadataStore, "Package metadata store" );
@@ -67,7 +69,7 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
         try ( OutputStream os = wrapStream( out, compressionType ) )
         {
             PackageMetadataListing list = metadataStore.list();
-            List<PackageMetadata> filtered = filterByComponent( component, list );
+            List<PackageMetadata> filtered = filterMetadata( component, arch, list );
             for ( PackageMetadata pm : filtered )
             {
                 String s = formatPackageMetadata( pm );
@@ -77,7 +79,7 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
             while ( list.isTruncated() )
             {
                 list = metadataStore.listNextBatch( list );
-                filtered = filterByComponent( component, list );
+                filtered = filterMetadata( component, arch, list );
                 for ( PackageMetadata pm : filtered )
                 {
                     String s = formatPackageMetadata( pm );
@@ -117,12 +119,12 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
     }
 
 
-    private List<PackageMetadata> filterByComponent( String component, PackageMetadataListing ls )
+    private List<PackageMetadata> filterMetadata( String component, Architecture arch, PackageMetadataListing ls )
     {
         List<PackageMetadata> res = new LinkedList<>();
         for ( PackageMetadata m : ls.getPackageMetadata() )
         {
-            if ( component.equals( m.getComponent() ) )
+            if ( component.equals( m.getComponent() ) && arch == m.getArchitecture() )
             {
                 res.add( m );
             }

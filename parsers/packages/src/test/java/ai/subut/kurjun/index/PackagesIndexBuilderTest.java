@@ -35,6 +35,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import ai.subut.kurjun.ar.DebAr;
 import ai.subut.kurjun.ar.DefaultDebAr;
 import ai.subut.kurjun.cfparser.DefaultControlFileParser;
+import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.PackageMetadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
@@ -146,7 +147,7 @@ public class PackagesIndexBuilderTest
     public void testBuildIndex() throws Exception
     {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        indexBuilder.buildIndex( "main", os );
+        indexBuilder.buildIndex( "main", Architecture.amd64, os );
 
         String s = new String( os.toByteArray() );
         LOGGER.info( "Packages index:\n{}", s );

@@ -71,4 +71,20 @@ public enum  CompressionType
     {
         return getCompressionType( file.getName() );
     }
+
+
+    public static CompressionType getByExtension( String ext )
+    {
+        if ( ext != null )
+        {
+            for ( CompressionType c : values() )
+            {
+                if ( ext.equalsIgnoreCase( c.getExtension() ) )
+                {
+                    return c;
+                }
+            }
+        }
+        return NONE;
+    }
 }
