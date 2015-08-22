@@ -29,18 +29,18 @@ class PackagesIndexParserImpl implements PackagesIndexParser
 {
 
     @Override
-    public List<IndexPackageMetaData> parse( File indexFile ) throws IOException
+    public List<IndexPackageMetaData> parse( File indexFile, String component ) throws IOException
     {
         CompressionType compressionType = CompressionType.getCompressionType( indexFile );
         try ( InputStream is = new FileInputStream( indexFile ) )
         {
-            return parse( is, compressionType );
+            return parse( is, compressionType, component );
         }
     }
 
 
     @Override
-    public List<IndexPackageMetaData> parse( InputStream is, CompressionType compressionType ) throws IOException
+    public List<IndexPackageMetaData> parse( InputStream is, CompressionType compressionType, String component ) throws IOException
     {
         List<IndexPackageMetaData> res = new LinkedList<>();
         try ( BufferedReader br = new BufferedReader( wrapStream( is, compressionType ) ) )
@@ -57,7 +57,8 @@ class PackagesIndexParserImpl implements PackagesIndexParser
                 {
                     throw new IOException( ex );
                 }
-                IndexPackageMetaData item = new IndexPackageMetadataImpl( cfp );
+                IndexPackageMetadataImpl item = new IndexPackageMetadataImpl( cfp );
+                item.setComponent( component );
                 res.add( item );
             }
         }

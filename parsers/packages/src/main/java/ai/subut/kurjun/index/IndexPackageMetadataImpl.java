@@ -29,6 +29,8 @@ public class IndexPackageMetadataImpl implements IndexPackageMetaData
     private ControlFile controlFile;
     private DependencyParser depParser = new DependencyParser();
 
+    private String component;
+
 
     public IndexPackageMetadataImpl( ControlFile controlFile )
     {
@@ -286,9 +288,23 @@ public class IndexPackageMetadataImpl implements IndexPackageMetaData
 
 
     @Override
+    public String getComponent()
+    {
+        return component;
+    }
+
+
+    public void setComponent( String component )
+    {
+        this.component = component;
+    }
+
+
+    @Override
     public String toString()
     {
         return controlFile.toString( PackageIndexFieldsParser.FIELDS );
     }
+
 }
 

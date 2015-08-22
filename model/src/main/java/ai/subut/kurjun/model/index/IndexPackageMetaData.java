@@ -70,6 +70,7 @@ public interface IndexPackageMetaData extends PackageMetadata
      * Gets the MD5 checksum for the Debian Package file in the repository.
      * @return the MD5 checksum for the package file
      */
+    @Override
     byte[] getMd5Sum();
 
 
@@ -83,6 +84,7 @@ public interface IndexPackageMetaData extends PackageMetadata
     /**
      * Gets the repository URL relative path of the Debian Package file in the repository.
      */
+    @Override
     String getFilename();
 
 
@@ -96,4 +98,16 @@ public interface IndexPackageMetaData extends PackageMetadata
      * Gets the Tags for the package.
      */
     List<TagItem> getTag();
+
+
+    /**
+     * Gets component or area of the repository this package metadata comes from. For example, main, contrib, non-free
+     * are common components in Debian ecosystem.
+     * <p>
+     * Binary package indices of component $COMP are located under dists/$DIST/$COMP/binary-$arch subdirectory.
+     *
+     * @return component name this package belongs to
+     */
+    String getComponent();
+
 }
