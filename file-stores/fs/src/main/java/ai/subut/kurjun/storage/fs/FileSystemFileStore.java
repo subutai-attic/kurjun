@@ -129,7 +129,7 @@ class FileSystemFileStore implements FileStore
         Path subDir = rootLocation.resolve( filename.substring( 0, 2 ) );
         Files.createDirectory( subDir );
 
-        Path target = Files.createTempFile( subDir, filename, null );
+        Path target = Files.createTempFile( subDir, filename, "" );
         byte[] md5 = copyStream( source, target );
 
         // check if we already have a file with the calculated md5 checksum, if so just replace the old file

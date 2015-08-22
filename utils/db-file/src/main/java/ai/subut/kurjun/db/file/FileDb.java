@@ -146,6 +146,10 @@ public class FileDb implements Closeable
      */
     public <K, V> Map<K, V> get( String mapName )
     {
+        // this call is to avoid "IllegalAccessError: Can not create snapshot with uncommited data"
+        // it occurs when there was no map with given name and tried to get a snapshot
+        contains( mapName, "dummy-key" );
+
         Map<K, V> result = new HashMap<>();
         DB db = txMaker.makeTx();
         try
