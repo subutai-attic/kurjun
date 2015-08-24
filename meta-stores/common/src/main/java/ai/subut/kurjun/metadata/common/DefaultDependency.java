@@ -7,7 +7,11 @@ import ai.subut.kurjun.model.metadata.Dependency;
 import ai.subut.kurjun.model.metadata.RelationOperator;
 
 
-public class DependencyImpl implements Dependency
+/**
+ * Simple serializable POJO implementation of {@link Dependency}.
+ *
+ */
+public class DefaultDependency implements Dependency
 {
     private String packageName;
     private List<Dependency> alternatives;

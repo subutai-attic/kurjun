@@ -22,6 +22,7 @@ import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.index.service.PackagesIndexParser;
+import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
 
 
@@ -59,7 +60,9 @@ class PackagesIndexParserImpl implements PackagesIndexParser
                 }
                 IndexPackageMetadataImpl item = new IndexPackageMetadataImpl( cfp );
                 item.setComponent( component );
-                res.add( item );
+
+                IndexPackageMetaData serializable = MetadataUtils.serializableIndexPackageMetadata( item );
+                res.add( serializable );
             }
         }
         return res;

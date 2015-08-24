@@ -6,7 +6,7 @@ package ai.subut.kurjun.model.metadata;
  */
 public enum Architecture
 {
-    amd64, i386;
+    all, amd64, i386;
 
 
     /**

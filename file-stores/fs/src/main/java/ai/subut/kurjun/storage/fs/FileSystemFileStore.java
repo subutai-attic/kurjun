@@ -17,9 +17,6 @@ import java.security.DigestInputStream;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -40,12 +37,10 @@ import static ai.subut.kurjun.storage.fs.FileSystemFileStoreModule.ROOT_DIRECTOR
 class FileSystemFileStore implements FileStore
 {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( FileSystemFileStore.class );
     private static final int BUFFER_SIZE = 1024 * 8;
     private static final String MAP_NAME = "checksum-to-filepath";
 
     private Path rootLocation;
-    private FileDb fileDb;
 
 
     /**
@@ -56,30 +51,27 @@ class FileSystemFileStore implements FileStore
     public FileSystemFileStore( @Named( ROOT_DIRECTORY ) String rootLocation )
     {
         this.rootLocation = Paths.get( rootLocation );
-        try
-        {
-            this.fileDb = new FileDb( this.rootLocation.resolve( "checksum.db" ).toString() );
-        }
-        catch ( IOException ex )
-        {
-            LOGGER.error( "Failed to initialize db file", ex );
-            throw new IllegalArgumentException( "Failed to initialize db file" );
-        }
     }
 
 
     @Override
     public boolean contains( byte[] md5 ) throws IOException
     {
-        return fileDb.contains( MAP_NAME, Hex.encodeHexString( md5 ) );
+        try ( FileDb fileDb = new FileDb( makeDbFilePath() ) )
+        {
+            return fileDb.contains( MAP_NAME, Hex.encodeHexString( md5 ) );
+        }
     }
 
 
     @Override
     public InputStream get( byte[] md5 ) throws IOException
     {
-        String path = fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), String.class );
-        return path != null ? new FileInputStream( path ) : null;
+        try ( FileDb fileDb = new FileDb( makeDbFilePath() ) )
+        {
+            String path = fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), String.class );
+            return path != null ? new FileInputStream( path ) : null;
+        }
     }
 
 
@@ -127,22 +119,25 @@ class FileSystemFileStore implements FileStore
 
         // distribute files into subdirectories by their first letter(s)
         Path subDir = rootLocation.resolve( filename.substring( 0, 2 ) );
-        Files.createDirectory( subDir );
+        Files.createDirectories( subDir );
 
         Path target = Files.createTempFile( subDir, filename, "" );
         byte[] md5 = copyStream( source, target );
 
-        // check if we already have a file with the calculated md5 checksum, if so just replace the old file
-        String existingPath = fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), String.class );
-        if ( existingPath != null )
+        try ( FileDb fileDb = new FileDb( makeDbFilePath() ) )
         {
-            Files.move( target, Paths.get( existingPath ), StandardCopyOption.REPLACE_EXISTING );
-            // clean up
-            deleteDirIfEmpty( subDir );
-        }
-        else
-        {
-            fileDb.put( MAP_NAME, Hex.encodeHexString( md5 ), target.toAbsolutePath().toString() );
+            // check if we already have a file with the calculated md5 checksum, if so just replace the old file
+            String existingPath = fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), String.class );
+            if ( existingPath != null )
+            {
+                Files.move( target, Paths.get( existingPath ), StandardCopyOption.REPLACE_EXISTING );
+                // clean up
+                deleteDirIfEmpty( subDir );
+            }
+            else
+            {
+                fileDb.put( MAP_NAME, Hex.encodeHexString( md5 ), target.toAbsolutePath().toString() );
+            }
         }
         return md5;
     }
@@ -152,12 +147,15 @@ class FileSystemFileStore implements FileStore
     public boolean remove( byte[] md5 ) throws IOException
     {
         String hexMd5 = Hex.encodeHexString( md5 );
-        String path = fileDb.get( MAP_NAME, hexMd5, String.class );
-        if ( path != null )
+        try ( FileDb fileDb = new FileDb( makeDbFilePath() ) )
         {
-            Files.deleteIfExists( Paths.get( path ) );
-            fileDb.remove( MAP_NAME, hexMd5 );
-            return true;
+            String path = fileDb.get( MAP_NAME, hexMd5, String.class );
+            if ( path != null )
+            {
+                Files.deleteIfExists( Paths.get( path ) );
+                fileDb.remove( MAP_NAME, hexMd5 );
+                return true;
+            }
         }
         return false;
     }
@@ -200,6 +198,11 @@ class FileSystemFileStore implements FileStore
         Files.delete( dir );
     }
 
+
+    private String makeDbFilePath()
+    {
+        return rootLocation.resolve( "checksum.db" ).toString();
+    }
 
 }
 

@@ -23,7 +23,7 @@ class AptUrlPathParser
         // (2) component name like "main"
         // (3) architecture like "amd64"
         // (4) packages index extension, usually correspond to compression type like "gz", "bz2"
-        packageIndexFilePattern = Pattern.compile( "/dists/(\\w+)/(\\w+)/binary-(\\w+)/Packages(?:\\.\\w+)?" );
+        packageIndexFilePattern = Pattern.compile( "/dists/(\\w+)/(\\w+)/binary-(\\w+)/Packages(\\.\\w+)?" );
 
         // this pattern is similar to the above one except it refers to Release file instead of Packages file
         componentReleaseFilePattern = Pattern.compile( "/dists/(\\w+)/(\\w+)/binary-(\\w+)/Release" );
@@ -117,7 +117,8 @@ class AptUrlPathParser
             String ext = matcher.group( 4 );
             if ( ext != null )
             {
-                compressionType = CompressionType.getByExtension( ext );
+                // beware that extension comes with dot in the beginning
+                compressionType = CompressionType.getByExtension( ext.substring( 1 ) );
             }
         }
         else

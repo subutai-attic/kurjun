@@ -15,7 +15,7 @@ import ai.subut.kurjun.model.metadata.Priority;
  * Simple POJO implementing PackageMetadata.
  *
  */
-public class PackageMetadataImpl implements PackageMetadata
+public class DefaultPackageMetadata implements PackageMetadata
 {
 
     private byte[] md5;
@@ -37,7 +37,7 @@ public class PackageMetadataImpl implements PackageMetadata
     private List<String> provides;
     private String section;
     private Priority priority;
-    private URL url;
+    private URL homepage;
     private String description;
 
 
@@ -58,7 +58,7 @@ public class PackageMetadataImpl implements PackageMetadata
     @Override
     public String getComponent()
     {
-        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+        return component;
     }
 
 
@@ -292,13 +292,13 @@ public class PackageMetadataImpl implements PackageMetadata
     @Override
     public URL getHomepage()
     {
-        return url;
+        return homepage;
     }
 
 
-    public void setUrl( URL url )
+    public void setHomepage( URL homepage )
     {
-        this.url = url;
+        this.homepage = homepage;
     }
 
 

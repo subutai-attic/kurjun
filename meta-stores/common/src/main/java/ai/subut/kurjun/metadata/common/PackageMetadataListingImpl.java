@@ -9,6 +9,10 @@ import ai.subut.kurjun.model.metadata.PackageMetadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataListing;
 
 
+/**
+ * POJO implementation of {@link PackageMetadataListing}.
+ *
+ */
 public class PackageMetadataListingImpl implements PackageMetadataListing
 {
     private List<PackageMetadata> metadata = new LinkedList<>();

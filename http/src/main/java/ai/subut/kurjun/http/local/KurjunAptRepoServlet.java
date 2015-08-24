@@ -90,6 +90,12 @@ class KurjunAptRepoServlet extends HttpServlet
             return;
         }
 
+        if ( compressionType != CompressionType.NONE )
+        {
+            // make archived package indices downloadable
+            String filename = "Packages." + compressionType.getExtension();
+            resp.setHeader( "Content-Disposition", " attachment; filename=" + filename );
+        }
         try ( OutputStream os = resp.getOutputStream() )
         {
             packagesIndexBuilder.buildIndex( component, arch, os, compressionType );

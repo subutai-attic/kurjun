@@ -9,10 +9,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import ai.subut.kurjun.model.repository.LocalRepository;
 
 
+@Singleton
 class KurjunAptPoolServlet extends HttpServlet
 {
     private LocalRepository repository;

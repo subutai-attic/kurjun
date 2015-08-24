@@ -1,9 +1,6 @@
 package ai.subut.kurjun.metadata.storage.nosql;
 
 
-import ai.subut.kurjun.metadata.storage.nosql.CassandraConnector;
-import ai.subut.kurjun.metadata.storage.nosql.NoSqlPackageMetadataStore;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -23,8 +20,8 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
-import ai.subut.kurjun.metadata.common.DependencyImpl;
-import ai.subut.kurjun.metadata.common.PackageMetadataImpl;
+import ai.subut.kurjun.metadata.common.DefaultDependency;
+import ai.subut.kurjun.metadata.common.DefaultPackageMetadata;
 import ai.subut.kurjun.metadata.common.PackageMetadataListingImpl;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.Dependency;
@@ -176,7 +173,7 @@ public class NoSqlPackageMetadataStoreTest
 
     private PackageMetadata createPackageMetadata()
     {
-        PackageMetadataImpl pm = new PackageMetadataImpl();
+        DefaultPackageMetadata pm = new DefaultPackageMetadata();
         pm.setArchitecture( Architecture.amd64 );
         pm.setDescription( "Description here" );
         pm.setFilename( UUID.randomUUID().toString() + "-ver-arch.deb" );
@@ -185,7 +182,7 @@ public class NoSqlPackageMetadataStoreTest
         pm.setMd5( DigestUtils.md5( pm.getFilename() ) );
         pm.setPriority( Priority.important );
 
-        DependencyImpl dep = new DependencyImpl();
+        DefaultDependency dep = new DefaultDependency();
         dep.setPackage( "Package" );
         dep.setVersion( "1.0.0" );
         dep.setRelationOperator( RelationOperator.StrictlyLater );
