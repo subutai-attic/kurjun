@@ -79,6 +79,36 @@ class SnapServlet extends HttpServletBase
     }
 
 
+    @Override
+    protected void doDelete( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException
+    {
+        String md5 = req.getParameter( SNAPS_MD5_PARAM );
+        if ( md5 == null )
+        {
+            badRequest( resp, "Provide md5 checksum of the package to remove" );
+            return;
+        }
+        try
+        {
+            byte[] md5bytes = Hex.decodeHex( md5.toCharArray() );
+            if ( metadataStore.contains( md5bytes ) )
+            {
+                fileStore.remove( md5bytes );
+                metadataStore.remove( md5bytes );
+                ok( resp, "Package successfully removed" );
+            }
+            else
+            {
+                notFound( resp, "Package with supplied checksum not found" );
+            }
+        }
+        catch ( DecoderException ex )
+        {
+            badRequest( resp, "Invalid md5 checksum provided" );
+        }
+    }
+
+
     private void getByMd5( String md5, HttpServletResponse resp ) throws IOException
     {
         try
