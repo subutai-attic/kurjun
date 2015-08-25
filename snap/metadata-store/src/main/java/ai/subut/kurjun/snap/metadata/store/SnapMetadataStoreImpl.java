@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.commons.codec.binary.Hex;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
@@ -25,13 +26,13 @@ class SnapMetadataStoreImpl implements SnapMetadataStore
 {
 
     private static final String MAP_NAME = "snap-metadata";
-    private FileDb fileDb;
+    private String fileDbPath;
 
 
     @Inject
-    public SnapMetadataStoreImpl( FileDb fileDb )
+    public SnapMetadataStoreImpl( @Named( SnapMetadataStoreModule.DB_FILE_PATH ) String fileDbPath )
     {
-        this.fileDb = fileDb;
+        this.fileDbPath = fileDbPath;
     }
 
 
@@ -39,7 +40,10 @@ class SnapMetadataStoreImpl implements SnapMetadataStore
     public boolean contains( byte[] md5 ) throws IOException
     {
         String md5hex = Hex.encodeHexString( md5 );
-        return fileDb.contains( MAP_NAME, md5hex );
+        try ( FileDb fileDb = new FileDb( fileDbPath ) )
+        {
+            return fileDb.contains( MAP_NAME, md5hex );
+        }
     }
 
 
@@ -47,14 +51,21 @@ class SnapMetadataStoreImpl implements SnapMetadataStore
     public SnapMetadata get( byte[] md5 ) throws IOException
     {
         String md5hex = Hex.encodeHexString( md5 );
-        return fileDb.get( MAP_NAME, md5hex, SnapMetadata.class );
+        try ( FileDb fileDb = new FileDb( fileDbPath ) )
+        {
+            return fileDb.get( MAP_NAME, md5hex, SnapMetadata.class );
+        }
     }
 
 
     @Override
     public List<SnapMetadata> list( SnapMetadataFilter filter ) throws IOException
     {
-        Map<String, SnapMetadata> map = fileDb.get( MAP_NAME );
+        Map<String, SnapMetadata> map;
+        try ( FileDb fileDb = new FileDb( fileDbPath ) )
+        {
+            map = fileDb.get( MAP_NAME );
+        }
         SnapMetadata[] items = map.values().stream().filter( filter ).toArray( SnapMetadata[]::new );
 
         List<SnapMetadata> ls = new ArrayList<>( items.length );
@@ -70,15 +81,21 @@ class SnapMetadataStoreImpl implements SnapMetadataStore
         {
             return false;
         }
-        fileDb.put( MAP_NAME, Hex.encodeHexString( metadata.getMd5() ), metadata );
-        return true;
+        try ( FileDb fileDb = new FileDb( fileDbPath ) )
+        {
+            fileDb.put( MAP_NAME, Hex.encodeHexString( metadata.getMd5() ), metadata );
+            return true;
+        }
     }
 
 
     @Override
     public boolean remove( byte[] md5 ) throws IOException
     {
-        return fileDb.remove( MAP_NAME, Hex.encodeHexString( md5 ) ) != null;
+        try ( FileDb fileDb = new FileDb( fileDbPath ) )
+        {
+            return fileDb.remove( MAP_NAME, Hex.encodeHexString( md5 ) ) != null;
+        }
     }
 
 }

@@ -18,7 +18,6 @@ public class FileDbModule extends AbstractModule
     protected void configure()
     {
         bind( FileDb.class );
-        bind( FileDbReadOnly.class );
     }
 
 }
