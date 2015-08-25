@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.MultipartConfig;
@@ -19,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
-import org.eclipse.jetty.server.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,12 +96,10 @@ class SnapServlet extends HttpServlet
     @Override
     protected void doPost( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException
     {
-
-        ServletUtils.setMultipartConfig( req, this.getClass() );
-
-        req.setAttribute( Request.__MULTIPART_CONFIG_ELEMENT, new MultipartConfigElement( "" ) );
         if ( ServletUtils.isMultipart( req ) )
         {
+            ServletUtils.setMultipartConfig( req, this.getClass() );
+
             List<String> paths = ServletUtils.splitPath( req.getPathInfo() );
 
             if ( paths.size() == 1 && paths.get( 0 ).equals( SNAPS_PATH ) )

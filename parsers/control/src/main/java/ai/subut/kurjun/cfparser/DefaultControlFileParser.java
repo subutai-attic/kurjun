@@ -12,12 +12,12 @@ import org.slf4j.LoggerFactory;
 import org.vafer.jdeb.debian.BinaryPackageControlFile;
 
 import ai.subut.kurjun.cfparser.service.ControlFileParser;
+import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.metadata.PackageMetadata;
 
 
 /**
- * The default CfParser implementation which wraps Torsten Curdt's jdeb
- * files.
+ * The default CfParser implementation which wraps Torsten Curdt's jdeb files.
  */
 public class DefaultControlFileParser implements ControlFileParser
 {
@@ -32,10 +32,8 @@ public class DefaultControlFileParser implements ControlFileParser
 //    private boolean isChangesFile( File controlFile ) {
 //        return false;
 //    }
-
-
     @Override
-    public PackageMetadata parse( Map<String,Object> params, File controlFile )
+    public PackageMetadata parse( Map<String, Object> params, File controlFile )
     {
 //        if ( isBinaryPackage( controlFile ) )
 //        {
@@ -52,7 +50,7 @@ public class DefaultControlFileParser implements ControlFileParser
     }
 
 
-    public PackageMetadata parseBinary( Map<String,Object> params, File controlFile )
+    public PackageMetadata parseBinary( Map<String, Object> params, File controlFile )
     {
         BinaryPackageControlFile control = null;
 
@@ -65,8 +63,10 @@ public class DefaultControlFileParser implements ControlFileParser
             LOG.error( "Failed to parse control file: {}", controlFile.getAbsolutePath(), e );
         }
 
-        return new BinaryPackageMetadata( ( byte[] ) params.get( "md5sum" ),
-                ( String ) params.get( "filename" ), control );
+        BinaryPackageMetadata metadata = new BinaryPackageMetadata( ( byte[] ) params.get( "md5sum" ),
+                                                                    ( String ) params.get( "filename" ), control );
+
+        return MetadataUtils.serializablePackageMetadata( metadata );
     }
 //
 //

@@ -1,10 +1,12 @@
 package ai.subut.kurjun.riparser;
 
 
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 
 import ai.subut.kurjun.model.index.Checksum;
 import ai.subut.kurjun.model.index.ChecksummedResource;
@@ -38,18 +40,34 @@ public class ReleaseChecksummedResource implements ChecksummedResource
     }
 
 
+    public void setSize( long size )
+    {
+        this.size = size;
+    }
+
+
+    public Map<Checksum, String> getChecksums()
+    {
+        return checksums;
+    }
+
+
     @Override
     public byte[] getChecksum( Checksum type )
     {
         String checksum = checksums.get( type );
         if ( checksum != null )
         {
-            return checksum.getBytes( StandardCharsets.UTF_8 );
+            try
+            {
+                return Hex.decodeHex( checksum.toCharArray() );
+            }
+            catch ( DecoderException ex )
+            {
+                throw new IllegalStateException( "Invalid checksum", ex );
+            }
         }
-        else
-        {
-            return null;
-        }
+        return null;
     }
 
 

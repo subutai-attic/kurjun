@@ -26,6 +26,8 @@ import com.google.inject.Module;
 import com.google.inject.name.Names;
 import com.google.inject.servlet.GuiceFilter;
 
+import ai.subut.kurjun.cfparser.ControlFileParserModule;
+import ai.subut.kurjun.http.local.KurjunAptRepoServletModule;
 import ai.subut.kurjun.http.local.LocalAptRepoServletModule;
 import ai.subut.kurjun.http.snap.SnapServletModule;
 import ai.subut.kurjun.index.PackagesIndexParserModule;
@@ -39,7 +41,7 @@ import ai.subut.kurjun.storage.fs.FileSystemFileStoreModule;
 
 public class HttpServer
 {
-    public static final String SNAPS_ROOT_LOCATION_KEY = "snaps.store.location";
+    public static final String ROOT_LOCATION_KEY = "snaps.store.location";
 
 
     public static void main( String[] args ) throws Exception
@@ -92,22 +94,23 @@ public class HttpServer
     {
 
         Collection<Module> modules = new ArrayList<>();
+        modules.add( new ControlFileParserModule() );
         modules.add( new ReleaseIndexParserModule() );
         modules.add( new PackagesIndexParserModule() );
 
-        String snapsDir = properties.getProperty( SNAPS_ROOT_LOCATION_KEY );
+        String rootDir = properties.getProperty( ROOT_LOCATION_KEY );
+
         modules.add( new SnapMetadataParserModule() );
-        modules.add( new SnapMetadataStoreModule( Paths.get( snapsDir, "metadata" ).toString() ) );
+        modules.add( new SnapMetadataStoreModule( Paths.get( rootDir, "metadata" ).toString() ) );
         modules.add( new SnapServletModule().setServletPath( "/snap" ) );
 
-        modules.add( new FileSystemFileStoreModule().setRootLocation( Paths.get( snapsDir, "files" ).toString() ) );
+        modules.add( new FileSystemFileStoreModule().setRootLocation( Paths.get( rootDir, "files" ).toString() ) );
         modules.add( new DbFilePackageMetadataStoreModule() );
 
         modules.add( new RepositoryModule() );
 
-        LocalAptRepoServletModule servletModule = new LocalAptRepoServletModule();
-        servletModule.setServletPath( "/apt" );
-        modules.add( servletModule );
+        modules.add( new LocalAptRepoServletModule().setServletPath( "/apt" ) );
+        modules.add( new KurjunAptRepoServletModule().setServletPath( "/vapt" ) );
 
         // setup necessary instance bindings here
         modules.add( new AbstractModule()
@@ -117,7 +120,7 @@ public class HttpServer
             {
                 bind( String.class )
                         .annotatedWith( Names.named( DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME ) )
-                        .toInstance( "/home/azilet/tmp/kurjun/metadata" );
+                        .toInstance( rootDir );
             }
         } );
 

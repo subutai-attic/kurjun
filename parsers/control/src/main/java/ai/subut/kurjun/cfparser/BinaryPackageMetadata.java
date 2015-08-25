@@ -30,6 +30,18 @@ class BinaryPackageMetadata extends AbstractPackageMetadata
 
 
     @Override
+    public String getComponent()
+    {
+        String section = getSection();
+        if ( section != null && section.contains( "/" ) )
+        {
+            return section.substring( 0, section.indexOf( "/" ) );
+        }
+        return "main";
+    }
+
+
+    @Override
     public String getPackage()
     {
         return controlFile.get( PACKAGE_FIELD );

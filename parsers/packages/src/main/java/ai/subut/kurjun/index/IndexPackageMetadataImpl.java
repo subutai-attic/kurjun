@@ -29,6 +29,8 @@ public class IndexPackageMetadataImpl implements IndexPackageMetaData
     private ControlFile controlFile;
     private DependencyParser depParser = new DependencyParser();
 
+    private String component;
+
 
     public IndexPackageMetadataImpl( ControlFile controlFile )
     {
@@ -131,7 +133,7 @@ public class IndexPackageMetadataImpl implements IndexPackageMetaData
     public List<TagItem> getTag()
     {
         // TODO:
-        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+        return null;
     }
 
 
@@ -176,7 +178,7 @@ public class IndexPackageMetadataImpl implements IndexPackageMetaData
     public List<Dependency> getDependencies()
     {
         String s = controlFile.get( IndexPackageMetaData.DEPENDS_FIELD );
-        return depParser.getDependencies( s );
+        return s != null ? depParser.getDependencies( s ) : null;
     }
 
 
@@ -184,7 +186,7 @@ public class IndexPackageMetadataImpl implements IndexPackageMetaData
     public List<Dependency> getRecommends()
     {
         String s = controlFile.get( IndexPackageMetaData.RECOMMENDS_FIELD );
-        return depParser.getDependencies( s );
+        return s != null ? depParser.getDependencies( s ) : null;
     }
 
 
@@ -192,7 +194,7 @@ public class IndexPackageMetadataImpl implements IndexPackageMetaData
     public List<Dependency> getSuggests()
     {
         String s = controlFile.get( IndexPackageMetaData.SUGGESTS_FIELD );
-        return depParser.getDependencies( s );
+        return s != null ? depParser.getDependencies( s ) : null;
     }
 
 
@@ -200,7 +202,7 @@ public class IndexPackageMetadataImpl implements IndexPackageMetaData
     public List<Dependency> getEnhances()
     {
         String s = controlFile.get( IndexPackageMetaData.ENHANCES_FIELD );
-        return depParser.getDependencies( s );
+        return s != null ? depParser.getDependencies( s ) : null;
     }
 
 
@@ -208,7 +210,7 @@ public class IndexPackageMetadataImpl implements IndexPackageMetaData
     public List<Dependency> getPreDepends()
     {
         String s = controlFile.get( IndexPackageMetaData.PRE_DEPENDS_FIELD );
-        return depParser.getDependencies( s );
+        return s != null ? depParser.getDependencies( s ) : null;
     }
 
 
@@ -216,7 +218,7 @@ public class IndexPackageMetadataImpl implements IndexPackageMetaData
     public List<Dependency> getConflicts()
     {
         String s = controlFile.get( IndexPackageMetaData.CONFLICTS_FIELD );
-        return depParser.getDependencies( s );
+        return s != null ? depParser.getDependencies( s ) : null;
     }
 
 
@@ -224,7 +226,7 @@ public class IndexPackageMetadataImpl implements IndexPackageMetaData
     public List<Dependency> getBreaks()
     {
         String s = controlFile.get( IndexPackageMetaData.BREAKS_FIELD );
-        return depParser.getDependencies( s );
+        return s != null ? depParser.getDependencies( s ) : null;
     }
 
 
@@ -232,7 +234,7 @@ public class IndexPackageMetadataImpl implements IndexPackageMetaData
     public List<Dependency> getReplaces()
     {
         String s = controlFile.get( IndexPackageMetaData.REPLACES_FIELD );
-        return depParser.getDependencies( s );
+        return s != null ? depParser.getDependencies( s ) : null;
     }
 
 
@@ -286,9 +288,23 @@ public class IndexPackageMetadataImpl implements IndexPackageMetaData
 
 
     @Override
+    public String getComponent()
+    {
+        return component;
+    }
+
+
+    public void setComponent( String component )
+    {
+        this.component = component;
+    }
+
+
+    @Override
     public String toString()
     {
         return controlFile.toString( PackageIndexFieldsParser.FIELDS );
     }
+
 }
 

@@ -17,8 +17,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
 import com.google.inject.name.Named;
 
-import ai.subut.kurjun.metadata.common.DependencyImpl;
-import ai.subut.kurjun.metadata.common.PackageMetadataImpl;
+import ai.subut.kurjun.metadata.common.DefaultDependency;
+import ai.subut.kurjun.metadata.common.DefaultPackageMetadata;
 import ai.subut.kurjun.metadata.common.PackageMetadataListingImpl;
 import ai.subut.kurjun.model.metadata.Dependency;
 import ai.subut.kurjun.model.metadata.PackageMetadata;
@@ -48,7 +48,7 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
             @Override
             public Dependency createInstance( Type type )
             {
-                return new DependencyImpl();
+                return new DefaultDependency();
             }
         };
         gb.registerTypeAdapter( Dependency.class, depInstanceCreator );
@@ -98,7 +98,7 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
             ResultSet rs = ps.executeQuery();
             if ( rs.next() )
             {
-                return GSON.fromJson( rs.getString( 1 ), PackageMetadataImpl.class );
+                return GSON.fromJson( rs.getString( 1 ), DefaultPackageMetadata.class );
             }
             return null;
         }
@@ -190,7 +190,7 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
             ResultSet rs = ps.executeQuery();
             while ( rs.next() && pml.getPackageMetadata().size() < batchSize )
             {
-                PackageMetadataImpl meta = GSON.fromJson( rs.getString( 1 ), PackageMetadataImpl.class );
+                DefaultPackageMetadata meta = GSON.fromJson( rs.getString( 1 ), DefaultPackageMetadata.class );
                 pml.getPackageMetadata().add( meta );
                 pml.setMarker( Hex.encodeHexString( meta.getMd5Sum() ) );
             }

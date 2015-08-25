@@ -15,8 +15,8 @@ import org.junit.rules.TemporaryFolder;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
-import ai.subut.kurjun.metadata.common.DependencyImpl;
-import ai.subut.kurjun.metadata.common.PackageMetadataImpl;
+import ai.subut.kurjun.metadata.common.DefaultDependency;
+import ai.subut.kurjun.metadata.common.DefaultPackageMetadata;
 import ai.subut.kurjun.metadata.common.PackageMetadataListingImpl;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.Dependency;
@@ -137,7 +137,7 @@ public class DbFilePackageMetadataStoreTest
 
     private PackageMetadata createPackageMetadata()
     {
-        PackageMetadataImpl pm = new PackageMetadataImpl();
+        DefaultPackageMetadata pm = new DefaultPackageMetadata();
         pm.setPackage( UUID.randomUUID().toString() );
         pm.setArchitecture( Architecture.amd64 );
         pm.setDescription( "Description here" );
@@ -147,7 +147,7 @@ public class DbFilePackageMetadataStoreTest
         pm.setMd5( DigestUtils.md5( pm.getFilename() ) );
         pm.setPriority( Priority.important );
 
-        DependencyImpl dep = new DependencyImpl();
+        DefaultDependency dep = new DefaultDependency();
         dep.setPackage( "Package" );
         dep.setVersion( "1.0.0" );
         dep.setRelationOperator( RelationOperator.StrictlyLater );

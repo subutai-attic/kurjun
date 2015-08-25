@@ -15,10 +15,11 @@ import ai.subut.kurjun.model.metadata.Priority;
  * Simple POJO implementing PackageMetadata.
  *
  */
-public class PackageMetadataImpl implements PackageMetadata
+public class DefaultPackageMetadata implements PackageMetadata
 {
 
     private byte[] md5;
+    private String component;
     private String filename;
     private String packageName;
     private String version;
@@ -36,7 +37,7 @@ public class PackageMetadataImpl implements PackageMetadata
     private List<String> provides;
     private String section;
     private Priority priority;
-    private URL url;
+    private URL homepage;
     private String description;
 
 
@@ -51,6 +52,19 @@ public class PackageMetadataImpl implements PackageMetadata
     {
 
         this.md5 = Arrays.copyOf( md5, md5.length );
+    }
+
+
+    @Override
+    public String getComponent()
+    {
+        return component;
+    }
+
+
+    public void setComponent( String component )
+    {
+        this.component = component;
     }
 
 
@@ -278,13 +292,13 @@ public class PackageMetadataImpl implements PackageMetadata
     @Override
     public URL getHomepage()
     {
-        return url;
+        return homepage;
     }
 
 
-    public void setUrl( URL url )
+    public void setHomepage( URL homepage )
     {
-        this.url = url;
+        this.homepage = homepage;
     }
 
 

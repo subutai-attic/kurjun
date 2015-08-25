@@ -24,7 +24,7 @@ public abstract class AbstractPackageMetadata implements PackageMetadata
     private static final Logger LOG = LoggerFactory.getLogger( BinaryPackageMetadata.class );
     protected ControlFile controlFile;
     private DependencyParser parser = new DependencyParser();
-    private Map<String,List<Dependency>> depCache = new HashMap<>();
+    private Map<String, List<Dependency>> depCache = new HashMap<>();
     private byte[] md5;
     private String filename;
 

@@ -46,7 +46,7 @@ class ReleaseIndexParserImpl implements ReleaseIndexParser
             throw new IOException( ex );
         }
 
-        DefaultReleaseFile rf = new DefaultReleaseFile( fp );
+        ReleaseFileWrapper rf = new ReleaseFileWrapper( fp );
         rf.setIndexResources( buildResources( fp ) );
         return rf;
     }

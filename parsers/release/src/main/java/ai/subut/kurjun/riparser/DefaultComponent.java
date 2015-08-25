@@ -28,7 +28,7 @@ public class DefaultComponent implements Component
      * @param name name of a component
      * @param releaseIndices index resources of a release that this component belongs to
      */
-    DefaultComponent( String name, Map<String, ChecksummedResource> releaseIndices )
+    public DefaultComponent( String name, Map<String, ChecksummedResource> releaseIndices )
     {
         this.name = name;
         for ( Map.Entry<String, ChecksummedResource> e : releaseIndices.entrySet() )

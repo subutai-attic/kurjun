@@ -16,7 +16,12 @@ import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
 
 
-public class DefaultReleaseFile implements ReleaseFile
+/**
+ * {@link ReleaseFile} implementation that wraps {@link ControlFile} instance constructed by fields of a release index
+ * file.
+ *
+ */
+class ReleaseFileWrapper implements ReleaseFile
 {
 
     private final ControlFile cf;
@@ -29,7 +34,7 @@ public class DefaultReleaseFile implements ReleaseFile
     private final Map<String, ChecksummedResource> indexResources = new HashMap<>();
 
 
-    public DefaultReleaseFile( ControlFile cf )
+    public ReleaseFileWrapper( ControlFile cf )
     {
         this.cf = cf;
     }

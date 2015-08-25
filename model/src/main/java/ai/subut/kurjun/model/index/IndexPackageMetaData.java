@@ -70,6 +70,7 @@ public interface IndexPackageMetaData extends PackageMetadata
      * Gets the MD5 checksum for the Debian Package file in the repository.
      * @return the MD5 checksum for the package file
      */
+    @Override
     byte[] getMd5Sum();
 
 
@@ -83,6 +84,7 @@ public interface IndexPackageMetaData extends PackageMetadata
     /**
      * Gets the repository URL relative path of the Debian Package file in the repository.
      */
+    @Override
     String getFilename();
 
 
@@ -96,4 +98,5 @@ public interface IndexPackageMetaData extends PackageMetadata
      * Gets the Tags for the package.
      */
     List<TagItem> getTag();
+
 }

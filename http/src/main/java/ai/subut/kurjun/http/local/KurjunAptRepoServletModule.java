@@ -15,6 +15,7 @@ public class KurjunAptRepoServletModule extends ServletModuleBase
     protected void configureServlets()
     {
 
+        serve( getServletPath() + "/upload" ).with( KurjunAptRepoUploadServlet.class );
         serve( getServletPath() + "/pool/*" ).with( KurjunAptPoolServlet.class );
         serve( getServletPath() + "/*" ).with( KurjunAptRepoServlet.class );
 

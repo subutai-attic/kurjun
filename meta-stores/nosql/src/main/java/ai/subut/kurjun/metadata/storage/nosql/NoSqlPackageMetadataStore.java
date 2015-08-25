@@ -18,8 +18,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
 import com.google.inject.Inject;
 
-import ai.subut.kurjun.metadata.common.DependencyImpl;
-import ai.subut.kurjun.metadata.common.PackageMetadataImpl;
+import ai.subut.kurjun.metadata.common.DefaultDependency;
+import ai.subut.kurjun.metadata.common.DefaultPackageMetadata;
 import ai.subut.kurjun.metadata.common.PackageMetadataListingImpl;
 import ai.subut.kurjun.model.metadata.Dependency;
 import ai.subut.kurjun.model.metadata.PackageMetadata;
@@ -57,7 +57,7 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
             @Override
             public Dependency createInstance( Type type )
             {
-                return new DependencyImpl();
+                return new DefaultDependency();
             }
         };
         gb.registerTypeAdapter( Dependency.class, depInstanceCreator );
@@ -125,7 +125,7 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
         Row row = rs.one();
         if ( row != null )
         {
-            return GSON.fromJson( row.getString( SchemaInfo.METADATA_COLUMN ), PackageMetadataImpl.class );
+            return GSON.fromJson( row.getString( SchemaInfo.METADATA_COLUMN ), DefaultPackageMetadata.class );
         }
         return null;
     }
@@ -194,7 +194,7 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
         {
             Row row = it.next();
             String json = row.getString( SchemaInfo.METADATA_COLUMN );
-            res.getPackageMetadata().add( GSON.fromJson( json, PackageMetadataImpl.class ) );
+            res.getPackageMetadata().add( GSON.fromJson( json, DefaultPackageMetadata.class ) );
             res.setMarker( row.getString( SchemaInfo.CHECKSUM_COLUMN ) );
         }
         res.setTruncated( it.hasNext() );

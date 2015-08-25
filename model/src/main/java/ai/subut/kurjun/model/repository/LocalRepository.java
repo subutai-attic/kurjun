@@ -1,7 +1,11 @@
 package ai.subut.kurjun.model.repository;
 
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
+
+import ai.subut.kurjun.model.metadata.PackageMetadata;
 
 
 /**
@@ -25,5 +29,7 @@ public interface LocalRepository extends Repository
      */
     Path getBaseDirectoryPath();
 
+
+    PackageMetadata put( InputStream is ) throws IOException;
 }
 

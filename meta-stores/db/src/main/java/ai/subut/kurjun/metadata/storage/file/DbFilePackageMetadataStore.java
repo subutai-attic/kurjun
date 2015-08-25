@@ -2,6 +2,7 @@ package ai.subut.kurjun.metadata.storage.file;
 
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Iterator;
@@ -28,7 +29,7 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
     int batchSize = 1000;
 
-    private FileDb fileDb;
+    private Path fileDbPath;
 
 
     /**
@@ -41,21 +42,27 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
     @Inject
     public DbFilePackageMetadataStore( @Named( DB_FILE_LOCATION_NAME ) String location ) throws IOException
     {
-        this.fileDb = new FileDb( Paths.get( location, "metadata" ).toString() );
+        this.fileDbPath = Paths.get( location, "metadata" );
     }
 
 
     @Override
     public boolean contains( byte[] md5 ) throws IOException
     {
-        return fileDb.contains( MAP_NAME, Hex.encodeHexString( md5 ) );
+        try ( FileDb fileDb = new FileDb( fileDbPath.toString() ) )
+        {
+            return fileDb.contains( MAP_NAME, Hex.encodeHexString( md5 ) );
+        }
     }
 
 
     @Override
     public PackageMetadata get( byte[] md5 ) throws IOException
     {
-        return fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), PackageMetadata.class );
+        try ( FileDb fileDb = new FileDb( fileDbPath.toString() ) )
+        {
+            return fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), PackageMetadata.class );
+        }
     }
 
 
@@ -64,7 +71,10 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
     {
         if ( !contains( meta.getMd5Sum() ) )
         {
-            fileDb.put( MAP_NAME, Hex.encodeHexString( meta.getMd5Sum() ), meta );
+            try ( FileDb fileDb = new FileDb( fileDbPath.toString() ) )
+            {
+                fileDb.put( MAP_NAME, Hex.encodeHexString( meta.getMd5Sum() ), meta );
+            }
             return true;
         }
         return false;
@@ -74,7 +84,10 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
     @Override
     public boolean remove( byte[] md5 ) throws IOException
     {
-        return fileDb.remove( MAP_NAME, Hex.encodeHexString( md5 ) ) != null;
+        try ( FileDb fileDb = new FileDb( fileDbPath.toString() ) )
+        {
+            return fileDb.remove( MAP_NAME, Hex.encodeHexString( md5 ) ) != null;
+        }
     }
 
 
@@ -98,7 +111,11 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
     private PackageMetadataListing listPackageMetadata( final String marker ) throws IOException
     {
-        Map<String, PackageMetadata> map = fileDb.get( MAP_NAME );
+        Map<String, PackageMetadata> map;
+        try ( FileDb fileDb = new FileDb( fileDbPath.toString() ) )
+        {
+            map = fileDb.get( MAP_NAME );
+        }
         Collection<PackageMetadata> items = map.values();
 
         // sort items by names
