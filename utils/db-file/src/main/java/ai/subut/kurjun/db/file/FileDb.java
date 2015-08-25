@@ -14,8 +14,6 @@ import java.util.Map;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 import org.mapdb.TxMaker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -27,7 +25,6 @@ import com.google.inject.name.Named;
  */
 public class FileDb implements Closeable
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger( FileDb.class );
 
     private final File file;
     protected final TxMaker txMaker;
@@ -35,8 +32,7 @@ public class FileDb implements Closeable
 
     /**
      * Constructs file based db backed by supplied file. File path argument is annotated with {@link Named} to enable
-     * file path injection. This constructor has fail-safe handling of {@code null} values: file db initialized in
-     * system temporary directory. This will work until the file is cleared from temp directory.
+     * file path injection.
      *
      * @param dbFile
      * @throws IOException
@@ -50,23 +46,17 @@ public class FileDb implements Closeable
 
     FileDb( String dbFile, boolean readOnly ) throws IOException
     {
-        DBMaker dbMaker;
-        if ( dbFile != null )
+        if ( dbFile == null || dbFile.isEmpty() )
         {
-            Path path = Paths.get( dbFile );
-            if ( Files.notExists( path ) )
-            {
-                Files.createDirectories( path.getParent() );
-            }
-            this.file = path.toFile();
-        }
-        else
-        {
-            LOGGER.warn( "DB file not supplied. Using temporary file!!!" );
-            this.file = File.createTempFile( "mapdb-temp", ".db" );
+            throw new IllegalArgumentException( "File db path can not be empty" );
         }
 
-        dbMaker = DBMaker.newFileDB( file );
+        Path path = Paths.get( dbFile );
+        // ensure parent dirs do exist
+        Files.createDirectories( path.getParent() );
+        this.file = path.toFile();
+
+        DBMaker dbMaker = DBMaker.newFileDB( file );
 
         if ( readOnly )
         {
@@ -75,6 +65,7 @@ public class FileDb implements Closeable
         this.txMaker = dbMaker
                 .closeOnJvmShutdown()
                 .mmapFileEnableIfSupported()
+                .snapshotEnable()
                 .makeTxMaker();
     }
 

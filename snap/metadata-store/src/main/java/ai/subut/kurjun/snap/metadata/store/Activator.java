@@ -1,7 +1,6 @@
 package ai.subut.kurjun.snap.metadata.store;
 
 
-import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Properties;
 
@@ -12,7 +11,6 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
 
-import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.db.file.FileDbModule;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadataStore;
 
@@ -61,20 +59,10 @@ public class Activator implements BundleActivator, ManagedService
                 throw new ConfigurationException( keyFilePath, "invalid file path" );
             }
 
-            FileDb fileDb;
-            try
-            {
-                fileDb = new FileDb( filePath );
-            }
-            catch ( IOException ex )
-            {
-                throw new ConfigurationException( keyFilePath, "invalid file path", ex );
-            }
-
             Dictionary prop = new Properties();
-            prop.put( keyFilePath, fileDb.getFile().getAbsolutePath() );
+            prop.put( keyFilePath, filePath );
 
-            metadataStoreReg = context.registerService( SnapMetadataStore.class, new SnapMetadataStoreImpl( fileDb ),
+            metadataStoreReg = context.registerService( SnapMetadataStore.class, new SnapMetadataStoreImpl( filePath ),
                                                         prop );
         }
     }

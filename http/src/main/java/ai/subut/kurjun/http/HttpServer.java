@@ -41,7 +41,8 @@ import ai.subut.kurjun.storage.fs.FileSystemFileStoreModule;
 
 public class HttpServer
 {
-    public static final String ROOT_LOCATION_KEY = "snaps.store.location";
+    public static final String HTTP_PORT_KEY = "http.port";
+    public static final String ROOT_LOCATION_KEY = "packages.store.location";
 
 
     public static void main( String[] args ) throws Exception
@@ -57,7 +58,7 @@ public class HttpServer
         handler.setContextPath( "/" );
         handler.addFilter( f, "/*", EnumSet.allOf( DispatcherType.class ) );
 
-        Server server = new Server( 8080 );
+        Server server = new Server( Integer.parseInt( properties.getProperty( HTTP_PORT_KEY, "8080" ) ) );
         server.setHandler( handler );
 
         server.start();
@@ -102,7 +103,7 @@ public class HttpServer
 
         modules.add( new SnapMetadataParserModule() );
         modules.add( new SnapMetadataStoreModule( Paths.get( rootDir, "metadata" ).toString() ) );
-        modules.add( new SnapServletModule().setServletPath( "/snap" ) );
+        modules.add( new SnapServletModule().setServletPath( "/snaps" ) );
 
         modules.add( new FileSystemFileStoreModule().setRootLocation( Paths.get( rootDir, "files" ).toString() ) );
         modules.add( new DbFilePackageMetadataStoreModule() );

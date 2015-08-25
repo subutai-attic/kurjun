@@ -4,7 +4,6 @@ package ai.subut.kurjun.snap.metadata.store;
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
 
-import ai.subut.kurjun.db.file.FileDbModule;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadataStore;
 
 
@@ -14,6 +13,7 @@ import ai.subut.kurjun.model.metadata.snap.SnapMetadataStore;
  */
 public class SnapMetadataStoreModule extends AbstractModule
 {
+    public static final String DB_FILE_PATH = "snap.metadata.store.filedb";
 
     private String fileDbPath;
 
@@ -32,7 +32,7 @@ public class SnapMetadataStoreModule extends AbstractModule
     @Override
     protected void configure()
     {
-        bind( String.class ).annotatedWith( Names.named( FileDbModule.DB_FILE_PATH ) ).toInstance( fileDbPath );
+        bind( String.class ).annotatedWith( Names.named( DB_FILE_PATH ) ).toInstance( fileDbPath );
 
         bind( SnapMetadataStore.class ).to( SnapMetadataStoreImpl.class );
     }

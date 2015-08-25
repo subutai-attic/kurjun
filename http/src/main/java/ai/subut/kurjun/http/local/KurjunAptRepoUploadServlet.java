@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
@@ -15,13 +13,14 @@ import javax.servlet.http.Part;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import ai.subut.kurjun.http.HttpServletBase;
 import ai.subut.kurjun.http.ServletUtils;
 import ai.subut.kurjun.model.repository.LocalRepository;
 
 
 @Singleton
 @MultipartConfig
-class KurjunAptRepoUploadServlet extends HttpServlet
+class KurjunAptRepoUploadServlet extends HttpServletBase
 {
 
     private static final String DEB_PACKAGE_PART = "package";
@@ -35,7 +34,7 @@ class KurjunAptRepoUploadServlet extends HttpServlet
     {
         if ( !ServletUtils.isMultipart( req ) )
         {
-            writeResponse( resp, HttpServletResponse.SC_BAD_REQUEST, "Not a multipart request" );
+            badRequest( resp, "Not a multipart request" );
             return;
         }
 
@@ -52,17 +51,7 @@ class KurjunAptRepoUploadServlet extends HttpServlet
         else
         {
             String msg = String.format( "No package attached with name '%s'", DEB_PACKAGE_PART );
-            writeResponse( resp, HttpServletResponse.SC_BAD_REQUEST, msg );
-        }
-    }
-
-
-    private void writeResponse( HttpServletResponse resp, int statusCode, String msg ) throws IOException
-    {
-        resp.setStatus( statusCode );
-        try ( ServletOutputStream os = resp.getOutputStream() )
-        {
-            os.print( msg );
+            badRequest( resp, msg );
         }
     }
 
