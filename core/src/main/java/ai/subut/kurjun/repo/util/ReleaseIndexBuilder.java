@@ -3,6 +3,7 @@ package ai.subut.kurjun.repo.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -155,6 +156,10 @@ public class ReleaseIndexBuilder
         List<String> components = release.getComponents();
         List<Architecture> architectures = release.getArchitectures();
 
+        MessageDigest md5Digest = DigestUtils.getMd5Digest();
+        MessageDigest sha1Digest = DigestUtils.getSha1Digest();
+        MessageDigest sha2Digest = DigestUtils.getSha256Digest();
+
         List<ChecksummedResource> packagesIndices = new ArrayList<>();
         for ( String component : components )
         {
@@ -172,9 +177,9 @@ public class ReleaseIndexBuilder
                     {
                         packagesIndexBuilder.buildIndex( component, arch, os, compressionType );
 
-                        byte[] md5 = DigestUtils.getMd5Digest().digest( os.toByteArray() );
-                        byte[] sha1 = DigestUtils.getSha1Digest().digest( os.toByteArray() );
-                        byte[] sha2 = DigestUtils.getSha256Digest().digest( os.toByteArray() );
+                        byte[] md5 = md5Digest.digest( os.toByteArray() );
+                        byte[] sha1 = sha1Digest.digest( os.toByteArray() );
+                        byte[] sha2 = sha2Digest.digest( os.toByteArray() );
 
                         ReleaseChecksummedResource r = new ReleaseChecksummedResource( relativePath );
                         r.setSize( os.size() );

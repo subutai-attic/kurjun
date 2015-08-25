@@ -14,6 +14,7 @@ public class SnapServletModule extends ServletModuleBase
     @Override
     protected void configureServlets()
     {
+        serve( getServletPath() + "/upload" ).with( SnapUploadServlet.class );
         serve( getServletPath() + "/*" ).with( SnapServlet.class );
     }
 

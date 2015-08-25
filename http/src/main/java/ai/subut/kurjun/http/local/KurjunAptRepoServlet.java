@@ -7,8 +7,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -16,6 +14,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.ar.CompressionType;
+import ai.subut.kurjun.http.HttpServletBase;
 import ai.subut.kurjun.index.service.PackagesIndexBuilder;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
@@ -27,7 +26,7 @@ import ai.subut.kurjun.repo.util.ReleaseIndexBuilder;
  * Servlet to serve repository metadata like release and package index files, keys, etc of a virtual apt repository.
  */
 @Singleton
-class KurjunAptRepoServlet extends HttpServlet
+class KurjunAptRepoServlet extends HttpServletBase
 {
 
     private LocalRepository repository;
@@ -64,7 +63,7 @@ class KurjunAptRepoServlet extends HttpServlet
         }
         else
         {
-            writeResponse( resp, HttpServletResponse.SC_NOT_FOUND, "Specified path does not exist or is not a file" );
+            notFound( resp, "Specified path does not exist or is not a file" );
         }
     }
 
@@ -76,17 +75,17 @@ class KurjunAptRepoServlet extends HttpServlet
                 .filter( r -> r.getCodename().equals( release ) ).findFirst();
         if ( !distr.isPresent() )
         {
-            writeResponse( resp, HttpServletResponse.SC_NOT_FOUND, "Release not found" );
+            notFound( resp, "Release not found" );
             return;
         }
         if ( distr.get().getComponent( component ) == null )
         {
-            writeResponse( resp, HttpServletResponse.SC_NOT_FOUND, "Component not found" );
+            notFound( resp, "Component not found" );
             return;
         }
         if ( arch == null )
         {
-            writeResponse( resp, HttpServletResponse.SC_NOT_FOUND, "Architecture not supported" );
+            notFound( resp, "Architecture not supported" );
             return;
         }
 
@@ -110,23 +109,14 @@ class KurjunAptRepoServlet extends HttpServlet
         if ( item.isPresent() )
         {
             String releaseIndex = releaseIndexBuilder.build( item.get(), repository.isKurjun() );
-            writeResponse( resp, HttpServletResponse.SC_OK, releaseIndex );
+            ok( resp, releaseIndex );
         }
         else
         {
-            writeResponse( resp, HttpServletResponse.SC_NOT_FOUND, "Release not found" );
+            notFound( resp, "Release not found" );
         }
     }
 
-
-    private void writeResponse( HttpServletResponse resp, int statusCode, String msg ) throws IOException
-    {
-        resp.setStatus( statusCode );
-        try ( ServletOutputStream os = resp.getOutputStream() )
-        {
-            os.print( msg );
-        }
-    }
 
 }
 

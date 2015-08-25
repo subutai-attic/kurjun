@@ -8,18 +8,18 @@ import java.nio.file.Path;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import ai.subut.kurjun.http.HttpServletBase;
 import ai.subut.kurjun.model.repository.LocalRepository;
 
 
 @Singleton
-class LocalAptRepoServlet extends HttpServlet
+class LocalAptRepoServlet extends HttpServletBase
 {
 
     private LocalRepository repository;
@@ -42,18 +42,17 @@ class LocalAptRepoServlet extends HttpServlet
 
         String pathWithoutLeadingSlash = req.getPathInfo().substring( 1 );
 
-        try ( ServletOutputStream out = resp.getOutputStream() )
+        Path path = repository.getBaseDirectoryPath().resolve( pathWithoutLeadingSlash );
+        if ( Files.exists( path ) )
         {
-            Path path = repository.getBaseDirectoryPath().resolve( pathWithoutLeadingSlash );
-            if ( Files.exists( path ) )
+            try ( ServletOutputStream out = resp.getOutputStream() )
             {
                 Files.copy( path, out );
             }
-            else
-            {
-                resp.setStatus( HttpServletResponse.SC_NOT_FOUND );
-                out.print( "Specified path does not exist or is not a file" );
-            }
+        }
+        else
+        {
+            notFound( resp, "Specified path does not exist or is not a file" );
         }
     }
 
