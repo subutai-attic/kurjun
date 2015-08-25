@@ -15,6 +15,7 @@
 
   <modules>
     <module>metadata-store</module>
+    <module>parser</module>
   </modules>
   
 </project>

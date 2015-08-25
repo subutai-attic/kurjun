@@ -104,6 +104,7 @@ class SnapServlet extends HttpServletBase
         }
         catch ( DecoderException ex )
         {
+            LOGGER.info( "Invalid md5 provided: {}", md5, ex );
             badRequest( resp, "Invalid md5 checksum provided" );
         }
     }

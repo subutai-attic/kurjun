@@ -19,7 +19,6 @@
     <module>control</module>
     <module>contents</module>
     <module>packages</module>
-    <module>snap</module>
   </modules>
 
   <description>
