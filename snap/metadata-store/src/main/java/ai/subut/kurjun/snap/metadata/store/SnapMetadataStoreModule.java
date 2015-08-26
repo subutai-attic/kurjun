@@ -19,11 +19,11 @@ public class SnapMetadataStoreModule extends AbstractModule
 
 
     /**
-     * Snap metadata store needs a file path where metadata is stored.
+     * Sets a file path where metadata is stored.
      *
      * @param fileDbPath file path to store metadata
      */
-    public SnapMetadataStoreModule( String fileDbPath )
+    public void setFileDbPath( String fileDbPath )
     {
         this.fileDbPath = fileDbPath;
     }
@@ -32,7 +32,10 @@ public class SnapMetadataStoreModule extends AbstractModule
     @Override
     protected void configure()
     {
-        bind( String.class ).annotatedWith( Names.named( DB_FILE_PATH ) ).toInstance( fileDbPath );
+        if ( fileDbPath != null )
+        {
+            bind( String.class ).annotatedWith( Names.named( DB_FILE_PATH ) ).toInstance( fileDbPath );
+        }
 
         bind( SnapMetadataStore.class ).to( SnapMetadataStoreImpl.class );
     }

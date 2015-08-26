@@ -17,6 +17,7 @@
   <modules>
     <module>archive</module>
     <module>db-file</module>
+    <module>common</module>
   </modules>
 
   <description>

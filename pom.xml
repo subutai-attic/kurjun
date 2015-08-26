@@ -77,6 +77,7 @@
     <commons-codec.version>1.10</commons-codec.version>
     <commons-compress.version>1.9</commons-compress.version>
     <commons-io.version>2.4</commons-io.version>
+    <commons-configuration.version>1.10</commons-configuration.version>
     <snakeyaml.version>1.15</snakeyaml.version>
     <xz.version>1.5</xz.version>
     <jdeb.version>1.4</jdeb.version>
@@ -266,6 +267,12 @@
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
         <version>${commons-io.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>commons-configuration</groupId>
+        <artifactId>commons-configuration</artifactId>
+        <version>${commons-configuration.version}</version>
       </dependency>
 
       <dependency>
