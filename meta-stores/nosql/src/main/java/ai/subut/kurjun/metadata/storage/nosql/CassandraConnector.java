@@ -19,7 +19,7 @@ import com.google.inject.Provider;
  * Provider class for {@link Session} instance. Needs to be initialized first, otherwise {@code null} is returned.
  *
  */
-class CassandraConnector implements Provider<Session>
+public class CassandraConnector implements Provider<Session>
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( CassandraConnector.class );
 

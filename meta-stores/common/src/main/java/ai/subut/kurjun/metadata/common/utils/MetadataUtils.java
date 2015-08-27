@@ -108,7 +108,7 @@ public class MetadataUtils
             DefaultDependency dep = new DefaultDependency();
             dep.setPackage( dependency.getPackage() );
             dep.setVersion( dependency.getVersion() );
-            dep.setRelationOperator( dependency.getDependencyOperator() );
+            dep.setDependencyOperator( dependency.getDependencyOperator() );
             dep.setAlternatives( cloneDependencies( dependency.getAlternatives() ) );
             result.add( dep );
         }

@@ -185,7 +185,7 @@ public class NoSqlPackageMetadataStoreTest
         DefaultDependency dep = new DefaultDependency();
         dep.setPackage( "Package" );
         dep.setVersion( "1.0.0" );
-        dep.setRelationOperator( RelationOperator.StrictlyLater );
+        dep.setDependencyOperator( RelationOperator.StrictlyLater );
 
         List<Dependency> ls = new ArrayList<>();
         ls.add( dep );
