@@ -16,7 +16,7 @@ public class DefaultDependency implements Dependency
     private String packageName;
     private List<Dependency> alternatives;
     private String version;
-    private RelationOperator relationOperator;
+    private RelationOperator dependencyOperator;
 
 
     @Override
@@ -61,13 +61,13 @@ public class DefaultDependency implements Dependency
     @Override
     public RelationOperator getDependencyOperator()
     {
-        return relationOperator;
+        return dependencyOperator;
     }
 
 
-    public void setRelationOperator( RelationOperator relationOperator )
+    public void setDependencyOperator( RelationOperator relationOperator )
     {
-        this.relationOperator = relationOperator;
+        this.dependencyOperator = relationOperator;
     }
 
 
