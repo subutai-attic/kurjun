@@ -44,7 +44,8 @@ public class Activator implements BundleActivator
 
         if ( metadataStore != null && fileStore != null )
         {
-            PackagesIndexBuilder indexBuilder = new PackagesIndexBuilderImpl( metadataStore, fileStore );
+            PackagesIndexBuilderImpl indexBuilder = new PackagesIndexBuilderImpl( metadataStore );
+            indexBuilder.setFileStore( fileStore );
             builderService = context.registerService( PackagesIndexBuilder.class, indexBuilder, null );
         }
     }

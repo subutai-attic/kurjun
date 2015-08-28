@@ -3,10 +3,8 @@ package ai.subut.kurjun.storage.fs;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -21,12 +19,10 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
+import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.model.storage.FileStore;
-
-import static ai.subut.kurjun.storage.fs.FileSystemFileStoreModule.ROOT_DIRECTORY;
 
 
 /**
@@ -37,7 +33,6 @@ import static ai.subut.kurjun.storage.fs.FileSystemFileStoreModule.ROOT_DIRECTOR
 class FileSystemFileStore implements FileStore
 {
 
-    private static final int BUFFER_SIZE = 1024 * 8;
     private static final String MAP_NAME = "checksum-to-filepath";
 
     private Path rootLocation;
@@ -48,7 +43,7 @@ class FileSystemFileStore implements FileStore
      *
      */
     @Inject
-    public FileSystemFileStore( @Named( ROOT_DIRECTORY ) String rootLocation )
+    public FileSystemFileStore( @Assisted String rootLocation )
     {
         this.rootLocation = Paths.get( rootLocation );
     }
@@ -171,15 +166,9 @@ class FileSystemFileStore implements FileStore
      */
     private byte[] copyStream( InputStream source, Path dest ) throws IOException
     {
-        try ( DigestInputStream is = new DigestInputStream( source, DigestUtils.getMd5Digest() );
-              OutputStream os = new FileOutputStream( dest.toFile() ) )
+        try ( DigestInputStream is = new DigestInputStream( source, DigestUtils.getMd5Digest() ) )
         {
-            int n;
-            byte[] buf = new byte[BUFFER_SIZE];
-            while ( ( n = is.read( buf ) ) > 0 )
-            {
-                os.write( buf, 0, n );
-            }
+            Files.copy( is, dest, StandardCopyOption.REPLACE_EXISTING );
             return is.getMessageDigest().digest();
         }
     }

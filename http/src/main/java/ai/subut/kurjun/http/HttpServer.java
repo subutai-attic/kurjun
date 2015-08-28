@@ -14,7 +14,7 @@ import com.google.inject.servlet.GuiceFilter;
 
 import ai.subut.kurjun.cfparser.ControlFileParserModule;
 import ai.subut.kurjun.common.KurjunBootstrap;
-import ai.subut.kurjun.common.KurjunProperties;
+import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.http.local.KurjunAptRepoServletModule;
 import ai.subut.kurjun.http.local.LocalAptRepoServletModule;
 import ai.subut.kurjun.http.snap.SnapServletModule;

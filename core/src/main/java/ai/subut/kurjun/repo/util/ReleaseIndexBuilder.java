@@ -23,6 +23,7 @@ import ai.subut.kurjun.model.index.Checksum;
 import ai.subut.kurjun.model.index.ChecksummedResource;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
+import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.riparser.ReleaseChecksummedResource;
 
 
@@ -50,6 +51,12 @@ public class ReleaseIndexBuilder
         compressionTypes.add( CompressionType.NONE );
         compressionTypes.add( CompressionType.GZIP );
         compressionTypes.add( CompressionType.BZIP2 );
+    }
+
+
+    public void setFileStore( FileStore fileStore )
+    {
+        packagesIndexBuilder.setFileStore( fileStore );
     }
 
 

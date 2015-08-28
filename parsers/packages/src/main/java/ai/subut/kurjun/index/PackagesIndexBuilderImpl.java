@@ -41,9 +41,15 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
 
 
     @Inject
-    public PackagesIndexBuilderImpl( PackageMetadataStore metadataStore, FileStore fileStore )
+    public PackagesIndexBuilderImpl( PackageMetadataStore metadataStore )
     {
         this.metadataStore = metadataStore;
+    }
+
+
+    @Override
+    public void setFileStore( FileStore fileStore )
+    {
         this.fileStore = fileStore;
     }
 

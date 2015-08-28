@@ -49,7 +49,7 @@ public class S3FileStoreTest
     {
         try ( InputStream is = ClassLoader.getSystemResourceAsStream( "kurjun-aws.properties" ) )
         {
-            s3 = new S3FileStore( UUID.randomUUID().toString(), new PropertiesCredentials( is ) );
+            s3 = new S3FileStore( new PropertiesCredentials( is ), UUID.randomUUID().toString() );
             s3.s3client.listBuckets();
             ready = true;
         }

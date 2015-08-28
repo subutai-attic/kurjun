@@ -322,6 +322,12 @@
         <artifactId>guice-servlet</artifactId>
         <version>${guice.version}</version>
       </dependency>
+
+      <dependency>
+        <groupId>com.google.inject.extensions</groupId>
+        <artifactId>guice-assistedinject</artifactId>
+        <version>${guice.version}</version>
+      </dependency>
       
       <dependency>
         <groupId>org.ops4j</groupId>
@@ -420,7 +426,6 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
-      <version>${slf4j.version}</version>
       <scope>test</scope>
       <!--
           Kurjun is a Slf4j-enabled project which means any preferred logging

@@ -17,6 +17,7 @@ import com.google.inject.Inject;
 
 import ai.subut.kurjun.model.metadata.PackageMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
+import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.repo.http.PathBuilder;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
 
@@ -73,6 +74,13 @@ class LocalRepositoryImpl extends RepositoryBase implements LocalRepository
 
     @Override
     public PackageMetadata put( InputStream is ) throws IOException
+    {
+        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+    }
+
+
+    @Override
+    public void setFileStore( FileStore fileStore )
     {
         throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
     }

@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 
 import ai.subut.kurjun.model.metadata.PackageMetadata;
+import ai.subut.kurjun.model.storage.FileStore;
 
 
 /**
@@ -28,6 +29,14 @@ public interface LocalRepository extends Repository
      * @return path to base directory
      */
     Path getBaseDirectoryPath();
+
+
+    /**
+     * Sets file store to be used by this repository.
+     *
+     * @param fileStore file store
+     */
+    void setFileStore( FileStore fileStore );
 
 
     PackageMetadata put( InputStream is ) throws IOException;
