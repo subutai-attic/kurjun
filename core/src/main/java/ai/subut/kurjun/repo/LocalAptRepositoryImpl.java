@@ -22,16 +22,20 @@ import ai.subut.kurjun.repo.http.PathBuilder;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
 
 
-class LocalRepositoryImpl extends RepositoryBase implements LocalRepository
+/**
+ * Local non-virtual apt repository.
+ *
+ */
+class LocalAptRepositoryImpl extends RepositoryBase implements LocalRepository
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger( LocalRepositoryImpl.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( LocalAptRepositoryImpl.class );
 
     private ReleaseIndexParser releaseIndexParser;
     private Path baseDirectory;
 
 
     @Inject
-    public LocalRepositoryImpl( ReleaseIndexParser releaseIndexParser )
+    public LocalAptRepositoryImpl( ReleaseIndexParser releaseIndexParser )
     {
         this.releaseIndexParser = releaseIndexParser;
 

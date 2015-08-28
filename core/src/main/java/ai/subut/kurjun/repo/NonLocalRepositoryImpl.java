@@ -15,6 +15,11 @@ import ai.subut.kurjun.repo.http.HttpHandler;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
 
 
+/**
+ * Nonlocal repository implementation. Remote repositories can be either non-virtual or virtual, this does not matter
+ * for {@link NonLocalRepository} implementation.
+ *
+ */
 class NonLocalRepositoryImpl extends RepositoryBase implements NonLocalRepository
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( NonLocalRepositoryImpl.class );

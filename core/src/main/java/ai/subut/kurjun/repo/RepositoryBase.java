@@ -21,6 +21,10 @@ import ai.subut.kurjun.model.repository.Repository;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
 
 
+/**
+ * Abstract base class for non-virtual apt repository. This can be a base for either local or remote apt repositories.
+ *
+ */
 abstract class RepositoryBase implements Repository
 {
 
@@ -80,7 +84,7 @@ abstract class RepositoryBase implements Repository
     @Override
     public boolean isKurjun()
     {
-        return true;
+        return false;
     }
 
 

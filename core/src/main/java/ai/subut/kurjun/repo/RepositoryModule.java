@@ -16,7 +16,7 @@ public class RepositoryModule extends AbstractModule
     protected void configure()
     {
 //        bind( LocalRepository.class ).to( LocalRepositoryImpl.class );
-        bind( LocalRepository.class ).to( DefaultLocalRepository.class );
+        bind( LocalRepository.class ).to( KurjunLocalRepository.class );
     }
 
 }

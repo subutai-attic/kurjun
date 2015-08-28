@@ -33,7 +33,11 @@ import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.riparser.DefaultRelease;
 
 
-public class DefaultLocalRepository implements LocalRepository
+/**
+ * Virtual apt repository implementation.
+ *
+ */
+public class KurjunLocalRepository implements LocalRepository
 {
 
     @Inject
@@ -47,7 +51,7 @@ public class DefaultLocalRepository implements LocalRepository
     private Set<ReleaseFile> releases = new HashSet<>();
 
 
-    public DefaultLocalRepository()
+    public KurjunLocalRepository()
     {
         // TODO: setup mechanism for repos
         DefaultRelease r = new DefaultRelease();

@@ -35,7 +35,7 @@ public class Activator implements BundleActivator
         }
 
         // TODO:
-        LocalRepositoryImpl localRepo = new LocalRepositoryImpl( releaseIndexParser );
+        LocalAptRepositoryImpl localRepo = new LocalAptRepositoryImpl( releaseIndexParser );
         localRepo.init( "" );
         context.registerService( LocalRepository.class, localRepo, null );
     }
