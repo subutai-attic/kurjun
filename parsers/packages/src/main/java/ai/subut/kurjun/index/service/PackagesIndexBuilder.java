@@ -6,6 +6,7 @@ import java.io.OutputStream;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.model.metadata.Architecture;
+import ai.subut.kurjun.model.storage.FileStore;
 
 
 /**
@@ -14,6 +15,15 @@ import ai.subut.kurjun.model.metadata.Architecture;
  */
 public interface PackagesIndexBuilder
 {
+
+    /**
+     * Sets file store to use when building packages index files. TODO: better injection mechanism
+     *
+     * @param fileStore
+     */
+    void setFileStore( FileStore fileStore );
+
+
     /**
      * Builds packages index file for the supplied component and architecture. Output will be plain stream without
      * compression.
@@ -37,5 +47,7 @@ public interface PackagesIndexBuilder
      * @throws IOException
      */
     void buildIndex( String component, Architecture arch, OutputStream os, CompressionType compressionType ) throws IOException;
+
+
 }
 

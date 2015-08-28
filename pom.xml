@@ -77,6 +77,7 @@
     <commons-codec.version>1.10</commons-codec.version>
     <commons-compress.version>1.9</commons-compress.version>
     <commons-io.version>2.4</commons-io.version>
+    <commons-configuration.version>1.10</commons-configuration.version>
     <snakeyaml.version>1.15</snakeyaml.version>
     <xz.version>1.5</xz.version>
     <jdeb.version>1.4</jdeb.version>
@@ -269,6 +270,12 @@
       </dependency>
 
       <dependency>
+        <groupId>commons-configuration</groupId>
+        <artifactId>commons-configuration</artifactId>
+        <version>${commons-configuration.version}</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.tukaani</groupId>
         <artifactId>xz</artifactId>
         <version>${xz.version}</version>
@@ -313,6 +320,12 @@
       <dependency>
         <groupId>com.google.inject.extensions</groupId>
         <artifactId>guice-servlet</artifactId>
+        <version>${guice.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.inject.extensions</groupId>
+        <artifactId>guice-assistedinject</artifactId>
         <version>${guice.version}</version>
       </dependency>
       
@@ -413,7 +426,6 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
-      <version>${slf4j.version}</version>
       <scope>test</scope>
       <!--
           Kurjun is a Slf4j-enabled project which means any preferred logging

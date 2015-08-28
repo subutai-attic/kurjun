@@ -1,17 +1,7 @@
 package ai.subut.kurjun.http;
 
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumSet;
-import java.util.Properties;
 
 import javax.servlet.DispatcherType;
 
@@ -19,14 +9,12 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.Module;
-import com.google.inject.name.Names;
 import com.google.inject.servlet.GuiceFilter;
 
 import ai.subut.kurjun.cfparser.ControlFileParserModule;
+import ai.subut.kurjun.common.KurjunBootstrap;
+import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.http.local.KurjunAptRepoServletModule;
 import ai.subut.kurjun.http.local.LocalAptRepoServletModule;
 import ai.subut.kurjun.http.snap.SnapServletModule;
@@ -42,15 +30,13 @@ import ai.subut.kurjun.storage.fs.FileSystemFileStoreModule;
 public class HttpServer
 {
     public static final String HTTP_PORT_KEY = "http.port";
-    public static final String ROOT_LOCATION_KEY = "packages.store.location";
 
 
     public static void main( String[] args ) throws Exception
     {
 
-        Properties properties = readProperties();
-
-        Injector injector = bootstrapDI( properties );
+        Injector injector = bootstrapDI();
+        KurjunProperties properties = injector.getInstance( KurjunProperties.class );
 
         FilterHolder f = new FilterHolder( injector.getInstance( GuiceFilter.class ) );
 
@@ -58,7 +44,7 @@ public class HttpServer
         handler.setContextPath( "/" );
         handler.addFilter( f, "/*", EnumSet.allOf( DispatcherType.class ) );
 
-        Server server = new Server( Integer.parseInt( properties.getProperty( HTTP_PORT_KEY, "8080" ) ) );
+        Server server = new Server( properties.getIntegerWithDefault( HTTP_PORT_KEY, 8080 ) );
         server.setHandler( handler );
 
         server.start();
@@ -66,67 +52,33 @@ public class HttpServer
     }
 
 
-    private static Properties readProperties() throws IOException
-    {
-        Properties properties = new Properties();
-        Path path = Paths.get( "app.properties" );
-        if ( Files.exists( path ) )
-        {
-            try ( Reader reader = new FileReader( path.toFile() ) )
-            {
-                properties.load( reader );
-            }
-        }
-        else
-        {
-            try ( Reader reader = new InputStreamReader( ClassLoader.getSystemResourceAsStream( path.toString() ) ) )
-            {
-                properties.load( reader );
-            }
-        }
-        return properties;
-    }
-
-
     /**
      * Starts and configures Guice DI.
      */
-    private static Injector bootstrapDI( Properties properties )
+    private static Injector bootstrapDI()
     {
 
-        Collection<Module> modules = new ArrayList<>();
-        modules.add( new ControlFileParserModule() );
-        modules.add( new ReleaseIndexParserModule() );
-        modules.add( new PackagesIndexParserModule() );
+        KurjunBootstrap bootstrap = new KurjunBootstrap();
+        bootstrap.addModule( new ControlFileParserModule() );
+        bootstrap.addModule( new ReleaseIndexParserModule() );
+        bootstrap.addModule( new PackagesIndexParserModule() );
 
-        String rootDir = properties.getProperty( ROOT_LOCATION_KEY );
+        bootstrap.addModule( new SnapMetadataParserModule() );
+        bootstrap.addModule( new SnapMetadataStoreModule() );
+        bootstrap.addModule( new SnapServletModule().setServletPath( "/snaps" ) );
 
-        modules.add( new SnapMetadataParserModule() );
-        modules.add( new SnapMetadataStoreModule( Paths.get( rootDir, "metadata" ).toString() ) );
-        modules.add( new SnapServletModule().setServletPath( "/snaps" ) );
+        bootstrap.addModule( new FileSystemFileStoreModule() );
+        bootstrap.addModule( new DbFilePackageMetadataStoreModule() );
 
-        modules.add( new FileSystemFileStoreModule().setRootLocation( Paths.get( rootDir, "files" ).toString() ) );
-        modules.add( new DbFilePackageMetadataStoreModule() );
+        bootstrap.addModule( new RepositoryModule() );
 
-        modules.add( new RepositoryModule() );
+        bootstrap.addModule( new LocalAptRepoServletModule().setServletPath( "/apt" ) );
+        bootstrap.addModule( new KurjunAptRepoServletModule().setServletPath( "/vapt" ) );
 
-        modules.add( new LocalAptRepoServletModule().setServletPath( "/apt" ) );
-        modules.add( new KurjunAptRepoServletModule().setServletPath( "/vapt" ) );
 
-        // setup necessary instance bindings here
-        modules.add( new AbstractModule()
-        {
-            @Override
-            protected void configure()
-            {
-                bind( String.class )
-                        .annotatedWith( Names.named( DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME ) )
-                        .toInstance( rootDir );
-            }
-        } );
+        bootstrap.boot();
 
-        return Guice.createInjector( modules );
-
+        return bootstrap.getInjector();
     }
 }
 

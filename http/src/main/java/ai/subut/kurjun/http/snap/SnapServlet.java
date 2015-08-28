@@ -20,6 +20,8 @@ import org.apache.commons.io.IOUtils;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import ai.subut.kurjun.common.service.KurjunProperties;
+import ai.subut.kurjun.common.service.PropertyKey;
 import ai.subut.kurjun.http.HttpServletBase;
 import ai.subut.kurjun.http.ServletUtils;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
@@ -27,6 +29,7 @@ import ai.subut.kurjun.model.metadata.snap.SnapMetadataFilter;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadataStore;
 import ai.subut.kurjun.model.metadata.snap.SnapUtils;
 import ai.subut.kurjun.model.storage.FileStore;
+import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 
 @Singleton
@@ -44,7 +47,10 @@ class SnapServlet extends HttpServletBase
     private SnapMetadataStore metadataStore;
 
     @Inject
-    private FileStore fileStore;
+    private FileStoreFactory fileStoreFactory;
+
+    @Inject
+    private KurjunProperties properties;
 
 
     @Override
@@ -93,6 +99,7 @@ class SnapServlet extends HttpServletBase
             byte[] md5bytes = Hex.decodeHex( md5.toCharArray() );
             if ( metadataStore.contains( md5bytes ) )
             {
+                FileStore fileStore = getFileStore();
                 fileStore.remove( md5bytes );
                 metadataStore.remove( md5bytes );
                 ok( resp, "Package successfully removed" );
@@ -104,6 +111,7 @@ class SnapServlet extends HttpServletBase
         }
         catch ( DecoderException ex )
         {
+            LOGGER.info( "Invalid md5 provided: {}", md5, ex );
             badRequest( resp, "Invalid md5 checksum provided" );
         }
     }
@@ -166,6 +174,7 @@ class SnapServlet extends HttpServletBase
 
     private void streamPackage( SnapMetadata meta, HttpServletResponse resp ) throws IOException
     {
+        FileStore fileStore = getFileStore();
         try ( InputStream is = fileStore.get( meta.getMd5() ) )
         {
             if ( is != null )
@@ -199,6 +208,12 @@ class SnapServlet extends HttpServletBase
         return sb.toString();
     }
 
+
+    private FileStore getFileStore()
+    {
+        String parentDir = properties.get( PropertyKey.FILE_SYSTEM_PARENT_DIR );
+        return fileStoreFactory.createFileSystemFileStore( parentDir );
+    }
 
 }
 

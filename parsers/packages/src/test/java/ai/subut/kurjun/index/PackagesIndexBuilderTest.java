@@ -134,6 +134,8 @@ public class PackagesIndexBuilderTest
                         Hex.encodeHexString( ( byte[] ) args.getArguments()[0] ) ) );
             }
         } );
+
+        indexBuilder.setFileStore( fileStore );
     }
 
 

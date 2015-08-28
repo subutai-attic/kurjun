@@ -14,12 +14,16 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.ar.CompressionType;
+import ai.subut.kurjun.common.service.KurjunProperties;
+import ai.subut.kurjun.common.service.PropertyKey;
 import ai.subut.kurjun.http.HttpServletBase;
 import ai.subut.kurjun.index.service.PackagesIndexBuilder;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.repository.LocalRepository;
+import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.repo.util.ReleaseIndexBuilder;
+import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 
 /**
@@ -37,11 +41,28 @@ class KurjunAptRepoServlet extends HttpServletBase
     @Inject
     private ReleaseIndexBuilder releaseIndexBuilder;
 
+    @Inject
+    private FileStoreFactory fileStoreFactory;
+
+    @Inject
+    private KurjunProperties properties;
+
 
     @Inject
     public KurjunAptRepoServlet( LocalRepository repository )
     {
         this.repository = repository;
+    }
+
+
+    @Override
+    public void init() throws ServletException
+    {
+        String parentDir = properties.get( PropertyKey.FILE_SYSTEM_PARENT_DIR );
+        FileStore fileStore = fileStoreFactory.createFileSystemFileStore( parentDir );
+        repository.setFileStore( fileStore );
+        packagesIndexBuilder.setFileStore( fileStore );
+        releaseIndexBuilder.setFileStore( fileStore );
     }
 
 

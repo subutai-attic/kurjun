@@ -40,10 +40,9 @@ public class DefaultLocalRepository implements LocalRepository
     private PackageMetadataStore metadataStore;
 
     @Inject
-    private FileStore fileStore;
-
-    @Inject
     private ControlFileParser controlFileParser;
+
+    private FileStore fileStore;
 
     private Set<ReleaseFile> releases = new HashSet<>();
 
@@ -58,6 +57,13 @@ public class DefaultLocalRepository implements LocalRepository
         r.setDescription( "Short description of the repo" );
         r.setVersion( "12.04" );
         releases.add( r );
+    }
+
+
+    @Override
+    public void setFileStore( FileStore fileStore )
+    {
+        this.fileStore = fileStore;
     }
 
 
@@ -147,6 +153,8 @@ public class DefaultLocalRepository implements LocalRepository
 
             DebAr deb = new DefaultDebAr( target.toFile(), tempDir.toFile() );
             PackageMetadata meta = controlFileParser.parse( params, deb.getControlFile() );
+
+            // TODO: we need release and component supplied here!!!
 
             metadataStore.put( meta );
             fileStore.put( target.toFile() );

@@ -17,6 +17,7 @@
   <modules>
     <module>s3</module>
     <module>fs</module>
+    <module>factory</module>
   </modules>
 
   <description>

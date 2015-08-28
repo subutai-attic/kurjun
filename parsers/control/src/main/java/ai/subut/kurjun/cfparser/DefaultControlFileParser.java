@@ -24,28 +24,9 @@ public class DefaultControlFileParser implements ControlFileParser
     private final static Logger LOG = LoggerFactory.getLogger( DefaultControlFileParser.class );
 
 
-//    private boolean isBinaryPackage( File controlFile ) {
-//        return true;
-//    }
-//
-//
-//    private boolean isChangesFile( File controlFile ) {
-//        return false;
-//    }
     @Override
     public PackageMetadata parse( Map<String, Object> params, File controlFile )
     {
-//        if ( isBinaryPackage( controlFile ) )
-//        {
-//            return parseBinary( controlFile );
-//        }
-//
-//        if ( isChangesFile( controlFile ) )
-//        {
-//            return parseSource( controlFile );
-//        }
-//
-//        throw new IllegalStateException( "We should not goet here." );
         return parseBinary( params, controlFile );
     }
 
@@ -68,9 +49,4 @@ public class DefaultControlFileParser implements ControlFileParser
 
         return MetadataUtils.serializablePackageMetadata( metadata );
     }
-//
-//
-//    public PkgMeta parseSource( File controlFile ) {
-//        return null;
-//    }
 }

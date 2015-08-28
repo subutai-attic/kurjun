@@ -3,10 +3,8 @@ package ai.subut.kurjun.storage.s3;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -32,6 +30,8 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.model.storage.FileStore;
 
@@ -39,17 +39,16 @@ import ai.subut.kurjun.model.storage.FileStore;
 class S3FileStore implements FileStore
 {
 
-    public static final String BUCKET_NAME = "subutai-kurjun";
     public static final long MULTIPART_THRESHOLD_BYTES = 1024 * 1024 * 100;
 
     private static final Logger LOGGER = LoggerFactory.getLogger( S3FileStore.class );
-    private static final int BUFFER_SIZE = 1024 * 8;
 
     String bucketName;
     AmazonS3 s3client;
 
 
-    public S3FileStore( String bucketName, AWSCredentials credentials )
+    @Inject
+    public S3FileStore( AWSCredentials credentials, @Assisted String bucketName )
     {
         this.bucketName = bucketName;
         this.s3client = new AmazonS3Client( credentials );
@@ -173,14 +172,9 @@ class S3FileStore implements FileStore
     {
         Objects.requireNonNull( source, "Source URL" );
         File file = File.createTempFile( "s3_", null );
-        try ( OutputStream os = new FileOutputStream( file ); InputStream is = source.openStream() )
+        try ( InputStream is = source.openStream() )
         {
-            int n;
-            byte[] buf = new byte[BUFFER_SIZE];
-            while ( ( n = is.read( buf ) ) > 0 )
-            {
-                os.write( buf, 0, n );
-            }
+            Files.copy( is, file.toPath(), StandardCopyOption.REPLACE_EXISTING );
             return put( file );
         }
         finally
@@ -197,14 +191,9 @@ class S3FileStore implements FileStore
 
         Objects.requireNonNull( source, "Source stream" );
         File file = File.createTempFile( "s3_", null );
-        try ( OutputStream os = new FileOutputStream( file ) )
+        try
         {
-            int n;
-            byte[] buf = new byte[BUFFER_SIZE];
-            while ( ( n = source.read( buf ) ) > 0 )
-            {
-                os.write( buf, 0, n );
-            }
+            Files.copy( source, file.toPath(), StandardCopyOption.REPLACE_EXISTING );
             return put( file );
         }
         finally

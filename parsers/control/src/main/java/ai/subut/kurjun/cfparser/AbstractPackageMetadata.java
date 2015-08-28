@@ -79,6 +79,7 @@ public abstract class AbstractPackageMetadata implements PackageMetadata
      *
      * @return the md5 sum of the Debian package
      */
+    @Override
     public byte[] getMd5Sum()
     {
         // again give back a copy so no one can fuck with it
@@ -91,6 +92,7 @@ public abstract class AbstractPackageMetadata implements PackageMetadata
      *
      * @return the filename of the Debian package
      */
+    @Override
     public String getFilename()
     {
         return filename;
