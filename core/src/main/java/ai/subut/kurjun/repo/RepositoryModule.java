@@ -2,8 +2,12 @@ package ai.subut.kurjun.repo;
 
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Module;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.google.inject.name.Names;
 
 import ai.subut.kurjun.model.repository.LocalRepository;
+
 
 /**
  * Guice module to initialize repository type bindings.
@@ -12,11 +16,19 @@ import ai.subut.kurjun.model.repository.LocalRepository;
 public class RepositoryModule extends AbstractModule
 {
 
+    public static final String LOCAL_NONVIRTUAL = "local.nonvirtual";
+    public static final String LOCAL_KURJUN = "local.kurjun";
+
+
     @Override
     protected void configure()
     {
-//        bind( LocalRepository.class ).to( LocalRepositoryImpl.class );
-        bind( LocalRepository.class ).to( KurjunLocalRepository.class );
+        Module module = new FactoryModuleBuilder()
+                .implement( LocalRepository.class, Names.named( LOCAL_NONVIRTUAL ), LocalAptRepositoryImpl.class )
+                .implement( LocalRepository.class, Names.named( LOCAL_KURJUN ), KurjunLocalRepository.class )
+                .build( RepositoryFactory.class );
+
+        install( module );
     }
 
 }

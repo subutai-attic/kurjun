@@ -11,20 +11,15 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.http.HttpServletBase;
-import ai.subut.kurjun.model.repository.LocalRepository;
+import ai.subut.kurjun.repo.RepositoryFactory;
 
 
 @Singleton
 class KurjunAptPoolServlet extends HttpServletBase
 {
-    private LocalRepository repository;
-
 
     @Inject
-    public KurjunAptPoolServlet( LocalRepository repository )
-    {
-        this.repository = repository;
-    }
+    private RepositoryFactory repositoryFactory;
 
 
     @Override

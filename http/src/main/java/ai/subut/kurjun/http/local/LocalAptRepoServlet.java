@@ -16,6 +16,7 @@ import com.google.inject.Singleton;
 
 import ai.subut.kurjun.http.HttpServletBase;
 import ai.subut.kurjun.model.repository.LocalRepository;
+import ai.subut.kurjun.repo.RepositoryFactory;
 
 
 @Singleton
@@ -26,11 +27,10 @@ class LocalAptRepoServlet extends HttpServletBase
 
 
     @Inject
-    public LocalAptRepoServlet( LocalRepository repository )
+    public LocalAptRepoServlet( RepositoryFactory repositoryFactory )
     {
-        this.repository = repository;
-        // TODO: injected repo shall be already inited
-        this.repository.init( "/var/www/repos/apt/hub" );
+        // TODO: parent dir from config
+        repository = repositoryFactory.createLocal( "/var/www/repos/apt/hub" );
     }
 
 
@@ -42,7 +42,7 @@ class LocalAptRepoServlet extends HttpServletBase
 
         String pathWithoutLeadingSlash = req.getPathInfo().substring( 1 );
 
-        Path path = repository.getBaseDirectoryPath().resolve( pathWithoutLeadingSlash );
+        Path path = repository.getBaseDirectory().resolve( pathWithoutLeadingSlash );
         if ( Files.exists( path ) )
         {
             try ( ServletOutputStream out = resp.getOutputStream() )

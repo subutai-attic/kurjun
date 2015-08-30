@@ -19,6 +19,7 @@ import ai.subut.kurjun.http.HttpServletBase;
 import ai.subut.kurjun.http.ServletUtils;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.storage.FileStore;
+import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 
@@ -33,10 +34,12 @@ class KurjunAptRepoUploadServlet extends HttpServletBase
     private KurjunProperties properties;
 
     @Inject
-    private LocalRepository repository;
+    private FileStoreFactory fileStoreFactory;
 
     @Inject
-    private FileStoreFactory fileStoreFactory;
+    private RepositoryFactory repositoryFactory;
+
+    private LocalRepository repository;
 
 
     @Override
@@ -44,7 +47,8 @@ class KurjunAptRepoUploadServlet extends HttpServletBase
     {
         String parentDir = properties.get( PropertyKey.FILE_SYSTEM_PARENT_DIR );
         FileStore fileStore = fileStoreFactory.createFileSystemFileStore( parentDir );
-        repository.setFileStore( fileStore );
+
+        repository = repositoryFactory.createLocalKurjun( fileStore );
     }
 
 

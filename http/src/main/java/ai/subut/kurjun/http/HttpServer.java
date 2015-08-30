@@ -24,7 +24,7 @@ import ai.subut.kurjun.repo.RepositoryModule;
 import ai.subut.kurjun.riparser.ReleaseIndexParserModule;
 import ai.subut.kurjun.snap.SnapMetadataParserModule;
 import ai.subut.kurjun.snap.metadata.store.SnapMetadataStoreModule;
-import ai.subut.kurjun.storage.fs.FileSystemFileStoreModule;
+import ai.subut.kurjun.storage.factory.FileStoreModule;
 
 
 public class HttpServer
@@ -67,7 +67,7 @@ public class HttpServer
         bootstrap.addModule( new SnapMetadataStoreModule() );
         bootstrap.addModule( new SnapServletModule().setServletPath( "/snaps" ) );
 
-        bootstrap.addModule( new FileSystemFileStoreModule() );
+        bootstrap.addModule( new FileStoreModule() );
         bootstrap.addModule( new DbFilePackageMetadataStoreModule() );
 
         bootstrap.addModule( new RepositoryModule() );

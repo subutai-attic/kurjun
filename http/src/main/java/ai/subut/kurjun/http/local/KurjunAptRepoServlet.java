@@ -22,6 +22,7 @@ import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.storage.FileStore;
+import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.repo.util.ReleaseIndexBuilder;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
@@ -33,8 +34,6 @@ import ai.subut.kurjun.storage.factory.FileStoreFactory;
 class KurjunAptRepoServlet extends HttpServletBase
 {
 
-    private LocalRepository repository;
-
     @Inject
     private PackagesIndexBuilder packagesIndexBuilder;
 
@@ -45,14 +44,12 @@ class KurjunAptRepoServlet extends HttpServletBase
     private FileStoreFactory fileStoreFactory;
 
     @Inject
-    private KurjunProperties properties;
-
+    private RepositoryFactory repositoryFactory;
 
     @Inject
-    public KurjunAptRepoServlet( LocalRepository repository )
-    {
-        this.repository = repository;
-    }
+    private KurjunProperties properties;
+
+    private LocalRepository repository;
 
 
     @Override
@@ -60,7 +57,9 @@ class KurjunAptRepoServlet extends HttpServletBase
     {
         String parentDir = properties.get( PropertyKey.FILE_SYSTEM_PARENT_DIR );
         FileStore fileStore = fileStoreFactory.createFileSystemFileStore( parentDir );
-        repository.setFileStore( fileStore );
+
+        repository = repositoryFactory.createLocalKurjun( fileStore );
+
         packagesIndexBuilder.setFileStore( fileStore );
         releaseIndexBuilder.setFileStore( fileStore );
     }
