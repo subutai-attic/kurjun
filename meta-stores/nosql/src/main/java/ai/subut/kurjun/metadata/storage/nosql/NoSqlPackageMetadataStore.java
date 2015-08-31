@@ -182,6 +182,7 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
 
         ResultSet rs = session.execute( st );
 
+        // TODO: check loop, see db file impl
         Iterator<Row> it = rs.iterator();
         while ( it.hasNext() && res.getPackageMetadata().size() < batchSize )
         {

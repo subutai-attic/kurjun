@@ -41,7 +41,15 @@
       <artifactId>metadata-common</artifactId>
       <version>${project.version}</version>
     </dependency>
-    
+
+    <!-- TODO: remove this dependency, added to use snap metadata pojo classes -->
+    <!-- default snap pojo classes should be moved to common module            -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>snap-parser</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <dependency>
       <groupId>com.datastax.cassandra</groupId>
       <artifactId>cassandra-driver-core</artifactId>

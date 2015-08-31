@@ -56,7 +56,7 @@ public class PackageMetadataStoreFactory
         }
         if ( NoSqlPackageMetadataStoreModule.TYPE.equals( type ) )
         {
-            return noSqlMetadataStoreFactory.createNoSqlPackageMetadataStore( context );
+            return noSqlMetadataStoreFactory.create( context );
         }
         if ( SqlDbPackageMetadataStoreModule.TYPE.equals( type ) )
         {
