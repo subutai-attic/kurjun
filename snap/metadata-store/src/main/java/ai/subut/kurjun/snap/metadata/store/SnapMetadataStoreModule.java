@@ -14,10 +14,17 @@ import ai.subut.kurjun.model.metadata.snap.SnapMetadataStore;
  */
 public class SnapMetadataStoreModule extends AbstractModule
 {
+    /**
+     * Property key for file db path to be used by file backed meta data store.
+     */
     public static final String DB_FILE_PATH = "snap.metadata.store.filedb";
 
-    static final String FILE_DB = "filedb";
-    static final String NOSQL_DB = "nosql";
+    /**
+     * Property key for the snap meta data store type.
+     */
+    public static final String TYPE = "snap.metadata.store.type";
+    public static final String FILE_DB = "filedb";
+    public static final String NOSQL_DB = "nosql";
 
 
     @Override
