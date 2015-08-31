@@ -6,12 +6,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.codec.binary.Hex;
 
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
+import com.google.inject.ProvisionException;
+import com.google.inject.assistedinject.Assisted;
 
+import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadataFilter;
@@ -30,7 +34,22 @@ class SnapMetadataStoreImpl implements SnapMetadataStore
 
 
     @Inject
-    public SnapMetadataStoreImpl( @Named( SnapMetadataStoreModule.DB_FILE_PATH ) String fileDbPath )
+    public SnapMetadataStoreImpl( KurjunProperties properties, @Assisted KurjunContext context )
+    {
+        Properties cp = properties.getContextProperties( context );
+        String dbFilePath = cp.getProperty( SnapMetadataStoreModule.DB_FILE_PATH );
+        if ( dbFilePath != null )
+        {
+            this.fileDbPath = dbFilePath;
+        }
+        else
+        {
+            throw new ProvisionException( "File db path not specified for context " + context );
+        }
+    }
+
+
+    SnapMetadataStoreImpl( String fileDbPath )
     {
         this.fileDbPath = fileDbPath;
     }

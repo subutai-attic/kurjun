@@ -3,6 +3,7 @@ package ai.subut.kurjun.repo;
 
 import com.google.inject.name.Named;
 
+import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.storage.FileStore;
 
@@ -31,7 +32,7 @@ public interface RepositoryFactory
      * @return
      */
     @Named( RepositoryModule.LOCAL_KURJUN )
-    LocalRepository createLocalKurjun( FileStore fileStore );
+    LocalRepository createLocalKurjun( FileStore fileStore, PackageMetadataStore metadataStore );
 
 }
 

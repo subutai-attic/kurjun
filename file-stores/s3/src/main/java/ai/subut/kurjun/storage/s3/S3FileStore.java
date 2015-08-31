@@ -9,6 +9,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,8 @@ import com.amazonaws.services.s3.transfer.Upload;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
+import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.model.storage.FileStore;
 
 
@@ -48,7 +51,20 @@ class S3FileStore implements FileStore
 
 
     @Inject
-    public S3FileStore( AWSCredentials credentials, @Assisted String bucketName )
+    public S3FileStore( AWSCredentials credentials, KurjunProperties properties, @Assisted KurjunContext context )
+    {
+        Properties prop = properties.getContextProperties( context.getName() );
+        ctor( credentials, prop.getProperty( S3FileStoreModule.BUCKET_NAME ) );
+    }
+
+
+    public S3FileStore( AWSCredentials credentials, String bucketName )
+    {
+        ctor( credentials, bucketName );
+    }
+
+
+    private void ctor( AWSCredentials credentials, String bucketName )
     {
         this.bucketName = bucketName;
         this.s3client = new AmazonS3Client( credentials );

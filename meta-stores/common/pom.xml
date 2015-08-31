@@ -13,6 +13,7 @@
   <name>Kurjun Metadata Common</name>
 
   <properties>
+    <osgi.bundle-activator>ai.subut.kurjun.metadata.common.Activator</osgi.bundle-activator>
   </properties>
 
   <build>
@@ -33,6 +34,22 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>model</artifactId>
       <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>ai.subut.kurjun</groupId>
+      <artifactId>common-utils</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.inject.extensions</groupId>
+      <artifactId>guice-assistedinject</artifactId>
     </dependency>
 
   </dependencies>

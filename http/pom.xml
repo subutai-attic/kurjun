@@ -102,7 +102,7 @@
 
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>db-meta-store</artifactId>
+      <artifactId>metadata-store-factory</artifactId>
       <version>${project.version}</version>
     </dependency>
 
@@ -116,11 +116,6 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>snap-metadata-store</artifactId>
       <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.google.inject</groupId>
-      <artifactId>guice</artifactId>
     </dependency>
 
     <dependency>

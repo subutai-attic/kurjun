@@ -21,6 +21,7 @@ import com.amazonaws.auth.PropertiesCredentials;
 
 import ai.subut.kurjun.model.storage.FileStore;
 
+import static ai.subut.kurjun.storage.s3.S3FileStoreModule.BUCKET_NAME;
 import static ai.subut.kurjun.storage.s3.S3FileStoreModule.S3_ACCESS_KEY;
 import static ai.subut.kurjun.storage.s3.S3FileStoreModule.S3_SECRET_KEY;
 
@@ -33,7 +34,6 @@ public class Activator implements BundleActivator, ManagedService
 {
 
     public static final String SERVICE_PID = S3FileStore.class.getName();
-    public static final String BUCKET_NAME = "file.store.s3.bucketName";
     public static final String CREDENTIALS_FILE = "file.store.s3.credentialsFile";
 
     private static final Logger LOGGER = LoggerFactory.getLogger( Activator.class );

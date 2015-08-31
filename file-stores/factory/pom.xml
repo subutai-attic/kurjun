@@ -19,6 +19,7 @@
       <artifactId>s3-file-store</artifactId>
       <version>${project.version}</version>
     </dependency>
+
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>fs-file-store</artifactId>

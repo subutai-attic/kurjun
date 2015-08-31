@@ -1,4 +1,4 @@
-package ai.subut.kurjun.index;
+package ai.subut.kurjun.repo.util;
 
 
 import java.io.ByteArrayOutputStream;
@@ -19,7 +19,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -43,9 +42,9 @@ import ai.subut.kurjun.model.storage.FileStore;
 
 
 @RunWith( MockitoJUnitRunner.class )
-public class PackagesIndexBuilderTest
+public class PackagesIndexBuilderImplTest
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger( PackagesIndexBuilderTest.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( PackagesIndexBuilderImplTest.class );
 
     private static Map<String, File> testPackageFiles;
     private static Map<String, PackageMetadata> metadata;
@@ -57,8 +56,7 @@ public class PackagesIndexBuilderTest
     @Mock
     private PackageMetadataStore metadataStore;
 
-    @InjectMocks
-    private PackagesIndexBuilderImpl indexBuilder;
+    private PackagesIndexBuilderImpl indexBuilder = new PackagesIndexBuilderImpl();
 
 
     @BeforeClass
@@ -135,7 +133,9 @@ public class PackagesIndexBuilderTest
             }
         } );
 
-        indexBuilder.setFileStore( fileStore );
+        indexBuilder.fileStore = fileStore;
+        indexBuilder.metadataStore = metadataStore;
+
     }
 
 

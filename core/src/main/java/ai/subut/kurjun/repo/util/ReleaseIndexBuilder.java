@@ -16,14 +16,15 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.ar.CompressionType;
-import ai.subut.kurjun.index.service.PackagesIndexBuilder;
+import ai.subut.kurjun.common.KurjunContext;
 import ai.subut.kurjun.model.index.Checksum;
 import ai.subut.kurjun.model.index.ChecksummedResource;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
-import ai.subut.kurjun.model.storage.FileStore;
+import ai.subut.kurjun.repo.service.PackagesIndexBuilder;
 import ai.subut.kurjun.riparser.ReleaseChecksummedResource;
 
 
@@ -42,21 +43,17 @@ public class ReleaseIndexBuilder
 
     private final Set<CompressionType> compressionTypes = new HashSet<>();
 
-    @Inject
     private PackagesIndexBuilder packagesIndexBuilder;
 
 
-    public ReleaseIndexBuilder()
+    @Inject
+    public ReleaseIndexBuilder( AptIndexBuilderFactory indexBuilderFactory, @Assisted KurjunContext context )
     {
         compressionTypes.add( CompressionType.NONE );
         compressionTypes.add( CompressionType.GZIP );
         compressionTypes.add( CompressionType.BZIP2 );
-    }
 
-
-    public void setFileStore( FileStore fileStore )
-    {
-        packagesIndexBuilder.setFileStore( fileStore );
+        packagesIndexBuilder = indexBuilderFactory.createPackagesIndexBuilder( context );
     }
 
 

@@ -1,6 +1,7 @@
 package ai.subut.kurjun.storage.fs;
 
 
+import ai.subut.kurjun.common.KurjunContext;
 import ai.subut.kurjun.model.storage.FileStore;
 
 
@@ -12,12 +13,12 @@ public interface FileSystemFileStoreFactory
 {
 
     /**
-     * Creates file system backed file store at the specified directory of local file system.
+     * Creates file system backed file store for the supplied context.
      *
-     * @param parentDirectory directory where files will be stored
+     * @param context context
      * @return file system backed file store
      */
-    FileStore create( String parentDirectory );
+    FileStore create( KurjunContext context );
 
 }
 

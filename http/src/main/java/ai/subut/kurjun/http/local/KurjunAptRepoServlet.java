@@ -14,15 +14,18 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.ar.CompressionType;
-import ai.subut.kurjun.common.service.KurjunProperties;
-import ai.subut.kurjun.common.service.PropertyKey;
+import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.http.HttpServer;
 import ai.subut.kurjun.http.HttpServletBase;
-import ai.subut.kurjun.index.service.PackagesIndexBuilder;
+import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
+import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.repo.RepositoryFactory;
+import ai.subut.kurjun.repo.service.PackagesIndexBuilder;
+import ai.subut.kurjun.repo.util.AptIndexBuilderFactory;
 import ai.subut.kurjun.repo.util.ReleaseIndexBuilder;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
@@ -35,19 +38,18 @@ class KurjunAptRepoServlet extends HttpServletBase
 {
 
     @Inject
-    private PackagesIndexBuilder packagesIndexBuilder;
-
-    @Inject
-    private ReleaseIndexBuilder releaseIndexBuilder;
+    private AptIndexBuilderFactory indexBuilderFactory;
 
     @Inject
     private FileStoreFactory fileStoreFactory;
 
     @Inject
-    private RepositoryFactory repositoryFactory;
+    private PackageMetadataStoreFactory metadataStoreFactory;
 
     @Inject
-    private KurjunProperties properties;
+    private RepositoryFactory repositoryFactory;
+
+    private KurjunContext context;
 
     private LocalRepository repository;
 
@@ -55,13 +57,12 @@ class KurjunAptRepoServlet extends HttpServletBase
     @Override
     public void init() throws ServletException
     {
-        String parentDir = properties.get( PropertyKey.FILE_SYSTEM_PARENT_DIR );
-        FileStore fileStore = fileStoreFactory.createFileSystemFileStore( parentDir );
+        context = HttpServer.CONTEXT;
 
-        repository = repositoryFactory.createLocalKurjun( fileStore );
+        FileStore fileStore = fileStoreFactory.create( context );
+        PackageMetadataStore metadataStore = metadataStoreFactory.create( context );
 
-        packagesIndexBuilder.setFileStore( fileStore );
-        releaseIndexBuilder.setFileStore( fileStore );
+        repository = repositoryFactory.createLocalKurjun( fileStore, metadataStore );
     }
 
 
@@ -115,6 +116,8 @@ class KurjunAptRepoServlet extends HttpServletBase
             String filename = "Packages." + compressionType.getExtension();
             resp.setHeader( "Content-Disposition", " attachment; filename=" + filename );
         }
+
+        PackagesIndexBuilder packagesIndexBuilder = indexBuilderFactory.createPackagesIndexBuilder( context );
         try ( OutputStream os = resp.getOutputStream() )
         {
             packagesIndexBuilder.buildIndex( component, arch, os, compressionType );
@@ -128,6 +131,7 @@ class KurjunAptRepoServlet extends HttpServletBase
                 .filter( r -> r.getCodename().equals( release ) ).findFirst();
         if ( item.isPresent() )
         {
+            ReleaseIndexBuilder releaseIndexBuilder = indexBuilderFactory.createReleaseIndexBuilder( context );
             String releaseIndex = releaseIndexBuilder.build( item.get(), repository.isKurjun() );
             ok( resp, releaseIndex );
         }

@@ -19,6 +19,7 @@
     <module>nosql</module>
     <module>db</module>
     <module>common</module>
+    <module>factory</module>
   </modules>
 
   <description>

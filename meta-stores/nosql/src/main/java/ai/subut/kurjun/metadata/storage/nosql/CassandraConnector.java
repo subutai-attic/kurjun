@@ -1,11 +1,7 @@
 package ai.subut.kurjun.metadata.storage.nosql;
 
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,10 +9,12 @@ import org.slf4j.LoggerFactory;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 import com.google.inject.Provider;
+import com.google.inject.ProvisionException;
 
 
 /**
- * Provider class for {@link Session} instance. Needs to be initialized first, otherwise {@code null} is returned.
+ * Provider class for {@link Session} instance. Needs to be initialized. If not initialized first get request triggers
+ * initialization of session to localhost with default port.
  *
  */
 public class CassandraConnector implements Provider<Session>
@@ -25,7 +23,6 @@ public class CassandraConnector implements Provider<Session>
 
     private Cluster cluster;
     private Session session;
-    private File replicationConfigFile;
 
 
     private CassandraConnector()
@@ -42,19 +39,19 @@ public class CassandraConnector implements Provider<Session>
     @Override
     public Session get()
     {
+        if ( session == null )
+        {
+            // try localhost with default port if not explicitly inited
+            try
+            {
+                init( "localhost", 0 );
+            }
+            catch ( IOException ex )
+            {
+                throw new ProvisionException( "Failed to init Cassandra session", ex );
+            }
+        }
         return this.session;
-    }
-
-
-    public File getReplicationConfigFile()
-    {
-        return replicationConfigFile;
-    }
-
-
-    public void setReplicationConfigFile( File replicationConfigFile )
-    {
-        this.replicationConfigFile = replicationConfigFile;
     }
 
 
@@ -78,8 +75,6 @@ public class CassandraConnector implements Provider<Session>
         LOGGER.info( "Connected to cluster: {}", cluster.getMetadata().getClusterName() );
 
         session = cluster.connect();
-
-        createSchema();
     }
 
 
@@ -92,29 +87,6 @@ public class CassandraConnector implements Provider<Session>
         if ( cluster != null )
         {
             cluster.close();
-        }
-    }
-
-
-    private void createSchema() throws IOException
-    {
-        try ( InputStream is = getReplicationConfigStream() )
-        {
-            session.execute( SchemaInfo.getCreateKeyspaceStatement( is ) );
-            session.execute( SchemaInfo.getCreateTableStatement() );
-        }
-    }
-
-
-    private InputStream getReplicationConfigStream() throws FileNotFoundException
-    {
-        if ( replicationConfigFile != null )
-        {
-            return new FileInputStream( replicationConfigFile );
-        }
-        else
-        {
-            return ClassLoader.getSystemResourceAsStream( "cassandra-replication" );
         }
     }
 

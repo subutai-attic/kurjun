@@ -2,7 +2,6 @@ package ai.subut.kurjun.metadata.storage.sql;
 
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,19 +12,16 @@ import java.util.Properties;
 import org.apache.commons.codec.binary.Hex;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.InstanceCreator;
-import com.google.inject.name.Named;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 
-import ai.subut.kurjun.metadata.common.DefaultDependency;
+import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.metadata.common.DefaultPackageMetadata;
 import ai.subut.kurjun.metadata.common.PackageMetadataListingImpl;
-import ai.subut.kurjun.model.metadata.Dependency;
 import ai.subut.kurjun.model.metadata.PackageMetadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
-
-import static ai.subut.kurjun.metadata.storage.sql.SqlDbPackageMetadataStoreModule.CONN_PROPERTIES_NAME;
 
 
 /**
@@ -35,35 +31,33 @@ import static ai.subut.kurjun.metadata.storage.sql.SqlDbPackageMetadataStoreModu
  */
 class SqlDbPackageMetadataStore implements PackageMetadataStore
 {
-    private static final Gson GSON;
+    @Inject
+    Gson gson;
 
     int batchSize = 1000;
 
 
-    static
+    /**
+     * Constructs a metadata store backed by a SQL DB whose properties are provided by an {@link Properties} instance of
+     * the context.
+     *
+     * @param properties properties
+     * @param context context for which SQL db store is created
+     */
+    @Inject
+    public SqlDbPackageMetadataStore( KurjunProperties properties, @Assisted KurjunContext context )
     {
-        GsonBuilder gb = new GsonBuilder().setPrettyPrinting();
-        InstanceCreator<Dependency> depInstanceCreator = new InstanceCreator<Dependency>()
-        {
-            @Override
-            public Dependency createInstance( Type type )
-            {
-                return new DefaultDependency();
-            }
-        };
-        gb.registerTypeAdapter( Dependency.class, depInstanceCreator );
-
-        GSON = gb.create();
+        Properties cp = properties.getContextProperties( context );
+        ConnectionFactory.getInstance().init( cp );
     }
 
 
     /**
      * Constructs a metadata store backed by a SQL DB whose properties are provided by an {@link Properties} instance
-     * annotated with {@link SqlDbPackageMetadataStoreModule#CONN_PROPERTIES_NAME} name.
      *
      * @param properties
      */
-    public SqlDbPackageMetadataStore( @Named( CONN_PROPERTIES_NAME ) Properties properties )
+    public SqlDbPackageMetadataStore( Properties properties )
     {
         ConnectionFactory.getInstance().init( properties );
     }
@@ -98,7 +92,7 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
             ResultSet rs = ps.executeQuery();
             if ( rs.next() )
             {
-                return GSON.fromJson( rs.getString( 1 ), DefaultPackageMetadata.class );
+                return gson.fromJson( rs.getString( 1 ), DefaultPackageMetadata.class );
             }
             return null;
         }
@@ -124,7 +118,7 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
             {
                 ps = conn.prepareStatement( SqlStatements.INSERT );
                 ps.setString( 1, Hex.encodeHexString( meta.getMd5Sum() ) );
-                ps.setString( 2, GSON.toJson( meta ) );
+                ps.setString( 2, gson.toJson( meta ) );
                 return ps.executeUpdate() > 0;
             }
             return false;
@@ -190,7 +184,7 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
             ResultSet rs = ps.executeQuery();
             while ( rs.next() && pml.getPackageMetadata().size() < batchSize )
             {
-                DefaultPackageMetadata meta = GSON.fromJson( rs.getString( 1 ), DefaultPackageMetadata.class );
+                DefaultPackageMetadata meta = gson.fromJson( rs.getString( 1 ), DefaultPackageMetadata.class );
                 pml.getPackageMetadata().add( meta );
                 pml.setMarker( Hex.encodeHexString( meta.getMd5Sum() ) );
             }

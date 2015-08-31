@@ -2,6 +2,7 @@ package ai.subut.kurjun.http;
 
 
 import java.util.EnumSet;
+import java.util.Properties;
 
 import javax.servlet.DispatcherType;
 
@@ -9,27 +10,35 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 
+import com.datastax.driver.core.Session;
+import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceFilter;
 
 import ai.subut.kurjun.cfparser.ControlFileParserModule;
 import ai.subut.kurjun.common.KurjunBootstrap;
+import ai.subut.kurjun.common.KurjunContext;
 import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.http.local.KurjunAptRepoServletModule;
 import ai.subut.kurjun.http.local.LocalAptRepoServletModule;
 import ai.subut.kurjun.http.snap.SnapServletModule;
 import ai.subut.kurjun.index.PackagesIndexParserModule;
+import ai.subut.kurjun.metadata.factory.PackageMetadataStoreModule;
 import ai.subut.kurjun.metadata.storage.file.DbFilePackageMetadataStoreModule;
+import ai.subut.kurjun.metadata.storage.nosql.CassandraConnector;
 import ai.subut.kurjun.repo.RepositoryModule;
 import ai.subut.kurjun.riparser.ReleaseIndexParserModule;
 import ai.subut.kurjun.snap.SnapMetadataParserModule;
 import ai.subut.kurjun.snap.metadata.store.SnapMetadataStoreModule;
 import ai.subut.kurjun.storage.factory.FileStoreModule;
+import ai.subut.kurjun.storage.fs.FileSystemFileStoreModule;
 
 
 public class HttpServer
 {
     public static final String HTTP_PORT_KEY = "http.port";
+
+    public static final KurjunContext CONTEXT = new KurjunContext( "my" );
 
 
     public static void main( String[] args ) throws Exception
@@ -37,6 +46,7 @@ public class HttpServer
 
         Injector injector = bootstrapDI();
         KurjunProperties properties = injector.getInstance( KurjunProperties.class );
+        setContexts( properties );
 
         FilterHolder f = new FilterHolder( injector.getInstance( GuiceFilter.class ) );
 
@@ -67,8 +77,16 @@ public class HttpServer
         bootstrap.addModule( new SnapMetadataStoreModule() );
         bootstrap.addModule( new SnapServletModule().setServletPath( "/snaps" ) );
 
+        bootstrap.addModule( new AbstractModule()
+        {
+            @Override
+            protected void configure()
+            {
+                bind( Session.class ).toProvider( CassandraConnector.getInstance() );
+            }
+        } );
         bootstrap.addModule( new FileStoreModule() );
-        bootstrap.addModule( new DbFilePackageMetadataStoreModule() );
+        bootstrap.addModule( new PackageMetadataStoreModule() );
 
         bootstrap.addModule( new RepositoryModule() );
 
@@ -79,6 +97,19 @@ public class HttpServer
         bootstrap.boot();
 
         return bootstrap.getInjector();
+    }
+
+
+    private static void setContexts( KurjunProperties properties )
+    {
+        Properties p = properties.getContextProperties( CONTEXT );
+        p.setProperty( FileStoreModule.FILE_STORE_TYPE, FileSystemFileStoreModule.TYPE );
+        p.setProperty( FileSystemFileStoreModule.ROOT_DIRECTORY, "/tmp/kurjun/files" );
+
+        p.setProperty( PackageMetadataStoreModule.PACKAGE_METADATA_STORE_TYPE, DbFilePackageMetadataStoreModule.TYPE );
+        p.setProperty( DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME, "/tmp/kurjun/metadata" );
+
+        p.setProperty( SnapMetadataStoreModule.DB_FILE_PATH, "/tmp/kurjun/snaps" );
     }
 }
 

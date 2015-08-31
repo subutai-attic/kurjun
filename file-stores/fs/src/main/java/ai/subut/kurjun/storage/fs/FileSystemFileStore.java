@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.DigestInputStream;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.UUID;
 
 import org.apache.commons.codec.binary.Hex;
@@ -21,6 +22,8 @@ import org.apache.commons.codec.digest.DigestUtils;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
+import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.model.storage.FileStore;
 
@@ -43,9 +46,17 @@ class FileSystemFileStore implements FileStore
      *
      */
     @Inject
-    public FileSystemFileStore( @Assisted String rootLocation )
+    public FileSystemFileStore( KurjunProperties properties, @Assisted KurjunContext context )
     {
-        this.rootLocation = Paths.get( rootLocation );
+        Properties cp = properties.getContextProperties( context.getName() );
+        String parentDir = cp.getProperty( FileSystemFileStoreModule.ROOT_DIRECTORY );
+        this.rootLocation = Paths.get( parentDir );
+    }
+
+
+    public FileSystemFileStore( String parentDirectory )
+    {
+        this.rootLocation = Paths.get( parentDirectory );
     }
 
 

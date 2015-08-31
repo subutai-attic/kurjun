@@ -7,6 +7,7 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
 
 import ai.subut.kurjun.model.repository.LocalRepository;
+import ai.subut.kurjun.repo.util.AptIndiceBuilderModule;
 
 
 /**
@@ -29,6 +30,7 @@ public class RepositoryModule extends AbstractModule
                 .build( RepositoryFactory.class );
 
         install( module );
+        install( new AptIndiceBuilderModule() );
     }
 
 }

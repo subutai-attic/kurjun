@@ -1,6 +1,9 @@
 package ai.subut.kurjun.common;
 
 
+import java.util.Properties;
+
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +21,12 @@ public class KurjunPropertiesImplTest
     public void setUp() throws ConfigurationException
     {
         properties = new KurjunPropertiesImpl();
+    }
+
+
+    @After
+    public void tearDown() throws Exception
+    {
     }
 
 
@@ -73,6 +82,19 @@ public class KurjunPropertiesImplTest
     {
         Assert.assertEquals( false, properties.getBooleanWithDefault( "invalid.key", false ) );
         Assert.assertEquals( false, properties.getBooleanWithDefault( "int.value.invalid", false ) );
+    }
+
+
+    @Test
+    public void testGetContextProperties()
+    {
+        String context = "some-context";
+        Properties p = properties.getContextProperties( context );
+        Assert.assertNotNull( p );
+
+        p.put( "key", "value" );
+        p = properties.getContextProperties( context );
+        Assert.assertEquals( "value", p.getProperty( "key" ) );
     }
 
 }

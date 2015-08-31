@@ -20,8 +20,8 @@ import org.apache.commons.io.IOUtils;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import ai.subut.kurjun.common.service.KurjunProperties;
-import ai.subut.kurjun.common.service.PropertyKey;
+import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.http.HttpServer;
 import ai.subut.kurjun.http.HttpServletBase;
 import ai.subut.kurjun.http.ServletUtils;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
@@ -29,6 +29,7 @@ import ai.subut.kurjun.model.metadata.snap.SnapMetadataFilter;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadataStore;
 import ai.subut.kurjun.model.metadata.snap.SnapUtils;
 import ai.subut.kurjun.model.storage.FileStore;
+import ai.subut.kurjun.snap.metadata.store.SnapMetadataStoreFactory;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 
@@ -44,13 +45,19 @@ class SnapServlet extends HttpServletBase
     private static final String SNAPS_VERSION_PARAM = "version";
 
     @Inject
-    private SnapMetadataStore metadataStore;
+    private SnapMetadataStoreFactory metadataStoreFactory;
 
     @Inject
     private FileStoreFactory fileStoreFactory;
 
-    @Inject
-    private KurjunProperties properties;
+    private KurjunContext context;
+
+
+    @Override
+    public void init() throws ServletException
+    {
+        this.context = HttpServer.CONTEXT;
+    }
 
 
     @Override
@@ -94,6 +101,7 @@ class SnapServlet extends HttpServletBase
             badRequest( resp, "Provide md5 checksum of the package to remove" );
             return;
         }
+        SnapMetadataStore metadataStore = getMetadataStore();
         try
         {
             byte[] md5bytes = Hex.decodeHex( md5.toCharArray() );
@@ -119,6 +127,7 @@ class SnapServlet extends HttpServletBase
 
     private void getByMd5( String md5, HttpServletResponse resp ) throws IOException
     {
+        SnapMetadataStore metadataStore = getMetadataStore();
         try
         {
             byte[] md5bytes = Hex.decodeHex( md5.toCharArray() );
@@ -141,7 +150,7 @@ class SnapServlet extends HttpServletBase
 
     private void getByNameAndVersion( String name, String version, HttpServletResponse resp ) throws IOException
     {
-
+        SnapMetadataStore metadataStore = getMetadataStore();
         List<SnapMetadata> ls = metadataStore.list( SnapMetadataFilter.getNameFilter( name ) );
         // filter by version if specified
         if ( version != null )
@@ -211,8 +220,13 @@ class SnapServlet extends HttpServletBase
 
     private FileStore getFileStore()
     {
-        String parentDir = properties.get( PropertyKey.FILE_SYSTEM_PARENT_DIR );
-        return fileStoreFactory.createFileSystemFileStore( parentDir );
+        return fileStoreFactory.create( context );
+    }
+
+
+    private SnapMetadataStore getMetadataStore()
+    {
+        return metadataStoreFactory.create( context );
     }
 
 }

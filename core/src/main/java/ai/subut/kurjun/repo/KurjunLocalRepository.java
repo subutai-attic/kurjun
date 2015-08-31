@@ -46,11 +46,9 @@ class KurjunLocalRepository extends RepositoryBase implements LocalRepository
 {
 
     @Inject
-    private PackageMetadataStore metadataStore;
-
-    @Inject
     private ControlFileParser controlFileParser;
 
+    private PackageMetadataStore metadataStore;
     private FileStore fileStore;
 
     private final URL url;
@@ -58,7 +56,7 @@ class KurjunLocalRepository extends RepositoryBase implements LocalRepository
 
 
     @Inject
-    public KurjunLocalRepository( @Assisted FileStore fileStore )
+    public KurjunLocalRepository( @Assisted FileStore fileStore, @Assisted PackageMetadataStore metadataStore )
     {
         // TODO: setup mechanism for repos
         DefaultRelease r = new DefaultRelease();
@@ -70,6 +68,7 @@ class KurjunLocalRepository extends RepositoryBase implements LocalRepository
         releases.add( r );
 
         this.fileStore = fileStore;
+        this.metadataStore = metadataStore;
 
         try
         {
