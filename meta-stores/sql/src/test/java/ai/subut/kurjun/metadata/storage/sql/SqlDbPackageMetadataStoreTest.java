@@ -3,6 +3,7 @@ package ai.subut.kurjun.metadata.storage.sql;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.commons.codec.digest.DigestUtils;
+
+import com.google.gson.GsonBuilder;
+import com.google.gson.InstanceCreator;
 
 import ai.subut.kurjun.metadata.common.DefaultDependency;
 import ai.subut.kurjun.metadata.common.DefaultPackageMetadata;
@@ -50,6 +54,14 @@ public class SqlDbPackageMetadataStoreTest
             Properties properties = new Properties();
             properties.load( is );
             store = new SqlDbPackageMetadataStore( properties );
+            store.gson = new GsonBuilder().registerTypeAdapter( Dependency.class, new InstanceCreator<Dependency>()
+            {
+                @Override
+                public Dependency createInstance( Type type )
+                {
+                    return new DefaultDependency();
+                }
+            } ).create();
         }
         catch ( Exception ex )
         {

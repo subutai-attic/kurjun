@@ -1,4 +1,4 @@
-package ai.subut.kurjun.index.service;
+package ai.subut.kurjun.repo.service;
 
 
 import java.io.IOException;
@@ -6,7 +6,6 @@ import java.io.OutputStream;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.model.metadata.Architecture;
-import ai.subut.kurjun.model.storage.FileStore;
 
 
 /**
@@ -15,14 +14,6 @@ import ai.subut.kurjun.model.storage.FileStore;
  */
 public interface PackagesIndexBuilder
 {
-
-    /**
-     * Sets file store to use when building packages index files. TODO: better injection mechanism
-     *
-     * @param fileStore
-     */
-    void setFileStore( FileStore fileStore );
-
 
     /**
      * Builds packages index file for the supplied component and architecture. Output will be plain stream without

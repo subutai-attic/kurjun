@@ -7,20 +7,22 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
 import java.util.stream.Stream;
 
 import org.apache.commons.codec.binary.Hex;
 
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
+import com.google.inject.ProvisionException;
+import com.google.inject.assistedinject.Assisted;
 
+import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.metadata.common.PackageMetadataListingImpl;
 import ai.subut.kurjun.model.metadata.PackageMetadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
-
-import static ai.subut.kurjun.metadata.storage.file.DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME;
 
 
 class DbFilePackageMetadataStore implements PackageMetadataStore
@@ -39,10 +41,22 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
      *
      * @param location parent directory
      */
-    @Inject
-    public DbFilePackageMetadataStore( @Named( DB_FILE_LOCATION_NAME ) String location ) throws IOException
+    public DbFilePackageMetadataStore( String fileDbPath )
     {
-        this.fileDbPath = Paths.get( location, "metadata" );
+        this.fileDbPath = Paths.get( fileDbPath, "metadata" );
+    }
+
+
+    @Inject
+    public DbFilePackageMetadataStore( KurjunProperties properties, @Assisted KurjunContext context )
+    {
+        Properties cp = properties.getContextProperties( context );
+        String fileDbDirectory = cp.getProperty( DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME );
+        if ( fileDbDirectory == null )
+        {
+            throw new ProvisionException( "File db location not specified for context " + context );
+        }
+        this.fileDbPath = Paths.get( fileDbDirectory, "metadata" );
     }
 
 

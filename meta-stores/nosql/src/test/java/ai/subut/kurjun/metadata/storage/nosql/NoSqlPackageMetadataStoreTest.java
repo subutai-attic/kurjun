@@ -3,6 +3,7 @@ package ai.subut.kurjun.metadata.storage.nosql;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -19,6 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.commons.codec.digest.DigestUtils;
+
+import com.google.gson.GsonBuilder;
+import com.google.gson.InstanceCreator;
 
 import ai.subut.kurjun.metadata.common.DefaultDependency;
 import ai.subut.kurjun.metadata.common.DefaultPackageMetadata;
@@ -51,6 +55,14 @@ public class NoSqlPackageMetadataStoreTest
             prop.load( is );
             store = new NoSqlPackageMetadataStore( prop.getProperty( "test.cassandra.node" ),
                                                    Integer.parseInt( prop.getProperty( "test.cassandra.port" ) ) );
+            store.gson = new GsonBuilder().registerTypeAdapter( Dependency.class, new InstanceCreator<Dependency>()
+            {
+                @Override
+                public Dependency createInstance( Type type )
+                {
+                    return new DefaultDependency();
+                }
+            } ).create();
         }
         catch ( Exception ex )
         {

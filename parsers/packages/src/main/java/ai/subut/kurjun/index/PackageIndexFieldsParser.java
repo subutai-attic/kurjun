@@ -8,10 +8,10 @@ import ai.subut.kurjun.model.index.IndexPackageMetaData;
 import ai.subut.kurjun.model.metadata.PackageMetadata;
 
 
-class PackageIndexFieldsParser extends ControlFile
+public class PackageIndexFieldsParser extends ControlFile
 {
 
-    static final ControlField[] FIELDS =
+    public static final ControlField[] FIELDS =
     {
         new ControlField( PackageMetadata.PACKAGE_FIELD, true ),
         new ControlField( PackageMetadata.VERSION_FIELD, true ),

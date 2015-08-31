@@ -1,11 +1,18 @@
 package ai.subut.kurjun.storage.factory;
 
 
-import com.google.inject.Inject;
+import java.util.Properties;
 
+import com.google.inject.Inject;
+import com.google.inject.ProvisionException;
+
+import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.storage.fs.FileSystemFileStoreFactory;
+import ai.subut.kurjun.storage.fs.FileSystemFileStoreModule;
 import ai.subut.kurjun.storage.s3.S3FileStoreFactory;
+import ai.subut.kurjun.storage.s3.S3FileStoreModule;
 
 
 /**
@@ -16,6 +23,9 @@ public class FileStoreFactory
 {
 
     @Inject
+    private KurjunProperties properties;
+
+    @Inject
     private FileSystemFileStoreFactory fileSystemFileStoreFactory;
 
     @Inject
@@ -23,26 +33,29 @@ public class FileStoreFactory
 
 
     /**
-     * Wrapper to {@link FileSystemFileStoreFactory#create(java.lang.String) }
+     * Creates file store for the supplied context. File store type is identified by
+     * {@link FileStoreModule#FILE_STORE_TYPE} key.
      *
-     * @param parentDirectory
+     * @param context
      * @return
      */
-    public FileStore createFileSystemFileStore( String parentDirectory )
+    public FileStore create( KurjunContext context )
     {
-        return fileSystemFileStoreFactory.create( parentDirectory );
+        Properties prop = properties.getContextProperties( context.getName() );
+        String type = prop.getProperty( FileStoreModule.FILE_STORE_TYPE );
+
+        if ( FileSystemFileStoreModule.TYPE.equals( type ) )
+        {
+            return fileSystemFileStoreFactory.create( context );
+        }
+
+        if ( S3FileStoreModule.TYPE.equals( type ) )
+        {
+            return s3FileStoreFactory.create( context );
+        }
+
+        throw new ProvisionException( "Invalid context properties" );
     }
 
-
-    /**
-     * Wrapper to {@link  S3FileStoreFactory#create(java.lang.String)}
-     *
-     * @param bucketName
-     * @return
-     */
-    public FileStore createS3FileStore( String bucketName )
-    {
-        return s3FileStoreFactory.create( bucketName );
-    }
 }
 

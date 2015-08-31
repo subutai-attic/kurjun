@@ -1,4 +1,4 @@
-package ai.subut.kurjun.index;
+package ai.subut.kurjun.repo.util;
 
 
 import java.io.IOException;
@@ -21,9 +21,13 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorOutputStream;
 
 import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.ar.CompressionType;
-import ai.subut.kurjun.index.service.PackagesIndexBuilder;
+import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunProperties;
+import ai.subut.kurjun.index.PackageIndexFieldsParser;
+import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.Dependency;
@@ -31,26 +35,37 @@ import ai.subut.kurjun.model.metadata.PackageMetadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.storage.FileStore;
+import ai.subut.kurjun.repo.service.PackagesIndexBuilder;
+import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 
 class PackagesIndexBuilderImpl implements PackagesIndexBuilder
 {
 
-    private PackageMetadataStore metadataStore;
-    private FileStore fileStore;
+    PackageMetadataStore metadataStore;
+    FileStore fileStore;
 
 
     @Inject
-    public PackagesIndexBuilderImpl( PackageMetadataStore metadataStore )
+    public PackagesIndexBuilderImpl( KurjunProperties properties,
+                                     FileStoreFactory fileStoreFactory,
+                                     PackageMetadataStoreFactory metadataStoreFactory,
+                                     @Assisted KurjunContext context )
     {
-        this.metadataStore = metadataStore;
+        this.fileStore = fileStoreFactory.create( context );
+        this.metadataStore = metadataStoreFactory.create( context );
     }
 
 
-    @Override
-    public void setFileStore( FileStore fileStore )
+    public PackagesIndexBuilderImpl( PackageMetadataStore metadataStore, FileStore fileStore )
     {
+        this.metadataStore = metadataStore;
         this.fileStore = fileStore;
+    }
+
+
+    PackagesIndexBuilderImpl()
+    {
     }
 
 
@@ -258,7 +273,15 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
             {
                 sb.append( ", " );
             }
-            sb.append( dep instanceof Dependency ? dumpDependency( ( Dependency ) dep ) : dep );
+
+            if ( dep instanceof Dependency )
+            {
+                sb.append( dumpDependency( ( Dependency ) dep ) );
+            }
+            else
+            {
+                sb.append( dep );
+            }
         }
         return sb.toString();
     }

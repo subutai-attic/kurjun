@@ -3,7 +3,6 @@ package ai.subut.kurjun.metadata.storage.nosql;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.Iterator;
 
 import org.apache.commons.codec.binary.Hex;
@@ -14,14 +13,13 @@ import com.datastax.driver.core.Session;
 import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.InstanceCreator;
 import com.google.inject.Inject;
+import com.google.inject.ProvisionException;
+import com.google.inject.assistedinject.Assisted;
 
-import ai.subut.kurjun.metadata.common.DefaultDependency;
+import ai.subut.kurjun.common.KurjunContext;
 import ai.subut.kurjun.metadata.common.DefaultPackageMetadata;
 import ai.subut.kurjun.metadata.common.PackageMetadataListingImpl;
-import ai.subut.kurjun.model.metadata.Dependency;
 import ai.subut.kurjun.model.metadata.PackageMetadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
@@ -43,33 +41,29 @@ import static com.datastax.driver.core.querybuilder.QueryBuilder.token;
 class NoSqlPackageMetadataStore implements PackageMetadataStore
 {
 
-    private static final Gson GSON;
+    @Inject
+    Gson gson;
 
     int batchSize = 1000;
     private Session session;
-
-
-    static
-    {
-        GsonBuilder gb = new GsonBuilder().setPrettyPrinting();
-        InstanceCreator<Dependency> depInstanceCreator = new InstanceCreator<Dependency>()
-        {
-            @Override
-            public Dependency createInstance( Type type )
-            {
-                return new DefaultDependency();
-            }
-        };
-        gb.registerTypeAdapter( Dependency.class, depInstanceCreator );
-
-        GSON = gb.create();
-    }
+    private SchemaInfo schemaInfo;
 
 
     @Inject
-    public NoSqlPackageMetadataStore( Session session )
+    public NoSqlPackageMetadataStore( Session session, @Assisted KurjunContext context )
     {
         this.session = session;
+
+        schemaInfo = new SchemaInfo();
+        schemaInfo.setTag( context.getName() );
+        try
+        {
+            schemaInfo.createSchema( session );
+        }
+        catch ( IOException ex )
+        {
+            throw new ProvisionException( "Failed to construct metadata store", ex );
+        }
     }
 
 
@@ -100,12 +94,11 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
     public NoSqlPackageMetadataStore( String node, int port, File replicationConfig ) throws IOException
     {
         CassandraConnector connector = CassandraConnector.getInstance();
-        if ( replicationConfig != null )
-        {
-            connector.setReplicationConfigFile( replicationConfig );
-        }
         connector.init( node, port );
         this.session = connector.get();
+
+        schemaInfo = new SchemaInfo();
+        schemaInfo.createSchema( session, replicationConfig );
     }
 
 
@@ -119,13 +112,13 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
     @Override
     public PackageMetadata get( byte[] md5 ) throws IOException
     {
-        Statement st = QueryBuilder.select().from( SchemaInfo.KEYSPACE, SchemaInfo.TABLE )
+        Statement st = QueryBuilder.select().from( SchemaInfo.KEYSPACE, schemaInfo.getTableName() )
                 .where( QueryBuilder.eq( SchemaInfo.CHECKSUM_COLUMN, Hex.encodeHexString( md5 ) ) );
         ResultSet rs = session.execute( st );
         Row row = rs.one();
         if ( row != null )
         {
-            return GSON.fromJson( row.getString( SchemaInfo.METADATA_COLUMN ), DefaultPackageMetadata.class );
+            return gson.fromJson( row.getString( SchemaInfo.METADATA_COLUMN ), DefaultPackageMetadata.class );
         }
         return null;
     }
@@ -136,9 +129,9 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
     {
         if ( !contains( meta.getMd5Sum() ) )
         {
-            Statement st = QueryBuilder.insertInto( SchemaInfo.KEYSPACE, SchemaInfo.TABLE )
+            Statement st = QueryBuilder.insertInto( SchemaInfo.KEYSPACE, schemaInfo.getTableName() )
                     .value( SchemaInfo.CHECKSUM_COLUMN, Hex.encodeHexString( meta.getMd5Sum() ) )
-                    .value( SchemaInfo.METADATA_COLUMN, GSON.toJson( meta ) );
+                    .value( SchemaInfo.METADATA_COLUMN, gson.toJson( meta ) );
             session.execute( st );
             return true;
         }
@@ -151,7 +144,7 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
     {
         if ( contains( md5 ) )
         {
-            Statement st = QueryBuilder.delete().from( SchemaInfo.KEYSPACE, SchemaInfo.TABLE )
+            Statement st = QueryBuilder.delete().from( SchemaInfo.KEYSPACE, schemaInfo.getTableName() )
                     .where( QueryBuilder.eq( SchemaInfo.CHECKSUM_COLUMN, Hex.encodeHexString( md5 ) ) );
             session.execute( st );
             return true;
@@ -182,7 +175,7 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
     {
         PackageMetadataListingImpl res = new PackageMetadataListingImpl();
 
-        Statement st = QueryBuilder.select().from( SchemaInfo.KEYSPACE, SchemaInfo.TABLE )
+        Statement st = QueryBuilder.select().from( SchemaInfo.KEYSPACE, schemaInfo.getTableName() )
                 .where( gt( token( SchemaInfo.CHECKSUM_COLUMN ), fcall( "token", marker != null ? marker : "" ) ) )
                 .limit( batchSize + 1 );
         // (*) limit with one more item to detect whether there are more results to fetch
@@ -194,7 +187,7 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
         {
             Row row = it.next();
             String json = row.getString( SchemaInfo.METADATA_COLUMN );
-            res.getPackageMetadata().add( GSON.fromJson( json, DefaultPackageMetadata.class ) );
+            res.getPackageMetadata().add( gson.fromJson( json, DefaultPackageMetadata.class ) );
             res.setMarker( row.getString( SchemaInfo.CHECKSUM_COLUMN ) );
         }
         res.setTruncated( it.hasNext() );

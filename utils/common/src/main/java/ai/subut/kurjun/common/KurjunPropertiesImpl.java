@@ -1,6 +1,11 @@
 package ai.subut.kurjun.common;
 
 
+import java.util.Objects;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +33,7 @@ class KurjunPropertiesImpl implements KurjunProperties
     private static final Logger LOGGER = LoggerFactory.getLogger( KurjunPropertiesImpl.class );
 
     private PropertiesConfiguration conf;
+    private ConcurrentMap<String, Properties> propertiesByContext = new ConcurrentHashMap<>();
 
 
     public KurjunPropertiesImpl() throws ConfigurationException
@@ -107,6 +113,31 @@ class KurjunPropertiesImpl implements KurjunProperties
         {
             LOGGER.debug( "Invalid value", ex );
             return defaultValue;
+        }
+    }
+
+
+    @Override
+    public Properties getContextProperties( KurjunContext context )
+    {
+        return getContextProperties( context.getName() );
+    }
+
+
+    @Override
+    public Properties getContextProperties( String context )
+    {
+        Objects.requireNonNull( context, "context name" );
+
+        Properties freshnew = new Properties();
+        Properties existing = propertiesByContext.putIfAbsent( context, freshnew );
+        if ( existing != null )
+        {
+            return existing;
+        }
+        else
+        {
+            return freshnew;
         }
     }
 

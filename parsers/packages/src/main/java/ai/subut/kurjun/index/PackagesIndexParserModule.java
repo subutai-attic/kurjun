@@ -3,7 +3,6 @@ package ai.subut.kurjun.index;
 
 import com.google.inject.AbstractModule;
 
-import ai.subut.kurjun.index.service.PackagesIndexBuilder;
 import ai.subut.kurjun.index.service.PackagesIndexParser;
 
 
@@ -18,7 +17,6 @@ public class PackagesIndexParserModule extends AbstractModule
     protected void configure()
     {
         bind( PackagesIndexParser.class ).to( PackagesIndexParserImpl.class );
-        bind( PackagesIndexBuilder.class ).to( PackagesIndexBuilderImpl.class );
     }
 
 }

@@ -3,7 +3,6 @@ package ai.subut.kurjun.metadata.storage.sql;
 
 import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Properties;
 
 import org.osgi.framework.BundleActivator;
@@ -32,7 +31,7 @@ public class Activator implements BundleActivator, ManagedService
     {
         this.context = context;
 
-        Dictionary properties = new Hashtable();
+        Dictionary properties = new Properties();
         properties.put( Constants.SERVICE_PID, ConnectionPropertyName.SERVICE_PID );
 
         managedService = context.registerService( ManagedService.class, this, properties );

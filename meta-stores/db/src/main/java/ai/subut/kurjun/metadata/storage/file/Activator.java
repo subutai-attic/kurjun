@@ -1,7 +1,6 @@
 package ai.subut.kurjun.metadata.storage.file;
 
 
-import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Properties;
 
@@ -59,15 +58,7 @@ public class Activator implements BundleActivator, ManagedService
             Dictionary properties = new Properties();
             properties.put( ServiceConstants.FILE_LOCATION, location );
 
-            DbFilePackageMetadataStore pms;
-            try
-            {
-                pms = new DbFilePackageMetadataStore( location );
-            }
-            catch ( IOException ex )
-            {
-                throw new ConfigurationException( ServiceConstants.FILE_LOCATION, "Invalid location", ex );
-            }
+            DbFilePackageMetadataStore pms = new DbFilePackageMetadataStore( location );
 
             dbFileStoreService = context.registerService( PackageMetadataStore.class, pms, properties );
         }

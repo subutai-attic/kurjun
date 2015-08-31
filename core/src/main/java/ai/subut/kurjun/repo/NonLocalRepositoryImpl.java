@@ -4,61 +4,70 @@ package ai.subut.kurjun.repo;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 
+import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.repository.NonLocalRepository;
 import ai.subut.kurjun.repo.http.HttpHandler;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
 
 
+/**
+ * Nonlocal repository implementation. Remote repositories can be either non-virtual or virtual, this does not matter
+ * for {@link NonLocalRepository} implementation.
+ *
+ */
 class NonLocalRepositoryImpl extends RepositoryBase implements NonLocalRepository
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( NonLocalRepositoryImpl.class );
 
     private final HttpHandler httpHandler = new HttpHandler( this );
+    private URL url;
     private ReleaseIndexParser releaseIndexParser;
 
 
+    /**
+     * Constructs nonlocal repository located by the specified URL.
+     *
+     * @param releaseIndexParser
+     * @param url URL of the remote repository
+     */
     @Inject
-    public NonLocalRepositoryImpl( ReleaseIndexParser releaseIndexParser )
+    public NonLocalRepositoryImpl( ReleaseIndexParser releaseIndexParser, @Assisted URL url )
     {
         this.releaseIndexParser = releaseIndexParser;
-    }
-
-
-    @Override
-    public void init( URL url )
-    {
         this.url = url;
     }
 
 
     @Override
-    protected Logger getLogger()
+    public URL getUrl()
     {
-        return LOGGER;
+        return url;
     }
 
 
     @Override
-    protected ReleaseIndexParser getReleaseIndexParser()
+    public boolean isKurjun()
     {
-        return releaseIndexParser;
+        // TODO: how to define if remote repo is Kurjun or not
+        return false;
     }
 
 
     @Override
-    protected InputStream openDistributionsFileStream() throws IOException
+    public Set<ReleaseFile> getDistributions()
     {
-        return httpHandler.streamDistributionsFile();
+        throw new UnsupportedOperationException( "TODO: how to get releases from a remote repo" );
     }
 
 
-    @Override
     protected InputStream openReleaseIndexFileStream( String release ) throws IOException
     {
         return httpHandler.streamReleaseIndexFile( release, false );
