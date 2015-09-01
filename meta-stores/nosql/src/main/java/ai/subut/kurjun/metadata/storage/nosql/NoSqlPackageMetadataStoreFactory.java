@@ -19,6 +19,7 @@ public interface NoSqlPackageMetadataStoreFactory
      * common schema is used for all context independent instances
      * @return package meta data store
      */
-    PackageMetadataStore createNoSqlPackageMetadataStore( KurjunContext context );
+    PackageMetadataStore create( KurjunContext context );
+
 }
 

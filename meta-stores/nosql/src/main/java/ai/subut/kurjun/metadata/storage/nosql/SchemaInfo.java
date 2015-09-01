@@ -19,7 +19,7 @@ import com.datastax.driver.core.Session;
  * table in a schema.
  *
  */
-class SchemaInfo
+public class SchemaInfo
 {
     public static final String KEYSPACE = "kurjun_metadata";
     public static final String TABLE_PREFIX = "metadata";
@@ -60,7 +60,7 @@ class SchemaInfo
      */
     public String getTableName()
     {
-        if ( tag != null )
+        if ( tag != null && !tag.isEmpty() )
         {
             return TABLE_PREFIX + "_" + tag;
         }

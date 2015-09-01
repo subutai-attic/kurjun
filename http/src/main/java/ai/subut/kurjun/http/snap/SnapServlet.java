@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +22,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.http.HttpServer;
 import ai.subut.kurjun.http.HttpServletBase;
 import ai.subut.kurjun.http.ServletUtils;
@@ -30,6 +32,7 @@ import ai.subut.kurjun.model.metadata.snap.SnapMetadataStore;
 import ai.subut.kurjun.model.metadata.snap.SnapUtils;
 import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.snap.metadata.store.SnapMetadataStoreFactory;
+import ai.subut.kurjun.snap.metadata.store.SnapMetadataStoreModule;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 
@@ -43,6 +46,9 @@ class SnapServlet extends HttpServletBase
     private static final String SNAPS_MD5_PARAM = "md5";
     private static final String SNAPS_NAME_PARAM = "name";
     private static final String SNAPS_VERSION_PARAM = "version";
+
+    @Inject
+    private KurjunProperties properties;
 
     @Inject
     private SnapMetadataStoreFactory metadataStoreFactory;
@@ -226,7 +232,23 @@ class SnapServlet extends HttpServletBase
 
     private SnapMetadataStore getMetadataStore()
     {
-        return metadataStoreFactory.create( context );
+        return getMetadataStore( properties, context, metadataStoreFactory );
+    }
+
+
+    static SnapMetadataStore getMetadataStore( KurjunProperties properties, KurjunContext context,
+                                               SnapMetadataStoreFactory metadataStoreFactory )
+    {
+        Properties cp = properties.getContextProperties( context );
+        String type = cp.getProperty( SnapMetadataStoreModule.TYPE, "to_avoid_npe" );
+        switch ( type )
+        {
+            case SnapMetadataStoreModule.NOSQL_DB:
+                return metadataStoreFactory.createCassandraStore( context );
+            case SnapMetadataStoreModule.FILE_DB:
+            default:
+                return metadataStoreFactory.create( context );
+        }
     }
 
 }

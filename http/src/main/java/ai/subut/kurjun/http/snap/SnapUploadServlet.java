@@ -19,6 +19,7 @@ import com.google.inject.Singleton;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.http.HttpServer;
 import ai.subut.kurjun.http.HttpServletBase;
 import ai.subut.kurjun.http.ServletUtils;
@@ -35,6 +36,9 @@ import ai.subut.kurjun.storage.factory.FileStoreFactory;
 class SnapUploadServlet extends HttpServletBase
 {
     public static final String SNAPS_PACKAGE_PART = "package";
+
+    @Inject
+    private KurjunProperties properties;
 
     @Inject
     private SnapMetadataParser metadataParser;
@@ -110,7 +114,7 @@ class SnapUploadServlet extends HttpServletBase
 
         if ( Arrays.equals( meta.getMd5(), md5 ) )
         {
-            SnapMetadataStore metadataStore = metadataStoreFactory.create( context );
+            SnapMetadataStore metadataStore = SnapServlet.getMetadataStore( properties, context, metadataStoreFactory );
             metadataStore.put( meta );
             ok( resp, "Package successfully saved" );
         }

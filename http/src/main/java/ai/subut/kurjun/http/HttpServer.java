@@ -104,11 +104,17 @@ public class HttpServer
     {
         Properties p = properties.getContextProperties( CONTEXT );
         p.setProperty( FileStoreModule.FILE_STORE_TYPE, FileSystemFileStoreModule.TYPE );
+        // --- begin S3 file store  ---
+        //p.setProperty( FileStoreModule.FILE_STORE_TYPE, S3FileStoreModule.TYPE );
+        //p.setProperty( S3FileStoreModule.BUCKET_NAME, "kurjun-test" );
+        // --- end S3 file store    ---
+
         p.setProperty( FileSystemFileStoreModule.ROOT_DIRECTORY, "/tmp/kurjun/files" );
 
         p.setProperty( PackageMetadataStoreModule.PACKAGE_METADATA_STORE_TYPE, DbFilePackageMetadataStoreModule.TYPE );
         p.setProperty( DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME, "/tmp/kurjun/metadata" );
 
+        //p.setProperty( SnapMetadataStoreModule.TYPE, SnapMetadataStoreModule.NOSQL_DB );
         p.setProperty( SnapMetadataStoreModule.DB_FILE_PATH, "/tmp/kurjun/snaps" );
     }
 }
