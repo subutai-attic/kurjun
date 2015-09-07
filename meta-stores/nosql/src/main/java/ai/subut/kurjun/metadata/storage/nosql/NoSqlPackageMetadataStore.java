@@ -1,7 +1,6 @@
 package ai.subut.kurjun.metadata.storage.nosql;
 
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -77,28 +76,12 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
      */
     public NoSqlPackageMetadataStore( String node, int port ) throws IOException
     {
-        this( node, port, null );
-    }
-
-
-    /**
-     * Constructor of Cassandra backed package metadata store.
-     *
-     * @param node the address of the node to connect to; any node of the cluster may be used
-     * @param port the port to use; 0 for default
-     * @param replicationConfig the file to read replication configuration from, useful when there is no keyspace
-     * created yet
-     *
-     * @throws IOException
-     */
-    public NoSqlPackageMetadataStore( String node, int port, File replicationConfig ) throws IOException
-    {
         CassandraConnector connector = CassandraConnector.getInstance();
         connector.init( node, port );
         this.session = connector.get();
 
         schemaInfo = new SchemaInfo();
-        schemaInfo.createSchema( session, replicationConfig );
+        schemaInfo.createSchema( session );
     }
 
 

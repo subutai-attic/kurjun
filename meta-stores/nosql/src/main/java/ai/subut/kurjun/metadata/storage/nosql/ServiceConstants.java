@@ -1,7 +1,6 @@
 package ai.subut.kurjun.metadata.storage.nosql;
 
 
-
 public class ServiceConstants
 {
 
@@ -9,7 +8,6 @@ public class ServiceConstants
 
     public static final String NODE = "node";
     public static final String PORT = "port";
-    public static final String REPLICATION_CONFIG_FILE = "replicationConfigFile";
 
 }
 
