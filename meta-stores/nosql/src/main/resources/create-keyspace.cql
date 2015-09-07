@@ -1,0 +1,1 @@
+create keyspace if not exists kurjun_metadata with replication = { 'class' : 'NetworkTopologyStrategy', 'datacenter1' : 1 };

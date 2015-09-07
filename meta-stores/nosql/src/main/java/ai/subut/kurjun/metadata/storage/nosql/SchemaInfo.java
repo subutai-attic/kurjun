@@ -1,15 +1,7 @@
 package ai.subut.kurjun.metadata.storage.nosql;
 
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-import org.slf4j.LoggerFactory;
 
 import com.datastax.driver.core.Session;
 
@@ -22,7 +14,6 @@ import com.datastax.driver.core.Session;
 public class SchemaInfo
 {
     public static final String KEYSPACE = "kurjun_metadata";
-    public static final String TABLE_PREFIX = "metadata";
 
     public static final String CHECKSUM_COLUMN = "checksum";
     public static final String METADATA_COLUMN = "metadata";
@@ -62,73 +53,24 @@ public class SchemaInfo
     {
         if ( tag != null && !tag.isEmpty() )
         {
-            return TABLE_PREFIX + "_" + tag;
+            return "metadata_" + tag;
         }
         else
         {
-            return TABLE_PREFIX;
+            return "metadata";
         }
     }
 
 
     /**
-     * A wrapper to {@link SchemaInfo#createSchema(com.datastax.driver.core.Session, java.io.File) }.
+     * Prepares the schema for meta data storage. Basically it creates necessary tables for supplied tag.
      *
-     * @param session
+     * @param session db connection session
      * @throws IOException
      */
     public void createSchema( Session session ) throws IOException
     {
-        createSchema( session, null );
-    }
-
-
-    /**
-     * Prepares the schema for meta data storage. Basically it creates necessary schema(keyspace) and table.
-     *
-     * @param session db connection session
-     * @param replicationConfigFile file to replication configuration that should be used when creating a keyspace;
-     * {@code null} can supplied in which case the default replication factor is used.
-     * @throws IOException
-     */
-    public void createSchema( Session session, File replicationConfigFile ) throws IOException
-    {
-        session.execute( getCreateKeyspaceStatement( replicationConfigFile ) );
         session.execute( getCreateTableStatement() );
-    }
-
-
-    private String getCreateKeyspaceStatement( File replicationConfigFile )
-    {
-        StringBuilder sb = new StringBuilder();
-        try ( BufferedReader br = new BufferedReader( new InputStreamReader(
-                getReplicationConfigStream( replicationConfigFile ) ) ) )
-        {
-            String line;
-            while ( ( line = br.readLine() ) != null )
-            {
-                sb.append( line ).append( " " );
-            }
-        }
-        catch ( IOException ex )
-        {
-            LoggerFactory.getLogger( SchemaInfo.class ).error( "Failed to read replication config", ex );
-            return null;
-        }
-        return String.format( "CREATE KEYSPACE IF NOT EXISTS %s WITH replication = %s;", KEYSPACE, sb.toString() );
-    }
-
-
-    private InputStream getReplicationConfigStream( File replicationConfigFile ) throws FileNotFoundException
-    {
-        if ( replicationConfigFile != null )
-        {
-            return new FileInputStream( replicationConfigFile );
-        }
-        else
-        {
-            return ClassLoader.getSystemResourceAsStream( "cassandra-replication" );
-        }
     }
 
 

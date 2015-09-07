@@ -1,7 +1,6 @@
 package ai.subut.kurjun.metadata.storage.nosql;
 
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Properties;
@@ -65,12 +64,9 @@ public class Activator implements BundleActivator, ManagedService
             throw new ConfigurationException( ServiceConstants.PORT, "invalid port" );
         }
 
-        String replicationFactorFile = ( String ) config.get( ServiceConstants.REPLICATION_CONFIG_FILE );
         try
         {
-            PackageMetadataStore pms = replicationFactorFile != null
-                    ? new NoSqlPackageMetadataStore( node, port, new File( replicationFactorFile ) )
-                    : new NoSqlPackageMetadataStore( node, port );
+            PackageMetadataStore pms = new NoSqlPackageMetadataStore( node, port );
             nosqlStoreService = context.registerService( PackageMetadataStore.class, pms, null );
         }
         catch ( IOException ex )
