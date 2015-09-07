@@ -67,7 +67,7 @@ class SnapUploadServlet extends HttpServletBase
             ServletUtils.setMultipartConfig( req, this.getClass() );
 
             Part part = req.getPart( SNAPS_PACKAGE_PART );
-            if ( part != null )
+            if ( part != null && part.getSubmittedFileName() != null )
             {
                 parsePackageFile( part, resp );
             }

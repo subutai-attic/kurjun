@@ -42,10 +42,10 @@ class SnapServlet extends HttpServletBase
 
     private static final Logger LOGGER = LoggerFactory.getLogger( SnapServlet.class );
 
-    private static final String SNAPS_GET_PATH = "get";
-    private static final String SNAPS_MD5_PARAM = "md5";
-    private static final String SNAPS_NAME_PARAM = "name";
-    private static final String SNAPS_VERSION_PARAM = "version";
+    static final String SNAPS_GET_PATH = "get";
+    static final String SNAPS_MD5_PARAM = "md5";
+    static final String SNAPS_NAME_PARAM = "name";
+    static final String SNAPS_VERSION_PARAM = "version";
 
     @Inject
     private KurjunProperties properties;
@@ -87,7 +87,7 @@ class SnapServlet extends HttpServletBase
             }
             else
             {
-                String msg = "Neither 'md5' nor 'name' and 'version' params specififed";
+                String msg = "Neither 'md5' nor 'name' and 'version' params specified";
                 badRequest( resp, msg );
             }
         }
@@ -102,36 +102,18 @@ class SnapServlet extends HttpServletBase
     protected void doDelete( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException
     {
         String md5 = req.getParameter( SNAPS_MD5_PARAM );
-        if ( md5 == null )
+        if ( md5 != null )
+        {
+            deletePackage( md5, resp );
+        }
+        else
         {
             badRequest( resp, "Provide md5 checksum of the package to remove" );
-            return;
-        }
-        SnapMetadataStore metadataStore = getMetadataStore();
-        try
-        {
-            byte[] md5bytes = Hex.decodeHex( md5.toCharArray() );
-            if ( metadataStore.contains( md5bytes ) )
-            {
-                FileStore fileStore = getFileStore();
-                fileStore.remove( md5bytes );
-                metadataStore.remove( md5bytes );
-                ok( resp, "Package successfully removed" );
-            }
-            else
-            {
-                notFound( resp, "Package with supplied checksum not found" );
-            }
-        }
-        catch ( DecoderException ex )
-        {
-            LOGGER.info( "Invalid md5 provided: {}", md5, ex );
-            badRequest( resp, "Invalid md5 checksum provided" );
         }
     }
 
 
-    private void getByMd5( String md5, HttpServletResponse resp ) throws IOException
+    protected void getByMd5( String md5, HttpServletResponse resp ) throws IOException
     {
         SnapMetadataStore metadataStore = getMetadataStore();
         try
@@ -154,7 +136,7 @@ class SnapServlet extends HttpServletBase
     }
 
 
-    private void getByNameAndVersion( String name, String version, HttpServletResponse resp ) throws IOException
+    protected void getByNameAndVersion( String name, String version, HttpServletResponse resp ) throws IOException
     {
         SnapMetadataStore metadataStore = getMetadataStore();
         List<SnapMetadata> ls = metadataStore.list( SnapMetadataFilter.getNameFilter( name ) );
@@ -183,6 +165,32 @@ class SnapServlet extends HttpServletBase
         {
             String index = makePackagesIndex( ls );
             ok( resp, index );
+        }
+    }
+
+
+    protected void deletePackage( String md5, HttpServletResponse resp ) throws IOException
+    {
+        SnapMetadataStore metadataStore = getMetadataStore();
+        try
+        {
+            byte[] md5bytes = Hex.decodeHex( md5.toCharArray() );
+            if ( metadataStore.contains( md5bytes ) )
+            {
+                FileStore fileStore = getFileStore();
+                fileStore.remove( md5bytes );
+                metadataStore.remove( md5bytes );
+                ok( resp, "Package successfully removed" );
+            }
+            else
+            {
+                notFound( resp, "Package with supplied checksum not found" );
+            }
+        }
+        catch ( DecoderException ex )
+        {
+            LOGGER.info( "Invalid md5 provided: {}", md5, ex );
+            badRequest( resp, "Invalid md5 checksum provided" );
         }
     }
 
