@@ -56,6 +56,13 @@ class BinaryPackageMetadata extends AbstractPackageMetadata
 
 
     @Override
+    public String getSource()
+    {
+        return controlFile.get( SOURCE_FIELD );
+    }
+
+
+    @Override
     public String getMaintainer()
     {
         return controlFile.get( MAINTAINER_FIELD );
@@ -65,7 +72,7 @@ class BinaryPackageMetadata extends AbstractPackageMetadata
     @Override
     public Architecture getArchitecture()
     {
-        return Architecture.valueOf( controlFile.get( ARCHITECTURE_FIELD ) );
+        return Architecture.getByValue( controlFile.get( ARCHITECTURE_FIELD ) );
     }
 
 

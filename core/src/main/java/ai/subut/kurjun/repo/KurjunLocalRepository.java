@@ -69,7 +69,7 @@ class KurjunLocalRepository extends RepositoryBase implements LocalRepository
         // TODO: setup mechanism for repos
         DefaultRelease r = new DefaultRelease();
         r.setCodename( "trusty" );
-        r.setArchitectures( Arrays.asList( Architecture.amd64, Architecture.i386 ) );
+        r.setArchitectures( Arrays.asList( Architecture.AMD64, Architecture.i386 ) );
         r.setComponents( Arrays.asList( "main" ) );
         r.setDescription( "Short description of the repo" );
         r.setVersion( "12.04" );

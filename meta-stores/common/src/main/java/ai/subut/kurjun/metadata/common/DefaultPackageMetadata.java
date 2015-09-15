@@ -23,6 +23,7 @@ public class DefaultPackageMetadata implements PackageMetadata
     private String filename;
     private String packageName;
     private String version;
+    private String source;
     private String maintainer;
     private Architecture architecture;
     private int installedSize;
@@ -104,6 +105,19 @@ public class DefaultPackageMetadata implements PackageMetadata
     public void setVersion( String version )
     {
         this.version = version;
+    }
+
+
+    @Override
+    public String getSource()
+    {
+        return source;
+    }
+
+
+    public void setSource( String source )
+    {
+        this.source = source;
     }
 
 

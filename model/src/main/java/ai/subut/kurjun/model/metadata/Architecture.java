@@ -6,11 +6,15 @@ package ai.subut.kurjun.model.metadata;
  */
 public enum Architecture
 {
-    all, amd64, i386;
+    ALL,
+    AMD64,
+    i386;
 
 
     /**
-     * Gets architecture by name. This method does case-insensitive search.
+     * Gets architecture by name. This method does case-insensitive matching for architecture enum items. This method is
+     * preferred to {@link Enum#valueOf(java.lang.Class, java.lang.String)} because in most of the places arch field are
+     * in lower case whereas enum items are defined in upper case.
      *
      * @param arch
      * @return
@@ -27,4 +31,12 @@ public enum Architecture
         return null;
     }
 
+
+    @Override
+    public String toString()
+    {
+        return super.toString().toLowerCase();
+    }
+
 }
+

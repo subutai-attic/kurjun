@@ -13,6 +13,7 @@ public interface PackageMetadata extends Serializable
 {
     String PACKAGE_FIELD = "Package";
     String VERSION_FIELD = "Version";
+    String SOURCE_FIELD = "Source";
     String MAINTAINER_FIELD = "Maintainer";
     String ARCHITECTURE_FIELD = "Architecture";
     String INSTALLED_SIZE_FIELD = "Installed-Size";
@@ -63,6 +64,8 @@ public interface PackageMetadata extends Serializable
     String getPackage();
 
     String getVersion();
+
+    String getSource();
 
     String getMaintainer();
 

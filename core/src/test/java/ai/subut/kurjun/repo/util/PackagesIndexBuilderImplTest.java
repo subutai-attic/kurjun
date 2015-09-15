@@ -39,6 +39,7 @@ import ai.subut.kurjun.model.metadata.PackageMetadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.storage.FileStore;
+import ai.subut.kurjun.repo.service.PackageFilenameBuilder;
 
 
 @RunWith( MockitoJUnitRunner.class )
@@ -55,6 +56,9 @@ public class PackagesIndexBuilderImplTest
 
     @Mock
     private PackageMetadataStore metadataStore;
+
+    @Mock
+    private PackageFilenameBuilder filenameBuilder;
 
     private PackagesIndexBuilderImpl indexBuilder = new PackagesIndexBuilderImpl();
 
@@ -135,6 +139,7 @@ public class PackagesIndexBuilderImplTest
 
         indexBuilder.fileStore = fileStore;
         indexBuilder.metadataStore = metadataStore;
+        indexBuilder.filenameBuilder = filenameBuilder;
 
     }
 
@@ -149,7 +154,7 @@ public class PackagesIndexBuilderImplTest
     public void testBuildIndex() throws Exception
     {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        indexBuilder.buildIndex( "main", Architecture.amd64, os );
+        indexBuilder.buildIndex( "main", Architecture.AMD64, os );
 
         String s = new String( os.toByteArray() );
         LOGGER.info( "Packages index:\n{}", s );

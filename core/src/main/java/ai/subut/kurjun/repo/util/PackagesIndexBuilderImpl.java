@@ -25,7 +25,6 @@ import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.KurjunContext;
-import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.index.PackageIndexFieldsParser;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
@@ -35,6 +34,7 @@ import ai.subut.kurjun.model.metadata.PackageMetadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.storage.FileStore;
+import ai.subut.kurjun.repo.service.PackageFilenameBuilder;
 import ai.subut.kurjun.repo.service.PackagesIndexBuilder;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
@@ -42,15 +42,18 @@ import ai.subut.kurjun.storage.factory.FileStoreFactory;
 class PackagesIndexBuilderImpl implements PackagesIndexBuilder
 {
 
+    @Inject
+    PackageFilenameBuilder filenameBuilder;
+
     PackageMetadataStore metadataStore;
     FileStore fileStore;
 
 
     @Inject
-    public PackagesIndexBuilderImpl( KurjunProperties properties,
-                                     FileStoreFactory fileStoreFactory,
-                                     PackageMetadataStoreFactory metadataStoreFactory,
-                                     @Assisted KurjunContext context )
+    public PackagesIndexBuilderImpl(
+            FileStoreFactory fileStoreFactory,
+            PackageMetadataStoreFactory metadataStoreFactory,
+            @Assisted KurjunContext context )
     {
         this.fileStore = fileStoreFactory.create( context );
         this.metadataStore = metadataStoreFactory.create( context );
@@ -84,9 +87,6 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
         Objects.requireNonNull( metadataStore, "Package metadata store" );
         Objects.requireNonNull( component, "component to build packages index for" );
 
-        Charset utf8 = StandardCharsets.UTF_8;
-        byte[] newLineBytes = System.lineSeparator().getBytes( utf8 );
-
         try ( OutputStream os = wrapStream( out, compressionType ) )
         {
             PackageMetadataListing list = metadataStore.list();
@@ -94,8 +94,7 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
             for ( PackageMetadata pm : filtered )
             {
                 String s = formatPackageMetadata( pm );
-                os.write( s.getBytes( utf8 ) );
-                os.write( newLineBytes );
+                writeString( s, os );
             }
             while ( list.isTruncated() )
             {
@@ -104,11 +103,18 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
                 for ( PackageMetadata pm : filtered )
                 {
                     String s = formatPackageMetadata( pm );
-                    os.write( s.getBytes( utf8 ) );
-                    os.write( newLineBytes );
+                    writeString( s, os );
                 }
             }
         }
+    }
+
+
+    private void writeString( String s, OutputStream sink ) throws IOException
+    {
+        Charset utf8 = StandardCharsets.UTF_8;
+        sink.write( s.getBytes( utf8 ) );
+        sink.write( System.lineSeparator().getBytes( utf8 ) );
     }
 
 
@@ -173,6 +179,10 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
         cf.set( PackageMetadata.DESCRIPTION_FIELD, meta.getDescription() );
 
         // === optional fields ===
+        if ( meta.getSource() != null )
+        {
+            cf.set( PackageMetadata.SOURCE_FIELD, meta.getSource() );
+        }
         if ( meta.getInstalledSize() > 0 )
         {
             cf.set( PackageMetadata.INSTALLED_SIZE_FIELD, Integer.toString( meta.getInstalledSize() ) );
@@ -198,7 +208,7 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
                 sha2.update( buf, 0, n );
             }
         }
-        cf.set( IndexPackageMetaData.FILENAME_FIELD, meta.getFilename() );
+        cf.set( IndexPackageMetaData.FILENAME_FIELD, filenameBuilder.makeFilename( meta ) );
         cf.set( IndexPackageMetaData.SIZE_FIELD, Long.toString( totalBytes ) );
         cf.set( IndexPackageMetaData.MD5SUM_FIELD, Hex.encodeHexString( meta.getMd5Sum() ) );
         cf.set( IndexPackageMetaData.SHA1_FIELD, Hex.encodeHexString( sha1.digest() ) );
