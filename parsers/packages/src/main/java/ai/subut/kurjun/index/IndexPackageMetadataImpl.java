@@ -152,6 +152,13 @@ public class IndexPackageMetadataImpl implements IndexPackageMetaData
 
 
     @Override
+    public String getSource()
+    {
+        return controlFile.get( SOURCE_FIELD );
+    }
+
+
+    @Override
     public String getMaintainer()
     {
         return controlFile.get( IndexPackageMetaData.MAINTAINER_FIELD );
@@ -162,7 +169,7 @@ public class IndexPackageMetadataImpl implements IndexPackageMetaData
     public Architecture getArchitecture()
     {
         String arch = controlFile.get( IndexPackageMetaData.ARCHITECTURE_FIELD );
-        return Architecture.valueOf( arch );
+        return Architecture.getByValue( arch );
     }
 
 

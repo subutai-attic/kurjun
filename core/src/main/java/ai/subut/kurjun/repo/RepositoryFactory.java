@@ -3,9 +3,8 @@ package ai.subut.kurjun.repo;
 
 import com.google.inject.name.Named;
 
-import ai.subut.kurjun.model.metadata.PackageMetadataStore;
+import ai.subut.kurjun.common.KurjunContext;
 import ai.subut.kurjun.model.repository.LocalRepository;
-import ai.subut.kurjun.model.storage.FileStore;
 
 
 /**
@@ -26,13 +25,13 @@ public interface RepositoryFactory
 
 
     /**
-     * Creates virtual repository where files are stored in supplied file store.
+     * Creates virtual repository for the supplied context.
      *
-     * @param fileStore file store of the repository
-     * @return
+     * @param kurjunContext context
+     * @return Kurjun local apt repository
      */
     @Named( RepositoryModule.LOCAL_KURJUN )
-    LocalRepository createLocalKurjun( FileStore fileStore, PackageMetadataStore metadataStore );
+    LocalRepository createLocalKurjun( KurjunContext kurjunContext );
 
 }
 

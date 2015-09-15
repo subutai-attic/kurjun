@@ -8,6 +8,11 @@ import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.model.metadata.Architecture;
 
 
+/**
+ * Helper class to parse apt repository URLs. This class recognizes release index file URLs (plain, clear-signed, and
+ * signature), component release file URLs, and packages index file URLs (plain and compressed forms).
+ *
+ */
 class AptUrlPathParser
 {
 
@@ -51,48 +56,88 @@ class AptUrlPathParser
     }
 
 
+    /**
+     * Gets release/distribution from the path if applicable.
+     *
+     * @return release/distribution name
+     */
     public String getRelease()
     {
         return release;
     }
 
 
+    /**
+     * Gets release component from the path if applicable.
+     *
+     * @return component name
+     */
     public String getComponent()
     {
         return component;
     }
 
 
+    /**
+     * Gets architecture from the path if applicable. For example, arch is specified in packages index file paths.
+     *
+     * @return archtecture
+     */
     public Architecture getArchitecture()
     {
         return architecture;
     }
 
 
+    /**
+     * Gets compression type of package index files.
+     *
+     * @return compression type of a package index file
+     */
     public CompressionType getCompressionType()
     {
         return compressionType;
     }
 
 
+    /**
+     * Indicates if supplied path is for package index file.
+     *
+     * @return
+     */
     public boolean isPackagesIndexFile()
     {
         return packagesIndexFile;
     }
 
 
+    /**
+     * Indicates if supplied path is for release index file.
+     *
+     * @return
+     */
     public boolean isReleaseIndexFile()
     {
         return releaseIndexFile;
     }
 
 
+    /**
+     * Indicates if supplied path is for clear-signed release index file.
+     *
+     * @return
+     */
     public boolean isClearSignedReleaseIndexFile()
     {
         return clearSignedReleaseIndexFile;
     }
 
 
+    /**
+     * Indicates if supplied path is for signature of the release index file.
+     *
+     * @return
+     */
     public boolean isReleaseIndexFileSignature()
     {
         return releaseIndexFileSignature;

@@ -186,7 +186,7 @@ public class NoSqlPackageMetadataStoreTest
     private PackageMetadata createPackageMetadata()
     {
         DefaultPackageMetadata pm = new DefaultPackageMetadata();
-        pm.setArchitecture( Architecture.amd64 );
+        pm.setArchitecture( Architecture.AMD64 );
         pm.setDescription( "Description here" );
         pm.setFilename( UUID.randomUUID().toString() + "-ver-arch.deb" );
         pm.setInstalledSize( 1234 );

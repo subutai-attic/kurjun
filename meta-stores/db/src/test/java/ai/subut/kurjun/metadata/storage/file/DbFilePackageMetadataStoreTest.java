@@ -139,7 +139,7 @@ public class DbFilePackageMetadataStoreTest
     {
         DefaultPackageMetadata pm = new DefaultPackageMetadata();
         pm.setPackage( UUID.randomUUID().toString() );
-        pm.setArchitecture( Architecture.amd64 );
+        pm.setArchitecture( Architecture.AMD64 );
         pm.setDescription( "Description here" );
         pm.setFilename( pm.getPackage() + "-ver-arch.deb" );
         pm.setInstalledSize( 1234 );

@@ -97,7 +97,7 @@ class ReleaseFileWrapper implements ReleaseFile
         {
             if ( !s.isEmpty() )
             {
-                ls.add( Architecture.valueOf( s ) );
+                ls.add( Architecture.getByValue( s ) );
             }
         }
         return ls;

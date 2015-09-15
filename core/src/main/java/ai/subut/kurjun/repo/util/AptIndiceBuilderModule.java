@@ -4,6 +4,8 @@ package ai.subut.kurjun.repo.util;
 import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 
+import ai.subut.kurjun.repo.service.PackageFilenameBuilder;
+import ai.subut.kurjun.repo.service.PackageFilenameParser;
 import ai.subut.kurjun.repo.service.PackagesIndexBuilder;
 
 
@@ -23,6 +25,9 @@ public class AptIndiceBuilderModule extends AbstractModule
                 .implement( PackagesIndexBuilder.class, PackagesIndexBuilderImpl.class )
                 .implement( ReleaseIndexBuilder.class, ReleaseIndexBuilder.class )
                 .build( AptIndexBuilderFactory.class ) );
+
+        bind( PackageFilenameBuilder.class ).to( DebPackageFilenameManager.class );
+        bind( PackageFilenameParser.class ).to( DebPackageFilenameManager.class );
     }
 
 }

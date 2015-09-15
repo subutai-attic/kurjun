@@ -28,7 +28,9 @@ import com.google.inject.assistedinject.Assisted;
 import ai.subut.kurjun.ar.DebAr;
 import ai.subut.kurjun.ar.DefaultDebAr;
 import ai.subut.kurjun.cfparser.service.ControlFileParser;
+import ai.subut.kurjun.common.KurjunContext;
 import ai.subut.kurjun.common.utils.InetUtils;
+import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.PackageMetadata;
@@ -36,6 +38,7 @@ import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.riparser.DefaultRelease;
+import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 
 /**
@@ -48,27 +51,31 @@ class KurjunLocalRepository extends RepositoryBase implements LocalRepository
     @Inject
     private ControlFileParser controlFileParser;
 
-    private PackageMetadataStore metadataStore;
-    private FileStore fileStore;
+    @Inject
+    private FileStoreFactory fileStoreFactory;
+
+    @Inject
+    private PackageMetadataStoreFactory metadataStoreFactory;
+
+    private final KurjunContext context;
 
     private final URL url;
     private Set<ReleaseFile> releases = new HashSet<>();
 
 
     @Inject
-    public KurjunLocalRepository( @Assisted FileStore fileStore, @Assisted PackageMetadataStore metadataStore )
+    public KurjunLocalRepository( @Assisted KurjunContext kurjunContext )
     {
         // TODO: setup mechanism for repos
         DefaultRelease r = new DefaultRelease();
         r.setCodename( "trusty" );
-        r.setArchitectures( Arrays.asList( Architecture.amd64, Architecture.i386 ) );
+        r.setArchitectures( Arrays.asList( Architecture.AMD64, Architecture.i386 ) );
         r.setComponents( Arrays.asList( "main" ) );
         r.setDescription( "Short description of the repo" );
         r.setVersion( "12.04" );
         releases.add( r );
 
-        this.fileStore = fileStore;
-        this.metadataStore = metadataStore;
+        this.context = kurjunContext;
 
         try
         {
@@ -113,6 +120,9 @@ class KurjunLocalRepository extends RepositoryBase implements LocalRepository
     @Override
     public PackageMetadata put( InputStream is ) throws IOException
     {
+        PackageMetadataStore metadataStore = metadataStoreFactory.create( context );
+        FileStore fileStore = fileStoreFactory.create( context );
+
         Path target = Files.createTempFile( null, null );
         Path tempDir = Files.createTempDirectory( null );
 
