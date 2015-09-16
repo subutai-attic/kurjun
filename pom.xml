@@ -21,6 +21,7 @@
     <module>parsers</module>
     <module>file-stores</module>
     <module>meta-stores</module>
+    <module>security</module>
     <module>core</module>
     <module>http</module>
     <module>snap</module>
@@ -78,9 +79,11 @@
     <commons-compress.version>1.9</commons-compress.version>
     <commons-io.version>2.4</commons-io.version>
     <commons-configuration.version>1.10</commons-configuration.version>
+    <commons-validator.version>1.4.1</commons-validator.version>
     <snakeyaml.version>1.15</snakeyaml.version>
     <xz.version>1.5</xz.version>
     <jdeb.version>1.4</jdeb.version>
+    <bcpg-jdk15on.version>1.52</bcpg-jdk15on.version>
     <org.osgi.core.version>6.0.0</org.osgi.core.version>
     <org.osgi.compendium.version>5.0.0</org.osgi.compendium.version>
     <aws-java-sdk-s3.version>1.10.11</aws-java-sdk-s3.version>
@@ -276,6 +279,12 @@
       </dependency>
 
       <dependency>
+        <groupId>commons-validator</groupId>
+        <artifactId>commons-validator</artifactId>
+        <version>${commons-validator.version}</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.tukaani</groupId>
         <artifactId>xz</artifactId>
         <version>${xz.version}</version>
@@ -291,6 +300,12 @@
             <artifactId>sisu-guice</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcpg-jdk15on</artifactId>
+        <version>${bcpg-jdk15on.version}</version>
       </dependency>
 
       <dependency>
