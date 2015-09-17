@@ -1,0 +1,23 @@
+# Common configuration
+lxc.include = /usr/share/lxc/config/ubuntu.common.conf
+# Container specific configuration
+lxc.rootfs = /var/lib/lxc/hadoop/rootfs
+lxc.mount = /var/lib/lxc/hadoop/fstab
+lxc.utsname = hadoop
+lxc.arch = amd64
+# Network configuration
+lxc.network.type = veth
+lxc.network.flags = up
+lxc.network.link = lxcbr0
+lxc.network.hwaddr = 00:16:3e:4a:25:12
+subutai.config.path = /etc
+lxc.hook.pre-start = /usr/bin/pre_start_hook
+subutai.parent = openjre7
+subutai.git.branch = hadoop
+lxc.mount.entry = /lxc/hadoop-opt opt none bind,rw 0 0
+lxc.mount.entry = /lxc-data/hadoop-home home none bind,rw 0 0
+lxc.mount.entry = /lxc-data/hadoop-var var none bind,rw 0 0
+subutai.template.version = 2.1.2
+subutai.git.uuid = df4f6bec0c14560a8ad1bc06b52211ae1047dba0
+subutai.template.package = /lxc-data/tmpdir/hadoop-subutai-template_2.1.2_amd64.deb
+
