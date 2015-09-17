@@ -8,7 +8,7 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
     
-  <artifactId>template</artifactId>
+  <artifactId>kurjun-template-parser</artifactId>
   <name>Kurjun Subutai Template Parser</name>
   <packaging>jar</packaging>
 
