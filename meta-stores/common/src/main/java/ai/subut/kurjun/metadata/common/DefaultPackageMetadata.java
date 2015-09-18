@@ -96,6 +96,13 @@ public class DefaultPackageMetadata implements PackageMetadata
 
 
     @Override
+    public String getName()
+    {
+        return getPackage();
+    }
+
+
+    @Override
     public String getVersion()
     {
         return version;

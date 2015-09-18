@@ -96,13 +96,13 @@ class SnapMetadataStoreImpl implements SnapMetadataStore
     @Override
     public boolean put( SnapMetadata metadata ) throws IOException
     {
-        if ( contains( metadata.getMd5() ) )
+        if ( contains( metadata.getMd5Sum() ) )
         {
             return false;
         }
         try ( FileDb fileDb = new FileDb( fileDbPath ) )
         {
-            fileDb.put( MAP_NAME, Hex.encodeHexString( metadata.getMd5() ), metadata );
+            fileDb.put( MAP_NAME, Hex.encodeHexString( metadata.getMd5Sum() ), metadata );
             return true;
         }
     }

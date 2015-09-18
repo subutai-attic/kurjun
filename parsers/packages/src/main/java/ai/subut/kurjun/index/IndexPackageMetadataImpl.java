@@ -145,6 +145,13 @@ public class IndexPackageMetadataImpl implements IndexPackageMetaData
 
 
     @Override
+    public String getName()
+    {
+        return getPackage();
+    }
+
+
+    @Override
     public String getVersion()
     {
         return controlFile.get( IndexPackageMetaData.VERSION_FIELD );

@@ -7,16 +7,18 @@ import java.util.Collection;
 /**
  * This interface represents a result set of a {@link PackageMetadataStore#list() } method. This interface exposes
  * methods to get a set of retrieved metadata and to identify if the result is final or not.
+ *
+ * @param <T> specific subtype of meta data this listing is handling
  */
-public interface PackageMetadataListing
+public interface PackageMetadataListing<T extends Metadata>
 {
 
     /**
      * Gets metadata retrieved in one batch.
      *
-     * @return collection of {@link PackageMetadata} instances
+     * @return collection of {@link Metadata} instances
      */
-    Collection<PackageMetadata> getPackageMetadata();
+    Collection<T> getPackageMetadata();
 
 
     /**

@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import ai.subut.kurjun.model.metadata.PackageMetadata;
+import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataListing;
 
 
@@ -13,15 +13,15 @@ import ai.subut.kurjun.model.metadata.PackageMetadataListing;
  * POJO implementation of {@link PackageMetadataListing}.
  *
  */
-public class PackageMetadataListingImpl implements PackageMetadataListing
+public class PackageMetadataListingImpl implements PackageMetadataListing<Metadata>
 {
-    private List<PackageMetadata> metadata = new LinkedList<>();
+    private List<Metadata> metadata = new LinkedList<>();
     private Object marker;
     private boolean truncated;
 
 
     @Override
-    public Collection<PackageMetadata> getPackageMetadata()
+    public Collection<Metadata> getPackageMetadata()
     {
         return metadata;
     }

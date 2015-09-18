@@ -27,10 +27,11 @@ public interface SubutaiTemplateParser
 
 
     /**
-     * Parses template config file from supplied stream.
+     * Parses template config file from supplied stream. Please note that this method receives stream of a config file
+     * and so can not calculate md5 sum of the package itself.
      *
      * @param stream stream to read template config file contents from
-     * @return template meta data
+     * @return template meta data without md5 sum value
      * @throws IOException
      */
     TemplateMetadata parseTemplateConfigFile( InputStream stream ) throws IOException;

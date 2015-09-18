@@ -49,6 +49,13 @@ class BinaryPackageMetadata extends AbstractPackageMetadata
 
 
     @Override
+    public String getName()
+    {
+        return getPackage();
+    }
+
+
+    @Override
     public String getVersion()
     {
         return controlFile.get( VERSION_FIELD );

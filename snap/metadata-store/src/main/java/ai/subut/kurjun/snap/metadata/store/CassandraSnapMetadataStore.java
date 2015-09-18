@@ -106,10 +106,10 @@ class CassandraSnapMetadataStore implements SnapMetadataStore
     @Override
     public boolean put( SnapMetadata metadata ) throws IOException
     {
-        if ( !contains( metadata.getMd5() ) )
+        if ( !contains( metadata.getMd5Sum() ) )
         {
             Statement st = QueryBuilder.insertInto( SchemaInfo.KEYSPACE, schemaInfo.getTableName() )
-                    .value( SchemaInfo.CHECKSUM_COLUMN, Hex.encodeHexString( metadata.getMd5() ) )
+                    .value( SchemaInfo.CHECKSUM_COLUMN, Hex.encodeHexString( metadata.getMd5Sum() ) )
                     .value( SchemaInfo.METADATA_COLUMN, gson.toJson( metadata ) );
             session.execute( st );
             return true;

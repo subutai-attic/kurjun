@@ -20,7 +20,7 @@ public class DefaultSnapMetadata implements SnapMetadata
 
 
     @Override
-    public byte[] getMd5()
+    public byte[] getMd5Sum()
     {
         return md5 != null ? Arrays.copyOf( md5, md5.length ) : null;
     }

@@ -112,7 +112,7 @@ class SnapUploadServlet extends HttpServletBase
             Files.delete( path );
         }
 
-        if ( Arrays.equals( meta.getMd5(), md5 ) )
+        if ( Arrays.equals( meta.getMd5Sum(), md5 ) )
         {
             SnapMetadataStore metadataStore = SnapServlet.getMetadataStore( properties, context, metadataStoreFactory );
             metadataStore.put( meta );

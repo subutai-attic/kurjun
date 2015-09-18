@@ -198,7 +198,7 @@ class SnapServlet extends HttpServletBase
     private void streamPackage( SnapMetadata meta, HttpServletResponse resp ) throws IOException
     {
         FileStore fileStore = getFileStore();
-        try ( InputStream is = fileStore.get( meta.getMd5() ) )
+        try ( InputStream is = fileStore.get( meta.getMd5Sum() ) )
         {
             if ( is != null )
             {
@@ -225,7 +225,7 @@ class SnapServlet extends HttpServletBase
             sb.append( "name: " ).append( meta.getName() ).append( delim );
             sb.append( "version: " ).append( meta.getVersion() ).append( delim );
             sb.append( "vendor: " ).append( meta.getName() ).append( delim );
-            sb.append( "md5: " ).append( Hex.encodeHexString( meta.getMd5() ) );
+            sb.append( "md5: " ).append( Hex.encodeHexString( meta.getMd5Sum() ) );
             sb.append( System.lineSeparator() );
         }
         return sb.toString();

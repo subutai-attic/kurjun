@@ -4,6 +4,8 @@ package ai.subut.kurjun.model.metadata.snap;
 import java.io.Serializable;
 import java.util.List;
 
+import ai.subut.kurjun.model.metadata.Metadata;
+
 
 /**
  * Interface for Ubuntu Core snap package metadata.
@@ -12,32 +14,8 @@ import java.util.List;
  * metadata.
  *
  */
-public interface SnapMetadata extends Serializable
+public interface SnapMetadata extends Metadata, Serializable
 {
-
-    /**
-     * Gets the md5 checksum of the corresponding package.
-     *
-     * @return
-     */
-    byte[] getMd5();
-
-
-    /**
-     * Gets the name of the snap package.
-     *
-     * @return snap package name
-     */
-    String getName();
-
-
-    /**
-     * Gets the version of the snap package.
-     *
-     * @return
-     */
-    String getVersion();
-
 
     /**
      * Gets the name and email or URL for the person providing support for this package.

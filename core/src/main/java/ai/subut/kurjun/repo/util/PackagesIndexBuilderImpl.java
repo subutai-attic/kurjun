@@ -146,7 +146,8 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
     }
 
 
-    private List<PackageMetadata> filterMetadata( String component, Architecture arch, PackageMetadataListing ls )
+    private List<PackageMetadata> filterMetadata( String component, Architecture arch,
+                                                  PackageMetadataListing<PackageMetadata> ls )
     {
         List<PackageMetadata> res = new LinkedList<>();
         for ( PackageMetadata m : ls.getPackageMetadata() )

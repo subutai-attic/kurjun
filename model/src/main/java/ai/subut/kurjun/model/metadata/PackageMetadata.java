@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Interface for package meta data.
  */
-public interface PackageMetadata extends Serializable
+public interface PackageMetadata extends Metadata, Serializable
 {
     String PACKAGE_FIELD = "Package";
     String VERSION_FIELD = "Version";
@@ -39,6 +39,7 @@ public interface PackageMetadata extends Serializable
      *
      * @return the md5 sum for the Debian package file
      */
+    @Override
     byte[] getMd5Sum();
 
 
@@ -63,6 +64,7 @@ public interface PackageMetadata extends Serializable
 
     String getPackage();
 
+    @Override
     String getVersion();
 
     String getSource();

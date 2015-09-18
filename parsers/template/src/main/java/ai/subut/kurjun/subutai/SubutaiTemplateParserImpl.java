@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 
 import ai.subut.kurjun.ar.DefaultTar;
@@ -32,6 +33,12 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
     @Override
     public TemplateMetadata parseTemplate( File file ) throws IOException
     {
+        byte[] md5;
+        try ( InputStream is = new FileInputStream( file ) )
+        {
+            md5 = DigestUtils.md5( is );
+        }
+
         Path targetDir = Files.createTempDirectory( null );
         try
         {
@@ -41,7 +48,7 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
             Path configPath = targetDir.resolve( "config" );
             try ( InputStream is = new FileInputStream( configPath.toFile() ) )
             {
-                return parseTemplateConfigFile( is );
+                return parseConfigFile( is, md5 );
             }
         }
         finally
@@ -54,7 +61,16 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
     @Override
     public TemplateMetadata parseTemplateConfigFile( InputStream stream ) throws IOException
     {
-        DefaultTemplateMetadata meta = new DefaultTemplateMetadata();
+        return parseConfigFile( stream, null );
+    }
+
+
+    private TemplateMetadata parseConfigFile( InputStream stream, byte[] md5 ) throws IOException
+    {
+        String name = null;
+        String version = null;
+        Architecture arch = null;
+
         try ( BufferedReader br = new BufferedReader( new InputStreamReader( stream ) ) )
         {
             String line;
@@ -63,21 +79,55 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
                 Matcher matcher = NAME_LINE_PATTERN.matcher( line );
                 if ( matcher.matches() )
                 {
-                    meta.setName( matcher.group( 1 ) );
+                    name = matcher.group( 1 );
                 }
                 else if ( ( matcher = VERSION_LINE_PATTERN.matcher( line ) ).matches() )
                 {
-                    meta.setVersion( matcher.group( 1 ) );
+                    version = matcher.group( 1 );
                 }
                 else if ( ( matcher = ARCH_LINE_PATTERN.matcher( line ) ).matches() )
                 {
-                    Architecture arch = Architecture.getByValue( matcher.group( 1 ) );
-                    meta.setArchitecture( arch );
+                    arch = Architecture.getByValue( matcher.group( 1 ) );
                 }
             }
         }
-        return meta;
+
+        final String fname = name;
+        final String fversion = version;
+        final Architecture farch = arch;
+
+        return new TemplateMetadata()
+        {
+
+            @Override
+            public Architecture getArchitecture()
+            {
+                return farch;
+            }
+
+
+            @Override
+            public byte[] getMd5Sum()
+            {
+                return md5;
+            }
+
+
+            @Override
+            public String getName()
+            {
+                return fname;
+            }
+
+
+            @Override
+            public String getVersion()
+            {
+                return fversion;
+            }
+        };
     }
+
 
 }
 
