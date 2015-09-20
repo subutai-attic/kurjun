@@ -34,7 +34,7 @@ import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
-import ai.subut.kurjun.model.metadata.PackageMetadata;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.storage.FileStore;

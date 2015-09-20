@@ -6,11 +6,10 @@ import java.util.Collection;
 
 /**
  * This interface represents a result set of a {@link PackageMetadataStore#list() } method. This interface exposes
- * methods to get a set of retrieved metadata and to identify if the result is final or not.
+ * methods to get a partial set of meta data and to identify if the result is final or not.
  *
- * @param <T> specific subtype of meta data this listing is handling
  */
-public interface PackageMetadataListing
+public interface MetadataListing
 {
 
     /**

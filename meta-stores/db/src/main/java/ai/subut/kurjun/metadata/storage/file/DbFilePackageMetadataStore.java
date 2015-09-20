@@ -19,10 +19,10 @@ import com.google.inject.assistedinject.Assisted;
 import ai.subut.kurjun.common.KurjunContext;
 import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.db.file.FileDb;
-import ai.subut.kurjun.metadata.common.PackageMetadataListingImpl;
+import ai.subut.kurjun.metadata.common.MetadataListingImpl;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
-import ai.subut.kurjun.model.metadata.PackageMetadata;
-import ai.subut.kurjun.model.metadata.PackageMetadataListing;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
+import ai.subut.kurjun.model.metadata.MetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 
@@ -108,14 +108,14 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
 
     @Override
-    public PackageMetadataListing list() throws IOException
+    public MetadataListing list() throws IOException
     {
         return listPackageMetadata( null );
     }
 
 
     @Override
-    public PackageMetadataListing listNextBatch( PackageMetadataListing listing ) throws IOException
+    public MetadataListing listNextBatch( MetadataListing listing ) throws IOException
     {
         if ( listing.isTruncated() && listing.getMarker() != null )
         {
@@ -125,7 +125,7 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
     }
 
 
-    private PackageMetadataListing listPackageMetadata( final String marker ) throws IOException
+    private MetadataListing listPackageMetadata( final String marker ) throws IOException
     {
         Map<String, PackageMetadata> map;
         try ( FileDb fileDb = new FileDb( fileDbPath.toString() ) )
@@ -144,7 +144,7 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
             stream = stream.filter( m -> m.getPackage().compareTo( marker ) > 0 );
         }
 
-        PackageMetadataListingImpl pml = new PackageMetadataListingImpl();
+        MetadataListingImpl pml = new MetadataListingImpl();
 
         // terminate stream limiting result set to (batch size + 1)
         // one more item is used to determine whether there is more result to fetch

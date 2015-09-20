@@ -9,9 +9,9 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 import ai.subut.kurjun.metadata.common.apt.DefaultDependency;
-import ai.subut.kurjun.model.metadata.Dependency;
-import ai.subut.kurjun.model.metadata.PackageMetadata;
-import ai.subut.kurjun.model.metadata.RelationOperator;
+import ai.subut.kurjun.model.metadata.apt.Dependency;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
+import ai.subut.kurjun.model.metadata.apt.RelationOperator;
 
 
 /**

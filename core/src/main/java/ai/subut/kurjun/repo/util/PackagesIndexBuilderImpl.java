@@ -31,11 +31,11 @@ import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
 import ai.subut.kurjun.model.metadata.Architecture;
-import ai.subut.kurjun.model.metadata.Dependency;
-import ai.subut.kurjun.model.metadata.PackageMetadata;
-import ai.subut.kurjun.model.metadata.PackageMetadataListing;
+import ai.subut.kurjun.model.metadata.MetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.metadata.apt.Dependency;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.repo.service.PackageFilenameBuilder;
 import ai.subut.kurjun.repo.service.PackagesIndexBuilder;
@@ -95,7 +95,7 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
 
         try ( OutputStream os = wrapStream( out, compressionType ) )
         {
-            PackageMetadataListing list = metadataStore.list();
+            MetadataListing list = metadataStore.list();
             List<PackageMetadata> filtered = filterMetadata( component, arch, list );
             for ( PackageMetadata pm : filtered )
             {
@@ -152,8 +152,7 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
     }
 
 
-    private List<PackageMetadata> filterMetadata( String component, Architecture arch,
-                                                  PackageMetadataListing ls )
+    private List<PackageMetadata> filterMetadata( String component, Architecture arch, MetadataListing ls )
     {
         List<PackageMetadata> res = new LinkedList<>();
         for ( SerializableMetadata m : ls.getPackageMetadata() )

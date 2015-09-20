@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.Map;
 
-import ai.subut.kurjun.model.metadata.PackageMetadata;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 
 
 /**

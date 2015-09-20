@@ -7,10 +7,10 @@ import java.util.List;
 
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.metadata.Architecture;
-import ai.subut.kurjun.model.metadata.Dependency;
-import ai.subut.kurjun.model.metadata.PackageMetadata;
-import ai.subut.kurjun.model.metadata.Priority;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.metadata.apt.Dependency;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
+import ai.subut.kurjun.model.metadata.apt.Priority;
 
 
 /**

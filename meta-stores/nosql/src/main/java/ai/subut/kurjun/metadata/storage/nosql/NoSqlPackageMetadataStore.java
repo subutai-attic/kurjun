@@ -18,9 +18,9 @@ import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.common.KurjunContext;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
-import ai.subut.kurjun.metadata.common.PackageMetadataListingImpl;
-import ai.subut.kurjun.model.metadata.PackageMetadata;
-import ai.subut.kurjun.model.metadata.PackageMetadataListing;
+import ai.subut.kurjun.metadata.common.MetadataListingImpl;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
+import ai.subut.kurjun.model.metadata.MetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 
@@ -137,14 +137,14 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
 
 
     @Override
-    public PackageMetadataListing list() throws IOException
+    public MetadataListing list() throws IOException
     {
         return listPackageMetadata( null );
     }
 
 
     @Override
-    public PackageMetadataListing listNextBatch( PackageMetadataListing listing ) throws IOException
+    public MetadataListing listNextBatch( MetadataListing listing ) throws IOException
     {
         if ( listing.isTruncated() && listing.getMarker() != null )
         {
@@ -154,9 +154,9 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
     }
 
 
-    private PackageMetadataListing listPackageMetadata( String marker ) throws IOException
+    private MetadataListing listPackageMetadata( String marker ) throws IOException
     {
-        PackageMetadataListingImpl res = new PackageMetadataListingImpl();
+        MetadataListingImpl res = new MetadataListingImpl();
 
         Statement st = QueryBuilder.select().from( SchemaInfo.KEYSPACE, schemaInfo.getTableName() )
                 .where( gt( token( SchemaInfo.CHECKSUM_COLUMN ), fcall( "token", marker != null ? marker : "" ) ) )

@@ -5,7 +5,7 @@ import org.vafer.jdeb.debian.ControlField;
 import org.vafer.jdeb.debian.ControlFile;
 
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
-import ai.subut.kurjun.model.metadata.PackageMetadata;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 
 
 public class PackageIndexFieldsParser extends ControlFile

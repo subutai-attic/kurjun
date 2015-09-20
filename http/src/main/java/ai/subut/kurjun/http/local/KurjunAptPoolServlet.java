@@ -19,8 +19,8 @@ import ai.subut.kurjun.http.HttpServer;
 import ai.subut.kurjun.http.HttpServletBase;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.metadata.Metadata;
-import ai.subut.kurjun.model.metadata.PackageMetadata;
-import ai.subut.kurjun.model.metadata.PackageMetadataListing;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
+import ai.subut.kurjun.model.metadata.MetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.storage.FileStore;
@@ -69,7 +69,7 @@ class KurjunAptPoolServlet extends HttpServletBase
 
         PackageMetadataStore metadataStore = metadataStoreFactory.create( context );
 
-        PackageMetadataListing list = metadataStore.list();
+        MetadataListing list = metadataStore.list();
         PackageMetadata metadata = findMetadata( packageName, version, list.getPackageMetadata() );
 
         while ( metadata == null && list.isTruncated() )

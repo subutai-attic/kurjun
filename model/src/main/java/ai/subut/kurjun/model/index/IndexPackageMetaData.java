@@ -3,7 +3,7 @@ package ai.subut.kurjun.model.index;
 
 import java.util.List;
 
-import ai.subut.kurjun.model.metadata.PackageMetadata;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 
 
 /**
@@ -17,12 +17,9 @@ public interface IndexPackageMetaData extends PackageMetadata
     String DESCRIPTION_MD5_FIELD = "Description-md5";
 
     /**
-     * @todo have no idea what this is used for
-     * Example values are:
-     * Tag: game::strategy, implemented-in::c++, interface::x11, role::program,
-     *  uitoolkit::sdl, uitoolkit::wxwidgets, use::gameplaying,
-     *  x11::application
-     * Also note that this is a multi-line field.
+     * @todo have no idea what this is used for Example values are: Tag: game::strategy, implemented-in::c++,
+     * interface::x11, role::program, uitoolkit::sdl, uitoolkit::wxwidgets, use::gameplaying, x11::application Also note
+     * that this is a multi-line field.
      */
     String TAG_FIELD = "Tag";
 
@@ -54,6 +51,7 @@ public interface IndexPackageMetaData extends PackageMetadata
 
     /**
      * Gets the SHA1 hash for the Debian Package file in the repository.
+     *
      * @return the SHA1 hash for the package
      */
     byte[] getSHA1();
@@ -61,6 +59,7 @@ public interface IndexPackageMetaData extends PackageMetadata
 
     /**
      * Gets the SHA256 hash for the Debian Package file in the repository.
+     *
      * @return the SHA256 hash for the package file
      */
     byte[] getSHA256();
@@ -68,6 +67,7 @@ public interface IndexPackageMetaData extends PackageMetadata
 
     /**
      * Gets the MD5 checksum for the Debian Package file in the repository.
+     *
      * @return the MD5 checksum for the package file
      */
     @Override
@@ -76,6 +76,7 @@ public interface IndexPackageMetaData extends PackageMetadata
 
     /**
      * Gets the size in bytes of the Debian Package file in the repository.
+     *
      * @return the size in bytes of the package file
      */
     long getSize();
@@ -100,3 +101,4 @@ public interface IndexPackageMetaData extends PackageMetadata
     List<TagItem> getTag();
 
 }
+

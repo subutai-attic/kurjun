@@ -4,8 +4,8 @@ package ai.subut.kurjun.metadata.common.apt;
 import java.util.ArrayList;
 import java.util.List;
 
-import ai.subut.kurjun.model.metadata.Dependency;
-import ai.subut.kurjun.model.metadata.RelationOperator;
+import ai.subut.kurjun.model.metadata.apt.Dependency;
+import ai.subut.kurjun.model.metadata.apt.RelationOperator;
 
 
 /**

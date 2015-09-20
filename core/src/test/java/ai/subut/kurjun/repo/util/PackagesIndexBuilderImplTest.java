@@ -37,8 +37,8 @@ import ai.subut.kurjun.cfparser.DefaultControlFileParser;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.Metadata;
-import ai.subut.kurjun.model.metadata.PackageMetadata;
-import ai.subut.kurjun.model.metadata.PackageMetadataListing;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
+import ai.subut.kurjun.model.metadata.MetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.storage.FileStore;
@@ -117,7 +117,7 @@ public class PackagesIndexBuilderImplTest
         Assume.assumeFalse( testPackageFiles.isEmpty() );
         Assume.assumeTrue( metadata.size() == testPackageFiles.size() );
 
-        PackageMetadataListing listing = Mockito.mock( PackageMetadataListing.class );
+        MetadataListing listing = Mockito.mock(MetadataListing.class );
         Mockito.when( listing.getPackageMetadata() ).thenReturn( metadata.values() );
         Mockito.when( listing.isTruncated() ).thenReturn( false );
 

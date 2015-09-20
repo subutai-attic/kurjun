@@ -11,8 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.vafer.jdeb.debian.BinaryPackageControlFile;
 
 import ai.subut.kurjun.model.metadata.Architecture;
-import ai.subut.kurjun.model.metadata.Dependency;
-import ai.subut.kurjun.model.metadata.Priority;
+import ai.subut.kurjun.model.metadata.apt.Dependency;
+import ai.subut.kurjun.model.metadata.apt.Priority;
 
 
 /**

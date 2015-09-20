@@ -1,8 +1,6 @@
 package ai.subut.kurjun.metadata.common;
 
 
-import ai.subut.kurjun.metadata.common.apt.DefaultDependency;
-
 import java.lang.reflect.Type;
 import java.util.Dictionary;
 import java.util.Properties;
@@ -14,7 +12,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
 
-import ai.subut.kurjun.model.metadata.Dependency;
+import ai.subut.kurjun.metadata.common.apt.DefaultDependency;
+import ai.subut.kurjun.model.metadata.apt.Dependency;
 
 
 public class Activator implements BundleActivator

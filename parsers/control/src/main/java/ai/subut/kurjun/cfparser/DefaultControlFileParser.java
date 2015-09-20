@@ -13,7 +13,7 @@ import org.vafer.jdeb.debian.BinaryPackageControlFile;
 
 import ai.subut.kurjun.cfparser.service.ControlFileParser;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
-import ai.subut.kurjun.model.metadata.PackageMetadata;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 
 
 /**

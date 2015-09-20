@@ -18,8 +18,8 @@ import com.google.inject.assistedinject.Assisted;
 import ai.subut.kurjun.common.KurjunContext;
 import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
-import ai.subut.kurjun.metadata.common.PackageMetadataListingImpl;
-import ai.subut.kurjun.model.metadata.PackageMetadataListing;
+import ai.subut.kurjun.metadata.common.MetadataListingImpl;
+import ai.subut.kurjun.model.metadata.MetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 
@@ -150,14 +150,14 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
 
 
     @Override
-    public PackageMetadataListing list() throws IOException
+    public MetadataListing list() throws IOException
     {
         return listPackageMetadata( null );
     }
 
 
     @Override
-    public PackageMetadataListing listNextBatch( PackageMetadataListing listing ) throws IOException
+    public MetadataListing listNextBatch( MetadataListing listing ) throws IOException
     {
         if ( listing.isTruncated() && listing.getMarker() != null )
         {
@@ -167,9 +167,9 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
     }
 
 
-    private PackageMetadataListing listPackageMetadata( String marker ) throws IOException
+    private MetadataListing listPackageMetadata( String marker ) throws IOException
     {
-        PackageMetadataListingImpl pml = new PackageMetadataListingImpl();
+        MetadataListingImpl pml = new MetadataListingImpl();
         try ( Connection conn = ConnectionFactory.getInstance().getConnection() )
         {
             PreparedStatement ps;

@@ -11,8 +11,8 @@ import ai.subut.kurjun.metadata.common.apt.DefaultDependency;
 import ai.subut.kurjun.metadata.common.apt.DefaultIndexPackageMetaData;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
-import ai.subut.kurjun.model.metadata.Dependency;
-import ai.subut.kurjun.model.metadata.PackageMetadata;
+import ai.subut.kurjun.model.metadata.apt.Dependency;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 
 
 public class MetadataUtils

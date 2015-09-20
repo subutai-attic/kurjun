@@ -20,16 +20,16 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
-import ai.subut.kurjun.metadata.common.PackageMetadataListingImpl;
+import ai.subut.kurjun.metadata.common.MetadataListingImpl;
 import ai.subut.kurjun.metadata.common.apt.DefaultDependency;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
 import ai.subut.kurjun.model.metadata.Architecture;
-import ai.subut.kurjun.model.metadata.Dependency;
 import ai.subut.kurjun.model.metadata.Metadata;
-import ai.subut.kurjun.model.metadata.PackageMetadataListing;
-import ai.subut.kurjun.model.metadata.Priority;
-import ai.subut.kurjun.model.metadata.RelationOperator;
+import ai.subut.kurjun.model.metadata.MetadataListing;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.metadata.apt.Dependency;
+import ai.subut.kurjun.model.metadata.apt.Priority;
+import ai.subut.kurjun.model.metadata.apt.RelationOperator;
 
 
 public class NoSqlPackageMetadataStoreTest
@@ -144,13 +144,13 @@ public class NoSqlPackageMetadataStoreTest
             extraItems.add( pm );
         }
 
-        PackageMetadataListing ls = store.list();
+        MetadataListing ls = store.list();
 
         Assert.assertNotNull( ls );
         Assert.assertTrue( ls.isTruncated() );
         Assert.assertEquals( store.batchSize, ls.getPackageMetadata().size() );
 
-        PackageMetadataListing next = store.listNextBatch( ls );
+        MetadataListing next = store.listNextBatch( ls );
         Assert.assertNotNull( next );
     }
 
@@ -158,7 +158,7 @@ public class NoSqlPackageMetadataStoreTest
     @Test( expected = IllegalStateException.class )
     public void testListNextBatchWithInvalidInput() throws Exception
     {
-        PackageMetadataListingImpl listing = new PackageMetadataListingImpl();
+        MetadataListingImpl listing = new MetadataListingImpl();
         listing.setTruncated( false );
 
         store.listNextBatch( listing );
@@ -168,7 +168,7 @@ public class NoSqlPackageMetadataStoreTest
     @Test( expected = IllegalStateException.class )
     public void testListNextBatchWithoutMarker() throws IOException
     {
-        store.listNextBatch( new PackageMetadataListingImpl() );
+        store.listNextBatch( new MetadataListingImpl() );
     }
 
 

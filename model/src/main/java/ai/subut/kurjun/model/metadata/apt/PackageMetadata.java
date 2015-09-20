@@ -1,5 +1,8 @@
-package ai.subut.kurjun.model.metadata;
+package ai.subut.kurjun.model.metadata.apt;
 
+
+import ai.subut.kurjun.model.metadata.Architecture;
+import ai.subut.kurjun.model.metadata.Metadata;
 
 import java.net.URL;
 import java.util.List;

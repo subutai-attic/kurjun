@@ -5,15 +5,15 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import ai.subut.kurjun.model.metadata.PackageMetadataListing;
+import ai.subut.kurjun.model.metadata.MetadataListing;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 
 
 /**
- * POJO implementation of {@link PackageMetadataListing}.
+ * POJO implementation of {@link MetadataListing}.
  *
  */
-public class PackageMetadataListingImpl implements PackageMetadataListing
+public class MetadataListingImpl implements MetadataListing
 {
     private List<SerializableMetadata> metadata = new LinkedList<>();
     private Object marker;
