@@ -10,7 +10,7 @@ import java.util.Collection;
  *
  * @param <T> specific subtype of meta data this listing is handling
  */
-public interface PackageMetadataListing<T extends Metadata>
+public interface PackageMetadataListing
 {
 
     /**
@@ -18,7 +18,7 @@ public interface PackageMetadataListing<T extends Metadata>
      *
      * @return collection of {@link Metadata} instances
      */
-    Collection<T> getPackageMetadata();
+    Collection<SerializableMetadata> getPackageMetadata();
 
 
     /**

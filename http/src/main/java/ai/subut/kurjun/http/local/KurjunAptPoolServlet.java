@@ -18,9 +18,11 @@ import ai.subut.kurjun.common.KurjunContext;
 import ai.subut.kurjun.http.HttpServer;
 import ai.subut.kurjun.http.HttpServletBase;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
+import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.PackageMetadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.repo.service.PackageFilenameBuilder;
 import ai.subut.kurjun.repo.service.PackageFilenameParser;
@@ -100,13 +102,13 @@ class KurjunAptPoolServlet extends HttpServletBase
     }
 
 
-    private PackageMetadata findMetadata( String packageName, String version, Collection<PackageMetadata> ls )
+    private PackageMetadata findMetadata( String packageName, String version, Collection<SerializableMetadata> ls )
     {
-        for ( PackageMetadata m : ls )
+        for ( Metadata m : ls )
         {
-            if ( m.getPackage().equals( packageName ) && m.getVersion().equals( version ) )
+            if ( m.getName().equals( packageName ) && m.getVersion().equals( version ) )
             {
-                return m;
+                return m instanceof PackageMetadata ? ( PackageMetadata ) m : null;
             }
         }
         return null;

@@ -1,6 +1,8 @@
 package ai.subut.kurjun.metadata.common;
 
 
+import ai.subut.kurjun.metadata.common.apt.DefaultDependency;
+
 import java.lang.reflect.Type;
 import java.util.Dictionary;
 import java.util.Properties;

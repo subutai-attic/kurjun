@@ -74,7 +74,7 @@ class CassandraSnapMetadataStore implements SnapMetadataStore
         Row row = rs.one();
         if ( row != null )
         {
-            return gson.fromJson( row.getString( SchemaInfo.METADATA_COLUMN ), DefaultSnapMetadata.class );
+            return gson.fromJson( row.getString( SchemaInfo.DATA_COLUMN ), DefaultSnapMetadata.class );
         }
         return null;
     }
@@ -92,7 +92,7 @@ class CassandraSnapMetadataStore implements SnapMetadataStore
         Iterator<Row> it = rs.iterator();
         while ( it.hasNext() )
         {
-            String json = it.next().getString( SchemaInfo.METADATA_COLUMN );
+            String json = it.next().getString( SchemaInfo.DATA_COLUMN );
             DefaultSnapMetadata m = gson.fromJson( json, DefaultSnapMetadata.class );
             if ( filter.test( m ) )
             {
@@ -110,7 +110,7 @@ class CassandraSnapMetadataStore implements SnapMetadataStore
         {
             Statement st = QueryBuilder.insertInto( SchemaInfo.KEYSPACE, schemaInfo.getTableName() )
                     .value( SchemaInfo.CHECKSUM_COLUMN, Hex.encodeHexString( metadata.getMd5Sum() ) )
-                    .value( SchemaInfo.METADATA_COLUMN, gson.toJson( metadata ) );
+                    .value( SchemaInfo.DATA_COLUMN, gson.toJson( metadata ) );
             session.execute( st );
             return true;
         }

@@ -26,21 +26,21 @@ public interface PackageMetadataStore
     /**
      * Gets the metadata of a Debian package with the supplied md5 sum.
      *
-     * @param md5 the md5 sum of the Debian package
-     * @return the metadata, or null of no such metadata
+     * @param md5 the md5 sum of the package
+     * @return the metadata, or null if no such metadata
      * @throws IOException if there are problems accessing the store
      */
-    PackageMetadata get( byte[] md5 ) throws IOException;
+    SerializableMetadata get( byte[] md5 ) throws IOException;
 
 
     /**
      * Puts the metadata of a Debian package into the store.
      *
-     * @param meta the metadata for the Debian package
+     * @param meta the metadata for the package
      * @return true if the metadata was stored, false if it already existed
      * @throws IOException if there are problems accessing the store
      */
-    boolean put( PackageMetadata meta ) throws IOException;
+    boolean put( SerializableMetadata meta ) throws IOException;
 
 
     /**

@@ -1,6 +1,7 @@
-package ai.subut.kurjun.metadata.common;
+package ai.subut.kurjun.metadata.common.apt;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ai.subut.kurjun.model.metadata.Dependency;
@@ -14,7 +15,7 @@ import ai.subut.kurjun.model.metadata.RelationOperator;
 public class DefaultDependency implements Dependency
 {
     private String packageName;
-    private List<Dependency> alternatives;
+    private List<Dependency> alternatives = new ArrayList<>();
     private String version;
     private RelationOperator dependencyOperator;
 

@@ -20,9 +20,11 @@ import ai.subut.kurjun.common.KurjunContext;
 import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.metadata.common.PackageMetadataListingImpl;
+import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.metadata.PackageMetadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
 
 
 class DbFilePackageMetadataStore implements PackageMetadataStore
@@ -71,17 +73,17 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
 
     @Override
-    public PackageMetadata get( byte[] md5 ) throws IOException
+    public SerializableMetadata get( byte[] md5 ) throws IOException
     {
         try ( FileDb fileDb = new FileDb( fileDbPath.toString() ) )
         {
-            return fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), PackageMetadata.class );
+            return fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), SerializableMetadata.class );
         }
     }
 
 
     @Override
-    public boolean put( PackageMetadata meta ) throws IOException
+    public boolean put( SerializableMetadata meta ) throws IOException
     {
         if ( !contains( meta.getMd5Sum() ) )
         {
@@ -152,12 +154,13 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
             PackageMetadata item = it.next();
             if ( pml.getPackageMetadata().size() < batchSize )
             {
-                pml.getPackageMetadata().add( item );
+                pml.getPackageMetadata().add( MetadataUtils.serializablePackageMetadata( item ) );
                 pml.setMarker( item.getPackage() );
             }
             else
             {
                 pml.setTruncated( true );
+                break;
             }
         }
         return pml;

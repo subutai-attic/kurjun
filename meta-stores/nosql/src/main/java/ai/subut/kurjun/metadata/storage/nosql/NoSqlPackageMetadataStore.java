@@ -4,6 +4,7 @@ package ai.subut.kurjun.metadata.storage.nosql;
 import java.io.IOException;
 import java.util.Iterator;
 
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 
 import com.datastax.driver.core.ResultSet;
@@ -11,17 +12,17 @@ import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
-import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.ProvisionException;
 import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.common.KurjunContext;
-import ai.subut.kurjun.metadata.common.DefaultPackageMetadata;
+import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.PackageMetadataListingImpl;
 import ai.subut.kurjun.model.metadata.PackageMetadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
 
 import static com.datastax.driver.core.querybuilder.QueryBuilder.fcall;
 import static com.datastax.driver.core.querybuilder.QueryBuilder.gt;
@@ -39,9 +40,6 @@ import static com.datastax.driver.core.querybuilder.QueryBuilder.token;
  */
 class NoSqlPackageMetadataStore implements PackageMetadataStore
 {
-
-    @Inject
-    Gson gson;
 
     int batchSize = 1000;
     private Session session;
@@ -93,7 +91,7 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
 
 
     @Override
-    public PackageMetadata get( byte[] md5 ) throws IOException
+    public SerializableMetadata get( byte[] md5 ) throws IOException
     {
         Statement st = QueryBuilder.select().from( SchemaInfo.KEYSPACE, schemaInfo.getTableName() )
                 .where( QueryBuilder.eq( SchemaInfo.CHECKSUM_COLUMN, Hex.encodeHexString( md5 ) ) );
@@ -101,20 +99,22 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
         Row row = rs.one();
         if ( row != null )
         {
-            return gson.fromJson( row.getString( SchemaInfo.METADATA_COLUMN ), DefaultPackageMetadata.class );
+            return makeMetadata( row );
         }
         return null;
     }
 
 
     @Override
-    public boolean put( PackageMetadata meta ) throws IOException
+    public boolean put( SerializableMetadata meta ) throws IOException
     {
         if ( !contains( meta.getMd5Sum() ) )
         {
             Statement st = QueryBuilder.insertInto( SchemaInfo.KEYSPACE, schemaInfo.getTableName() )
                     .value( SchemaInfo.CHECKSUM_COLUMN, Hex.encodeHexString( meta.getMd5Sum() ) )
-                    .value( SchemaInfo.METADATA_COLUMN, gson.toJson( meta ) );
+                    .value( SchemaInfo.NAME_COLUMN, meta.getName() )
+                    .value( SchemaInfo.VERSION_COLUMN, meta.getVersion() )
+                    .value( SchemaInfo.DATA_COLUMN, meta.serialize() );
             session.execute( st );
             return true;
         }
@@ -154,7 +154,7 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
     }
 
 
-    private PackageMetadataListing listPackageMetadata( String marker )
+    private PackageMetadataListing listPackageMetadata( String marker ) throws IOException
     {
         PackageMetadataListingImpl res = new PackageMetadataListingImpl();
 
@@ -165,18 +165,45 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
 
         ResultSet rs = session.execute( st );
 
-        // TODO: check loop, see db file impl
         Iterator<Row> it = rs.iterator();
-        while ( it.hasNext() && res.getPackageMetadata().size() < batchSize )
+        while ( it.hasNext() )
         {
-            Row row = it.next();
-            String json = row.getString( SchemaInfo.METADATA_COLUMN );
-            res.getPackageMetadata().add( gson.fromJson( json, DefaultPackageMetadata.class ) );
-            res.setMarker( row.getString( SchemaInfo.CHECKSUM_COLUMN ) );
+            if ( res.getPackageMetadata().size() < batchSize )
+            {
+                Row row = it.next();
+                res.getPackageMetadata().add( makeMetadata( row ) );
+                res.setMarker( row.getString( SchemaInfo.CHECKSUM_COLUMN ) );
+            }
+            else
+            {
+                res.setTruncated( true );
+                break;
+            }
         }
-        res.setTruncated( it.hasNext() );
         return res;
     }
+
+
+    private SerializableMetadata makeMetadata( Row row ) throws IOException
+    {
+        byte[] md5;
+        try
+        {
+            String md5hex = row.getString( SchemaInfo.CHECKSUM_COLUMN );
+            md5 = Hex.decodeHex( md5hex.toCharArray() );
+        }
+        catch ( DecoderException ex )
+        {
+            throw new IOException( ex );
+        }
+        DefaultMetadata m = new DefaultMetadata();
+        m.setMd5sum( md5 );
+        m.setName( row.getString( SchemaInfo.NAME_COLUMN ) );
+        m.setVersion( row.getString( SchemaInfo.VERSION_COLUMN ) );
+        m.setSerialized( row.getString( SchemaInfo.DATA_COLUMN ) );
+        return m;
+    }
+
 
 }
 

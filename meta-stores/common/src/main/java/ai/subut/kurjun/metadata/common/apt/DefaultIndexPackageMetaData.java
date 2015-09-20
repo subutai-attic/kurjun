@@ -1,4 +1,4 @@
-package ai.subut.kurjun.metadata.common;
+package ai.subut.kurjun.metadata.common.apt;
 
 
 import java.util.Arrays;

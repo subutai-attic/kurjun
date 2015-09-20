@@ -9,19 +9,19 @@ import java.sql.SQLException;
 import java.util.Objects;
 import java.util.Properties;
 
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 
-import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.common.KurjunContext;
 import ai.subut.kurjun.common.service.KurjunProperties;
-import ai.subut.kurjun.metadata.common.DefaultPackageMetadata;
+import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.PackageMetadataListingImpl;
-import ai.subut.kurjun.model.metadata.PackageMetadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
 
 
 /**
@@ -31,8 +31,6 @@ import ai.subut.kurjun.model.metadata.PackageMetadataStore;
  */
 class SqlDbPackageMetadataStore implements PackageMetadataStore
 {
-    @Inject
-    Gson gson;
 
     int batchSize = 1000;
 
@@ -82,7 +80,7 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
 
 
     @Override
-    public PackageMetadata get( byte[] md5 ) throws IOException
+    public SerializableMetadata get( byte[] md5 ) throws IOException
     {
         Objects.requireNonNull( md5, "Checksum" );
         try ( Connection conn = ConnectionFactory.getInstance().getConnection() )
@@ -92,36 +90,40 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
             ResultSet rs = ps.executeQuery();
             if ( rs.next() )
             {
-                return gson.fromJson( rs.getString( 1 ), DefaultPackageMetadata.class );
+                DefaultMetadata meta = new DefaultMetadata();
+                meta.setMd5sum( md5 );
+                meta.setName( rs.getString( SqlStatements.NAME_COLUMN ) );
+                meta.setVersion( rs.getString( SqlStatements.VERSION_COLUMN ) );
+                meta.setSerialized( rs.getString( SqlStatements.DATA_COLUMN ) );
+                return meta;
             }
-            return null;
         }
         catch ( SQLException ex )
         {
             throw makeIOException( ex );
         }
+        return null;
     }
 
 
     @Override
-    public boolean put( PackageMetadata meta ) throws IOException
+    public boolean put( SerializableMetadata meta ) throws IOException
     {
         Objects.requireNonNull( meta, "Package metadata" );
         Objects.requireNonNull( meta.getMd5Sum(), "Checksum of metadata" );
+
+        if ( contains( meta.getMd5Sum() ) )
+        {
+            return false;
+        }
         try ( Connection conn = ConnectionFactory.getInstance().getConnection() )
         {
-            // first check if data for checksum already exists
-            PreparedStatement ps = conn.prepareStatement( SqlStatements.SELECT_COUNT );
+            PreparedStatement ps = conn.prepareStatement( SqlStatements.INSERT );
             ps.setString( 1, Hex.encodeHexString( meta.getMd5Sum() ) );
-            ResultSet rs = ps.executeQuery();
-            if ( rs.next() && rs.getInt( 1 ) == 0 )
-            {
-                ps = conn.prepareStatement( SqlStatements.INSERT );
-                ps.setString( 1, Hex.encodeHexString( meta.getMd5Sum() ) );
-                ps.setString( 2, gson.toJson( meta ) );
-                return ps.executeUpdate() > 0;
-            }
-            return false;
+            ps.setString( 2, meta.getName() );
+            ps.setString( 3, meta.getVersion() );
+            ps.setString( 4, meta.serialize() );
+            return ps.executeUpdate() > 0;
         }
         catch ( SQLException ex )
         {
@@ -181,16 +183,31 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
                 ps = conn.prepareStatement( SqlStatements.SELECT_ORDERED );
             }
 
+            ps.setFetchSize( batchSize + 1 );
             ResultSet rs = ps.executeQuery();
-            while ( rs.next() && pml.getPackageMetadata().size() < batchSize )
+            while ( rs.next() )
             {
-                DefaultPackageMetadata meta = gson.fromJson( rs.getString( 1 ), DefaultPackageMetadata.class );
-                pml.getPackageMetadata().add( meta );
-                pml.setMarker( Hex.encodeHexString( meta.getMd5Sum() ) );
+                if ( pml.getPackageMetadata().size() < batchSize )
+                {
+                    String md5hex = rs.getString( SqlStatements.CHECKSUM_COLUMN );
+
+                    DefaultMetadata meta = new DefaultMetadata();
+                    meta.setMd5sum( Hex.decodeHex( md5hex.toCharArray() ) );
+                    meta.setName( rs.getString( SqlStatements.NAME_COLUMN ) );
+                    meta.setVersion( rs.getString( SqlStatements.VERSION_COLUMN ) );
+                    meta.setSerialized( rs.getString( SqlStatements.DATA_COLUMN ) );
+
+                    pml.getPackageMetadata().add( meta );
+                    pml.setMarker( md5hex );
+                }
+                else
+                {
+                    pml.setTruncated( true );
+                    break;
+                }
             }
-            pml.setTruncated( rs.next() );
         }
-        catch ( SQLException ex )
+        catch ( SQLException | DecoderException ex )
         {
             throw makeIOException( ex );
         }
@@ -198,9 +215,9 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
     }
 
 
-    private IOException makeIOException( SQLException ex )
+    private IOException makeIOException( Exception ex )
     {
-        return new IOException( "Failed to connect/query db", ex );
+        return new IOException( "Failed to query db", ex );
     }
 
 }

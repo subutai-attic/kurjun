@@ -1,8 +1,6 @@
 package ai.subut.kurjun.model.metadata.template;
 
 
-import java.io.Serializable;
-
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.Metadata;
 
@@ -11,7 +9,7 @@ import ai.subut.kurjun.model.metadata.Metadata;
  * Interface for Subutai template meta data.
  *
  */
-public interface TemplateMetadata extends Metadata, Serializable
+public interface TemplateMetadata extends Metadata
 {
 
     /**

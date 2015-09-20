@@ -1,7 +1,6 @@
 package ai.subut.kurjun.model.metadata;
 
 
-import java.io.Serializable;
 import java.net.URL;
 import java.util.List;
 
@@ -9,7 +8,7 @@ import java.util.List;
 /**
  * Interface for package meta data.
  */
-public interface PackageMetadata extends Metadata, Serializable
+public interface PackageMetadata extends Metadata
 {
     String PACKAGE_FIELD = "Package";
     String VERSION_FIELD = "Version";

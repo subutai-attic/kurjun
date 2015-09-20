@@ -84,6 +84,12 @@
     </dependency>
 
     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>metadata-common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
     </dependency>
@@ -103,6 +109,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    
+
   </dependencies>
 </project>

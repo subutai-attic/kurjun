@@ -34,10 +34,13 @@ import org.apache.commons.codec.digest.DigestUtils;
 import ai.subut.kurjun.ar.DebAr;
 import ai.subut.kurjun.ar.DefaultDebAr;
 import ai.subut.kurjun.cfparser.DefaultControlFileParser;
+import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.metadata.Architecture;
+import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.PackageMetadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.repo.service.PackageFilenameBuilder;
 
@@ -48,7 +51,7 @@ public class PackagesIndexBuilderImplTest
     private static final Logger LOGGER = LoggerFactory.getLogger( PackagesIndexBuilderImplTest.class );
 
     private static Map<String, File> testPackageFiles;
-    private static Map<String, PackageMetadata> metadata;
+    private static Map<String, SerializableMetadata> metadata;
     private static int filesCount = 2;
 
     @Mock
@@ -100,7 +103,7 @@ public class PackagesIndexBuilderImplTest
             {
                 PackageMetadata pm = createPackageMetadata( file );
                 String md5hex = Hex.encodeHexString( pm.getMd5Sum() );
-                metadata.put( md5hex, pm );
+                metadata.put( md5hex, MetadataUtils.serializablePackageMetadata( pm ) );
                 testPackageFiles.put( md5hex, file );
             }
         }
@@ -140,6 +143,7 @@ public class PackagesIndexBuilderImplTest
         indexBuilder.fileStore = fileStore;
         indexBuilder.metadataStore = metadataStore;
         indexBuilder.filenameBuilder = filenameBuilder;
+        indexBuilder.gson = MetadataUtils.JSON;
 
     }
 
@@ -160,9 +164,9 @@ public class PackagesIndexBuilderImplTest
         LOGGER.info( "Packages index:\n{}", s );
 
         // TODO:
-        for ( PackageMetadata pm : metadata.values() )
+        for ( Metadata pm : metadata.values() )
         {
-            Assert.assertTrue( s.contains( PackageMetadata.PACKAGE_FIELD + ": " + pm.getPackage() ) );
+            Assert.assertTrue( s.contains( PackageMetadata.PACKAGE_FIELD + ": " + pm.getName() ) );
             Assert.assertTrue( s.contains( PackageMetadata.VERSION_FIELD + ": " + pm.getVersion() ) );
         }
     }

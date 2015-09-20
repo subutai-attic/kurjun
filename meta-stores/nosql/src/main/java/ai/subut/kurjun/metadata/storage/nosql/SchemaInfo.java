@@ -2,6 +2,11 @@ package ai.subut.kurjun.metadata.storage.nosql;
 
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.datastax.driver.core.Session;
 
@@ -16,7 +21,9 @@ public class SchemaInfo
     public static final String KEYSPACE = "kurjun_metadata";
 
     public static final String CHECKSUM_COLUMN = "checksum";
-    public static final String METADATA_COLUMN = "metadata";
+    public static final String NAME_COLUMN = "name";
+    public static final String VERSION_COLUMN = "version";
+    public static final String DATA_COLUMN = "data";
 
     private String tag;
 
@@ -70,14 +77,29 @@ public class SchemaInfo
      */
     public void createSchema( Session session ) throws IOException
     {
-        session.execute( getCreateTableStatement() );
+        session.execute( readScript( "create-schema.cql" ) );
+        session.execute( readScript( "create-indice.cql" ) );
     }
 
 
-    private String getCreateTableStatement()
+    private String readScript( String resx ) throws IOException
     {
-        return String.format( "CREATE TABLE IF NOT EXISTS %s.%s (%s text PRIMARY KEY, %s text);",
-                              KEYSPACE, getTableName(), CHECKSUM_COLUMN, METADATA_COLUMN );
+        try ( InputStream is = ClassLoader.getSystemResourceAsStream( resx ) )
+        {
+            if ( is != null )
+            {
+                List<String> lines = IOUtils.readLines( is );
+                String cql = StringUtils.join( lines, System.lineSeparator() );
+                cql = cql.replace( "{keyspace}", KEYSPACE );
+                cql = cql.replace( "{table}", getTableName() );
+                cql = cql.replace( "{checksum}", CHECKSUM_COLUMN );
+                cql = cql.replace( "{name}", NAME_COLUMN );
+                cql = cql.replace( "{version}", VERSION_COLUMN );
+                cql = cql.replace( "{data}", DATA_COLUMN );
+                return cql;
+            }
+        }
+        throw new IllegalStateException( "Failed to read resource: " + resx );
     }
 
 

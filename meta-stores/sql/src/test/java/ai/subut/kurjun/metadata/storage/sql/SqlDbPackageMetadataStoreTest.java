@@ -3,7 +3,6 @@ package ai.subut.kurjun.metadata.storage.sql;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Type;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,18 +21,16 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
-import com.google.gson.GsonBuilder;
-import com.google.gson.InstanceCreator;
-
-import ai.subut.kurjun.metadata.common.DefaultDependency;
-import ai.subut.kurjun.metadata.common.DefaultPackageMetadata;
 import ai.subut.kurjun.metadata.common.PackageMetadataListingImpl;
+import ai.subut.kurjun.metadata.common.apt.DefaultDependency;
+import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.Dependency;
-import ai.subut.kurjun.model.metadata.PackageMetadata;
+import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataListing;
 import ai.subut.kurjun.model.metadata.Priority;
 import ai.subut.kurjun.model.metadata.RelationOperator;
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
 
 
 public class SqlDbPackageMetadataStoreTest
@@ -41,8 +38,8 @@ public class SqlDbPackageMetadataStoreTest
     private static final Logger LOGGER = LoggerFactory.getLogger( SqlDbPackageMetadataStoreTest.class );
     private static SqlDbPackageMetadataStore store;
 
-    private PackageMetadata meta;
-    private List<PackageMetadata> extraItems;
+    private SerializableMetadata meta;
+    private List<SerializableMetadata> extraItems;
     private byte[] otherMd5;
 
 
@@ -54,14 +51,6 @@ public class SqlDbPackageMetadataStoreTest
             Properties properties = new Properties();
             properties.load( is );
             store = new SqlDbPackageMetadataStore( properties );
-            store.gson = new GsonBuilder().registerTypeAdapter( Dependency.class, new InstanceCreator<Dependency>()
-            {
-                @Override
-                public Dependency createInstance( Type type )
-                {
-                    return new DefaultDependency();
-                }
-            } ).create();
         }
         catch ( Exception ex )
         {
@@ -96,7 +85,7 @@ public class SqlDbPackageMetadataStoreTest
         if ( store != null )
         {
             store.remove( meta.getMd5Sum() );
-            for ( PackageMetadata item : extraItems )
+            for ( SerializableMetadata item : extraItems )
             {
                 store.remove( item.getMd5Sum() );
             }
@@ -115,7 +104,7 @@ public class SqlDbPackageMetadataStoreTest
     @Test
     public void testGet() throws Exception
     {
-        PackageMetadata res = store.get( meta.getMd5Sum() );
+        Metadata res = store.get( meta.getMd5Sum() );
         Assert.assertEquals( meta, res );
         Assert.assertNull( store.get( otherMd5 ) );
     }
@@ -149,7 +138,7 @@ public class SqlDbPackageMetadataStoreTest
         // put twice of the batch size
         for ( int i = 0; i < store.batchSize * 2; i++ )
         {
-            PackageMetadata pm = createPackageMetadata();
+            DefaultPackageMetadata pm = createPackageMetadata();
             store.put( pm );
             extraItems.add( pm );
         }
@@ -182,7 +171,7 @@ public class SqlDbPackageMetadataStoreTest
     }
 
 
-    private PackageMetadata createPackageMetadata()
+    private DefaultPackageMetadata createPackageMetadata()
     {
         DefaultPackageMetadata pm = new DefaultPackageMetadata();
         pm.setArchitecture( Architecture.AMD64 );
