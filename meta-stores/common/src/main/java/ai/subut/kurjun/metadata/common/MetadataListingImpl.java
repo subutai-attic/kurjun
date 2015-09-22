@@ -1,7 +1,6 @@
 package ai.subut.kurjun.metadata.common;
 
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,7 +20,7 @@ public class MetadataListingImpl implements MetadataListing
 
 
     @Override
-    public Collection<SerializableMetadata> getPackageMetadata()
+    public List<SerializableMetadata> getPackageMetadata()
     {
         return metadata;
     }

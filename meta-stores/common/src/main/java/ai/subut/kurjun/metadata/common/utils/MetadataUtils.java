@@ -10,9 +10,11 @@ import com.google.gson.GsonBuilder;
 import ai.subut.kurjun.metadata.common.apt.DefaultDependency;
 import ai.subut.kurjun.metadata.common.apt.DefaultIndexPackageMetaData;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
+import ai.subut.kurjun.metadata.common.snap.DefaultSnapMetadata;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
 import ai.subut.kurjun.model.metadata.apt.Dependency;
 import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
+import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
 
 
 public class MetadataUtils
@@ -27,6 +29,8 @@ public class MetadataUtils
 
         // register Dependency type adapter for correct deserialization of fields like List<Dependency>
         gb.registerTypeAdapter( Dependency.class, new DependencyTypeAdapter() );
+        // TODO: framework may need type adapter!!!
+//        gb.registerTypeAdapter( Framework.class, new DefaultFramework() );
 
         JSON = gb.create();
     }
@@ -82,6 +86,29 @@ public class MetadataUtils
         result.setTag( meta.getTag() );
 
         return result;
+    }
+
+
+    /**
+     * Converts supplied snap meta data to its serializable meta data form.
+     *
+     * @param meta snap meta data to convert
+     * @return serializable meta data
+     */
+    public static DefaultSnapMetadata serializableSnapMetadata( SnapMetadata meta )
+    {
+        if ( meta instanceof DefaultSnapMetadata )
+        {
+            return ( DefaultSnapMetadata ) meta;
+        }
+        DefaultSnapMetadata m = new DefaultSnapMetadata();
+        m.setMd5Sum( meta.getMd5Sum() );
+        m.setName( meta.getName() );
+        m.setVersion( meta.getVersion() );
+        m.setVendor( meta.getVendor() );
+        m.setSource( meta.getSource() );
+        m.setFrameworks( meta.getFrameworks() );
+        return m;
     }
 
 

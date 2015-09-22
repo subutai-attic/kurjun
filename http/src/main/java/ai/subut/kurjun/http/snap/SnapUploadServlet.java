@@ -14,19 +14,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
+import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.KurjunContext;
-import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.http.HttpServer;
 import ai.subut.kurjun.http.HttpServletBase;
 import ai.subut.kurjun.http.ServletUtils;
+import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
+import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
+import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
-import ai.subut.kurjun.model.metadata.snap.SnapMetadataStore;
 import ai.subut.kurjun.model.storage.FileStore;
-import ai.subut.kurjun.snap.metadata.store.SnapMetadataStoreFactory;
 import ai.subut.kurjun.snap.service.SnapMetadataParser;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
@@ -38,13 +39,13 @@ class SnapUploadServlet extends HttpServletBase
     public static final String SNAPS_PACKAGE_PART = "package";
 
     @Inject
-    private KurjunProperties properties;
+    private Gson gson;
 
     @Inject
     private SnapMetadataParser metadataParser;
 
     @Inject
-    private SnapMetadataStoreFactory metadataStoreFactory;
+    private PackageMetadataStoreFactory metadataStoreFactory;
 
     @Inject
     private FileStoreFactory fileStoreFactory;
@@ -114,8 +115,8 @@ class SnapUploadServlet extends HttpServletBase
 
         if ( Arrays.equals( meta.getMd5Sum(), md5 ) )
         {
-            SnapMetadataStore metadataStore = SnapServlet.getMetadataStore( properties, context, metadataStoreFactory );
-            metadataStore.put( meta );
+            PackageMetadataStore metadataStore = metadataStoreFactory.create( context );
+            metadataStore.put( MetadataUtils.serializableSnapMetadata( meta ) );
             ok( resp, "Package successfully saved" );
         }
         else

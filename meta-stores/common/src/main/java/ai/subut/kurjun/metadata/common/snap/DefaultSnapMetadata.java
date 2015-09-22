@@ -1,17 +1,19 @@
-package ai.subut.kurjun.snap;
+package ai.subut.kurjun.metadata.common.snap;
 
 
 import java.util.Arrays;
 import java.util.List;
 
+import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.metadata.snap.Framework;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
 
 
-public class DefaultSnapMetadata implements SnapMetadata
+public class DefaultSnapMetadata implements SnapMetadata, SerializableMetadata
 {
 
-    private byte[] md5;
+    private byte[] md5Sum;
     private String name;
     private String version;
     private String vendor;
@@ -22,13 +24,13 @@ public class DefaultSnapMetadata implements SnapMetadata
     @Override
     public byte[] getMd5Sum()
     {
-        return md5 != null ? Arrays.copyOf( md5, md5.length ) : null;
+        return md5Sum != null ? Arrays.copyOf( md5Sum, md5Sum.length ) : null;
     }
 
 
-    public void setMd5( byte[] md5 )
+    public void setMd5Sum( byte[] md5Sum )
     {
-        this.md5 = Arrays.copyOf( md5, md5.length );
+        this.md5Sum = Arrays.copyOf( md5Sum, md5Sum.length );
     }
 
 
@@ -94,6 +96,13 @@ public class DefaultSnapMetadata implements SnapMetadata
     public void setFrameworks( List<Framework> frameworks )
     {
         this.frameworks = frameworks;
+    }
+
+
+    @Override
+    public String serialize()
+    {
+        return MetadataUtils.JSON.toJson( this );
     }
 
 

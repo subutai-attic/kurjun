@@ -1,5 +1,7 @@
-package ai.subut.kurjun.model.metadata.snap;
+package ai.subut.kurjun.common.utils;
 
+
+import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
 
 import java.util.regex.Pattern;
 

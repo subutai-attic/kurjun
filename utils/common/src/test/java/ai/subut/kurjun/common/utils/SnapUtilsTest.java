@@ -1,4 +1,4 @@
-package ai.subut.kurjun.model.metadata.snap;
+package ai.subut.kurjun.common.utils;
 
 
 import org.junit.Assert;

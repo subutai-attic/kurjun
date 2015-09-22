@@ -18,8 +18,9 @@ import com.google.inject.Inject;
 
 import ai.subut.kurjun.ar.DefaultTar;
 import ai.subut.kurjun.ar.Tar;
+import ai.subut.kurjun.common.utils.SnapUtils;
+import ai.subut.kurjun.metadata.common.snap.DefaultSnapMetadata;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
-import ai.subut.kurjun.model.metadata.snap.SnapUtils;
 import ai.subut.kurjun.snap.service.SnapMetadataParser;
 
 
@@ -102,7 +103,7 @@ class SnapMetadataParserImpl implements SnapMetadataParser
 
         if ( md5 != null )
         {
-            m.setMd5( md5 );
+            m.setMd5Sum( md5 );
         }
 
         return m;

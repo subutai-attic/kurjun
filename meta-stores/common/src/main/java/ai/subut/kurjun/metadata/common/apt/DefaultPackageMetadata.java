@@ -47,7 +47,7 @@ public class DefaultPackageMetadata implements PackageMetadata, SerializableMeta
     @Override
     public byte[] getMd5Sum()
     {
-        return Arrays.copyOf( md5, md5.length );
+        return md5 != null ? Arrays.copyOf( md5, md5.length ) : null;
     }
 
 

@@ -30,7 +30,6 @@ import ai.subut.kurjun.metadata.storage.nosql.CassandraConnector;
 import ai.subut.kurjun.repo.RepositoryModule;
 import ai.subut.kurjun.riparser.ReleaseIndexParserModule;
 import ai.subut.kurjun.snap.SnapMetadataParserModule;
-import ai.subut.kurjun.snap.metadata.store.SnapMetadataStoreModule;
 import ai.subut.kurjun.storage.factory.FileStoreModule;
 import ai.subut.kurjun.storage.fs.FileSystemFileStoreModule;
 
@@ -75,7 +74,6 @@ public class HttpServer
         bootstrap.addModule( new PackagesIndexParserModule() );
 
         bootstrap.addModule( new SnapMetadataParserModule() );
-        bootstrap.addModule( new SnapMetadataStoreModule() );
         bootstrap.addModule( new SnapServletModule().setServletPath( "/snaps" ) );
 
         bootstrap.addModule( new AbstractModule()
@@ -116,8 +114,6 @@ public class HttpServer
         p.setProperty( PackageMetadataStoreModule.PACKAGE_METADATA_STORE_TYPE, PackageMetadataStoreFactory.NOSQL_DB );
         p.setProperty( DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME, "/tmp/kurjun/metadata" );
 
-        //p.setProperty( SnapMetadataStoreModule.TYPE, SnapMetadataStoreModule.NOSQL_DB );
-        p.setProperty( SnapMetadataStoreModule.DB_FILE_PATH, "/tmp/kurjun/snaps" );
     }
 }
 
