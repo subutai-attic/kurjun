@@ -23,6 +23,7 @@ import ai.subut.kurjun.http.local.KurjunAptRepoServletModule;
 import ai.subut.kurjun.http.local.LocalAptRepoServletModule;
 import ai.subut.kurjun.http.snap.SnapServletModule;
 import ai.subut.kurjun.index.PackagesIndexParserModule;
+import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreModule;
 import ai.subut.kurjun.metadata.storage.file.DbFilePackageMetadataStoreModule;
 import ai.subut.kurjun.metadata.storage.nosql.CassandraConnector;
@@ -111,7 +112,8 @@ public class HttpServer
 
         p.setProperty( FileSystemFileStoreModule.ROOT_DIRECTORY, "/tmp/kurjun/files" );
 
-        p.setProperty( PackageMetadataStoreModule.PACKAGE_METADATA_STORE_TYPE, DbFilePackageMetadataStoreModule.TYPE );
+        p.setProperty( PackageMetadataStoreModule.PACKAGE_METADATA_STORE_TYPE, PackageMetadataStoreFactory.FILE_DB );
+        p.setProperty( PackageMetadataStoreModule.PACKAGE_METADATA_STORE_TYPE, PackageMetadataStoreFactory.NOSQL_DB );
         p.setProperty( DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME, "/tmp/kurjun/metadata" );
 
         //p.setProperty( SnapMetadataStoreModule.TYPE, SnapMetadataStoreModule.NOSQL_DB );

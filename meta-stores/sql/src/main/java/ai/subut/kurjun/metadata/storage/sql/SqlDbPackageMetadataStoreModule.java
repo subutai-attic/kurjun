@@ -17,8 +17,6 @@ import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 public class SqlDbPackageMetadataStoreModule extends AbstractModule
 {
 
-    public static final String TYPE = "sql";
-
 
     @Override
     protected void configure()
