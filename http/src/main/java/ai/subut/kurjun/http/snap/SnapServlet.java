@@ -223,7 +223,7 @@ class SnapServlet extends HttpServletBase
         List<SerializableMetadata> result = new LinkedList<>();
         for ( SerializableMetadata m : ls )
         {
-            if ( namePattern.matcher( name ).matches() )
+            if ( namePattern.matcher( m.getName() ).matches() )
             {
                 if ( version != null && !version.equals( m.getVersion() ) )
                 {
@@ -239,14 +239,14 @@ class SnapServlet extends HttpServletBase
     private String makePackagesIndex( List<SerializableMetadata> ls )
     {
         // TODO: maybe better to render html with links to packages
-        String delim = ";";
+        String delim = "; ";
         StringBuilder sb = new StringBuilder();
         sb.append( "count: " ).append( ls.size() ).append( System.lineSeparator() );
         for ( SerializableMetadata meta : ls )
         {
+            sb.append( "md5: " ).append( Hex.encodeHexString( meta.getMd5Sum() ) ).append( delim );
             sb.append( "name: " ).append( meta.getName() ).append( delim );
             sb.append( "version: " ).append( meta.getVersion() ).append( delim );
-            sb.append( "md5: " ).append( Hex.encodeHexString( meta.getMd5Sum() ) );
             sb.append( System.lineSeparator() );
         }
         return sb.toString();

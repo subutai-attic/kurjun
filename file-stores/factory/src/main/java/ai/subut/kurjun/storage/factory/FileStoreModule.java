@@ -14,11 +14,6 @@ import ai.subut.kurjun.storage.s3.S3FileStoreModule;
 public class FileStoreModule extends AbstractModule
 {
 
-    /**
-     * Property key for file store type.
-     */
-    public static final String FILE_STORE_TYPE = "file.storage.type";
-
 
     @Override
     protected void configure()

@@ -11,18 +11,19 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 
+import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.common.KurjunContext;
 import ai.subut.kurjun.http.HttpServer;
 import ai.subut.kurjun.http.HttpServletBase;
+import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
-import ai.subut.kurjun.model.metadata.Metadata;
-import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.metadata.MetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.repo.service.PackageFilenameBuilder;
 import ai.subut.kurjun.repo.service.PackageFilenameParser;
@@ -44,6 +45,10 @@ class KurjunAptPoolServlet extends HttpServletBase
 
     @Inject
     private PackageFilenameBuilder filenameBuilder;
+
+    @Inject
+    private Gson gson;
+
 
     private KurjunContext context;
 
@@ -104,11 +109,11 @@ class KurjunAptPoolServlet extends HttpServletBase
 
     private PackageMetadata findMetadata( String packageName, String version, Collection<SerializableMetadata> ls )
     {
-        for ( Metadata m : ls )
+        for ( SerializableMetadata m : ls )
         {
             if ( m.getName().equals( packageName ) && m.getVersion().equals( version ) )
             {
-                return m instanceof PackageMetadata ? ( PackageMetadata ) m : null;
+                return gson.fromJson( m.serialize(), DefaultPackageMetadata.class );
             }
         }
         return null;

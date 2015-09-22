@@ -10,9 +10,7 @@ import ai.subut.kurjun.common.KurjunContext;
 import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.storage.fs.FileSystemFileStoreFactory;
-import ai.subut.kurjun.storage.fs.FileSystemFileStoreModule;
 import ai.subut.kurjun.storage.s3.S3FileStoreFactory;
-import ai.subut.kurjun.storage.s3.S3FileStoreModule;
 
 
 /**
@@ -21,6 +19,21 @@ import ai.subut.kurjun.storage.s3.S3FileStoreModule;
  */
 public class FileStoreFactory
 {
+
+    /**
+     * Property key for file store type.
+     */
+    public static final String TYPE = "file.storage.type";
+
+    /**
+     * File system backed file store type key.
+     */
+    public static final String FILE_SYSTEM = "fs";
+
+    /**
+     * Amazon S3 backed file store type key.
+     */
+    public static final String S3 = "s3";
 
     @Inject
     private KurjunProperties properties;
@@ -42,14 +55,14 @@ public class FileStoreFactory
     public FileStore create( KurjunContext context )
     {
         Properties prop = properties.getContextProperties( context.getName() );
-        String type = prop.getProperty( FileStoreModule.FILE_STORE_TYPE );
+        String type = prop.getProperty( TYPE );
 
-        if ( FileSystemFileStoreModule.TYPE.equals( type ) )
+        if ( FILE_SYSTEM.equals( type ) )
         {
             return fileSystemFileStoreFactory.create( context );
         }
 
-        if ( S3FileStoreModule.TYPE.equals( type ) )
+        if ( S3.equals( type ) )
         {
             return s3FileStoreFactory.create( context );
         }
