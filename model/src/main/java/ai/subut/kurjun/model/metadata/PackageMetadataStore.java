@@ -2,21 +2,22 @@ package ai.subut.kurjun.model.metadata;
 
 
 import java.io.IOException;
+import java.util.List;
 
 
 /**
- * A store containing the metadata for Debian packages. The md5 of the Debian
+ * A store containing the metadata for packages. The md5 of the
  * package associated with the stored metadata is used as the primary key to
  * access it.
  */
 public interface PackageMetadataStore
 {
     /**
-     * Checks to see if a Debian package's metadata exists within this
+     * Checks to see if a package's metadata exists within this
      * PkgMetaStore.
      *
-     * @param md5 the md5 sum of the Debian package
-     * @return true if the metadata of a Debian package having the same md5
+     * @param md5 the md5 sum of the package
+     * @return true if the metadata of a package having the same md5
      * sum exists
      * @throws IOException if there are problems accessing the store
      */
@@ -24,7 +25,7 @@ public interface PackageMetadataStore
 
 
     /**
-     * Gets the metadata of a Debian package with the supplied md5 sum.
+     * Gets the metadata of a package with the supplied md5 sum.
      *
      * @param md5 the md5 sum of the package
      * @return the metadata, or null if no such metadata
@@ -34,7 +35,17 @@ public interface PackageMetadataStore
 
 
     /**
-     * Puts the metadata of a Debian package into the store.
+     * Gets metadata of packages whose name match the supplied package name.
+     *
+     * @param name package name string
+     * @return list of metadata that match the supplied name
+     * @throws IOException
+     */
+    List<SerializableMetadata> get( String name ) throws IOException;
+
+
+    /**
+     * Puts the metadata of a package into the store.
      *
      * @param meta the metadata for the package
      * @return true if the metadata was stored, false if it already existed
@@ -44,7 +55,7 @@ public interface PackageMetadataStore
 
 
     /**
-     * Removes the meta data associated with the Debian package with the md5 sum.
+     * Removes the meta data associated with the package with the md5 sum.
      *
      * @param md5 the md5 sum of the Debian package
      * @return true if the metadata was removed, false if no such metadata existed

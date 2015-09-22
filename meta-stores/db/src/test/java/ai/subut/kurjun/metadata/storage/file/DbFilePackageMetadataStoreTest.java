@@ -72,6 +72,13 @@ public class DbFilePackageMetadataStoreTest
         Metadata res = store.get( meta.getMd5Sum() );
         Assert.assertEquals( meta, res );
         Assert.assertNull( store.get( otherMd5 ) );
+
+        // test get by name
+        List<SerializableMetadata> ls = store.get( meta.getName() );
+        Assert.assertEquals( 1, ls.size() );
+        Assert.assertTrue( ls.contains( meta ) );
+
+        Assert.assertTrue( store.get( "non-existing-name" ).isEmpty() );
     }
 
 
@@ -139,7 +146,8 @@ public class DbFilePackageMetadataStoreTest
     private DefaultPackageMetadata createPackageMetadata()
     {
         DefaultPackageMetadata pm = new DefaultPackageMetadata();
-        pm.setPackage( UUID.randomUUID().toString() );
+        pm.setPackage( "package-name" + UUID.randomUUID().toString() );
+        pm.setVersion( "1.2.3" );
         pm.setArchitecture( Architecture.AMD64 );
         pm.setDescription( "Description here" );
         pm.setFilename( pm.getPackage() + "-ver-arch.deb" );

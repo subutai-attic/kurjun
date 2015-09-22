@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Stream;
@@ -77,6 +80,33 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
         {
             return fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), SerializableMetadata.class );
         }
+    }
+
+
+    @Override
+    public List<SerializableMetadata> get( String name ) throws IOException
+    {
+        if ( name == null )
+        {
+            return Collections.emptyList();
+        }
+
+        Collection<SerializableMetadata> items;
+        try ( FileDb fileDb = new FileDb( fileDbPath.toString() ) )
+        {
+            Map<String, SerializableMetadata> map = fileDb.get( MAP_NAME );
+            items = map.values();
+        }
+
+        List<SerializableMetadata> result = new LinkedList<>();
+        for ( SerializableMetadata item : items )
+        {
+            if ( name.equals( item.getName() ) )
+            {
+                result.add( item );
+            }
+        }
+        return result;
     }
 
 

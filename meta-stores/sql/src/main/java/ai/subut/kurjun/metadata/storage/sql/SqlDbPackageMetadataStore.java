@@ -6,6 +6,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -90,19 +93,41 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
             ResultSet rs = ps.executeQuery();
             if ( rs.next() )
             {
-                DefaultMetadata meta = new DefaultMetadata();
-                meta.setMd5sum( md5 );
-                meta.setName( rs.getString( SqlStatements.NAME_COLUMN ) );
-                meta.setVersion( rs.getString( SqlStatements.VERSION_COLUMN ) );
-                meta.setSerialized( rs.getString( SqlStatements.DATA_COLUMN ) );
-                return meta;
+                return makeMetadata( rs );
             }
         }
-        catch ( SQLException ex )
+        catch ( SQLException | DecoderException ex )
         {
             throw makeIOException( ex );
         }
         return null;
+    }
+
+
+    @Override
+    public List<SerializableMetadata> get( String name ) throws IOException
+    {
+        if ( name == null )
+        {
+            return Collections.emptyList();
+        }
+
+        List<SerializableMetadata> result = new LinkedList<>();
+        try ( Connection conn = ConnectionFactory.getInstance().getConnection() )
+        {
+            PreparedStatement ps = conn.prepareStatement( SqlStatements.SELECT_BY_NAME );
+            ps.setString( 1, name );
+            ResultSet rs = ps.executeQuery();
+            while ( rs.next() )
+            {
+                result.add( makeMetadata( rs ) );
+            }
+        }
+        catch ( SQLException | DecoderException ex )
+        {
+            throw makeIOException( ex );
+        }
+        return result;
     }
 
 
@@ -190,12 +215,7 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
                 if ( pml.getPackageMetadata().size() < batchSize )
                 {
                     String md5hex = rs.getString( SqlStatements.CHECKSUM_COLUMN );
-
-                    DefaultMetadata meta = new DefaultMetadata();
-                    meta.setMd5sum( Hex.decodeHex( md5hex.toCharArray() ) );
-                    meta.setName( rs.getString( SqlStatements.NAME_COLUMN ) );
-                    meta.setVersion( rs.getString( SqlStatements.VERSION_COLUMN ) );
-                    meta.setSerialized( rs.getString( SqlStatements.DATA_COLUMN ) );
+                    DefaultMetadata meta = makeMetadata( rs );
 
                     pml.getPackageMetadata().add( meta );
                     pml.setMarker( md5hex );
@@ -212,6 +232,20 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
             throw makeIOException( ex );
         }
         return pml;
+    }
+
+
+    private DefaultMetadata makeMetadata( ResultSet current ) throws SQLException, DecoderException
+    {
+        String md5hex = current.getString( SqlStatements.CHECKSUM_COLUMN );
+        byte[] md5 = Hex.decodeHex( md5hex.toCharArray() );
+
+        DefaultMetadata meta = new DefaultMetadata();
+        meta.setMd5sum( md5 );
+        meta.setName( current.getString( SqlStatements.NAME_COLUMN ) );
+        meta.setVersion( current.getString( SqlStatements.VERSION_COLUMN ) );
+        meta.setSerialized( current.getString( SqlStatements.DATA_COLUMN ) );
+        return meta;
     }
 
 

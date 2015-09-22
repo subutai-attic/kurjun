@@ -2,7 +2,10 @@ package ai.subut.kurjun.metadata.storage.nosql;
 
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -19,10 +22,10 @@ import com.google.inject.assistedinject.Assisted;
 import ai.subut.kurjun.common.KurjunContext;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.MetadataListingImpl;
-import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.metadata.MetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 
 import static com.datastax.driver.core.querybuilder.QueryBuilder.fcall;
 import static com.datastax.driver.core.querybuilder.QueryBuilder.gt;
@@ -102,6 +105,28 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
             return makeMetadata( row );
         }
         return null;
+    }
+
+
+    @Override
+    public List<SerializableMetadata> get( String name ) throws IOException
+    {
+        if ( name == null )
+        {
+            return Collections.emptyList();
+        }
+
+        Statement st = QueryBuilder.select().from( SchemaInfo.KEYSPACE, schemaInfo.getTableName() )
+                .where( QueryBuilder.eq( SchemaInfo.NAME_COLUMN, name ) );
+        ResultSet rs = session.execute( st );
+
+        List<SerializableMetadata> result = new LinkedList<>();
+        Iterator<Row> it = rs.iterator();
+        while ( it.hasNext() )
+        {
+            result.add( makeMetadata( it.next() ) );
+        }
+        return result;
     }
 
 
