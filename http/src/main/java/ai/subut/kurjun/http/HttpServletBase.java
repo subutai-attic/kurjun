@@ -15,6 +15,12 @@ import javax.servlet.http.HttpServletResponse;
 public abstract class HttpServletBase extends HttpServlet
 {
 
+    public static final String MD5_PARAM = "md5";
+    public static final String NAME_PARAM = "name";
+    public static final String VERSION_PARAM = "version";
+    public static final String PACKAGE_FILE_PART_NAME = "package";
+
+
     protected void ok( HttpServletResponse resp, String msg ) throws IOException
     {
         writeResponse( resp, HttpServletResponse.SC_OK, msg );

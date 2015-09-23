@@ -11,10 +11,12 @@ import ai.subut.kurjun.metadata.common.apt.DefaultDependency;
 import ai.subut.kurjun.metadata.common.apt.DefaultIndexPackageMetaData;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
 import ai.subut.kurjun.metadata.common.snap.DefaultSnapMetadata;
+import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
 import ai.subut.kurjun.model.metadata.apt.Dependency;
 import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
+import ai.subut.kurjun.model.metadata.template.TemplateMetadata;
 
 
 public class MetadataUtils
@@ -108,6 +110,27 @@ public class MetadataUtils
         m.setVendor( meta.getVendor() );
         m.setSource( meta.getSource() );
         m.setFrameworks( meta.getFrameworks() );
+        return m;
+    }
+
+
+    /**
+     * Converts supplied Subutai template metadata into its serializable form.
+     *
+     * @param metadata meta data to convert
+     * @return serializable form of meta data
+     */
+    public static DefaultTemplate serializableTemplateMetadata( TemplateMetadata metadata )
+    {
+        if ( metadata instanceof DefaultTemplate )
+        {
+            return ( DefaultTemplate ) metadata;
+        }
+        DefaultTemplate m = new DefaultTemplate();
+        m.setMd5Sum( metadata.getMd5Sum() );
+        m.setName( metadata.getName() );
+        m.setVersion( metadata.getVersion() );
+        m.setArchitecture( metadata.getArchitecture() );
         return m;
     }
 
