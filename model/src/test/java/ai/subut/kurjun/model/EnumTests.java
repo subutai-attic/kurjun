@@ -3,7 +3,7 @@ package ai.subut.kurjun.model;
 
 import org.junit.Test;
 
-import ai.subut.kurjun.model.metadata.RelationOperator;
+import ai.subut.kurjun.model.metadata.apt.RelationOperator;
 import ai.subut.kurjun.model.repository.Protocol;
 
 import static org.junit.Assert.assertEquals;

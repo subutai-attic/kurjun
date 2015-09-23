@@ -1,4 +1,4 @@
-package ai.subut.kurjun.metadata.common;
+package ai.subut.kurjun.metadata.common.apt;
 
 
 import java.util.Arrays;
@@ -25,7 +25,7 @@ public class DefaultIndexPackageMetaData extends DefaultPackageMetadata implemen
     @Override
     public byte[] getSHA1()
     {
-        return Arrays.copyOf( sha1, sha1.length );
+        return sha1 != null ? Arrays.copyOf( sha1, sha1.length ) : null;
     }
 
 
@@ -38,7 +38,7 @@ public class DefaultIndexPackageMetaData extends DefaultPackageMetadata implemen
     @Override
     public byte[] getSHA256()
     {
-        return Arrays.copyOf( sha256, sha256.length );
+        return sha256 != null ? Arrays.copyOf( sha256, sha256.length ) : null;
     }
 
 

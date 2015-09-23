@@ -23,13 +23,14 @@ import ai.subut.kurjun.http.local.KurjunAptRepoServletModule;
 import ai.subut.kurjun.http.local.LocalAptRepoServletModule;
 import ai.subut.kurjun.http.snap.SnapServletModule;
 import ai.subut.kurjun.index.PackagesIndexParserModule;
+import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreModule;
 import ai.subut.kurjun.metadata.storage.file.DbFilePackageMetadataStoreModule;
 import ai.subut.kurjun.metadata.storage.nosql.CassandraConnector;
 import ai.subut.kurjun.repo.RepositoryModule;
 import ai.subut.kurjun.riparser.ReleaseIndexParserModule;
 import ai.subut.kurjun.snap.SnapMetadataParserModule;
-import ai.subut.kurjun.snap.metadata.store.SnapMetadataStoreModule;
+import ai.subut.kurjun.storage.factory.FileStoreFactory;
 import ai.subut.kurjun.storage.factory.FileStoreModule;
 import ai.subut.kurjun.storage.fs.FileSystemFileStoreModule;
 
@@ -74,7 +75,6 @@ public class HttpServer
         bootstrap.addModule( new PackagesIndexParserModule() );
 
         bootstrap.addModule( new SnapMetadataParserModule() );
-        bootstrap.addModule( new SnapMetadataStoreModule() );
         bootstrap.addModule( new SnapServletModule().setServletPath( "/snaps" ) );
 
         bootstrap.addModule( new AbstractModule()
@@ -103,19 +103,18 @@ public class HttpServer
     private static void setContexts( KurjunProperties properties )
     {
         Properties p = properties.getContextProperties( CONTEXT );
-        p.setProperty( FileStoreModule.FILE_STORE_TYPE, FileSystemFileStoreModule.TYPE );
+        p.setProperty( FileStoreFactory.TYPE, FileStoreFactory.FILE_SYSTEM );
         // --- begin S3 file store  ---
-        //p.setProperty( FileStoreModule.FILE_STORE_TYPE, S3FileStoreModule.TYPE );
+        //p.setProperty( FileStoreFactory.TYPE, FileStoreFactory.S3 );
         //p.setProperty( S3FileStoreModule.BUCKET_NAME, "kurjun-test" );
         // --- end S3 file store    ---
 
         p.setProperty( FileSystemFileStoreModule.ROOT_DIRECTORY, "/tmp/kurjun/files" );
 
-        p.setProperty( PackageMetadataStoreModule.PACKAGE_METADATA_STORE_TYPE, DbFilePackageMetadataStoreModule.TYPE );
+        p.setProperty( PackageMetadataStoreModule.PACKAGE_METADATA_STORE_TYPE, PackageMetadataStoreFactory.FILE_DB );
+        // if file db is used, set db file below
         p.setProperty( DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME, "/tmp/kurjun/metadata" );
 
-        //p.setProperty( SnapMetadataStoreModule.TYPE, SnapMetadataStoreModule.NOSQL_DB );
-        p.setProperty( SnapMetadataStoreModule.DB_FILE_PATH, "/tmp/kurjun/snaps" );
     }
 }
 

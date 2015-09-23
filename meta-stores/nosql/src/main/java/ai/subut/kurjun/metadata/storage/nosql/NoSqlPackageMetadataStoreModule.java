@@ -18,8 +18,6 @@ import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 public class NoSqlPackageMetadataStoreModule extends AbstractModule
 {
 
-    public static final String TYPE = "nosql";
-
 
     @Override
     protected void configure()

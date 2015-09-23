@@ -1,7 +1,9 @@
-package ai.subut.kurjun.model.metadata;
+package ai.subut.kurjun.model.metadata.apt;
 
 
-import java.io.Serializable;
+import ai.subut.kurjun.model.metadata.Architecture;
+import ai.subut.kurjun.model.metadata.Metadata;
+
 import java.net.URL;
 import java.util.List;
 
@@ -9,7 +11,7 @@ import java.util.List;
 /**
  * Interface for package meta data.
  */
-public interface PackageMetadata extends Serializable
+public interface PackageMetadata extends Metadata
 {
     String PACKAGE_FIELD = "Package";
     String VERSION_FIELD = "Version";
@@ -39,6 +41,7 @@ public interface PackageMetadata extends Serializable
      *
      * @return the md5 sum for the Debian package file
      */
+    @Override
     byte[] getMd5Sum();
 
 
@@ -63,6 +66,7 @@ public interface PackageMetadata extends Serializable
 
     String getPackage();
 
+    @Override
     String getVersion();
 
     String getSource();

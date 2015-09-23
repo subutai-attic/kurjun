@@ -25,7 +25,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.model.index.ReleaseFile;
-import ai.subut.kurjun.model.metadata.PackageMetadata;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.repo.http.PathBuilder;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;

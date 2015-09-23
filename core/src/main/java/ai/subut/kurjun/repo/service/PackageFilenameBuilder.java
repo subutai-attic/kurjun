@@ -1,7 +1,7 @@
 package ai.subut.kurjun.repo.service;
 
 
-import ai.subut.kurjun.model.metadata.PackageMetadata;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 
 
 /**

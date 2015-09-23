@@ -19,10 +19,10 @@ import com.google.inject.assistedinject.Assisted;
 import ai.subut.kurjun.common.KurjunContext;
 import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.db.file.FileDb;
-import ai.subut.kurjun.metadata.common.PackageMetadataListingImpl;
-import ai.subut.kurjun.model.metadata.PackageMetadata;
-import ai.subut.kurjun.model.metadata.PackageMetadataListing;
+import ai.subut.kurjun.metadata.common.MetadataListingImpl;
+import ai.subut.kurjun.model.metadata.MetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
 
 
 class DbFilePackageMetadataStore implements PackageMetadataStore
@@ -71,17 +71,17 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
 
     @Override
-    public PackageMetadata get( byte[] md5 ) throws IOException
+    public SerializableMetadata get( byte[] md5 ) throws IOException
     {
         try ( FileDb fileDb = new FileDb( fileDbPath.toString() ) )
         {
-            return fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), PackageMetadata.class );
+            return fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), SerializableMetadata.class );
         }
     }
 
 
     @Override
-    public boolean put( PackageMetadata meta ) throws IOException
+    public boolean put( SerializableMetadata meta ) throws IOException
     {
         if ( !contains( meta.getMd5Sum() ) )
         {
@@ -106,14 +106,14 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
 
     @Override
-    public PackageMetadataListing list() throws IOException
+    public MetadataListing list() throws IOException
     {
         return listPackageMetadata( null );
     }
 
 
     @Override
-    public PackageMetadataListing listNextBatch( PackageMetadataListing listing ) throws IOException
+    public MetadataListing listNextBatch( MetadataListing listing ) throws IOException
     {
         if ( listing.isTruncated() && listing.getMarker() != null )
         {
@@ -123,41 +123,42 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
     }
 
 
-    private PackageMetadataListing listPackageMetadata( final String marker ) throws IOException
+    private MetadataListing listPackageMetadata( final String marker ) throws IOException
     {
-        Map<String, PackageMetadata> map;
+        Map<String, SerializableMetadata> map;
         try ( FileDb fileDb = new FileDb( fileDbPath.toString() ) )
         {
             map = fileDb.get( MAP_NAME );
         }
-        Collection<PackageMetadata> items = map.values();
+        Collection<SerializableMetadata> items = map.values();
 
         // sort items by names
-        Stream<PackageMetadata> stream = items.stream().sorted(
-                (m1, m2) -> m1.getPackage().compareTo( m2.getPackage() ) );
+        Stream<SerializableMetadata> stream = items.stream().sorted(
+                (m1, m2) -> m1.getName().compareTo( m2.getName() ) );
 
         // filter items if marker is set
         if ( marker != null )
         {
-            stream = stream.filter( m -> m.getPackage().compareTo( marker ) > 0 );
+            stream = stream.filter( m -> m.getName().compareTo( marker ) > 0 );
         }
 
-        PackageMetadataListingImpl pml = new PackageMetadataListingImpl();
+        MetadataListingImpl pml = new MetadataListingImpl();
 
         // terminate stream limiting result set to (batch size + 1)
         // one more item is used to determine whether there is more result to fetch
-        Iterator<PackageMetadata> it = stream.limit( batchSize + 1 ).iterator();
+        Iterator<SerializableMetadata> it = stream.limit( batchSize + 1 ).iterator();
         while ( it.hasNext() )
         {
-            PackageMetadata item = it.next();
+            SerializableMetadata item = it.next();
             if ( pml.getPackageMetadata().size() < batchSize )
             {
                 pml.getPackageMetadata().add( item );
-                pml.setMarker( item.getPackage() );
+                pml.setMarker( item.getName() );
             }
             else
             {
                 pml.setTruncated( true );
+                break;
             }
         }
         return pml;

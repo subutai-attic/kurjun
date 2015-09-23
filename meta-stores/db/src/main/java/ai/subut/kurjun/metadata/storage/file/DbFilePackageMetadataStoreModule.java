@@ -17,8 +17,6 @@ import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 public class DbFilePackageMetadataStoreModule extends AbstractModule
 {
 
-    public static final String TYPE = "file";
-
     /**
      * Property key for file db directory.
      */

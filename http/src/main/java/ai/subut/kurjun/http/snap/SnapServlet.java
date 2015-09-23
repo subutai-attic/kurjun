@@ -3,9 +3,10 @@ package ai.subut.kurjun.http.snap;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -18,21 +19,22 @@ import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 
+import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.common.KurjunContext;
-import ai.subut.kurjun.common.service.KurjunProperties;
+import ai.subut.kurjun.common.utils.SnapUtils;
 import ai.subut.kurjun.http.HttpServer;
 import ai.subut.kurjun.http.HttpServletBase;
 import ai.subut.kurjun.http.ServletUtils;
+import ai.subut.kurjun.metadata.common.snap.DefaultSnapMetadata;
+import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
+import ai.subut.kurjun.model.metadata.MetadataListing;
+import ai.subut.kurjun.model.metadata.PackageMetadataStore;
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
-import ai.subut.kurjun.model.metadata.snap.SnapMetadataFilter;
-import ai.subut.kurjun.model.metadata.snap.SnapMetadataStore;
-import ai.subut.kurjun.model.metadata.snap.SnapUtils;
 import ai.subut.kurjun.model.storage.FileStore;
-import ai.subut.kurjun.snap.metadata.store.SnapMetadataStoreFactory;
-import ai.subut.kurjun.snap.metadata.store.SnapMetadataStoreModule;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 
@@ -48,10 +50,10 @@ class SnapServlet extends HttpServletBase
     static final String SNAPS_VERSION_PARAM = "version";
 
     @Inject
-    private KurjunProperties properties;
+    private Gson gson;
 
     @Inject
-    private SnapMetadataStoreFactory metadataStoreFactory;
+    private PackageMetadataStoreFactory metadataStoreFactory;
 
     @Inject
     private FileStoreFactory fileStoreFactory;
@@ -115,13 +117,15 @@ class SnapServlet extends HttpServletBase
 
     protected void getByMd5( String md5, HttpServletResponse resp ) throws IOException
     {
-        SnapMetadataStore metadataStore = getMetadataStore();
+        PackageMetadataStore metadataStore = getMetadataStore();
         try
         {
             byte[] md5bytes = Hex.decodeHex( md5.toCharArray() );
             if ( metadataStore.contains( md5bytes ) )
             {
-                streamPackage( metadataStore.get( md5bytes ), resp );
+                SerializableMetadata meta = metadataStore.get( md5bytes );
+                DefaultSnapMetadata snapMeta = gson.fromJson( meta.serialize(), DefaultSnapMetadata.class );
+                streamPackage( snapMeta, resp );
             }
             else
             {
@@ -138,32 +142,30 @@ class SnapServlet extends HttpServletBase
 
     protected void getByNameAndVersion( String name, String version, HttpServletResponse resp ) throws IOException
     {
-        SnapMetadataStore metadataStore = getMetadataStore();
-        List<SnapMetadata> ls = metadataStore.list( SnapMetadataFilter.getNameFilter( name ) );
-        // filter by version if specified
-        if ( version != null )
-        {
-            Iterator<SnapMetadata> it = ls.iterator();
-            while ( it.hasNext() )
-            {
-                if ( !it.next().getVersion().equals( version ) )
-                {
-                    it.remove();
-                }
-            }
-        }
+        PackageMetadataStore metadataStore = getMetadataStore();
 
-        if ( ls.isEmpty() )
+        MetadataListing list;
+        List<SerializableMetadata> all = new LinkedList<>();
+        do
+        {
+            list = metadataStore.list();
+            List<SerializableMetadata> filtered = filterByNameAndVersion( name, version, list.getPackageMetadata() );
+            all.addAll( filtered );
+        }
+        while ( list.isTruncated() );
+
+        if ( all.isEmpty() )
         {
             notFound( resp, "No package(s) found" );
         }
-        else if ( ls.size() == 1 )
+        else if ( all.size() == 1 )
         {
-            streamPackage( ls.get( 0 ), resp );
+            DefaultSnapMetadata meta = gson.fromJson( all.get( 0 ).serialize(), DefaultSnapMetadata.class );
+            streamPackage( meta, resp );
         }
         else
         {
-            String index = makePackagesIndex( ls );
+            String index = makePackagesIndex( all );
             ok( resp, index );
         }
     }
@@ -171,7 +173,7 @@ class SnapServlet extends HttpServletBase
 
     protected void deletePackage( String md5, HttpServletResponse resp ) throws IOException
     {
-        SnapMetadataStore metadataStore = getMetadataStore();
+        PackageMetadataStore metadataStore = getMetadataStore();
         try
         {
             byte[] md5bytes = Hex.decodeHex( md5.toCharArray() );
@@ -198,7 +200,7 @@ class SnapServlet extends HttpServletBase
     private void streamPackage( SnapMetadata meta, HttpServletResponse resp ) throws IOException
     {
         FileStore fileStore = getFileStore();
-        try ( InputStream is = fileStore.get( meta.getMd5() ) )
+        try ( InputStream is = fileStore.get( meta.getMd5Sum() ) )
         {
             if ( is != null )
             {
@@ -214,18 +216,37 @@ class SnapServlet extends HttpServletBase
     }
 
 
-    private String makePackagesIndex( List<SnapMetadata> ls )
+    private List<SerializableMetadata> filterByNameAndVersion( String name, String version,
+                                                               Collection<SerializableMetadata> ls )
+    {
+        Pattern namePattern = Pattern.compile( name, Pattern.CASE_INSENSITIVE );
+        List<SerializableMetadata> result = new LinkedList<>();
+        for ( SerializableMetadata m : ls )
+        {
+            if ( namePattern.matcher( m.getName() ).matches() )
+            {
+                if ( version != null && !version.equals( m.getVersion() ) )
+                {
+                    continue;
+                }
+                result.add( m );
+            }
+        }
+        return result;
+    }
+
+
+    private String makePackagesIndex( List<SerializableMetadata> ls )
     {
         // TODO: maybe better to render html with links to packages
-        String delim = ";";
+        String delim = "; ";
         StringBuilder sb = new StringBuilder();
         sb.append( "count: " ).append( ls.size() ).append( System.lineSeparator() );
-        for ( SnapMetadata meta : ls )
+        for ( SerializableMetadata meta : ls )
         {
+            sb.append( "md5: " ).append( Hex.encodeHexString( meta.getMd5Sum() ) ).append( delim );
             sb.append( "name: " ).append( meta.getName() ).append( delim );
             sb.append( "version: " ).append( meta.getVersion() ).append( delim );
-            sb.append( "vendor: " ).append( meta.getName() ).append( delim );
-            sb.append( "md5: " ).append( Hex.encodeHexString( meta.getMd5() ) );
             sb.append( System.lineSeparator() );
         }
         return sb.toString();
@@ -238,26 +259,11 @@ class SnapServlet extends HttpServletBase
     }
 
 
-    private SnapMetadataStore getMetadataStore()
+    private PackageMetadataStore getMetadataStore()
     {
-        return getMetadataStore( properties, context, metadataStoreFactory );
+        return metadataStoreFactory.create( context );
     }
 
-
-    static SnapMetadataStore getMetadataStore( KurjunProperties properties, KurjunContext context,
-                                               SnapMetadataStoreFactory metadataStoreFactory )
-    {
-        Properties cp = properties.getContextProperties( context );
-        String type = cp.getProperty( SnapMetadataStoreModule.TYPE, "to_avoid_npe" );
-        switch ( type )
-        {
-            case SnapMetadataStoreModule.NOSQL_DB:
-                return metadataStoreFactory.createCassandraStore( context );
-            case SnapMetadataStoreModule.FILE_DB:
-            default:
-                return metadataStoreFactory.create( context );
-        }
-    }
 
 }
 

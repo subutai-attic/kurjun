@@ -9,11 +9,8 @@ import com.google.inject.ProvisionException;
 import ai.subut.kurjun.common.KurjunContext;
 import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.metadata.storage.file.DbFilePackageMetadataStoreFactory;
-import ai.subut.kurjun.metadata.storage.file.DbFilePackageMetadataStoreModule;
 import ai.subut.kurjun.metadata.storage.nosql.NoSqlPackageMetadataStoreFactory;
-import ai.subut.kurjun.metadata.storage.nosql.NoSqlPackageMetadataStoreModule;
 import ai.subut.kurjun.metadata.storage.sql.SqlDbPackageMetadataStoreFactory;
-import ai.subut.kurjun.metadata.storage.sql.SqlDbPackageMetadataStoreModule;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 
 
@@ -24,6 +21,10 @@ import ai.subut.kurjun.model.metadata.PackageMetadataStore;
  */
 public class PackageMetadataStoreFactory
 {
+
+    public static final String FILE_DB = "file";
+    public static final String SQL_DB = "sql";
+    public static final String NOSQL_DB = "nosql";
 
     @Inject
     private KurjunProperties properties;
@@ -50,15 +51,15 @@ public class PackageMetadataStoreFactory
         Properties cp = properties.getContextProperties( context );
         String type = cp.getProperty( PackageMetadataStoreModule.PACKAGE_METADATA_STORE_TYPE );
 
-        if ( DbFilePackageMetadataStoreModule.TYPE.equals( type ) )
+        if ( FILE_DB.equals( type ) )
         {
             return dbFileMetadataStoreFactory.create( context );
         }
-        if ( NoSqlPackageMetadataStoreModule.TYPE.equals( type ) )
+        if ( NOSQL_DB.equals( type ) )
         {
             return noSqlMetadataStoreFactory.create( context );
         }
-        if ( SqlDbPackageMetadataStoreModule.TYPE.equals( type ) )
+        if ( SQL_DB.equals( type ) )
         {
             return sqlDbMetadataStoreFactory.create( context );
         }

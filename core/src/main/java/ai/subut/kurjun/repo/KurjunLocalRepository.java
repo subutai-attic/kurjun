@@ -30,10 +30,11 @@ import ai.subut.kurjun.ar.DefaultDebAr;
 import ai.subut.kurjun.cfparser.service.ControlFileParser;
 import ai.subut.kurjun.common.KurjunContext;
 import ai.subut.kurjun.common.utils.InetUtils;
+import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
-import ai.subut.kurjun.model.metadata.PackageMetadata;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.storage.FileStore;
@@ -140,7 +141,7 @@ class KurjunLocalRepository extends RepositoryBase implements LocalRepository
 
             // TODO: we need release and component supplied here!!!
 
-            metadataStore.put( meta );
+            metadataStore.put( MetadataUtils.serializablePackageMetadata( meta ) );
             fileStore.put( target.toFile() );
             return meta;
         }

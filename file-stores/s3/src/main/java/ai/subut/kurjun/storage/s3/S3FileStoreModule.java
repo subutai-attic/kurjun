@@ -21,8 +21,6 @@ import ai.subut.kurjun.model.storage.FileStore;
 public class S3FileStoreModule extends AbstractModule
 {
 
-    public static final String TYPE = "s3";
-
     /**
      * Properties key for Amazon S3 bucket name.
      */

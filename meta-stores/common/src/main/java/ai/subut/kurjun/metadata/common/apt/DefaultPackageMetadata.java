@@ -1,21 +1,23 @@
-package ai.subut.kurjun.metadata.common;
+package ai.subut.kurjun.metadata.common.apt;
 
 
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
+import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.metadata.Architecture;
-import ai.subut.kurjun.model.metadata.Dependency;
-import ai.subut.kurjun.model.metadata.PackageMetadata;
-import ai.subut.kurjun.model.metadata.Priority;
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.metadata.apt.Dependency;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
+import ai.subut.kurjun.model.metadata.apt.Priority;
 
 
 /**
  * Simple POJO implementing PackageMetadata.
  *
  */
-public class DefaultPackageMetadata implements PackageMetadata
+public class DefaultPackageMetadata implements PackageMetadata, SerializableMetadata
 {
 
     private byte[] md5;
@@ -45,7 +47,7 @@ public class DefaultPackageMetadata implements PackageMetadata
     @Override
     public byte[] getMd5Sum()
     {
-        return Arrays.copyOf( md5, md5.length );
+        return md5 != null ? Arrays.copyOf( md5, md5.length ) : null;
     }
 
 
@@ -92,6 +94,13 @@ public class DefaultPackageMetadata implements PackageMetadata
     public void setPackage( String packageName )
     {
         this.packageName = packageName;
+    }
+
+
+    @Override
+    public String getName()
+    {
+        return getPackage();
     }
 
 
@@ -326,6 +335,13 @@ public class DefaultPackageMetadata implements PackageMetadata
     public void setDescription( String description )
     {
         this.description = description;
+    }
+
+
+    @Override
+    public String serialize()
+    {
+        return MetadataUtils.JSON.toJson( this );
     }
 
 

@@ -1,12 +1,17 @@
-package ai.subut.kurjun.snap;
+package ai.subut.kurjun.metadata.common.snap;
 
+
+import java.io.Serializable;
 
 import ai.subut.kurjun.model.metadata.snap.Framework;
 
 
-public class DefaultFramework implements Framework
+/**
+ * Default POJO implementation of {@link Framework}.
+ *
+ */
+public class DefaultFramework implements Framework, Serializable
 {
-
     private String name;
 
 

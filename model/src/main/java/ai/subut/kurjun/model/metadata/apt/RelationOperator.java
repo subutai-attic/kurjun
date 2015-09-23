@@ -1,4 +1,4 @@
-package ai.subut.kurjun.model.metadata;
+package ai.subut.kurjun.model.metadata.apt;
 
 
 /**

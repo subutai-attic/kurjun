@@ -26,21 +26,21 @@ public interface PackageMetadataStore
     /**
      * Gets the metadata of a Debian package with the supplied md5 sum.
      *
-     * @param md5 the md5 sum of the Debian package
-     * @return the metadata, or null of no such metadata
+     * @param md5 the md5 sum of the package
+     * @return the metadata, or null if no such metadata
      * @throws IOException if there are problems accessing the store
      */
-    PackageMetadata get( byte[] md5 ) throws IOException;
+    SerializableMetadata get( byte[] md5 ) throws IOException;
 
 
     /**
      * Puts the metadata of a Debian package into the store.
      *
-     * @param meta the metadata for the Debian package
+     * @param meta the metadata for the package
      * @return true if the metadata was stored, false if it already existed
      * @throws IOException if there are problems accessing the store
      */
-    boolean put( PackageMetadata meta ) throws IOException;
+    boolean put( SerializableMetadata meta ) throws IOException;
 
 
     /**
@@ -56,19 +56,19 @@ public interface PackageMetadataStore
     /**
      * Lists metadata stored in the store.
      *
-     * @return {@link PackageMetadataListing} instance that contains first batch of a result set, never {@code null}
+     * @return {@link MetadataListing} instance that contains first batch of a result set, never {@code null}
      * @throws IOException if there are problems accessing the store
      */
-    PackageMetadataListing list() throws IOException;
+    MetadataListing list() throws IOException;
 
 
     /**
      * Lists next batch of metadata when previous retrieval returned a truncated result.
      *
      * @param listing listing result from the previous query
-     * @return {@link PackageMetadataListing} instance that contains next batch of a result set, never {@code null}
+     * @return {@link MetadataListing} instance that contains next batch of a result set, never {@code null}
      * @throws IOException if there are problems accessing the store
      */
-    PackageMetadataListing listNextBatch( PackageMetadataListing listing ) throws IOException;
+    MetadataListing listNextBatch( MetadataListing listing ) throws IOException;
 
 }

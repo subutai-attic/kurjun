@@ -4,16 +4,36 @@ package ai.subut.kurjun.metadata.common.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import ai.subut.kurjun.metadata.common.DefaultDependency;
-import ai.subut.kurjun.metadata.common.DefaultIndexPackageMetaData;
-import ai.subut.kurjun.metadata.common.DefaultPackageMetadata;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import ai.subut.kurjun.metadata.common.apt.DefaultDependency;
+import ai.subut.kurjun.metadata.common.apt.DefaultIndexPackageMetaData;
+import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
+import ai.subut.kurjun.metadata.common.snap.DefaultSnapMetadata;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
-import ai.subut.kurjun.model.metadata.Dependency;
-import ai.subut.kurjun.model.metadata.PackageMetadata;
+import ai.subut.kurjun.model.metadata.apt.Dependency;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
+import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
 
 
 public class MetadataUtils
 {
+
+    public static final Gson JSON;
+
+
+    static
+    {
+        GsonBuilder gb = new GsonBuilder();
+
+        // register Dependency type adapter for correct deserialization of fields like List<Dependency>
+        gb.registerTypeAdapter( Dependency.class, new DependencyTypeAdapter() );
+        // TODO: framework may need type adapter!!!
+//        gb.registerTypeAdapter( Framework.class, new DefaultFramework() );
+
+        JSON = gb.create();
+    }
 
 
     private MetadataUtils()
@@ -29,11 +49,11 @@ public class MetadataUtils
      * @param meta meta data to convert
      * @return serializable instance of the supplied meta data
      */
-    public static PackageMetadata serializablePackageMetadata( PackageMetadata meta )
+    public static DefaultPackageMetadata serializablePackageMetadata( PackageMetadata meta )
     {
         if ( meta instanceof DefaultPackageMetadata )
         {
-            return meta;
+            return ( DefaultPackageMetadata ) meta;
         }
 
         DefaultPackageMetadata result = new DefaultPackageMetadata();
@@ -49,11 +69,11 @@ public class MetadataUtils
      * @param meta meta data to convert
      * @return serializable instance of the supplied meta data
      */
-    public static IndexPackageMetaData serializableIndexPackageMetadata( IndexPackageMetaData meta )
+    public static DefaultIndexPackageMetaData serializableIndexPackageMetadata( IndexPackageMetaData meta )
     {
         if ( meta instanceof DefaultIndexPackageMetaData )
         {
-            return meta;
+            return ( DefaultIndexPackageMetaData ) meta;
         }
 
         DefaultIndexPackageMetaData result = new DefaultIndexPackageMetaData();
@@ -66,6 +86,29 @@ public class MetadataUtils
         result.setTag( meta.getTag() );
 
         return result;
+    }
+
+
+    /**
+     * Converts supplied snap meta data to its serializable meta data form.
+     *
+     * @param meta snap meta data to convert
+     * @return serializable meta data
+     */
+    public static DefaultSnapMetadata serializableSnapMetadata( SnapMetadata meta )
+    {
+        if ( meta instanceof DefaultSnapMetadata )
+        {
+            return ( DefaultSnapMetadata ) meta;
+        }
+        DefaultSnapMetadata m = new DefaultSnapMetadata();
+        m.setMd5Sum( meta.getMd5Sum() );
+        m.setName( meta.getName() );
+        m.setVersion( meta.getVersion() );
+        m.setVendor( meta.getVendor() );
+        m.setSource( meta.getSource() );
+        m.setFrameworks( meta.getFrameworks() );
+        return m;
     }
 
 

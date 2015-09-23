@@ -17,8 +17,8 @@ import ai.subut.kurjun.cfparser.DependencyParser;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
 import ai.subut.kurjun.model.index.TagItem;
 import ai.subut.kurjun.model.metadata.Architecture;
-import ai.subut.kurjun.model.metadata.Dependency;
-import ai.subut.kurjun.model.metadata.Priority;
+import ai.subut.kurjun.model.metadata.apt.Dependency;
+import ai.subut.kurjun.model.metadata.apt.Priority;
 
 
 public class IndexPackageMetadataImpl implements IndexPackageMetaData
@@ -141,6 +141,13 @@ public class IndexPackageMetadataImpl implements IndexPackageMetaData
     public String getPackage()
     {
         return controlFile.get( IndexPackageMetaData.PACKAGE_FIELD );
+    }
+
+
+    @Override
+    public String getName()
+    {
+        return getPackage();
     }
 
 
