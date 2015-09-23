@@ -26,7 +26,6 @@ import ai.subut.kurjun.repo.RepositoryFactory;
 class KurjunAptRepoUploadServlet extends HttpServletBase
 {
 
-    private static final String DEB_PACKAGE_PART = "package";
 
     @Inject
     private RepositoryFactory repositoryFactory;
@@ -53,7 +52,7 @@ class KurjunAptRepoUploadServlet extends HttpServletBase
 
         ServletUtils.setMultipartConfig( req, this.getClass() );
 
-        Part part = req.getPart( DEB_PACKAGE_PART );
+        Part part = req.getPart( PACKAGE_FILE_PART_NAME );
         if ( part != null )
         {
             try ( InputStream is = part.getInputStream() )
@@ -63,7 +62,7 @@ class KurjunAptRepoUploadServlet extends HttpServletBase
         }
         else
         {
-            String msg = String.format( "No package attached with name '%s'", DEB_PACKAGE_PART );
+            String msg = String.format( "No package attached with name '%s'", PACKAGE_FILE_PART_NAME );
             badRequest( resp, msg );
         }
     }

@@ -45,9 +45,6 @@ class SnapServlet extends HttpServletBase
     private static final Logger LOGGER = LoggerFactory.getLogger( SnapServlet.class );
 
     static final String SNAPS_GET_PATH = "get";
-    static final String SNAPS_MD5_PARAM = "md5";
-    static final String SNAPS_NAME_PARAM = "name";
-    static final String SNAPS_VERSION_PARAM = "version";
 
     @Inject
     private Gson gson;
@@ -74,15 +71,15 @@ class SnapServlet extends HttpServletBase
         List<String> paths = ServletUtils.splitPath( req.getPathInfo() );
         if ( paths.size() == 1 && paths.get( 0 ).equals( SNAPS_GET_PATH ) )
         {
-            String md5 = req.getParameter( SNAPS_MD5_PARAM );
+            String md5 = req.getParameter( MD5_PARAM );
             if ( md5 != null )
             {
                 getByMd5( md5, resp );
                 return;
             }
 
-            String name = req.getParameter( SNAPS_NAME_PARAM );
-            String version = req.getParameter( SNAPS_VERSION_PARAM );
+            String name = req.getParameter( NAME_PARAM );
+            String version = req.getParameter( VERSION_PARAM );
             if ( name != null )
             {
                 getByNameAndVersion( name, version, resp );
@@ -103,7 +100,7 @@ class SnapServlet extends HttpServletBase
     @Override
     protected void doDelete( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException
     {
-        String md5 = req.getParameter( SNAPS_MD5_PARAM );
+        String md5 = req.getParameter( MD5_PARAM );
         if ( md5 != null )
         {
             deletePackage( md5, resp );

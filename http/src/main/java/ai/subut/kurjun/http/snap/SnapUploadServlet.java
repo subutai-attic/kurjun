@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
-import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -36,10 +35,6 @@ import ai.subut.kurjun.storage.factory.FileStoreFactory;
 @MultipartConfig
 class SnapUploadServlet extends HttpServletBase
 {
-    public static final String SNAPS_PACKAGE_PART = "package";
-
-    @Inject
-    private Gson gson;
 
     @Inject
     private SnapMetadataParser metadataParser;
@@ -67,14 +62,14 @@ class SnapUploadServlet extends HttpServletBase
         {
             ServletUtils.setMultipartConfig( req, this.getClass() );
 
-            Part part = req.getPart( SNAPS_PACKAGE_PART );
+            Part part = req.getPart( PACKAGE_FILE_PART_NAME );
             if ( part != null && part.getSubmittedFileName() != null )
             {
                 parsePackageFile( part, resp );
             }
             else
             {
-                String msg = String.format( "No package file attached with name '%s'", SNAPS_PACKAGE_PART );
+                String msg = String.format( "No package file attached with name '%s'", PACKAGE_FILE_PART_NAME );
                 badRequest( resp, msg );
             }
         }
