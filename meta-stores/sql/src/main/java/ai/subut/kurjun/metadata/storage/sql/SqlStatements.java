@@ -27,6 +27,7 @@ class SqlStatements
     //
     public static final String SELECT_COUNT;
     public static final String SELECT_DATA;
+    public static final String SELECT_BY_NAME;
     public static final String SELECT_ORDERED;
     public static final String SELECT_NEXT_ORDERED;
     public static final String INSERT;
@@ -41,6 +42,8 @@ class SqlStatements
         SELECT_COUNT = new SQL().SELECT( "COUNT(*)" ).FROM( TABLE_NAME ).WHERE( CHECKSUM_COLUMN + " = ?" ).toString();
 
         SELECT_DATA = new SQL().SELECT( all ).FROM( TABLE_NAME ).WHERE( CHECKSUM_COLUMN + " = ?" ).toString();
+
+        SELECT_BY_NAME = new SQL().SELECT( all ).FROM( TABLE_NAME ).WHERE( NAME_COLUMN + " = ?" ).toString();
 
         SELECT_ORDERED = new SQL().SELECT( all ).FROM( TABLE_NAME ).ORDER_BY( CHECKSUM_COLUMN ).toString();
 

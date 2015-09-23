@@ -107,6 +107,13 @@ public class SqlDbPackageMetadataStoreTest
         Metadata res = store.get( meta.getMd5Sum() );
         Assert.assertEquals( meta, res );
         Assert.assertNull( store.get( otherMd5 ) );
+
+        // test get by name
+        List<SerializableMetadata> ls = store.get( meta.getName() );
+        Assert.assertEquals( 1, ls.size() );
+        Assert.assertTrue( ls.contains( meta ) );
+
+        Assert.assertTrue( store.get( "non-existing-name" ).isEmpty() );
     }
 
 
@@ -174,9 +181,11 @@ public class SqlDbPackageMetadataStoreTest
     private DefaultPackageMetadata createPackageMetadata()
     {
         DefaultPackageMetadata pm = new DefaultPackageMetadata();
+        pm.setPackage( "package-name" + UUID.randomUUID().toString() );
+        pm.setVersion( "1.2.3" );
         pm.setArchitecture( Architecture.AMD64 );
         pm.setDescription( "Description here" );
-        pm.setFilename( UUID.randomUUID().toString() + "-ver-arch.deb" );
+        pm.setFilename( pm.getPackage() + "-ver-arch.deb" );
         pm.setInstalledSize( 1234 );
         pm.setMaintainer( "Maintainer" );
         pm.setMd5( DigestUtils.md5( pm.getFilename() ) );

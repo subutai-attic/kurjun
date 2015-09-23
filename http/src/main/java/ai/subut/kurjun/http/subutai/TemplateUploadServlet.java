@@ -1,4 +1,4 @@
-package ai.subut.kurjun.http.snap;
+package ai.subut.kurjun.http.subutai;
 
 
 import java.io.IOException;
@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -25,25 +25,24 @@ import ai.subut.kurjun.http.ServletUtils;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
-import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
+import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 import ai.subut.kurjun.model.storage.FileStore;
-import ai.subut.kurjun.snap.service.SnapMetadataParser;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
+import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
 
 
 @Singleton
 @MultipartConfig
-class SnapUploadServlet extends HttpServletBase
+class TemplateUploadServlet extends HttpServletBase
 {
-
-    @Inject
-    private SnapMetadataParser metadataParser;
-
     @Inject
     private PackageMetadataStoreFactory metadataStoreFactory;
 
     @Inject
     private FileStoreFactory fileStoreFactory;
+
+    @Inject
+    private SubutaiTemplateParser templateParser;
 
     private KurjunContext context;
 
@@ -58,10 +57,17 @@ class SnapUploadServlet extends HttpServletBase
     @Override
     protected void doPost( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException
     {
-        if ( ServletUtils.isMultipart( req ) )
+        if ( !ServletUtils.isMultipart( req ) )
         {
-            ServletUtils.setMultipartConfig( req, this.getClass() );
+            badRequest( resp, "Request is not a multipart request" );
+            return;
+        }
+        ServletUtils.setMultipartConfig( req, TemplateUploadServlet.class );
 
+        List<String> pathItems = ServletUtils.splitPath( req.getPathInfo() );
+        if ( pathItems.size() == 1 )
+        {
+            String repo = pathItems.get( 0 );
             Part part = req.getPart( PACKAGE_FILE_PART_NAME );
             if ( part != null && part.getSubmittedFileName() != null )
             {
@@ -75,16 +81,13 @@ class SnapUploadServlet extends HttpServletBase
         }
         else
         {
-            badRequest( resp, "Request is not a multipart request" );
+            badRequest( resp, "Specify repository to upload to" );
         }
     }
 
 
     private void parsePackageFile( Part part, HttpServletResponse resp ) throws IOException
     {
-        byte[] md5 = null;
-        SnapMetadata meta;
-
         // define file extension based on submitted file name
         String fileName = part.getSubmittedFileName();
         String ext = CompressionType.getExtension( fileName );
@@ -93,31 +96,32 @@ class SnapUploadServlet extends HttpServletBase
             ext = "." + ext;
         }
 
-        FileStore fileStore = fileStoreFactory.create( HttpServer.CONTEXT );
+        FileStore fileStore = fileStoreFactory.create( context );
+        PackageMetadataStore metadataStore = metadataStoreFactory.create( context );
 
-        Path path = Files.createTempFile( "snap-uplaod", ext );
+        SubutaiTemplateMetadata meta;
+        Path temp = Files.createTempFile( "template-", ext );
         try ( InputStream is = part.getInputStream() )
         {
-            Files.copy( is, path, StandardCopyOption.REPLACE_EXISTING );
-
-            meta = metadataParser.parse( path.toFile() );
-            md5 = fileStore.put( path.toFile() );
+            Files.copy( is, temp, StandardCopyOption.REPLACE_EXISTING );
+            meta = templateParser.parseTemplate( temp.toFile() );
+            fileStore.put( temp.toFile() );
         }
         finally
         {
-            Files.delete( path );
+            Files.delete( temp );
         }
 
-        if ( Arrays.equals( meta.getMd5Sum(), md5 ) )
+        // store meta data separately and catch exception to revert in case meta data storing fails
+        // when package file is already stored
+        try
         {
-            PackageMetadataStore metadataStore = metadataStoreFactory.create( context );
-            metadataStore.put( MetadataUtils.serializableSnapMetadata( meta ) );
-            ok( resp, "Package successfully saved" );
+            metadataStore.put( MetadataUtils.serializableTemplateMetadata( meta ) );
         }
-        else
+        catch ( IOException ex )
         {
-            fileStore.remove( md5 );
-            internalServerError( resp, "Package integrity failure" );
+            fileStore.remove( meta.getMd5Sum() );
+            throw ex;
         }
     }
 

@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import ai.subut.kurjun.model.metadata.template.TemplateMetadata;
+import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 
 
 /**
@@ -23,7 +23,7 @@ public interface SubutaiTemplateParser
      * @return template meta data
      * @throws IOException
      */
-    TemplateMetadata parseTemplate( File file ) throws IOException;
+    SubutaiTemplateMetadata parseTemplate( File file ) throws IOException;
 
 
     /**
@@ -34,6 +34,6 @@ public interface SubutaiTemplateParser
      * @return template meta data without md5 sum value
      * @throws IOException
      */
-    TemplateMetadata parseTemplateConfigFile( InputStream stream ) throws IOException;
+    SubutaiTemplateMetadata parseTemplateConfigFile( InputStream stream ) throws IOException;
 }
 

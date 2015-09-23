@@ -41,7 +41,7 @@ class RestfulSnapServlet extends HttpServletBase
             return;
         }
 
-        if ( pathItems.get( 0 ).equals( SnapServlet.SNAPS_MD5_PARAM ) && pathItems.size() > 1 )
+        if ( pathItems.get( 0 ).equals( MD5_PARAM ) && pathItems.size() > 1 )
         {
             String md5 = pathItems.get( 1 );
             snapServlet.getByMd5( md5, resp );

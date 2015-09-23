@@ -18,7 +18,7 @@ import org.apache.commons.io.FileUtils;
 import ai.subut.kurjun.ar.DefaultTar;
 import ai.subut.kurjun.ar.Tar;
 import ai.subut.kurjun.model.metadata.Architecture;
-import ai.subut.kurjun.model.metadata.template.TemplateMetadata;
+import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
 
 
@@ -31,7 +31,7 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
 
 
     @Override
-    public TemplateMetadata parseTemplate( File file ) throws IOException
+    public SubutaiTemplateMetadata parseTemplate( File file ) throws IOException
     {
         byte[] md5;
         try ( InputStream is = new FileInputStream( file ) )
@@ -59,13 +59,13 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
 
 
     @Override
-    public TemplateMetadata parseTemplateConfigFile( InputStream stream ) throws IOException
+    public SubutaiTemplateMetadata parseTemplateConfigFile( InputStream stream ) throws IOException
     {
         return parseConfigFile( stream, null );
     }
 
 
-    private TemplateMetadata parseConfigFile( InputStream stream, byte[] md5 ) throws IOException
+    private SubutaiTemplateMetadata parseConfigFile( InputStream stream, byte[] md5 ) throws IOException
     {
         String name = null;
         String version = null;
@@ -96,7 +96,7 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
         final String fversion = version;
         final Architecture farch = arch;
 
-        return new TemplateMetadata()
+        return new SubutaiTemplateMetadata()
         {
 
             @Override
