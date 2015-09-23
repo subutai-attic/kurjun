@@ -16,7 +16,7 @@ import ai.subut.kurjun.model.index.IndexPackageMetaData;
 import ai.subut.kurjun.model.metadata.apt.Dependency;
 import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
-import ai.subut.kurjun.model.metadata.template.TemplateMetadata;
+import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 
 
 public class MetadataUtils
@@ -120,7 +120,7 @@ public class MetadataUtils
      * @param metadata meta data to convert
      * @return serializable form of meta data
      */
-    public static DefaultTemplate serializableTemplateMetadata( TemplateMetadata metadata )
+    public static DefaultTemplate serializableTemplateMetadata( SubutaiTemplateMetadata metadata )
     {
         if ( metadata instanceof DefaultTemplate )
         {

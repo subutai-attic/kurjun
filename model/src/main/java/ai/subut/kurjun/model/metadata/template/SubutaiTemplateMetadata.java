@@ -9,7 +9,7 @@ import ai.subut.kurjun.model.metadata.Metadata;
  * Interface for Subutai template meta data.
  *
  */
-public interface TemplateMetadata extends Metadata
+public interface SubutaiTemplateMetadata extends Metadata
 {
 
     /**

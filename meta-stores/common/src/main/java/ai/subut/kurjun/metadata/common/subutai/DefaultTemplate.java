@@ -6,14 +6,14 @@ import java.util.Arrays;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
-import ai.subut.kurjun.model.metadata.template.TemplateMetadata;
+import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 
 
 /**
- * Default serializable POJO implementation class of {@link TemplateMetadata}.
+ * Default serializable POJO implementation class of {@link SubutaiTemplateMetadata}.
  *
  */
-public class DefaultTemplate implements TemplateMetadata, SerializableMetadata
+public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMetadata
 {
 
     private byte[] md5Sum;

@@ -8,7 +8,7 @@ import org.junit.Assume;
 import org.junit.Test;
 
 import ai.subut.kurjun.model.metadata.Architecture;
-import ai.subut.kurjun.model.metadata.template.TemplateMetadata;
+import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
 
 
@@ -21,7 +21,7 @@ public class SubutaiTemplateParserImplTest
     @Test
     public void testParseTemplateConfigFile() throws Exception
     {
-        TemplateMetadata metadata;
+        SubutaiTemplateMetadata metadata;
         try ( InputStream is = ClassLoader.getSystemResourceAsStream( "config" ) )
         {
             Assume.assumeNotNull( is );

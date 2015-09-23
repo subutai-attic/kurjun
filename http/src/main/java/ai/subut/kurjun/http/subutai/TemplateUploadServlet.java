@@ -25,7 +25,7 @@ import ai.subut.kurjun.http.ServletUtils;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
-import ai.subut.kurjun.model.metadata.template.TemplateMetadata;
+import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
@@ -99,7 +99,7 @@ class TemplateUploadServlet extends HttpServletBase
         FileStore fileStore = fileStoreFactory.create( context );
         PackageMetadataStore metadataStore = metadataStoreFactory.create( context );
 
-        TemplateMetadata meta;
+        SubutaiTemplateMetadata meta;
         Path temp = Files.createTempFile( "template-", ext );
         try ( InputStream is = part.getInputStream() )
         {
