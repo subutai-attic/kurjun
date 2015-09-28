@@ -23,8 +23,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.common.KurjunContext;
-import ai.subut.kurjun.http.HttpServer;
-import ai.subut.kurjun.http.HttpServletBase;
 import ai.subut.kurjun.http.ServletUtils;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.metadata.Metadata;
@@ -35,7 +33,7 @@ import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 
 @Singleton
-class TemplateServlet extends HttpServletBase
+class TemplateServlet extends TemplateServletBase
 {
     public static final String GET_PATH = "get";
     public static final String TYPE_PARAM = "type";
@@ -49,15 +47,6 @@ class TemplateServlet extends HttpServletBase
     @Inject
     private PackageMetadataStoreFactory metadataStoreFactory;
 
-    private KurjunContext context;
-
-
-    @Override
-    public void init() throws ServletException
-    {
-        this.context = HttpServer.CONTEXT;
-    }
-
 
     @Override
     protected void doGet( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException
@@ -66,10 +55,16 @@ class TemplateServlet extends HttpServletBase
         if ( pathItems.size() == 2 && pathItems.get( 1 ).equals( GET_PATH ) )
         {
             String repo = pathItems.get( 0 );
+            KurjunContext context = getContextForType( repo );
+            if ( context == null )
+            {
+                badRequest( resp, "Invalid template type: " + repo );
+                return;
+            }
             String md5 = req.getParameter( MD5_PARAM );
             if ( md5 != null )
             {
-                getByMd5( md5, resp );
+                getByMd5( md5, resp, context );
             }
             else
             {
@@ -78,7 +73,7 @@ class TemplateServlet extends HttpServletBase
                 String type = req.getParameter( TYPE_PARAM );
                 if ( name != null && type != null )
                 {
-                    getByNameAndVersion( name, version, type, resp );
+                    getByNameAndVersion( name, version, type, resp, context );
                 }
                 else
                 {
@@ -102,6 +97,12 @@ class TemplateServlet extends HttpServletBase
         if ( paths.size() == 1 && md5hex != null )
         {
             String repo = paths.get( 0 );
+            KurjunContext context = getContextForType( repo );
+            if ( context == null )
+            {
+                badRequest( resp, "Invalid template type: " + repo );
+                return;
+            }
             byte[] md5;
             try
             {
@@ -132,7 +133,7 @@ class TemplateServlet extends HttpServletBase
     }
 
 
-    private void getByMd5( String md5hex, HttpServletResponse resp ) throws IOException
+    private void getByMd5( String md5hex, HttpServletResponse resp, KurjunContext context ) throws IOException
     {
         byte[] md5;
         try
@@ -170,14 +171,15 @@ class TemplateServlet extends HttpServletBase
     }
 
 
-    private void getByNameAndVersion( String name, String version, String type, HttpServletResponse resp ) throws IOException
+    private void getByNameAndVersion( String name, String version, String type, HttpServletResponse resp,
+                                      KurjunContext context ) throws IOException
     {
         Objects.requireNonNull( name, "name parameter" );
         Objects.requireNonNull( type, "type parameter" );
 
         if ( type.equals( RESPONSE_TYPE_MD5 ) )
         {
-            respondMd5( name, version, resp );
+            respondMd5( name, version, resp, context );
         }
         else
         {
@@ -186,7 +188,7 @@ class TemplateServlet extends HttpServletBase
     }
 
 
-    private void respondMd5( String name, String version, HttpServletResponse resp ) throws IOException
+    private void respondMd5( String name, String version, HttpServletResponse resp, KurjunContext context ) throws IOException
     {
         PackageMetadataStore metadataStore = metadataStoreFactory.create( context );
         List<SerializableMetadata> items = metadataStore.get( name );
