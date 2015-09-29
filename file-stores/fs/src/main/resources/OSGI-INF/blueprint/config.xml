@@ -1,13 +1,14 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
-  <bean id="fsFileStore" class="ai.subut.kurjun.storage.fs.FileSystemFileStore">
-    <!-- parent directory for file store -->
-    <argument value="/tmp/kurjun/osgi"/>
+  <reference id="kurjunProperties" interface="${project.groupId}.common.service.KurjunProperties" />
+
+  <bean id="fsFileStoreFactory" class="${project.groupId}.storage.fs.FileSystemFileStoreFactoryImpl">
+    <argument ref="kurjunProperties"/>
   </bean>
 
-  <service id="fsFileStoreService" ref="fsFileStore"
-           interface="ai.subut.kurjun.model.storage.FileStore"/>
+  <service id="fsFileStoreService" ref="fsFileStoreFactory"
+           interface="${project.groupId}.storage.fs.FileSystemFileStoreFactory"/>
 
 </blueprint>
 

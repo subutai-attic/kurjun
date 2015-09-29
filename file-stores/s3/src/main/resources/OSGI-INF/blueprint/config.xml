@@ -1,24 +1,14 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
-  <bean id="s3FileStore" class="ai.subut.kurjun.storage.s3.S3FileStore">
+  <reference id="kurjunProperties" interface="${project.groupId}.common.service.KurjunProperties" />
 
-    <!-- AWS credentials -->
-    <argument ref="awsCredentials" />
-
-    <!-- bucket name -->
-    <argument value="kurjun-bucket"/>
-
+  <bean id="s3FileStoreFactory" class="${project.groupId}.storage.s3.S3FileStoreFactoryImpl">
+    <argument ref="kurjunProperties"/>
   </bean>
 
-  <!-- specify AWS credentials here -->
-  <bean id="awsCredentials" class="ai.subut.kurjun.storage.s3.AWSCredentialsProvider">
-    <property name="accessKey" value="" />
-    <property name="secretKey" value="" />
-  </bean>
-
-  <service id="s3FileStoreService" ref="s3FileStore"
-           interface="ai.subut.kurjun.model.storage.FileStore" />
+  <service id="s3FileStoreService" ref="s3FileStoreFactory"
+           interface="${project.groupId}.storage.s3.S3FileStoreFactory"/>
 
 </blueprint>
 
