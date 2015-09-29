@@ -19,8 +19,6 @@ import com.google.inject.Singleton;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.KurjunContext;
-import ai.subut.kurjun.http.HttpServer;
-import ai.subut.kurjun.http.HttpServletBase;
 import ai.subut.kurjun.http.ServletUtils;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
@@ -33,7 +31,7 @@ import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
 
 @Singleton
 @MultipartConfig
-class TemplateUploadServlet extends HttpServletBase
+class TemplateUploadServlet extends TemplateServletBase
 {
     @Inject
     private PackageMetadataStoreFactory metadataStoreFactory;
@@ -43,15 +41,6 @@ class TemplateUploadServlet extends HttpServletBase
 
     @Inject
     private SubutaiTemplateParser templateParser;
-
-    private KurjunContext context;
-
-
-    @Override
-    public void init() throws ServletException
-    {
-        this.context = HttpServer.CONTEXT;
-    }
 
 
     @Override
@@ -68,10 +57,16 @@ class TemplateUploadServlet extends HttpServletBase
         if ( pathItems.size() == 1 )
         {
             String repo = pathItems.get( 0 );
+            KurjunContext context = getContextForType( repo );
+            if ( context == null )
+            {
+                badRequest( resp, "Invalid template type: " + repo );
+                return;
+            }
             Part part = req.getPart( PACKAGE_FILE_PART_NAME );
             if ( part != null && part.getSubmittedFileName() != null )
             {
-                parsePackageFile( part, resp );
+                parsePackageFile( part, resp, context );
             }
             else
             {
@@ -86,7 +81,7 @@ class TemplateUploadServlet extends HttpServletBase
     }
 
 
-    private void parsePackageFile( Part part, HttpServletResponse resp ) throws IOException
+    private void parsePackageFile( Part part, HttpServletResponse resp, KurjunContext context ) throws IOException
     {
         // define file extension based on submitted file name
         String fileName = part.getSubmittedFileName();

@@ -2,7 +2,9 @@ package ai.subut.kurjun.http;
 
 
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.servlet.DispatcherType;
 
@@ -42,6 +44,7 @@ public class HttpServer
     public static final String HTTP_PORT_KEY = "http.port";
 
     public static final KurjunContext CONTEXT = new KurjunContext( "my" );
+    public static final Set<KurjunContext> TEMPLATE_CONTEXTS = new HashSet<>();
 
 
     public static void main( String[] args ) throws Exception
@@ -124,6 +127,26 @@ public class HttpServer
         p.setProperty( "dataSource.databaseName", "kurjun_metadata" );
         p.setProperty( "dataSource.user", "kurjun_metadata" );
         p.setProperty( "dataSource.password", "kurjun_metadata" );
+
+        // init template type contexts based on above parameters
+        TEMPLATE_CONTEXTS.add( new KurjunContext( "public" ) );
+        TEMPLATE_CONTEXTS.add( new KurjunContext( "trust" ) );
+        for ( KurjunContext kc : TEMPLATE_CONTEXTS )
+        {
+            Properties kcp = properties.getContextProperties( kc );
+            kcp.putAll( p );
+
+            // set custom parent dir for file store
+            String s = p.getProperty( FileSystemFileStoreModule.ROOT_DIRECTORY ) + "/templates/" + kc.getName();
+            kcp.setProperty( FileSystemFileStoreModule.ROOT_DIRECTORY, s );
+
+            // TODO: custom settings for s3 file stores
+
+            // set custom meta data location
+            s = p.getProperty( DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME ) + "/templates/" + kc.getName();
+            kcp.setProperty( DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME, s );
+
+        }
 
     }
 }
