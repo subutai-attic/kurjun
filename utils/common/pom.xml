@@ -12,6 +12,10 @@
   <artifactId>common-utils</artifactId>
   <packaging>jar</packaging>
 
+  <properties>
+    <osgi.export-package>${project.groupId}.common.service</osgi.export-package>
+  </properties>
+
   <dependencies>
 
     <dependency>

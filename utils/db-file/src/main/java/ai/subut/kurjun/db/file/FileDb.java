@@ -15,8 +15,6 @@ import org.mapdb.DB;
 import org.mapdb.DBMaker;
 import org.mapdb.TxMaker;
 
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
 
 /**
@@ -31,14 +29,12 @@ public class FileDb implements Closeable
 
 
     /**
-     * Constructs file based db backed by supplied file. File path argument is annotated with {@link Named} to enable
-     * file path injection.
+     * Constructs file based db backed by supplied file.
      *
      * @param dbFile
      * @throws IOException
      */
-    @Inject
-    public FileDb( @Named( FileDbModule.DB_FILE_PATH ) String dbFile ) throws IOException
+    public FileDb( String dbFile ) throws IOException
     {
         this( dbFile, false );
     }
