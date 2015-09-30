@@ -22,7 +22,7 @@ public class FileStoreModule extends AbstractModule
         install( new FileSystemFileStoreModule() );
         install( new S3FileStoreModule() );
 
-        bind( FileStoreFactory.class );
+        bind( FileStoreFactory.class ).to( FileStoreFactoryImpl.class );
     }
 
 }

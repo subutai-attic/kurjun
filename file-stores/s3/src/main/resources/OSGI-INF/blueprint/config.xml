@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+
+  <reference id="kurjunProperties" interface="${project.groupId}.common.service.KurjunProperties" />
+
+  <bean id="s3FileStoreFactory" class="${project.groupId}.storage.s3.S3FileStoreFactoryImpl">
+    <argument ref="kurjunProperties"/>
+  </bean>
+
+  <service id="s3FileStoreService" ref="s3FileStoreFactory"
+           interface="${project.groupId}.storage.s3.S3FileStoreFactory"/>
+
+</blueprint>
+
