@@ -15,7 +15,6 @@
 
   <properties>
 
-    <osgi.bundle-activator>ai.subut.kurjun.index.Activator</osgi.bundle-activator>
     <osgi.export-package>ai.subut.kurjun.index.service</osgi.export-package>
 
     <test.pkg.index.url.gz>
