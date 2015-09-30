@@ -142,6 +142,7 @@ public class MetadataUtils
         target.setFilename( source.getFilename() );
         target.setPackage( source.getPackage() );
         target.setVersion( source.getVersion() );
+        target.setSource( source.getSource() );
         target.setMaintainer( source.getMaintainer() );
         target.setArchitecture( source.getArchitecture() );
         target.setInstalledSize( source.getInstalledSize() );
