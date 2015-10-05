@@ -27,8 +27,14 @@ import ai.subut.kurjun.snap.service.SnapMetadataParser;
 class SnapMetadataParserImpl implements SnapMetadataParser
 {
 
-    @Inject
     Yaml yaml;
+
+
+    @Inject
+    public SnapMetadataParserImpl( Yaml yaml )
+    {
+        this.yaml = yaml;
+    }
 
 
     @Override

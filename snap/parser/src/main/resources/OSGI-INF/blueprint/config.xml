@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+
+  <bean id="module" class="${project.groupId}.snap.SnapMetadataParserModule">
+  </bean>
+
+  <bean id="yamlParser" factory-ref="module" factory-method="makeYamlParser">
+  </bean>
+
+  <service interface="${project.groupId}.snap.service.SnapMetadataParser">
+    <bean class="${project.groupId}.snap.SnapMetadataParserImpl">
+      <argument ref="yamlParser"/>
+    </bean>
+  </service>
+
+</blueprint>

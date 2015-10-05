@@ -14,7 +14,6 @@
 
   <properties>
     <osgi.export-package>ai.subut.kurjun.snap.service</osgi.export-package>
-    <osgi.bundle-activator>ai.subut.kurjun.snap.Activator</osgi.bundle-activator>
   </properties>
   
   <build>
