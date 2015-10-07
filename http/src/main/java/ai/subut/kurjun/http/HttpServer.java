@@ -12,8 +12,6 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 
-import com.datastax.driver.core.Session;
-import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceFilter;
 
@@ -29,7 +27,6 @@ import ai.subut.kurjun.index.PackagesIndexParserModule;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreModule;
 import ai.subut.kurjun.metadata.storage.file.DbFilePackageMetadataStoreModule;
-import ai.subut.kurjun.metadata.storage.nosql.CassandraConnector;
 import ai.subut.kurjun.repo.RepositoryModule;
 import ai.subut.kurjun.riparser.ReleaseIndexParserModule;
 import ai.subut.kurjun.snap.SnapMetadataParserModule;
@@ -83,14 +80,6 @@ public class HttpServer
         bootstrap.addModule( new SnapMetadataParserModule() );
         bootstrap.addModule( new SnapServletModule().setServletPath( "/snaps" ) );
 
-        bootstrap.addModule( new AbstractModule()
-        {
-            @Override
-            protected void configure()
-            {
-                bind( Session.class ).toProvider( CassandraConnector.getInstance() );
-            }
-        } );
         bootstrap.addModule( new FileStoreModule() );
         bootstrap.addModule( new PackageMetadataStoreModule() );
 

@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
+import ai.subut.kurjun.common.KurjunContext;
 import ai.subut.kurjun.metadata.common.MetadataListingImpl;
 import ai.subut.kurjun.metadata.common.apt.DefaultDependency;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
@@ -37,6 +38,7 @@ public class NoSqlPackageMetadataStoreTest
 
     private static final Logger LOGGER = LoggerFactory.getLogger( NoSqlPackageMetadataStoreTest.class );
     private static NoSqlPackageMetadataStore store;
+    private static CassandraSessionProvider sessionProvider;
 
     private SerializableMetadata meta;
     private List<SerializableMetadata> extraItems;
@@ -44,26 +46,35 @@ public class NoSqlPackageMetadataStoreTest
 
 
     @BeforeClass
-    public static void setUpClass() throws IOException
+    public static void setUpClass()
     {
+        Properties prop = new Properties();
         try ( InputStream is = ClassLoader.getSystemResourceAsStream( "cassandra.properties" ) )
         {
-            Properties prop = new Properties();
             prop.load( is );
-            store = new NoSqlPackageMetadataStore( prop.getProperty( "test.cassandra.node" ),
-                                                   Integer.parseInt( prop.getProperty( "test.cassandra.port" ) ) );
+
+            String node = prop.getProperty( "test.cassandra.node" );
+            int port = Integer.parseInt( prop.getProperty( "test.cassandra.port" ) );
+            sessionProvider = new CassandraSessionProvider( node, port );
         }
         catch ( Exception ex )
         {
             LOGGER.error( "Failed to initialize Cassandra connection", ex );
+            return;
         }
+
+        KurjunContext defaultContext = new KurjunContext( "" );
+        store = new NoSqlPackageMetadataStore( sessionProvider, defaultContext );
     }
 
 
     @AfterClass
     public static void tearDownClass() throws IOException
     {
-        CassandraConnector.getInstance().close();
+        if ( sessionProvider != null )
+        {
+            sessionProvider.close();
+        }
     }
 
 

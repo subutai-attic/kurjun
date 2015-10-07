@@ -31,8 +31,7 @@ public class MetadataUtils
 
         // register Dependency type adapter for correct deserialization of fields like List<Dependency>
         gb.registerTypeAdapter( Dependency.class, new DependencyTypeAdapter() );
-        // TODO: framework may need type adapter!!!
-//        gb.registerTypeAdapter( Framework.class, new DefaultFramework() );
+        //gb.registerTypeAdapter( Framework.class, new DefaultFramework() );
 
         JSON = gb.create();
     }

@@ -1,16 +1,7 @@
 package ai.subut.kurjun.metadata.factory;
 
 
-import java.util.Properties;
-
-import com.google.inject.Inject;
-import com.google.inject.ProvisionException;
-
 import ai.subut.kurjun.common.KurjunContext;
-import ai.subut.kurjun.common.service.KurjunProperties;
-import ai.subut.kurjun.metadata.storage.file.DbFilePackageMetadataStoreFactory;
-import ai.subut.kurjun.metadata.storage.nosql.NoSqlPackageMetadataStoreFactory;
-import ai.subut.kurjun.metadata.storage.sql.SqlDbPackageMetadataStoreFactory;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 
 
@@ -19,24 +10,12 @@ import ai.subut.kurjun.model.metadata.PackageMetadataStore;
  * factories.
  *
  */
-public class PackageMetadataStoreFactory
+public interface PackageMetadataStoreFactory
 {
 
-    public static final String FILE_DB = "file";
-    public static final String SQL_DB = "sql";
-    public static final String NOSQL_DB = "nosql";
-
-    @Inject
-    private KurjunProperties properties;
-
-    @Inject
-    private DbFilePackageMetadataStoreFactory dbFileMetadataStoreFactory;
-
-    @Inject
-    private NoSqlPackageMetadataStoreFactory noSqlMetadataStoreFactory;
-
-    @Inject
-    private SqlDbPackageMetadataStoreFactory sqlDbMetadataStoreFactory;
+    String FILE_DB = "file";
+    String SQL_DB = "sql";
+    String NOSQL_DB = "nosql";
 
 
     /**
@@ -46,27 +25,7 @@ public class PackageMetadataStoreFactory
      * @param context context for which to create a store
      * @return package meta data store
      */
-    public PackageMetadataStore create( KurjunContext context )
-    {
-        Properties cp = properties.getContextProperties( context );
-        String type = cp.getProperty( PackageMetadataStoreModule.PACKAGE_METADATA_STORE_TYPE );
-
-        if ( FILE_DB.equals( type ) )
-        {
-            return dbFileMetadataStoreFactory.create( context );
-        }
-        if ( NOSQL_DB.equals( type ) )
-        {
-            return noSqlMetadataStoreFactory.create( context );
-        }
-        if ( SQL_DB.equals( type ) )
-        {
-            return sqlDbMetadataStoreFactory.create( context );
-        }
-
-        throw new ProvisionException( "Invalid package metadata store type: " + type );
-    }
-
+    PackageMetadataStore create( KurjunContext context );
 
 }
 

@@ -14,12 +14,9 @@
 
   <properties>
 
-    <osgi.bundle-activator>
-      ai.subut.kurjun.metadata.storage.nosql.Activator
-    </osgi.bundle-activator>
-
     <test.cassandra.node>localhost</test.cassandra.node>
     <test.cassandra.port>0</test.cassandra.port>
+
   </properties>
 
   <build>
