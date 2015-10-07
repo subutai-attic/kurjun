@@ -28,7 +28,7 @@ public class PackageMetadataStoreModule extends AbstractModule
         install( new NoSqlPackageMetadataStoreModule() );
         install( new SqlDbPackageMetadataStoreModule() );
 
-        bind( PackageMetadataStoreFactory.class );
+        bind( PackageMetadataStoreFactory.class ).to( PackageMetadataStoreFactoryImpl.class );
     }
 
 }

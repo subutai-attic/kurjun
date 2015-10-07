@@ -8,6 +8,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.yaml.snakeyaml.Yaml;
 
 import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
 
@@ -15,14 +16,15 @@ import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
 public class SnapMetadataParserImplTest
 {
 
-    private SnapMetadataParserImpl parser = new SnapMetadataParserImpl();
+    private SnapMetadataParserImpl parser;
     private InputStream packageMetadataStream;
 
 
     @Before
     public void setUp()
     {
-        parser.yaml = new SnapMetadataParserModule().makeYamlParser();
+        Yaml yaml = new SnapMetadataParserModule().makeYamlParser();
+        parser = new SnapMetadataParserImpl( yaml );
         packageMetadataStream = ClassLoader.getSystemResourceAsStream( "package.yaml" );
     }
 

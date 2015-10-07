@@ -50,9 +50,9 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
 
 
     @Inject
-    public NoSqlPackageMetadataStore( Session session, @Assisted KurjunContext context )
+    public NoSqlPackageMetadataStore( CassandraSessionProvider sessionProvider, @Assisted KurjunContext context )
     {
-        this.session = session;
+        this.session = sessionProvider.get();
 
         schemaInfo = new SchemaInfo();
         schemaInfo.setTag( context.getName() );
@@ -64,25 +64,6 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
         {
             throw new ProvisionException( "Failed to construct metadata store", ex );
         }
-    }
-
-
-    /**
-     * Constructor of Cassandra backed package metadata store.
-     *
-     * @param node the address of the node to connect to; any node of the cluster may be used
-     * @param port the port to use; 0 for default
-     *
-     * @throws IOException
-     */
-    public NoSqlPackageMetadataStore( String node, int port ) throws IOException
-    {
-        CassandraConnector connector = CassandraConnector.getInstance();
-        connector.init( node, port );
-        this.session = connector.get();
-
-        schemaInfo = new SchemaInfo();
-        schemaInfo.createSchema( session );
     }
 
 

@@ -19,5 +19,6 @@ public interface SqlDbPackageMetadataStoreFactory
      * @return
      */
     PackageMetadataStore create( KurjunContext context );
+
 }
 

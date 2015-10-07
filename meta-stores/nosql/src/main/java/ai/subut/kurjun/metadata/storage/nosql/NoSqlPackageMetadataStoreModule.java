@@ -27,6 +27,8 @@ public class NoSqlPackageMetadataStoreModule extends AbstractModule
                 .build( NoSqlPackageMetadataStoreFactory.class );
 
         install( module );
+
+        bind( CassandraSessionProvider.class ).asEagerSingleton();
     }
 
 }

@@ -14,10 +14,6 @@
 
   <properties>
 
-    <osgi.bundle-activator>
-      ai.subut.kurjun.metadata.storage.sql.Activator
-    </osgi.bundle-activator>
-
     <test.db.className>org.mariadb.jdbc.MySQLDataSource</test.db.className>
     <test.db.server>localhost</test.db.server>
     <test.db.dbName>kurjun_metadata</test.db.dbName>

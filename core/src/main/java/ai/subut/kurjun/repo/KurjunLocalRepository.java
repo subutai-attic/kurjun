@@ -34,8 +34,8 @@ import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
-import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.riparser.DefaultRelease;
@@ -49,13 +49,8 @@ import ai.subut.kurjun.storage.factory.FileStoreFactory;
 class KurjunLocalRepository extends RepositoryBase implements LocalRepository
 {
 
-    @Inject
     private ControlFileParser controlFileParser;
-
-    @Inject
     private FileStoreFactory fileStoreFactory;
-
-    @Inject
     private PackageMetadataStoreFactory metadataStoreFactory;
 
     private final KurjunContext context;
@@ -65,7 +60,11 @@ class KurjunLocalRepository extends RepositoryBase implements LocalRepository
 
 
     @Inject
-    public KurjunLocalRepository( @Assisted KurjunContext kurjunContext )
+    public KurjunLocalRepository(
+            ControlFileParser controlFileParser,
+            FileStoreFactory fileStoreFactory,
+            PackageMetadataStoreFactory metadataStoreFactory,
+            @Assisted KurjunContext kurjunContext )
     {
         // TODO: setup mechanism for repos
         DefaultRelease r = new DefaultRelease();
@@ -76,6 +75,9 @@ class KurjunLocalRepository extends RepositoryBase implements LocalRepository
         r.setVersion( "12.04" );
         releases.add( r );
 
+        this.controlFileParser = controlFileParser;
+        this.fileStoreFactory = fileStoreFactory;
+        this.metadataStoreFactory = metadataStoreFactory;
         this.context = kurjunContext;
 
         try

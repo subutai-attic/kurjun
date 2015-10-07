@@ -13,12 +13,6 @@
   <name>Kurjun DB File Store</name>
 
   <properties>
-    <mapdb.version>1.0.6</mapdb.version>
-
-    <osgi.bundle-activator>
-      ai.subut.kurjun.metadata.storage.file.impl.FileMetaStoreActivator
-    </osgi.bundle-activator>
-
   </properties>
 
   <build>
