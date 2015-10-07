@@ -24,7 +24,6 @@
     <module>security</module>
     <module>core</module>
     <module>http</module>
-    <module>snap</module>
   </modules>
 
   <description>
