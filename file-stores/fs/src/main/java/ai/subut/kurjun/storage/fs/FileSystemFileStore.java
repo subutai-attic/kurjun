@@ -13,7 +13,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.DigestInputStream;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.UUID;
 
 import org.apache.commons.codec.binary.Hex;
@@ -42,18 +41,23 @@ class FileSystemFileStore implements FileStore
 
 
     /**
-     * Constructs file system backed file store to a specified location in a file system.
+     * Constructs file system backed file store. File store location in a file system is determined by Kurjun property
+     * {@link FileSystemFileStoreModule#ROOT_DIRECTORY} and the supplied context.
      *
      */
     @Inject
     public FileSystemFileStore( KurjunProperties properties, @Assisted KurjunContext context )
     {
-        Properties cp = properties.getContextProperties( context.getName() );
-        String parentDir = cp.getProperty( FileSystemFileStoreModule.ROOT_DIRECTORY );
-        this.rootLocation = Paths.get( parentDir );
+        String parentDirectory = properties.get( FileSystemFileStoreModule.ROOT_DIRECTORY );
+        this.rootLocation = Paths.get( parentDirectory, context.getName() );
     }
 
 
+    /**
+     * Constructs file system backed file store at the specified file system location.
+     *
+     * @param parentDirectory parent directory for the file store
+     */
     public FileSystemFileStore( String parentDirectory )
     {
         this.rootLocation = Paths.get( parentDirectory );
