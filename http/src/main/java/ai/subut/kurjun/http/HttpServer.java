@@ -99,10 +99,7 @@ public class HttpServer
     {
         Properties p = properties.getContextProperties( CONTEXT );
         p.setProperty( FileStoreFactory.TYPE, FileStoreFactory.FILE_SYSTEM );
-        // --- begin S3 file store  ---
         //p.setProperty( FileStoreFactory.TYPE, FileStoreFactory.S3 );
-        //p.setProperty( S3FileStoreModule.BUCKET_NAME, "kurjun-test" );
-        // --- end S3 file store    ---
 
         p.setProperty( PackageMetadataStoreModule.PACKAGE_METADATA_STORE_TYPE, PackageMetadataStoreFactory.FILE_DB );
         // if file db is used, set db file below
@@ -121,8 +118,6 @@ public class HttpServer
         {
             Properties kcp = properties.getContextProperties( kc );
             kcp.putAll( p );
-
-            // TODO: custom settings for s3 file stores
 
             // set custom meta data location
             String s = p.getProperty( DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME ) + "/templates/" + kc.getName();

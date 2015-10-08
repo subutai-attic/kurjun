@@ -17,7 +17,13 @@ public class S3FileStoreModule extends AbstractModule
 {
 
     /**
-     * Properties key for Amazon S3 bucket name.
+     * Properties key for Amazon S3 bucket name prefix. If specified, this prefix will be used to make default bucket
+     * names for contexts.
+     */
+    public static final String BUCKET_NAME_PREFIX = "file.store.s3.bucket.prefix";
+
+    /**
+     * Properties key for Amazon S3 bucket name. This is context specific and is used only within context properties.
      */
     public static final String BUCKET_NAME = "file.store.s3.bucketName";
 
