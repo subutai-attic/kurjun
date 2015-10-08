@@ -1,6 +1,9 @@
 package ai.subut.kurjun.metadata.storage.nosql;
 
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,31 +31,46 @@ public class CassandraSessionProvider
     private Cluster cluster;
     private Session session;
 
+    private String node;
+    private int port;
+
+    private final Lock lock = new ReentrantLock();
+    private boolean initialized = false;
+
 
     @Inject
     public CassandraSessionProvider( KurjunProperties kurjunProperties )
     {
-        String node = kurjunProperties.get( CASSANDRA_NODE );
-        Integer port = kurjunProperties.getIntegerWithDefault( CASSANDRA_PORT, 0 );
-
-        if ( node == null )
-        {
-            LOGGER.warn( "Cassandra node property '{}' not set, using localhost", CASSANDRA_NODE );
-            node = "localhost";
-        }
-
-        init( node, port );
+        this.node = kurjunProperties.get( CASSANDRA_NODE );
+        this.port = kurjunProperties.getIntegerWithDefault( CASSANDRA_PORT, 0 );
     }
 
 
     CassandraSessionProvider( String node, int port )
     {
-        init( node, port );
+        this.node = node;
+        this.port = port;
     }
 
 
     public Session get()
     {
+        if ( !initialized )
+        {
+            lock.lock();
+            try
+            {
+                if ( !initialized )
+                {
+                    init( node, port );
+                    initialized = true;
+                }
+            }
+            finally
+            {
+                lock.unlock();
+            }
+        }
         return this.session;
     }
 
@@ -79,6 +97,12 @@ public class CassandraSessionProvider
      */
     private void init( String node, int port )
     {
+        if ( node == null )
+        {
+            LOGGER.warn( "Cassandra node property '{}' not set, using localhost", CASSANDRA_NODE );
+            node = "localhost";
+        }
+
         Cluster.Builder clusterBuilder = Cluster.builder().addContactPoint( node );
         if ( port > 0 )
         {

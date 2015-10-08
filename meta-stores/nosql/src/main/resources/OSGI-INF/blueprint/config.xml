@@ -3,7 +3,8 @@
 
   <reference id="kurjunProperties" interface="${project.groupId}.common.service.KurjunProperties" />
 
-  <bean id="sessionProvider" class="${project.groupId}.metadata.storage.nosql.CassandraSessionProvider">
+  <bean id="sessionProvider" scope="singleton"
+        class="${project.groupId}.metadata.storage.nosql.CassandraSessionProvider">
     <argument reg="kurjunProperties"/>
   </bean>
 

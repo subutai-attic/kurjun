@@ -56,15 +56,14 @@ public class NoSqlPackageMetadataStoreTest
             String node = prop.getProperty( "test.cassandra.node" );
             int port = Integer.parseInt( prop.getProperty( "test.cassandra.port" ) );
             sessionProvider = new CassandraSessionProvider( node, port );
+
+            KurjunContext defaultContext = new KurjunContext( "" );
+            store = new NoSqlPackageMetadataStore( sessionProvider, defaultContext );
         }
         catch ( Exception ex )
         {
             LOGGER.error( "Failed to initialize Cassandra connection", ex );
-            return;
         }
-
-        KurjunContext defaultContext = new KurjunContext( "" );
-        store = new NoSqlPackageMetadataStore( sessionProvider, defaultContext );
     }
 
 
