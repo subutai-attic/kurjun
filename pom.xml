@@ -22,9 +22,9 @@
     <module>file-stores</module>
     <module>meta-stores</module>
     <module>security</module>
-    <module>core</module>
+    <module>repository</module>
     <module>http</module>
-    <module>snap</module>
+    <module>karaf</module>
   </modules>
 
   <description>
@@ -157,6 +157,12 @@
             </property>
           </systemPropertyVariables>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.7</version>
       </plugin>
 
       <plugin>

@@ -8,9 +8,7 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>ai.subut.kurjun</groupId>
   <artifactId>cfparser</artifactId>
-  <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Kurjun Control File Parser</name>
 
