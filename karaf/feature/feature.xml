@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.3.0">
+
+  <!-- common bundles -->
+  <feature name="kurjun-common" version="${project.version}">
+    <bundle>mvn:${project.groupId}/common-utils/${project.version}</bundle>
+    <bundle>mvn:${project.groupId}/core/${project.version}</bundle>
+    <bundle>mvn:${project.groupId}/security/${project.version}</bundle>
+  </feature>
+
+  <!-- file store bundles -->
+  <feature name="kurjun-file-stores" version="${project.version}">
+    <bundle>mvn:${project.groupId}/file-store-factory/${project.version}</bundle>
+    <bundle>mvn:${project.groupId}/s3-file-store/${project.version}</bundle>
+    <bundle>mvn:${project.groupId}/fs-file-store/${project.version}</bundle>
+  </feature>
+
+  <!-- metadata store bundles -->
+  <feature name="kurjun-metadata-stores" version="${project.version}">
+    <bundle>mvn:${project.groupId}/sql-meta-store/${project.version}</bundle>
+    <bundle>mvn:${project.groupId}/nosql-meta-store/${project.version}</bundle>
+    <bundle>mvn:${project.groupId}/db-meta-store/${project.version}</bundle>
+    <bundle>mvn:${project.groupId}/metadata-store-factory/${project.version}</bundle>
+  </feature>
+
+  <!-- metadata parser bundles -->
+  <feature name="kurjun-parsers" version="${project.version}">
+    <bundle>mvn:${project.groupId}/kurjun-template-parser/${project.version}</bundle>
+    <bundle>mvn:${project.groupId}/snap-parser/${project.version}</bundle>
+  </feature>
+
+</features>
