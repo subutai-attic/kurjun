@@ -4,7 +4,7 @@
   <!-- common bundles -->
   <feature name="kurjun-common" version="${project.version}">
     <bundle>mvn:${project.groupId}/common-utils/${project.version}</bundle>
-    <bundle>mvn:${project.groupId}/core/${project.version}</bundle>
+    <bundle>mvn:${project.groupId}/repository/${project.version}</bundle>
     <bundle>mvn:${project.groupId}/security/${project.version}</bundle>
   </feature>
 

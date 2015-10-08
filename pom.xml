@@ -22,7 +22,7 @@
     <module>file-stores</module>
     <module>meta-stores</module>
     <module>security</module>
-    <module>core</module>
+    <module>repository</module>
     <module>http</module>
     <module>karaf</module>
   </modules>
