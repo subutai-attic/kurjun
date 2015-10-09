@@ -32,7 +32,6 @@ import ai.subut.kurjun.riparser.ReleaseIndexParserModule;
 import ai.subut.kurjun.snap.SnapMetadataParserModule;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 import ai.subut.kurjun.storage.factory.FileStoreModule;
-import ai.subut.kurjun.storage.fs.FileSystemFileStoreModule;
 import ai.subut.kurjun.subutai.SubutaiTemplateParserModule;
 
 
@@ -100,12 +99,7 @@ public class HttpServer
     {
         Properties p = properties.getContextProperties( CONTEXT );
         p.setProperty( FileStoreFactory.TYPE, FileStoreFactory.FILE_SYSTEM );
-        // --- begin S3 file store  ---
         //p.setProperty( FileStoreFactory.TYPE, FileStoreFactory.S3 );
-        //p.setProperty( S3FileStoreModule.BUCKET_NAME, "kurjun-test" );
-        // --- end S3 file store    ---
-
-        p.setProperty( FileSystemFileStoreModule.ROOT_DIRECTORY, "/tmp/kurjun/files" );
 
         p.setProperty( PackageMetadataStoreModule.PACKAGE_METADATA_STORE_TYPE, PackageMetadataStoreFactory.FILE_DB );
         // if file db is used, set db file below
@@ -125,14 +119,8 @@ public class HttpServer
             Properties kcp = properties.getContextProperties( kc );
             kcp.putAll( p );
 
-            // set custom parent dir for file store
-            String s = p.getProperty( FileSystemFileStoreModule.ROOT_DIRECTORY ) + "/templates/" + kc.getName();
-            kcp.setProperty( FileSystemFileStoreModule.ROOT_DIRECTORY, s );
-
-            // TODO: custom settings for s3 file stores
-
             // set custom meta data location
-            s = p.getProperty( DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME ) + "/templates/" + kc.getName();
+            String s = p.getProperty( DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME ) + "/templates/" + kc.getName();
             kcp.setProperty( DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME, s );
 
         }

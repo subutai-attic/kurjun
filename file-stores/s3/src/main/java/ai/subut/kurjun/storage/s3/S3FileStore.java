@@ -53,8 +53,17 @@ class S3FileStore implements FileStore
     @Inject
     public S3FileStore( AWSCredentials credentials, KurjunProperties properties, @Assisted KurjunContext context )
     {
+        // if there is explicit bucket name for context then use that
         Properties prop = properties.getContextProperties( context.getName() );
-        ctor( credentials, prop.getProperty( S3FileStoreModule.BUCKET_NAME ) );
+        String bucket = prop.getProperty( S3FileStoreModule.BUCKET_NAME );
+
+        // if bucket name is not supplied, make default bucket name for context
+        if ( bucket == null )
+        {
+            bucket = makeBucketName( properties, context );
+        }
+
+        ctor( credentials, bucket );
     }
 
 
@@ -74,6 +83,15 @@ class S3FileStore implements FileStore
             Bucket bucket = s3client.createBucket( bucketName );
             LOGGER.info( "Bucket '{}' created", bucket.getName() );
         }
+    }
+
+
+    public static final String makeBucketName( KurjunProperties properties, KurjunContext context )
+    {
+        String prefix = properties.getWithDefault( S3FileStoreModule.BUCKET_NAME_PREFIX, "kurjun-bucket-" );
+        // clear out all non-word characters; Amazon S3 bucket names have some restritions on naming
+        String contextCleared = context.getName().replaceAll( "\\W", "" );
+        return prefix + contextCleared;
     }
 
 
