@@ -57,5 +57,13 @@ class SqlStatements
         DELETE = new SQL().DELETE_FROM( TABLE_NAME ).WHERE( CHECKSUM_COLUMN + " = ?" ).toString();
 
     }
+
+
+    private SqlStatements()
+    {
+        // not to be constructed
+    }
+
+
 }
 

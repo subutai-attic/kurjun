@@ -1,7 +1,9 @@
 package ai.subut.kurjun.metadata.storage.sql;
 
 
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 
 /**
@@ -34,7 +36,32 @@ public class ConnectionPropertyName
     public static final String OPT_MINIMUM_IDLE = "minimumIdle";
     public static final String OPT_MAX_POOL_SIZE = "maximumPoolSize ";
 
-    public static final String SERVICE_PID = SqlDbPackageMetadataStore.class.getName();
+
+    private ConnectionPropertyName()
+    {
+        // not to be constructed
+    }
+
+
+    /**
+     * Gets a set of all property names defined in this class.
+     *
+     * @return set of property names
+     */
+    public static Set<String> getPropertyNames()
+    {
+        Set<String> set = new HashSet<>();
+        set.add( DATASOURCE_CLASS_NAME );
+        set.add( DATASOURCE_SERVER_NAME );
+        set.add( DATASOURCE_DATABASE_NAME );
+        set.add( DATASOURCE_USER );
+        set.add( DATASOURCE_PASS );
+        set.add( OPT_CONNECTION_TIMEOUT );
+        set.add( OPT_IDLE_TIMEOUT );
+        set.add( OPT_MINIMUM_IDLE );
+        set.add( OPT_MAX_POOL_SIZE );
+        return set;
+    }
 
 }
 

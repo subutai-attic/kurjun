@@ -67,7 +67,7 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
     @Override
     public boolean contains( byte[] md5 ) throws IOException
     {
-        Objects.requireNonNull( md5, "Checksum" );
+        Objects.requireNonNull( md5, "Checksum for contains method" );
         try ( Connection conn = ConnectionFactory.getInstance().getConnection() )
         {
             PreparedStatement ps = conn.prepareStatement( SqlStatements.SELECT_COUNT );
@@ -85,7 +85,7 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
     @Override
     public SerializableMetadata get( byte[] md5 ) throws IOException
     {
-        Objects.requireNonNull( md5, "Checksum" );
+        Objects.requireNonNull( md5, "Checksum for get method" );
         try ( Connection conn = ConnectionFactory.getInstance().getConnection() )
         {
             PreparedStatement ps = conn.prepareStatement( SqlStatements.SELECT_DATA );
@@ -160,7 +160,7 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
     @Override
     public boolean remove( byte[] md5 ) throws IOException
     {
-        Objects.requireNonNull( md5, "Checksum" );
+        Objects.requireNonNull( md5, "Checksum for remove method" );
         try ( Connection conn = ConnectionFactory.getInstance().getConnection() )
         {
             PreparedStatement ps = conn.prepareStatement( SqlStatements.DELETE );

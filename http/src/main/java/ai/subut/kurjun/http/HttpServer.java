@@ -108,8 +108,8 @@ public class HttpServer
         p.setProperty( "dataSourceClassName", "org.mariadb.jdbc.MySQLDataSource" );
         p.setProperty( "dataSource.serverName", "localhost" );
         p.setProperty( "dataSource.databaseName", "kurjun_metadata" );
-        p.setProperty( "dataSource.user", "kurjun_metadata" );
-        p.setProperty( "dataSource.password", "kurjun_metadata" );
+        p.setProperty( "dataSource.user", "kurjun-metadata" );
+        p.setProperty( "dataSource.password", "kurjun-metadata" );
 
         // init template type contexts based on above parameters
         TEMPLATE_CONTEXTS.add( new KurjunContext( "public" ) );
