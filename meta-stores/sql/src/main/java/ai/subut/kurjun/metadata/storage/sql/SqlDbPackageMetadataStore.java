@@ -37,6 +37,8 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
 
     int batchSize = 1000;
 
+    private final KurjunContext context;
+
 
     /**
      * Constructs a metadata store backed by a SQL DB whose properties are provided by an {@link Properties} instance of
@@ -50,6 +52,7 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
     {
         Properties cp = properties.getContextProperties( context );
         ConnectionFactory.getInstance().init( cp );
+        this.context = context;
     }
 
 
@@ -61,6 +64,7 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
     public SqlDbPackageMetadataStore( Properties properties )
     {
         ConnectionFactory.getInstance().init( properties );
+        this.context = new KurjunContext( "" );
     }
 
 
@@ -71,7 +75,8 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
         try ( Connection conn = ConnectionFactory.getInstance().getConnection() )
         {
             PreparedStatement ps = conn.prepareStatement( SqlStatements.SELECT_COUNT );
-            ps.setString( 1, Hex.encodeHexString( md5 ) );
+            ps.setString( 1, context.getName() );
+            ps.setString( 2, Hex.encodeHexString( md5 ) );
             ResultSet rs = ps.executeQuery();
             return rs.next() && rs.getInt( 1 ) > 0;
         }
@@ -89,7 +94,8 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
         try ( Connection conn = ConnectionFactory.getInstance().getConnection() )
         {
             PreparedStatement ps = conn.prepareStatement( SqlStatements.SELECT_DATA );
-            ps.setString( 1, Hex.encodeHexString( md5 ) );
+            ps.setString( 1, context.getName() );
+            ps.setString( 2, Hex.encodeHexString( md5 ) );
             ResultSet rs = ps.executeQuery();
             if ( rs.next() )
             {
@@ -116,7 +122,8 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
         try ( Connection conn = ConnectionFactory.getInstance().getConnection() )
         {
             PreparedStatement ps = conn.prepareStatement( SqlStatements.SELECT_BY_NAME );
-            ps.setString( 1, name );
+            ps.setString( 1, context.getName() );
+            ps.setString( 2, name );
             ResultSet rs = ps.executeQuery();
             while ( rs.next() )
             {
@@ -144,10 +151,11 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
         try ( Connection conn = ConnectionFactory.getInstance().getConnection() )
         {
             PreparedStatement ps = conn.prepareStatement( SqlStatements.INSERT );
-            ps.setString( 1, Hex.encodeHexString( meta.getMd5Sum() ) );
-            ps.setString( 2, meta.getName() );
-            ps.setString( 3, meta.getVersion() );
-            ps.setString( 4, meta.serialize() );
+            ps.setString( 1, context.getName() );
+            ps.setString( 2, Hex.encodeHexString( meta.getMd5Sum() ) );
+            ps.setString( 3, meta.getName() );
+            ps.setString( 4, meta.getVersion() );
+            ps.setString( 5, meta.serialize() );
             return ps.executeUpdate() > 0;
         }
         catch ( SQLException ex )
@@ -164,7 +172,8 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
         try ( Connection conn = ConnectionFactory.getInstance().getConnection() )
         {
             PreparedStatement ps = conn.prepareStatement( SqlStatements.DELETE );
-            ps.setString( 1, Hex.encodeHexString( md5 ) );
+            ps.setString( 1, context.getName() );
+            ps.setString( 2, Hex.encodeHexString( md5 ) );
             return ps.executeUpdate() > 0;
         }
         catch ( SQLException ex )
@@ -201,11 +210,13 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
             if ( marker != null && !marker.isEmpty() )
             {
                 ps = conn.prepareStatement( SqlStatements.SELECT_NEXT_ORDERED );
-                ps.setString( 1, marker );
+                ps.setString( 1, context.getName() );
+                ps.setString( 2, marker );
             }
             else
             {
                 ps = conn.prepareStatement( SqlStatements.SELECT_ORDERED );
+                ps.setString( 1, context.getName() );
             }
 
             ps.setFetchSize( batchSize + 1 );

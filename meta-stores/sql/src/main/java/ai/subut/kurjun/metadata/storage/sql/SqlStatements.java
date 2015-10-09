@@ -17,6 +17,8 @@ import org.apache.ibatis.jdbc.SQL;
 class SqlStatements
 {
     public static final String TABLE_NAME = "metadata";
+
+    public static final String CONTEXT_COLUMN = "context";
     public static final String CHECKSUM_COLUMN = "checksum";
     public static final String NAME_COLUMN = "name";
     public static final String VERSION_COLUMN = "version";
@@ -39,22 +41,42 @@ class SqlStatements
         List<String> allColumns = Arrays.asList( CHECKSUM_COLUMN, NAME_COLUMN, VERSION_COLUMN, DATA_COLUMN );
         String all = StringUtils.join( allColumns, ',' );
 
-        SELECT_COUNT = new SQL().SELECT( "COUNT(*)" ).FROM( TABLE_NAME ).WHERE( CHECKSUM_COLUMN + " = ?" ).toString();
+        String contextFilter = CONTEXT_COLUMN + " = ?";
+        String checksumFilter = CHECKSUM_COLUMN + " = ?";
 
-        SELECT_DATA = new SQL().SELECT( all ).FROM( TABLE_NAME ).WHERE( CHECKSUM_COLUMN + " = ?" ).toString();
-
-        SELECT_BY_NAME = new SQL().SELECT( all ).FROM( TABLE_NAME ).WHERE( NAME_COLUMN + " = ?" ).toString();
-
-        SELECT_ORDERED = new SQL().SELECT( all ).FROM( TABLE_NAME ).ORDER_BY( CHECKSUM_COLUMN ).toString();
-
-        SELECT_NEXT_ORDERED = new SQL().SELECT( all ).FROM( TABLE_NAME ).WHERE( CHECKSUM_COLUMN + " > ?" )
-                .ORDER_BY( CHECKSUM_COLUMN ).toString();
-
-        INSERT = new SQL().INSERT_INTO( TABLE_NAME ).VALUES( CHECKSUM_COLUMN, "?" ).VALUES( NAME_COLUMN, "?" )
-                .VALUES( VERSION_COLUMN, "?" ).VALUES( DATA_COLUMN, "?" )
+        SELECT_COUNT = new SQL().SELECT( "COUNT(*)" ).FROM( TABLE_NAME )
+                .WHERE( contextFilter ).AND().WHERE( checksumFilter )
                 .toString();
 
-        DELETE = new SQL().DELETE_FROM( TABLE_NAME ).WHERE( CHECKSUM_COLUMN + " = ?" ).toString();
+        SELECT_DATA = new SQL().SELECT( all ).FROM( TABLE_NAME )
+                .WHERE( contextFilter ).AND().WHERE( checksumFilter )
+                .toString();
+
+        SELECT_BY_NAME = new SQL().SELECT( all ).FROM( TABLE_NAME )
+                .WHERE( contextFilter ).AND().WHERE( NAME_COLUMN + " = ?" )
+                .toString();
+
+        SELECT_ORDERED = new SQL().SELECT( all ).FROM( TABLE_NAME )
+                .WHERE( contextFilter )
+                .ORDER_BY( CHECKSUM_COLUMN )
+                .toString();
+
+        SELECT_NEXT_ORDERED = new SQL().SELECT( all ).FROM( TABLE_NAME )
+                .WHERE( contextFilter ).AND().WHERE( CHECKSUM_COLUMN + " > ?" )
+                .ORDER_BY( CHECKSUM_COLUMN )
+                .toString();
+
+        INSERT = new SQL().INSERT_INTO( TABLE_NAME )
+                .VALUES( CONTEXT_COLUMN, "?" )
+                .VALUES( CHECKSUM_COLUMN, "?" )
+                .VALUES( NAME_COLUMN, "?" )
+                .VALUES( VERSION_COLUMN, "?" )
+                .VALUES( DATA_COLUMN, "?" )
+                .toString();
+
+        DELETE = new SQL().DELETE_FROM( TABLE_NAME )
+                .WHERE( contextFilter ).AND().WHERE( checksumFilter )
+                .toString();
 
     }
 
