@@ -104,12 +104,6 @@ public class HttpServer
         p.setProperty( PackageMetadataStoreModule.PACKAGE_METADATA_STORE_TYPE, PackageMetadataStoreFactory.FILE_DB );
         // if file db is used, set db file below
         p.setProperty( DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME, "/tmp/kurjun/metadata" );
-        // if sql db is used, set connection parameters below:
-        p.setProperty( "dataSourceClassName", "org.mariadb.jdbc.MySQLDataSource" );
-        p.setProperty( "dataSource.serverName", "localhost" );
-        p.setProperty( "dataSource.databaseName", "kurjun_metadata" );
-        p.setProperty( "dataSource.user", "kurjun_metadata" );
-        p.setProperty( "dataSource.password", "kurjun_metadata" );
 
         // init template type contexts based on above parameters
         TEMPLATE_CONTEXTS.add( new KurjunContext( "public" ) );

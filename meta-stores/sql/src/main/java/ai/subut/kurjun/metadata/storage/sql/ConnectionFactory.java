@@ -3,7 +3,9 @@ package ai.subut.kurjun.metadata.storage.sql;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -12,6 +14,8 @@ import org.slf4j.LoggerFactory;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+
+import ai.subut.kurjun.common.service.KurjunProperties;
 
 
 /**
@@ -51,11 +55,15 @@ class ConnectionFactory
      *
      * @param properties connection properties, property names specified in {@link ConnectionPropertyName} must be used
      */
-    public void init( Properties properties )
+    public synchronized void init( KurjunProperties properties )
     {
-        HikariConfig config = new HikariConfig( properties );
-        dataSource = new HikariDataSource( config );
-        LOGGER.info( "Kurjun SQL DB metadata store successfully initialized" );
+        if ( dataSource == null )
+        {
+            Properties p = copyAndFilterProperties( properties );
+            HikariConfig config = new HikariConfig( p );
+            dataSource = new HikariDataSource( config );
+            LOGGER.info( "Kurjun SQL DB metadata store successfully initialized" );
+        }
     }
 
 
@@ -82,6 +90,28 @@ class ConnectionFactory
         {
             ( ( HikariDataSource ) dataSource ).close();
         }
+    }
+
+
+    /**
+     * Filter supplied properties and return new copy of valid properties.
+     *
+     * @param properties context properties
+     * @return new properties with valid property names
+     */
+    private Properties copyAndFilterProperties( KurjunProperties properties )
+    {
+        Set<String> validPropertyNames = ConnectionPropertyName.getPropertyNames();
+
+        Properties p = new Properties();
+        for ( Map.Entry<String, Object> e : properties.propertyMap().entrySet() )
+        {
+            if ( validPropertyNames.contains( e.getKey() ) )
+            {
+                p.setProperty( e.getKey(), e.getValue().toString() );
+            }
+        }
+        return p;
     }
 
 }

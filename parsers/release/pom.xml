@@ -16,12 +16,12 @@
 
     <osgi.export-package>ai.subut.kurjun.riparser.service</osgi.export-package>
 
-    <test.release.codename>utopic</test.release.codename>
+    <test.release.codename>trusty</test.release.codename>
     <test.release.url>
-      http://archive.ubuntu.com/ubuntu/dists/utopic/Release
+      http://archive.ubuntu.com/ubuntu/dists/trusty/Release
     </test.release.url>
     <test.release.sign.url>
-      http://archive.ubuntu.com/ubuntu/dists/utopic/Release.gpg
+      http://archive.ubuntu.com/ubuntu/dists/trusty/Release.gpg
     </test.release.sign.url>
     <test.keyring.url>
       http://archive.ubuntu.com/ubuntu/project/ubuntu-archive-keyring.gpg

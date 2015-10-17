@@ -38,8 +38,6 @@ public class ReleaseIndexParserTest
     public static void setUpClass() throws IOException
     {
 
-        //PGPUtils.init();
-
         Properties properties = new Properties();
         properties.load( ClassLoader.getSystemResourceAsStream( "test.properties" ) );
 
