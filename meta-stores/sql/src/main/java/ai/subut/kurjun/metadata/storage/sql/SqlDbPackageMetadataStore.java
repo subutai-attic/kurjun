@@ -20,6 +20,7 @@ import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.common.KurjunContext;
 import ai.subut.kurjun.common.service.KurjunProperties;
+import ai.subut.kurjun.common.utils.PropertyUtils;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.MetadataListingImpl;
 import ai.subut.kurjun.model.metadata.MetadataListing;
@@ -50,8 +51,7 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
     @Inject
     public SqlDbPackageMetadataStore( KurjunProperties properties, @Assisted KurjunContext context )
     {
-        Properties cp = properties.getContextProperties( context );
-        ConnectionFactory.getInstance().init( cp );
+        ConnectionFactory.getInstance().init( properties );
         this.context = context;
     }
 
@@ -63,8 +63,7 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
      */
     public SqlDbPackageMetadataStore( Properties properties )
     {
-        ConnectionFactory.getInstance().init( properties );
-        this.context = new KurjunContext( "" );
+        this( PropertyUtils.makeKurjunProperties( properties ), new KurjunContext( "" ) );
     }
 
 

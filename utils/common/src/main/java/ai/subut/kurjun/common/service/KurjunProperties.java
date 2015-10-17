@@ -1,6 +1,7 @@
 package ai.subut.kurjun.common.service;
 
 
+import java.util.Map;
 import java.util.Properties;
 
 import ai.subut.kurjun.common.KurjunContext;
@@ -67,6 +68,15 @@ public interface KurjunProperties
      * @return value for supplied key if found and valid value exists; default value otherwise
      */
     Boolean getBooleanWithDefault( String key, Boolean defaultValue );
+
+
+    /**
+     * Gets a map of all property keys and their values. This is a snapshot of properties available when this method is
+     * called. Adding entries into returned map does not reflect to this Kurjun properties.
+     *
+     * @return map of properties keys and values
+     */
+    Map<String, Object> propertyMap();
 
 
     /**

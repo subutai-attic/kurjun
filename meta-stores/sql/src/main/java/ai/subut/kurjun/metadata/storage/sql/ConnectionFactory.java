@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import ai.subut.kurjun.common.service.KurjunProperties;
+
 
 /**
  * This class provides connections to database. Connection properties are taken from {@link Properties} instance in
@@ -53,7 +55,7 @@ class ConnectionFactory
      *
      * @param properties connection properties, property names specified in {@link ConnectionPropertyName} must be used
      */
-    public synchronized void init( Properties properties )
+    public synchronized void init( KurjunProperties properties )
     {
         if ( dataSource == null )
         {
@@ -97,16 +99,16 @@ class ConnectionFactory
      * @param properties context properties
      * @return new properties with valid property names
      */
-    private Properties copyAndFilterProperties( Properties properties )
+    private Properties copyAndFilterProperties( KurjunProperties properties )
     {
         Set<String> validPropertyNames = ConnectionPropertyName.getPropertyNames();
 
         Properties p = new Properties();
-        for ( Map.Entry<Object, Object> e : properties.entrySet() )
+        for ( Map.Entry<String, Object> e : properties.propertyMap().entrySet() )
         {
-            if ( validPropertyNames.contains( e.getKey().toString() ) )
+            if ( validPropertyNames.contains( e.getKey() ) )
             {
-                p.setProperty( e.getKey().toString(), e.getValue().toString() );
+                p.setProperty( e.getKey(), e.getValue().toString() );
             }
         }
         return p;

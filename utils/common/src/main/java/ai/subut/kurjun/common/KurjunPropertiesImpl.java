@@ -1,6 +1,8 @@
 package ai.subut.kurjun.common;
 
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,6 +42,13 @@ class KurjunPropertiesImpl implements KurjunProperties
     {
         conf = new PropertiesConfiguration( CONF_FILE_PATH );
         conf.setThrowExceptionOnMissing( false );
+    }
+
+
+    public KurjunPropertiesImpl( Properties properties )
+    {
+        this.conf = new PropertiesConfiguration();
+        properties.entrySet().forEach( e -> conf.setProperty( e.getKey().toString(), e.getValue() ) );
     }
 
 
@@ -114,6 +123,15 @@ class KurjunPropertiesImpl implements KurjunProperties
             LOGGER.debug( "Invalid value", ex );
             return defaultValue;
         }
+    }
+
+
+    @Override
+    public Map<String, Object> propertyMap()
+    {
+        Map<String, Object> map = new HashMap<>();
+        conf.getKeys().forEachRemaining( key -> map.put( key, conf.getProperty( key ) ) );
+        return map;
     }
 
 
