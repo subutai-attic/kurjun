@@ -2,11 +2,9 @@ package ai.subut.kurjun.repo.util;
 
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -15,7 +13,6 @@ import org.vafer.jdeb.debian.BinaryPackageControlFile;
 import org.vafer.jdeb.debian.ControlFile;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorOutputStream;
@@ -96,8 +93,8 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
         try ( OutputStream os = wrapStream( out, compressionType ) )
         {
             MetadataListing list = metadataStore.list();
-            List<PackageMetadata> filtered = filterMetadata( component, arch, list );
-            for ( PackageMetadata pm : filtered )
+            List<DefaultPackageMetadata> filtered = filterMetadata( component, arch, list );
+            for ( DefaultPackageMetadata pm : filtered )
             {
                 String s = formatPackageMetadata( pm );
                 writeString( s, os );
@@ -106,7 +103,7 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
             {
                 list = metadataStore.listNextBatch( list );
                 filtered = filterMetadata( component, arch, list );
-                for ( PackageMetadata pm : filtered )
+                for ( DefaultPackageMetadata pm : filtered )
                 {
                     String s = formatPackageMetadata( pm );
                     writeString( s, os );
@@ -152,12 +149,12 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
     }
 
 
-    private List<PackageMetadata> filterMetadata( String component, Architecture arch, MetadataListing ls )
+    private List<DefaultPackageMetadata> filterMetadata( String component, Architecture arch, MetadataListing ls )
     {
-        List<PackageMetadata> res = new LinkedList<>();
+        List<DefaultPackageMetadata> res = new LinkedList<>();
         for ( SerializableMetadata m : ls.getPackageMetadata() )
         {
-            PackageMetadata pm = gson.fromJson( m.serialize(), DefaultPackageMetadata.class );
+            DefaultPackageMetadata pm = gson.fromJson( m.serialize(), DefaultPackageMetadata.class );
             if ( component.equals( pm.getComponent() ) && arch == pm.getArchitecture() )
             {
                 res.add( pm );
@@ -167,7 +164,7 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
     }
 
 
-    private String formatPackageMetadata( PackageMetadata meta ) throws IOException
+    private String formatPackageMetadata( DefaultPackageMetadata meta ) throws IOException
     {
         if ( !fileStore.contains( meta.getMd5Sum() ) )
         {
@@ -201,25 +198,11 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
         includeDependencyFields( cf, meta );
 
         // packages index specific fields
-        long totalBytes = 0L;
-        MessageDigest sha1 = DigestUtils.getSha1Digest();
-        MessageDigest sha2 = DigestUtils.getSha256Digest();
-        try ( InputStream is = fileStore.get( meta.getMd5Sum() ) )
-        {
-            int n;
-            byte[] buf = new byte[1024 * 8];
-            while ( ( n = is.read( buf ) ) > 0 )
-            {
-                totalBytes += n;
-                sha1.update( buf, 0, n );
-                sha2.update( buf, 0, n );
-            }
-        }
         cf.set( IndexPackageMetaData.FILENAME_FIELD, filenameBuilder.makeFilename( meta ) );
-        cf.set( IndexPackageMetaData.SIZE_FIELD, Long.toString( totalBytes ) );
         cf.set( IndexPackageMetaData.MD5SUM_FIELD, Hex.encodeHexString( meta.getMd5Sum() ) );
-        cf.set( IndexPackageMetaData.SHA1_FIELD, Hex.encodeHexString( sha1.digest() ) );
-        cf.set( IndexPackageMetaData.SHA256_FIELD, Hex.encodeHexString( sha2.digest() ) );
+        includeExtraField( cf, meta, IndexPackageMetaData.SHA1_FIELD );
+        includeExtraField( cf, meta, IndexPackageMetaData.SHA256_FIELD );
+        includeExtraField( cf, meta, IndexPackageMetaData.SIZE_FIELD );
         // TODO: description md5 does NOT match
 //        cf.set( IndexPackageMetaData.DESCRIPTION_MD5_FIELD, DigestUtils.md5Hex( meta.getDescription() ) );
 
@@ -230,6 +213,15 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
         else
         {
             throw new IllegalArgumentException( "Given metadata has not complete info" );
+        }
+    }
+
+
+    private void includeExtraField( ControlFile cf, DefaultPackageMetadata meta, String field )
+    {
+        if ( meta.getExtra().containsKey( field ) )
+        {
+            cf.set( field, meta.getExtra().get( field ) );
         }
     }
 

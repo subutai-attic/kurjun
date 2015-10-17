@@ -158,6 +158,11 @@ public class MetadataUtils
         target.setPriority( source.getPriority() );
         target.setHomepage( source.getHomepage() );
         target.setDescription( source.getDescription() );
+
+        if ( source instanceof DefaultPackageMetadata )
+        {
+            target.getExtra().putAll( ( ( DefaultPackageMetadata ) source ).getExtra() );
+        }
     }
 
 

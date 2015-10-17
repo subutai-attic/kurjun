@@ -3,7 +3,9 @@ package ai.subut.kurjun.metadata.common.apt;
 
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.metadata.Architecture;
@@ -42,6 +44,8 @@ public class DefaultPackageMetadata implements PackageMetadata, SerializableMeta
     private Priority priority;
     private URL homepage;
     private String description;
+
+    private Map<String, String> extra = new HashMap<>();
 
 
     @Override
@@ -335,6 +339,28 @@ public class DefaultPackageMetadata implements PackageMetadata, SerializableMeta
     public void setDescription( String description )
     {
         this.description = description;
+    }
+
+
+    /**
+     * Gets extra meta data associated with this package.
+     *
+     * @return
+     */
+    public Map<String, String> getExtra()
+    {
+        return extra;
+    }
+
+
+    /**
+     * Sets extra meta data for this package.
+     *
+     * @param extra
+     */
+    public void setExtra( Map<String, String> extra )
+    {
+        this.extra = extra;
     }
 
 

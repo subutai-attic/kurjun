@@ -1,6 +1,7 @@
 package ai.subut.kurjun.repo;
 
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -11,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.security.DigestInputStream;
+import java.security.MessageDigest;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 
@@ -30,8 +33,10 @@ import ai.subut.kurjun.ar.DefaultDebAr;
 import ai.subut.kurjun.cfparser.service.ControlFileParser;
 import ai.subut.kurjun.common.KurjunContext;
 import ai.subut.kurjun.common.utils.InetUtils;
+import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
+import ai.subut.kurjun.model.index.IndexPackageMetaData;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
@@ -143,7 +148,10 @@ class KurjunLocalRepository extends RepositoryBase implements LocalRepository
 
             // TODO: we need release and component supplied here!!!
 
-            metadataStore.put( MetadataUtils.serializablePackageMetadata( meta ) );
+            DefaultPackageMetadata metadata = MetadataUtils.serializablePackageMetadata( meta );
+            addExtraData( metadata, target );
+
+            metadataStore.put( metadata );
             fileStore.put( target.toFile() );
             return meta;
         }
@@ -156,6 +164,29 @@ class KurjunLocalRepository extends RepositoryBase implements LocalRepository
             Files.delete( target );
             FileUtils.deleteDirectory( tempDir.toFile() );
         }
+    }
+
+
+    private void addExtraData( DefaultPackageMetadata metadata, Path packageFile ) throws IOException
+    {
+        long totalBytes = 0;
+        MessageDigest sha1 = DigestUtils.getSha1Digest();
+        MessageDigest sha2 = DigestUtils.getSha256Digest();
+        try ( InputStream is = new FileInputStream( packageFile.toFile() ) )
+        {
+            int n;
+            byte[] buf = new byte[1024 * 8];
+            while ( ( n = is.read( buf ) ) > 0 )
+            {
+                totalBytes += n;
+                sha1.update( buf, 0, n );
+                sha2.update( buf, 0, n );
+            }
+        }
+
+        metadata.getExtra().put( IndexPackageMetaData.SIZE_FIELD, Long.toString( totalBytes ) );
+        metadata.getExtra().put( IndexPackageMetaData.SHA1_FIELD, Hex.encodeHexString( sha1.digest() ) );
+        metadata.getExtra().put( IndexPackageMetaData.SHA256_FIELD, Hex.encodeHexString( sha2.digest() ) );
     }
 
 }
