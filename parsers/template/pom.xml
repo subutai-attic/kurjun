@@ -26,7 +26,6 @@
   </build>
 
   <properties>
-    <osgi.bundle-activator>ai.subut.kurjun.subutai.Activator</osgi.bundle-activator>
     <osgi.export-package>ai.subut.kurjun.subutai.service</osgi.export-package>
   </properties>
 
