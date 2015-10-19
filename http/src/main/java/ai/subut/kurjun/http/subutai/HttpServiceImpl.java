@@ -3,6 +3,9 @@ package ai.subut.kurjun.http.subutai;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -16,35 +19,51 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 
+import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.KurjunContext;
 import ai.subut.kurjun.http.HttpServer;
+import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
+import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
 
 import static ai.subut.kurjun.http.subutai.TemplateServlet.RESPONSE_TYPE_MD5;
 
 
-public class HttpServiceImpl implements HttpService
+class HttpServiceImpl implements HttpService
 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger( HttpServiceImpl.class );
 
     private FileStoreFactory fileStoreFactory;
     private PackageMetadataStoreFactory metadataStoreFactory;
+    private SubutaiTemplateParser templateParser;
+
+
+    public HttpServiceImpl( FileStoreFactory fileStoreFactory,
+                            PackageMetadataStoreFactory metadataStoreFactory,
+                            SubutaiTemplateParser templateParser )
+    {
+        this.fileStoreFactory = fileStoreFactory;
+        this.metadataStoreFactory = metadataStoreFactory;
+        this.templateParser = templateParser;
+    }
 
 
     @Override
-    public Response getTemplate( String md5, String name, String version, String type )
+    public Response getTemplate( String repository, String md5, String name, String version, String type )
     {
-        KurjunContext context = getContextForType( type );
+        KurjunContext context = getContextByRepoType( repository );
         if ( context == null )
         {
-            return badRequest( "Invalid template type: " + type );
+            return badRequest( "Invalid template repository: " + repository );
         }
         try
         {
@@ -69,16 +88,62 @@ public class HttpServiceImpl implements HttpService
 
 
     @Override
-    public Response uploadTemplate( InputStream is )
+    public Response uploadTemplate( String repository, Attachment attachment )
     {
-        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+        KurjunContext context = getContextByRepoType( repository );
+        if ( context == null )
+        {
+            return badRequest( "Invalid template repository: " + repository );
+        }
+        try
+        {
+            parsePackageFile( attachment, context );
+            return Response.ok( "Template uploaded" ).build();
+        }
+        catch ( IOException ex )
+        {
+            return Response.serverError().entity( ex ).build();
+        }
     }
 
 
     @Override
-    public Response deleteTemplates( String md5 )
+    public Response deleteTemplates( String repository, String md5hex )
     {
-        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+        KurjunContext context = getContextByRepoType( repository );
+        if ( context == null )
+        {
+            return badRequest( "Invalid template repository: " + repository );
+        }
+        byte[] md5;
+        try
+        {
+            md5 = Hex.decodeHex( md5hex.toCharArray() );
+        }
+        catch ( DecoderException ex )
+        {
+            LOGGER.warn( ex.getMessage() );
+            return badRequest( "Invalid md5 value" );
+        }
+
+        PackageMetadataStore metadataStore = metadataStoreFactory.create( context );
+        try
+        {
+            if ( metadataStore.remove( md5 ) )
+            {
+                FileStore fileStore = fileStoreFactory.create( context );
+                fileStore.remove( md5 );
+            }
+            else
+            {
+                return notFound( "Metadata not found for package md5" );
+            }
+        }
+        catch ( IOException ex )
+        {
+            return Response.serverError().entity( ex ).build();
+        }
+        return Response.ok( "Template deleted" ).build();
     }
 
 
@@ -90,7 +155,7 @@ public class HttpServiceImpl implements HttpService
      * @param type
      * @return
      */
-    protected KurjunContext getContextForType( String type )
+    protected KurjunContext getContextByRepoType( String type )
     {
         Set<KurjunContext> set = HttpServer.TEMPLATE_CONTEXTS;
         for ( Iterator<KurjunContext> it = set.iterator(); it.hasNext(); )
@@ -198,6 +263,46 @@ public class HttpServiceImpl implements HttpService
         else
         {
             return notFound( "Package not found" );
+        }
+    }
+
+
+    private void parsePackageFile( Attachment attachment, KurjunContext context ) throws IOException
+    {
+        // define file extension based on submitted file name
+        String fileName = attachment.getContentDisposition().getParameter( "filename" );
+        String ext = CompressionType.getExtension( fileName );
+        if ( ext != null )
+        {
+            ext = "." + ext;
+        }
+
+        FileStore fileStore = fileStoreFactory.create( context );
+        PackageMetadataStore metadataStore = metadataStoreFactory.create( context );
+
+        SubutaiTemplateMetadata meta;
+        Path temp = Files.createTempFile( "template-", ext );
+        try ( InputStream is = attachment.getObject( InputStream.class ) )
+        {
+            Files.copy( is, temp, StandardCopyOption.REPLACE_EXISTING );
+            meta = templateParser.parseTemplate( temp.toFile() );
+            fileStore.put( temp.toFile() );
+        }
+        finally
+        {
+            Files.delete( temp );
+        }
+
+        // store meta data separately and catch exception to revert in case meta data storing fails
+        // when package file is already stored
+        try
+        {
+            metadataStore.put( MetadataUtils.serializableTemplateMetadata( meta ) );
+        }
+        catch ( IOException ex )
+        {
+            fileStore.remove( meta.getMd5Sum() );
+            throw ex;
         }
     }
 
