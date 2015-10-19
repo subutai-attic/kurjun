@@ -86,6 +86,7 @@
     <bcpg-jdk15on.version>1.52</bcpg-jdk15on.version>
     <org.osgi.core.version>6.0.0</org.osgi.core.version>
     <org.osgi.compendium.version>5.0.0</org.osgi.compendium.version>
+    <cxf-rt-frontend-jaxrs.version>3.1.0</cxf-rt-frontend-jaxrs.version>
     <aws-java-sdk-s3.version>1.10.19</aws-java-sdk-s3.version>
     <mapdb.version>1.0.8</mapdb.version>
     <hikariCp.version>2.4.1</hikariCp.version>
@@ -428,6 +429,12 @@
         <groupId>org.osgi</groupId>
         <artifactId>org.osgi.compendium</artifactId>
         <version>${org.osgi.compendium.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+        <version>${cxf-rt-frontend-jaxrs.version}</version>
       </dependency>
 
       <dependency>
