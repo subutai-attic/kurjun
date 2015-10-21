@@ -31,7 +31,7 @@ class GroupManagerImpl implements GroupManager
     {
         try ( FileDb fileDb = fileDbProvider.get() )
         {
-            return fileDb.get( MAP_NAME, name, GroupImpl.class );
+            return fileDb.get( MAP_NAME, name, DefaultGroup.class );
         }
     }
 
@@ -61,7 +61,7 @@ class GroupManagerImpl implements GroupManager
     {
         try ( FileDb fileDb = fileDbProvider.get() )
         {
-            GroupImpl group = fileDb.get( MAP_NAME, groupName, GroupImpl.class );
+            DefaultGroup group = fileDb.get( MAP_NAME, groupName, DefaultGroup.class );
             if ( group == null )
             {
                 throw new IOException( "Group not found: " + groupName );
@@ -77,11 +77,11 @@ class GroupManagerImpl implements GroupManager
 
 
     @Override
-    public GroupImpl removeIdentity( Identity identity, String groupName ) throws IOException
+    public DefaultGroup removeIdentity( Identity identity, String groupName ) throws IOException
     {
         try ( FileDb fileDb = fileDbProvider.get() )
         {
-            GroupImpl group = fileDb.get( MAP_NAME, groupName, GroupImpl.class );
+            DefaultGroup group = fileDb.get( MAP_NAME, groupName, DefaultGroup.class );
             if ( group == null )
             {
                 throw new IOException( "Group not found: " + groupName );

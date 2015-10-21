@@ -14,7 +14,7 @@ import ai.subut.kurjun.model.security.Identity;
  * Default implementation of {@link Group}.
  *
  */
-public class GroupImpl implements Group, Serializable
+public class DefaultGroup implements Group, Serializable
 {
 
     private String name;

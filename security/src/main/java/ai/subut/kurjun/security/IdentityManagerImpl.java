@@ -59,7 +59,7 @@ public class IdentityManagerImpl implements IdentityManager
     {
         try ( FileDb fileDb = fileDbProvider.get() )
         {
-            return fileDb.get( MAP_NAME, fingerprint, IdentityImpl.class );
+            return fileDb.get( MAP_NAME, fingerprint, DefaultIdentity.class );
         }
     }
 
@@ -79,7 +79,7 @@ public class IdentityManagerImpl implements IdentityManager
         InputStream keyStream = new ByteArrayInputStream( key.getEncoded() );
         if ( PGPUtils.verifyData( signed, keyStream, out ) && fingerprint.equalsIgnoreCase( out.toString().trim() ) )
         {
-            Identity id = new IdentityImpl( key );
+            Identity id = new DefaultIdentity( key );
             try ( FileDb fileDb = fileDbProvider.get() )
             {
                 fileDb.put( MAP_NAME, fingerprint, id );

@@ -47,8 +47,8 @@ public class IdentityManagerImplTest
     private File file;
     private IdentityManager identityManager;
     private Identity sampleIdentity;
-    private GroupImpl group;
-    private RoleImpl role;
+    private DefaultGroup group;
+    private DefaultRole role;
 
     @Mock
     private PgpKeyFetcher keyFetcher;
@@ -88,11 +88,11 @@ public class IdentityManagerImplTest
         Assume.assumeNotNull( sampleKey );
         Assume.assumeNotNull( signedFingerprint );
 
-        this.sampleIdentity = new IdentityImpl( sampleKey );
+        this.sampleIdentity = new DefaultIdentity( sampleKey );
         this.file = temporaryFolder.newFile();
-        this.group = new GroupImpl();
+        this.group = new DefaultGroup();
         this.group.setName( "some-group" );
-        this.role = new RoleImpl();
+        this.role = new DefaultRole();
         this.role.setName( "some-role" );
 
         FileDbProvider fileDbProvider = new FileDbProviderImpl( file.getAbsolutePath() );

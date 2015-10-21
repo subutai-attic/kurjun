@@ -21,7 +21,7 @@ import ai.subut.kurjun.model.security.KeyAlgorithm;
 import ai.subut.kurjun.model.security.KeyUsage;
 
 
-public class IdentityImpl implements Identity, Serializable
+public class DefaultIdentity implements Identity, Serializable
 {
     private String keyId;
     private String keyFingerprint;
@@ -32,12 +32,12 @@ public class IdentityImpl implements Identity, Serializable
     private Set<KeyUsage> keyUsages = EnumSet.noneOf( KeyUsage.class );
 
 
-    public IdentityImpl()
+    public DefaultIdentity()
     {
     }
 
 
-    public IdentityImpl( PGPPublicKey key )
+    public DefaultIdentity( PGPPublicKey key )
     {
         this.keyId = String.format( "%016X", key.getKeyID() );
         this.keyFingerprint = Hex.encodeHexString( key.getFingerprint() );
@@ -108,9 +108,9 @@ public class IdentityImpl implements Identity, Serializable
     @Override
     public boolean equals( Object obj )
     {
-        if ( obj instanceof IdentityImpl )
+        if ( obj instanceof DefaultIdentity )
         {
-            IdentityImpl other = ( IdentityImpl ) obj;
+            DefaultIdentity other = ( DefaultIdentity ) obj;
             return Objects.equals( this.keyFingerprint, other.keyFingerprint );
         }
         return false;

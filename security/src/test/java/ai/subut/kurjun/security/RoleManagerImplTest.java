@@ -24,7 +24,7 @@ public class RoleManagerImplTest
 
     private File file;
     private RoleManager roleManager;
-    private RoleImpl sampleRole;
+    private DefaultRole sampleRole;
 
 
     @Before
@@ -33,7 +33,7 @@ public class RoleManagerImplTest
         this.file = temporaryFolder.newFile();
         this.roleManager = new RoleManagerImpl( new FileDbProviderImpl( file.getAbsolutePath() ) );
 
-        sampleRole = new RoleImpl();
+        sampleRole = new DefaultRole();
         sampleRole.setName( "role-name" );
         sampleRole.getPermissions().add( Permission.ADD_DEB );
         sampleRole.getPermissions().add( Permission.DEL_DEB );
@@ -66,7 +66,7 @@ public class RoleManagerImplTest
     @Test
     public void testAddRole() throws Exception
     {
-        RoleImpl newRole = new RoleImpl();
+        DefaultRole newRole = new DefaultRole();
         newRole.setName( "new-role" );
         newRole.getPermissions().addAll( sampleRole.getPermissions() );
 

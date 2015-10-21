@@ -30,7 +30,7 @@ class RoleManagerImpl implements RoleManager
     {
         try ( FileDb fileDb = fileDbProvider.get() )
         {
-            return fileDb.get( MAP_NAME, name, RoleImpl.class );
+            return fileDb.get( MAP_NAME, name, DefaultRole.class );
         }
     }
 

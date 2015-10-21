@@ -14,7 +14,7 @@ import ai.subut.kurjun.model.security.Role;
  * Default {@link Role} implementation.
  *
  */
-public class RoleImpl implements Role, Serializable
+public class DefaultRole implements Role, Serializable
 {
 
     private String name;

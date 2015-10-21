@@ -23,7 +23,7 @@ public class GroupManagerImplTest
 
     private File file;
     private GroupManager groupManager;
-    private GroupImpl sampleGroup;
+    private DefaultGroup sampleGroup;
 
 
     @Before
@@ -32,7 +32,7 @@ public class GroupManagerImplTest
         this.file = temporaryFolder.newFile();
         this.groupManager = new GroupManagerImpl( new FileDbProviderImpl( file.getAbsolutePath() ) );
 
-        sampleGroup = new GroupImpl();
+        sampleGroup = new DefaultGroup();
         sampleGroup.setName( "group-name" );
 
         this.groupManager.addGroup( sampleGroup );
@@ -61,7 +61,7 @@ public class GroupManagerImplTest
     @Test
     public void testAddGroup() throws Exception
     {
-        GroupImpl g = new GroupImpl();
+        DefaultGroup g = new DefaultGroup();
         g.setName( "new-group" );
 
         Assert.assertNull( groupManager.getGroup( g.getName() ) );
