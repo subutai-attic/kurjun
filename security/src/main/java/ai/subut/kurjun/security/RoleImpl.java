@@ -1,6 +1,7 @@
 package ai.subut.kurjun.security;
 
 
+import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
@@ -13,7 +14,7 @@ import ai.subut.kurjun.model.security.Role;
  * Default {@link Role} implementation.
  *
  */
-public class RoleImpl implements Role
+public class RoleImpl implements Role, Serializable
 {
 
     private String name;
