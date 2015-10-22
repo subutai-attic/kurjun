@@ -5,8 +5,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import org.bouncycastle.openpgp.PGPPublicKey;
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
+import ai.subut.kurjun.common.KurjunContext;
 import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.model.security.Group;
 import ai.subut.kurjun.model.security.Identity;
@@ -121,7 +124,7 @@ class IdentityManagerImpl implements IdentityManager
 
 
     @Override
-    public Set<Role> getRoles( Identity identity ) throws IOException
+    public Set<Role> getRoles( Identity identity, KurjunContext context ) throws IOException
     {
         try ( FileDb fileDb = fileDbProvider.get() )
         {
@@ -132,10 +135,16 @@ class IdentityManagerImpl implements IdentityManager
                 return Collections.emptySet();
             }
 
-            Set<Role> roles = new HashSet<>();
-            for ( Object item : items )
+            ContextRoles contextRoles = getContextRolesItem( context, items );
+            if ( contextRoles == null )
             {
-                Role r = roleManager.getRole( item.toString() );
+                return Collections.emptySet();
+            }
+
+            Set<Role> roles = new HashSet<>();
+            for ( String role : contextRoles.roles )
+            {
+                Role r = roleManager.getRole( role );
                 if ( r != null )
                 {
                     roles.add( r );
@@ -147,7 +156,7 @@ class IdentityManagerImpl implements IdentityManager
 
 
     @Override
-    public void addRole( Role role, Identity identity ) throws IOException
+    public void addRole( Role role, Identity identity, KurjunContext context ) throws IOException
     {
         try ( FileDb fileDb = fileDbProvider.get() )
         {
@@ -157,27 +166,85 @@ class IdentityManagerImpl implements IdentityManager
             {
                 items = new HashSet();
             }
-            if ( items.add( role.getName() ) )
+
+            ContextRoles cr = getContextRolesItem( context, items );
+            if ( cr == null )
             {
-                fileDb.put( ROLES_MAP_NAME, identity.getKeyFingerprint(), items );
+                cr = new ContextRoles( context.getName() );
+                items.add( cr );
             }
+            cr.roles.add( role.getName() );
+            fileDb.put( ROLES_MAP_NAME, identity.getKeyFingerprint(), items );
         }
     }
 
 
     @Override
-    public void removeRole( Role role, Identity identity ) throws IOException
+    public void removeRole( Role role, Identity identity, KurjunContext context ) throws IOException
     {
         try ( FileDb fileDb = fileDbProvider.get() )
         {
             // get role names the identity belongs to
             Set items = fileDb.get( ROLES_MAP_NAME, identity.getKeyFingerprint(), Set.class );
-            if ( items != null && items.remove( role.getName() ) )
+            if ( items != null )
             {
-                fileDb.put( ROLES_MAP_NAME, identity.getKeyFingerprint(), items );
+                ContextRoles cr = getContextRolesItem( context, items );
+                if ( cr != null && cr.roles.remove( role.getName() ) )
+                {
+                    fileDb.put( ROLES_MAP_NAME, identity.getKeyFingerprint(), items );
+                }
             }
         }
     }
+
+
+    private ContextRoles getContextRolesItem( KurjunContext context, Set items )
+    {
+        for ( Object item : items )
+        {
+            ContextRoles temp = ( ContextRoles ) item;
+            if ( temp.context.equals( context.getName() ) )
+            {
+                return temp;
+            }
+        }
+        return null;
+    }
+
+
+    private static class ContextRoles implements Serializable
+    {
+        private String context;
+        private Set<String> roles;
+
+
+        public ContextRoles( String context )
+        {
+            this.context = context;
+            this.roles = new HashSet<>();
+        }
+
+
+        @Override
+        public int hashCode()
+        {
+            int hash = 7;
+            hash = 29 * hash + Objects.hashCode( this.context );
+            return hash;
+        }
+
+
+        @Override
+        public boolean equals( Object obj )
+        {
+            if ( obj instanceof ContextRoles )
+            {
+                return Objects.equals( this.context, ( ( ContextRoles ) obj ).context );
+            }
+            return false;
+        }
+    }
+
 
 }
 

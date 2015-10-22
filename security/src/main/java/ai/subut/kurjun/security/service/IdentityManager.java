@@ -4,6 +4,7 @@ package ai.subut.kurjun.security.service;
 import java.io.IOException;
 import java.util.Set;
 
+import ai.subut.kurjun.common.KurjunContext;
 import ai.subut.kurjun.model.security.Group;
 import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.model.security.Role;
@@ -49,13 +50,37 @@ public interface IdentityManager
     Set<Group> getGroups( Identity identity ) throws IOException;
 
 
-    Set<Role> getRoles( Identity identity ) throws IOException;
+    /**
+     * Gets roles of supplied identity in a given context.
+     *
+     * @param identity
+     * @param context
+     * @return
+     * @throws IOException
+     */
+    Set<Role> getRoles( Identity identity, KurjunContext context ) throws IOException;
 
 
-    void addRole( Role role, Identity identity ) throws IOException;
+    /**
+     * Adds role to the identity in a given context.
+     *
+     * @param role role to add
+     * @param identity identity to add tole to
+     * @param context
+     * @throws IOException
+     */
+    void addRole( Role role, Identity identity, KurjunContext context ) throws IOException;
 
 
-    void removeRole( Role role, Identity identity ) throws IOException;
+    /**
+     * Removes role from the identity in a given context.
+     *
+     * @param role role to remove
+     * @param identity identity to remove role from
+     * @param context
+     * @throws IOException
+     */
+    void removeRole( Role role, Identity identity, KurjunContext context ) throws IOException;
 
 
 }

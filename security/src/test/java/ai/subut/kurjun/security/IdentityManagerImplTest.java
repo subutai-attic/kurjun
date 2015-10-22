@@ -24,6 +24,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import org.apache.commons.io.IOUtils;
 
+import ai.subut.kurjun.common.KurjunContext;
 import ai.subut.kurjun.model.security.Group;
 import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.model.security.Role;
@@ -142,7 +143,7 @@ public class IdentityManagerImplTest
     @Test
     public void testGetRoles() throws Exception
     {
-        Set<Role> roles = identityManager.getRoles( sampleIdentity );
+        Set<Role> roles = identityManager.getRoles( sampleIdentity, new KurjunContext( "test" ) );
         Assert.assertEquals( 0, roles.size() );
     }
 
@@ -150,14 +151,16 @@ public class IdentityManagerImplTest
     @Test
     public void testAddRemoveRole() throws Exception
     {
-        identityManager.addRole( role, sampleIdentity );
+        KurjunContext context = new KurjunContext( "test" );
 
-        Set<Role> roles = identityManager.getRoles( sampleIdentity );
+        identityManager.addRole( role, sampleIdentity, context );
+
+        Set<Role> roles = identityManager.getRoles( sampleIdentity, context );
         Assert.assertEquals( 1, roles.size() );
         Assert.assertTrue( roles.contains( role ) );
 
-        identityManager.removeRole( role, sampleIdentity );
-        roles = identityManager.getRoles( sampleIdentity );
+        identityManager.removeRole( role, sampleIdentity, context );
+        roles = identityManager.getRoles( sampleIdentity, context );
         Assert.assertFalse( roles.contains( role ) );
     }
 
