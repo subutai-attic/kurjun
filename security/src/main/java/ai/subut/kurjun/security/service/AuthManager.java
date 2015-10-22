@@ -2,10 +2,11 @@ package ai.subut.kurjun.security.service;
 
 
 /**
- * Security manager for Kurjun services. This is the main class to use for authentication and authorization purposes.
+ * Authentication and authorization manager for Kurjun services. This is the main class to use for authentication and
+ * authorization purposes.
  *
  */
-public interface SecurityManager
+public interface AuthManager
 {
 
     boolean isAuthenticated( String fingerprint );

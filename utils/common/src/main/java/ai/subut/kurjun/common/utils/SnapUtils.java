@@ -1,9 +1,10 @@
 package ai.subut.kurjun.common.utils;
 
 
-import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
 
 import java.util.regex.Pattern;
+
+import ai.subut.kurjun.model.metadata.Metadata;
 
 
 /**
@@ -52,7 +53,7 @@ public class SnapUtils
      * @param metadata snap metadata to make name for
      * @return file name for metadata
      */
-    public static String makeFileName( SnapMetadata metadata )
+    public static String makeFileName( Metadata metadata )
     {
         StringBuilder sb = new StringBuilder();
         sb.append( metadata.getName() ).append( "-" ).append( metadata.getVersion() );

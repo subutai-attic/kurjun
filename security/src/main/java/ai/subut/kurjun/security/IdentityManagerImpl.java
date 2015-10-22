@@ -27,7 +27,7 @@ import ai.subut.kurjun.security.service.RoleManager;
 import ai.subut.kurjun.security.utils.PGPUtils;
 
 
-public class IdentityManagerImpl implements IdentityManager
+class IdentityManagerImpl implements IdentityManager
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( IdentityManagerImpl.class );
 

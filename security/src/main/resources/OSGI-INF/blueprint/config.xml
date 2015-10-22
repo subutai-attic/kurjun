@@ -1,3 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+
+  <bean id="fileDbProvider" scope="prototype" class="${project.groupId}.security.FileDbProviderImpl">
+    <argument value="./security.db" />
+  </bean>
+
+  <bean id="keyFetcher" scope="prototype" class="${project.groupId}.security.PgpKeyFetcherImpl">
+    <argument value="http://localhost:8080/" />
+  </bean>
+
+  <bean id="groupManager" class="${project.groupId}.security.GroupManagerImpl" scope="prototype">
+    <argument ref="fileDbProvider"/>
+  </bean>
+
+  <bean id="roleManager" class="${project.groupId}.security.RoleManagerImpl" scope="prototype">
+    <argument ref="fileDbProvider"/>
+  </bean>
+  
+  <bean id="identityManager" class="${project.groupId}.security.IdentityManagerImpl" scope="prototype">
+    <argument ref="fileDbProvider"/>
+    <argument ref="keyFetcher"/>
+    <argument ref="groupManager"/>
+    <argument ref="roleManager"/>
+  </bean>
+
+  <service interface="${project.groupId}.security.service.GroupManager">
+    <ref component-id="groupManager"/>
+  </service>
+
+  <service interface="${project.groupId}.security.service.RoleManager">
+    <ref component-id="roleManager"/>
+  </service>
+  
+  <service interface="${project.groupId}.security.service.IdentityManager">
+    <ref component-id="identityManager"/>
+  </service>
+
+  <service interface="${project.groupId}.security.service.AuthManager">
+    <bean class="${project.groupId}.security.AuthManager">
+      <argument ref="identityManager" />
+    </bean>
+  </service>
+  
 </blueprint>

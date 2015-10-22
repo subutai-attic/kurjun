@@ -13,15 +13,26 @@ import org.bouncycastle.openpgp.PGPPublicKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Inject;
+
+import ai.subut.kurjun.common.service.KurjunProperties;
+import ai.subut.kurjun.common.service.KurjunPropertyKey;
 import ai.subut.kurjun.security.service.PgpKeyFetcher;
 import ai.subut.kurjun.security.utils.PGPUtils;
 
 
-public class PgpKeyFercherImpl implements PgpKeyFetcher
+class PgpKeyFercherImpl implements PgpKeyFetcher
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( PgpKeyFercherImpl.class );
 
     private URL keyserverUrl;
+
+
+    @Inject
+    public PgpKeyFercherImpl( KurjunProperties kurjunProperties ) throws MalformedURLException
+    {
+        this( kurjunProperties.get( KurjunPropertyKey.SECURITY_KEYSERVER_URL ) );
+    }
 
 
     public PgpKeyFercherImpl( String url ) throws MalformedURLException

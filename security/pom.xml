@@ -22,6 +22,12 @@
 
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>common-utils</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>db-file</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -57,7 +63,7 @@
         </exclusion>
       </exclusions>
     </dependency>
-    
+
   </dependencies>
 
 </project>

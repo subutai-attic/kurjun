@@ -6,16 +6,25 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Inject;
+
 import ai.subut.kurjun.model.security.Identity;
+import ai.subut.kurjun.security.service.AuthManager;
 import ai.subut.kurjun.security.service.IdentityManager;
-import ai.subut.kurjun.security.service.SecurityManager;
 
 
-class SecurityManagerImpl implements SecurityManager
+class AuthManagerImpl implements AuthManager
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger( SecurityManagerImpl.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( AuthManagerImpl.class );
 
     private IdentityManager identityManager;
+
+
+    @Inject
+    public AuthManagerImpl( IdentityManager identityManager )
+    {
+        this.identityManager = identityManager;
+    }
 
 
     @Override
