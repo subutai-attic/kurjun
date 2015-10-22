@@ -1,6 +1,7 @@
 package ai.subut.kurjun.security;
 
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
@@ -13,7 +14,7 @@ import ai.subut.kurjun.model.security.Identity;
  * Default implementation of {@link Group}.
  *
  */
-public class GroupImpl implements Group
+public class DefaultGroup implements Group, Serializable
 {
 
     private String name;
@@ -40,9 +41,25 @@ public class GroupImpl implements Group
     }
 
 
+    /**
+     * Adds supplied identity to this group.
+     *
+     * @param identity identity to add
+     */
     public void addIdentity( Identity identity )
     {
         identities.add( identity );
+    }
+
+
+    /**
+     * Removes supplied identity from this group.
+     *
+     * @param identity identity to remove
+     */
+    public void removeIdentity( Identity identity )
+    {
+        identities.remove( identity );
     }
 
 
