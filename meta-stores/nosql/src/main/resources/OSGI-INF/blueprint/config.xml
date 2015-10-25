@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
-  <reference id="kurjunProperties" interface="${project.groupId}.common.service.KurjunProperties" />
+  <reference id="kurjunProperties" interface="ai.subut.kurjun.common.service.KurjunProperties" />
 
   <bean id="sessionProvider" scope="singleton"
-        class="${project.groupId}.metadata.storage.nosql.CassandraSessionProvider">
+        class="ai.subut.kurjun.metadata.storage.nosql.CassandraSessionProvider">
     <argument reg="kurjunProperties"/>
   </bean>
 
-  <service interface="${project.groupId}.metadata.storage.nosql.NoSqlPackageMetadataStoreFactory" >
-    <bean class="${project.groupId}.metadata.storage.nosql.NoSqlPackageMetadataStoreFactoryImpl">
+  <service interface="ai.subut.kurjun.metadata.storage.nosql.NoSqlPackageMetadataStoreFactory" >
+    <bean class="ai.subut.kurjun.metadata.storage.nosql.NoSqlPackageMetadataStoreFactoryImpl">
       <argument ref="sessionProvider" />
     </bean>
   </service>

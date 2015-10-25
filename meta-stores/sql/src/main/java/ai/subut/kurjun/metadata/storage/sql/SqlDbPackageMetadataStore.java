@@ -18,7 +18,7 @@ import org.apache.commons.codec.binary.Hex;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
-import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.common.utils.PropertyUtils;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;

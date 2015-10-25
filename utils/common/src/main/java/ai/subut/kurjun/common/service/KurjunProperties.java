@@ -4,8 +4,6 @@ package ai.subut.kurjun.common.service;
 import java.util.Map;
 import java.util.Properties;
 
-import ai.subut.kurjun.common.KurjunContext;
-
 
 /**
  * Interface for Kurjun properties.

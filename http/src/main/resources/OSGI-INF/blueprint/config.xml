@@ -16,18 +16,18 @@
     </cxf:features>
   </cxf:bus>
 
-  <reference id="fileStoreFactory" interface="${project.groupId}.storage.factory.FileStoreFactory">
+  <reference id="fileStoreFactory" interface="ai.subut.kurjun.storage.factory.FileStoreFactory">
   </reference>
 
-  <reference id="metaStoreFactory" interface="${project.groupId}.metadata.factory.PackageMetadataStoreFactory">
+  <reference id="metaStoreFactory" interface="ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory">
   </reference>
 
-  <reference id="templateParser" interface="${project.groupId}.subutai.service.SubutaiTemplateParser">
+  <reference id="templateParser" interface="ai.subut.kurjun.subutai.service.SubutaiTemplateParser">
   </reference>
 
 
   <!-- HTTP service for Subutai templates -->
-  <bean id="templatesHttpService" class="${project.groupId}.http.subutai.HttpServiceImpl">
+  <bean id="templatesHttpService" class="ai.subut.kurjun.http.subutai.HttpServiceImpl">
     <argument ref="fileStoreFactory" />
     <argument ref="metaStoreFactory" />
     <argument ref="templateParser" />

@@ -1,4 +1,4 @@
-package ai.subut.kurjun.common;
+package ai.subut.kurjun.common.service;
 
 
 import java.util.Objects;

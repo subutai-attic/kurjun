@@ -24,7 +24,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import org.apache.commons.io.IOUtils;
 
-import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.security.Group;
 import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.model.security.Role;

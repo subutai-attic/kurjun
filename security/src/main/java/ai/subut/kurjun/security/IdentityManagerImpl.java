@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
-import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.model.security.Group;
 import ai.subut.kurjun.model.security.Identity;

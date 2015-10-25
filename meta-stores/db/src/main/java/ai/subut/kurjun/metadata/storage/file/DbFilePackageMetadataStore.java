@@ -19,7 +19,7 @@ import com.google.inject.Inject;
 import com.google.inject.ProvisionException;
 import com.google.inject.assistedinject.Assisted;
 
-import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.metadata.common.MetadataListingImpl;

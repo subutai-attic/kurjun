@@ -3,7 +3,7 @@ package ai.subut.kurjun.repo;
 
 import com.google.inject.name.Named;
 
-import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.repository.LocalRepository;
 
 

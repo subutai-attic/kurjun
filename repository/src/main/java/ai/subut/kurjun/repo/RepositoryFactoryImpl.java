@@ -2,7 +2,7 @@ package ai.subut.kurjun.repo;
 
 
 import ai.subut.kurjun.cfparser.service.ControlFileParser;
-import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;

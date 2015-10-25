@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
-import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.MetadataListingImpl;
 import ai.subut.kurjun.metadata.common.apt.DefaultDependency;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;

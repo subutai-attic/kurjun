@@ -31,7 +31,7 @@ import com.google.inject.assistedinject.Assisted;
 import ai.subut.kurjun.ar.DebAr;
 import ai.subut.kurjun.ar.DefaultDebAr;
 import ai.subut.kurjun.cfparser.service.ControlFileParser;
-import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.utils.InetUtils;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;

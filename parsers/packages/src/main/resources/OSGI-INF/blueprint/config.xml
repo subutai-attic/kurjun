@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
-  <service interface="${project.groupId}.index.service.PackagesIndexParser" >
+  <service interface="ai.subut.kurjun.index.service.PackagesIndexParser" >
 
-    <bean class="${project.groupId}.index.service.PackagesIndexParserImpl">
+    <bean class="ai.subut.kurjun.index.service.PackagesIndexParserImpl">
     </bean>
     
   </service>

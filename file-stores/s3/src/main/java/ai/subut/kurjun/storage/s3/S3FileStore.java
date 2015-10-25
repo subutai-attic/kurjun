@@ -34,7 +34,7 @@ import com.amazonaws.services.s3.transfer.Upload;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
-import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.model.storage.FileStore;
 
