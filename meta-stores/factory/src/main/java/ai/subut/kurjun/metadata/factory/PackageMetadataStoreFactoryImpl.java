@@ -6,7 +6,7 @@ import java.util.Properties;
 import com.google.inject.Inject;
 import com.google.inject.ProvisionException;
 
-import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.metadata.storage.file.DbFilePackageMetadataStoreFactory;
 import ai.subut.kurjun.metadata.storage.nosql.NoSqlPackageMetadataStoreFactory;

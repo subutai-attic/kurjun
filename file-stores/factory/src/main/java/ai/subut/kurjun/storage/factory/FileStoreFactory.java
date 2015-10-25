@@ -1,7 +1,7 @@
 package ai.subut.kurjun.storage.factory;
 
 
-import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.storage.FileStore;
 
 

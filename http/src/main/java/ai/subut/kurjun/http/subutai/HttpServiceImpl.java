@@ -22,7 +22,7 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 
 import ai.subut.kurjun.ar.CompressionType;
-import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.http.HttpServer;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;

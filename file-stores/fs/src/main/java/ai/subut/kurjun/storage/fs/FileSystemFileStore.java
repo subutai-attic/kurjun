@@ -21,7 +21,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
-import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.model.storage.FileStore;

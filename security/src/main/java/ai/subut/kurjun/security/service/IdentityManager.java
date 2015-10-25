@@ -4,7 +4,7 @@ package ai.subut.kurjun.security.service;
 import java.io.IOException;
 import java.util.Set;
 
-import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.security.Group;
 import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.model.security.Role;

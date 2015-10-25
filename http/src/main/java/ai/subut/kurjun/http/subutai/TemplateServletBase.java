@@ -4,7 +4,7 @@ package ai.subut.kurjun.http.subutai;
 import java.util.Iterator;
 import java.util.Set;
 
-import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.http.HttpServer;
 import ai.subut.kurjun.http.HttpServletBase;
 

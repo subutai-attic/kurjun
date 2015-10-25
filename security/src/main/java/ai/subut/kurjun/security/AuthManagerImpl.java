@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
-import ai.subut.kurjun.common.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.model.security.Permission;
 import ai.subut.kurjun.model.security.Role;
