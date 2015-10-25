@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
-  <reference id="kurjunProperties" interface="${project.groupId}.common.service.KurjunProperties" />
+  <reference id="kurjunProperties" interface="ai.subut.kurjun.common.service.KurjunProperties" />
 
-  <reference id="file" interface="${project.groupId}.metadata.storage.file.DbFilePackageMetadataStoreFactory"/>
-  <reference id="nosql" interface="${project.groupId}.metadata.storage.nosql.NoSqlPackageMetadataStoreFactory"/>
-  <reference id="sql" interface="${project.groupId}.metadata.storage.sql.SqlDbPackageMetadataStoreFactory"/>
+  <reference id="file" interface="ai.subut.kurjun.metadata.storage.file.DbFilePackageMetadataStoreFactory"/>
+  <reference id="nosql" interface="ai.subut.kurjun.metadata.storage.nosql.NoSqlPackageMetadataStoreFactory"/>
+  <reference id="sql" interface="ai.subut.kurjun.metadata.storage.sql.SqlDbPackageMetadataStoreFactory"/>
 
-  <service interface="${project.groupId}.metadata.factory.PackageMetadataStoreFactory">
-    <bean class="${project.groupId}.metadata.factory.PackageMetadataStoreFactory">
+  <service interface="ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory">
+    <bean class="ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory">
       <argument ref="kurjunProperties"/>
       <argument ref="file"/>
       <argument ref="nosql"/>

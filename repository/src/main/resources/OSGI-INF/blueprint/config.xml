@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
-  <service id="debFilenameBuilder" interface="${project.groupId}.repo.service.PackageFilenameBuilder">
-    <bean class="${project.groupId}.repo.util.DebPackageFilenameManager">
+  <service id="debFilenameBuilder" interface="ai.subut.kurjun.repo.service.PackageFilenameBuilder">
+    <bean class="ai.subut.kurjun.repo.util.DebPackageFilenameManager">
     </bean>
   </service>
 
-  <service id="debFilenameParser" interface="${project.groupId}.repo.service.PackageFilenameParser">
-    <bean class="${project.groupId}.repo.util.DebPackageFilenameManager">
+  <service id="debFilenameParser" interface="ai.subut.kurjun.repo.service.PackageFilenameParser">
+    <bean class="ai.subut.kurjun.repo.util.DebPackageFilenameManager">
     </bean>
   </service>
 
 
-  <reference id="fileStoreFactory" interface="${project.groupId}.storage.factory.FileStoreFactory"/>
-  <reference id="metaStoreFactory" interface="${project.groupId}.metadata.factory.PackageMetadataStoreFactory"/>
-  <reference id="releaseIndexParser" interface="${project.groupId}.riparser.service.ReleaseIndexParser"/>
-  <reference id="controlFileParser" interface="${project.groupId}.cfparser.service.ControlFileParser"/>
+  <reference id="fileStoreFactory" interface="ai.subut.kurjun.storage.factory.FileStoreFactory"/>
+  <reference id="metaStoreFactory" interface="ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory"/>
+  <reference id="releaseIndexParser" interface="ai.subut.kurjun.riparser.service.ReleaseIndexParser"/>
+  <reference id="controlFileParser" interface="ai.subut.kurjun.cfparser.service.ControlFileParser"/>
 
 
-  <service interface="${project.groupId}.repo.util.AptIndexBuilderFactory">
-    <bean class="${project.groupId}.repo.util.AptIndexBuilderFactoryImpl">
+  <service interface="ai.subut.kurjun.repo.util.AptIndexBuilderFactory">
+    <bean class="ai.subut.kurjun.repo.util.AptIndexBuilderFactoryImpl">
       <argument ref="fileStoreFactory"/>
       <argument ref="metaStoreFactory"/>
     </bean>
   </service>
 
-  <service interface="${project.groupId}.repo.RepositoryFactory">
-    <bean class="${project.groupId}.repo.RepositoryFactoryImpl">
+  <service interface="ai.subut.kurjun.repo.RepositoryFactory">
+    <bean class="ai.subut.kurjun.repo.RepositoryFactoryImpl">
       <argument ref="releaseIndexParser"/>
       <argument ref="controlFileParser"/>
       <argument ref="fileStoreFactory"/>
