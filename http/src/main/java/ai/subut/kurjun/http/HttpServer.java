@@ -20,13 +20,11 @@ import ai.subut.kurjun.common.KurjunBootstrap;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.http.local.KurjunAptRepoServletModule;
-import ai.subut.kurjun.http.local.LocalAptRepoServletModule;
 import ai.subut.kurjun.http.snap.SnapServletModule;
 import ai.subut.kurjun.http.subutai.TemplateServletModule;
 import ai.subut.kurjun.index.PackagesIndexParserModule;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreModule;
-import ai.subut.kurjun.metadata.storage.file.DbFilePackageMetadataStoreModule;
 import ai.subut.kurjun.repo.RepositoryModule;
 import ai.subut.kurjun.riparser.ReleaseIndexParserModule;
 import ai.subut.kurjun.snap.SnapMetadataParserModule;
@@ -84,7 +82,7 @@ public class HttpServer
 
         bootstrap.addModule( new RepositoryModule() );
 
-        bootstrap.addModule( new LocalAptRepoServletModule().setServletPath( "/apt" ) );
+        //bootstrap.addModule( new LocalAptRepoServletModule().setServletPath( "/apt" ) );
         bootstrap.addModule( new KurjunAptRepoServletModule().setServletPath( "/vapt" ) );
         bootstrap.addModule( new TemplateServletModule().setServletPath( "/templates" ) );
 
@@ -102,8 +100,6 @@ public class HttpServer
         //p.setProperty( FileStoreFactory.TYPE, FileStoreFactory.S3 );
 
         p.setProperty( PackageMetadataStoreModule.PACKAGE_METADATA_STORE_TYPE, PackageMetadataStoreFactory.FILE_DB );
-        // if file db is used, set db file below
-        p.setProperty( DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME, "/tmp/kurjun/metadata" );
 
         // init template type contexts based on above parameters
         TEMPLATE_CONTEXTS.add( new KurjunContext( "public" ) );
@@ -112,11 +108,6 @@ public class HttpServer
         {
             Properties kcp = properties.getContextProperties( kc );
             kcp.putAll( p );
-
-            // set custom meta data location
-            String s = p.getProperty( DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME ) + "/templates/" + kc.getName();
-            kcp.setProperty( DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME, s );
-
         }
 
     }

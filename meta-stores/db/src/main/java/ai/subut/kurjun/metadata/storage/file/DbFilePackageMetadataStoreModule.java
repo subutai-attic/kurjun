@@ -20,7 +20,7 @@ public class DbFilePackageMetadataStoreModule extends AbstractModule
     /**
      * Property key for file db directory.
      */
-    public static final String DB_FILE_LOCATION_NAME = "metadata.storage.file.location";
+    public static final String DB_FILE_LOCATION_NAME = "metadata.storage.file.directory";
 
 
     @Override
