@@ -20,7 +20,6 @@ import ai.subut.kurjun.common.KurjunBootstrap;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.http.local.KurjunAptRepoServletModule;
-import ai.subut.kurjun.http.local.LocalAptRepoServletModule;
 import ai.subut.kurjun.http.snap.SnapServletModule;
 import ai.subut.kurjun.http.subutai.TemplateServletModule;
 import ai.subut.kurjun.index.PackagesIndexParserModule;
@@ -84,7 +83,7 @@ public class HttpServer
 
         bootstrap.addModule( new RepositoryModule() );
 
-        bootstrap.addModule( new LocalAptRepoServletModule().setServletPath( "/apt" ) );
+        //bootstrap.addModule( new LocalAptRepoServletModule().setServletPath( "/apt" ) );
         bootstrap.addModule( new KurjunAptRepoServletModule().setServletPath( "/vapt" ) );
         bootstrap.addModule( new TemplateServletModule().setServletPath( "/templates" ) );
 
