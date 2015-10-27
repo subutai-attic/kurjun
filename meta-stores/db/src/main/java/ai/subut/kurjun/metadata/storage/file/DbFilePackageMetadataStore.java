@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.stream.Stream;
 
 import org.apache.commons.codec.binary.Hex;
@@ -53,13 +52,12 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
     @Inject
     public DbFilePackageMetadataStore( KurjunProperties properties, @Assisted KurjunContext context )
     {
-        Properties cp = properties.getContextProperties( context );
-        String fileDbDirectory = cp.getProperty( DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME );
+        String fileDbDirectory = properties.get( DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME );
         if ( fileDbDirectory == null )
         {
             throw new ProvisionException( "File db location not specified for context " + context );
         }
-        this.fileDbPath = Paths.get( fileDbDirectory, "metadata" );
+        this.fileDbPath = Paths.get( fileDbDirectory, context.getName(), "metadata" );
     }
 
 
