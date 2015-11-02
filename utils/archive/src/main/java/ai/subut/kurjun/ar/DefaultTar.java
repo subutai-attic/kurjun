@@ -17,6 +17,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.lzma.LZMACompressorInputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import static com.google.common.base.Preconditions.checkState;
@@ -27,6 +28,7 @@ import static com.google.common.base.Preconditions.checkState;
  */
 public class DefaultTar implements Tar
 {
+
     private static final Logger LOG = LoggerFactory.getLogger( DefaultTar.class );
     private final File file;
     private File decompressed;
@@ -93,7 +95,7 @@ public class DefaultTar implements Tar
     @Override
     public void extract( final File extractTo ) throws IOException
     {
-        if ( ! extractTo.exists() )
+        if ( !extractTo.exists() )
         {
             checkState( extractTo.mkdirs() );
         }
@@ -110,8 +112,6 @@ public class DefaultTar implements Tar
             tarfile = file;
         }
 
-
-
         try ( TarArchiveInputStream in = new TarArchiveInputStream( new FileInputStream( tarfile ) ) )
         {
             TarArchiveEntry entry;
@@ -121,7 +121,7 @@ public class DefaultTar implements Tar
                 {
                     File dir = new File( extractTo, entry.getName() );
 
-                    if ( ! dir.exists() )
+                    if ( !dir.exists() )
                     {
                         checkState( dir.mkdirs() );
                     }
@@ -152,6 +152,13 @@ public class DefaultTar implements Tar
         {
             LOG.error( "Failed to read from tar file {}", tarfile.getCanonicalFile(), e );
             throw e;
+        }
+        finally
+        {
+            if ( decompressed != null )
+            {
+                FileUtils.deleteQuietly( decompressed );
+            }
         }
     }
 }
