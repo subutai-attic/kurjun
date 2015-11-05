@@ -7,6 +7,7 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
 
 import ai.subut.kurjun.model.repository.LocalRepository;
+import ai.subut.kurjun.model.repository.PackageType;
 import ai.subut.kurjun.repo.util.AptIndiceBuilderModule;
 
 
@@ -17,16 +18,12 @@ import ai.subut.kurjun.repo.util.AptIndiceBuilderModule;
 public class RepositoryModule extends AbstractModule
 {
 
-    public static final String LOCAL_NONVIRTUAL = "local.nonvirtual";
-    public static final String LOCAL_KURJUN = "local.kurjun";
-
-
     @Override
     protected void configure()
     {
         Module module = new FactoryModuleBuilder()
-                .implement( LocalRepository.class, Names.named( LOCAL_NONVIRTUAL ), LocalAptRepositoryImpl.class )
-                .implement( LocalRepository.class, Names.named( LOCAL_KURJUN ), KurjunLocalRepository.class )
+                .implement( LocalRepository.class, Names.named( PackageType.DEB ), LocalAptRepository.class )
+                .implement( LocalRepository.class, Names.named( PackageType.SNAP ), LocalSnapRepository.class )
                 .build( RepositoryFactory.class );
 
         install( module );

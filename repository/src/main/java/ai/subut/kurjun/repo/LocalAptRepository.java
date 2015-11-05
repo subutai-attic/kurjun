@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
@@ -41,18 +44,19 @@ import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
-import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.riparser.DefaultRelease;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 
 /**
- * Virtual apt repository implementation.
+ * Local virtual apt repository implementation.
  *
  */
-class KurjunLocalRepository extends RepositoryBase implements LocalRepository
+class LocalAptRepository extends LocalRepositoryBase
 {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( LocalAptRepository.class );
 
     private ControlFileParser controlFileParser;
     private FileStoreFactory fileStoreFactory;
@@ -65,7 +69,7 @@ class KurjunLocalRepository extends RepositoryBase implements LocalRepository
 
 
     @Inject
-    public KurjunLocalRepository(
+    public LocalAptRepository(
             ControlFileParser controlFileParser,
             FileStoreFactory fileStoreFactory,
             PackageMetadataStoreFactory metadataStoreFactory,
@@ -94,13 +98,6 @@ class KurjunLocalRepository extends RepositoryBase implements LocalRepository
         {
             throw new IllegalStateException( ex );
         }
-    }
-
-
-    @Override
-    public Path getBaseDirectory()
-    {
-        throw new UnsupportedOperationException( "Local virtual reposiitory does not have base directory." );
     }
 
 
@@ -167,6 +164,27 @@ class KurjunLocalRepository extends RepositoryBase implements LocalRepository
     }
 
 
+    @Override
+    protected Logger getLogger()
+    {
+        return LOGGER;
+    }
+
+
+    @Override
+    protected PackageMetadataStore getMetadataStore()
+    {
+        return metadataStoreFactory.create( context );
+    }
+
+
+    @Override
+    protected FileStore getFileStore()
+    {
+        return fileStoreFactory.create( context );
+    }
+
+
     private void addExtraData( DefaultPackageMetadata metadata, Path packageFile ) throws IOException
     {
         long totalBytes = 0;
@@ -188,6 +206,7 @@ class KurjunLocalRepository extends RepositoryBase implements LocalRepository
         metadata.getExtra().put( IndexPackageMetaData.SHA1_FIELD, Hex.encodeHexString( sha1.digest() ) );
         metadata.getExtra().put( IndexPackageMetaData.SHA256_FIELD, Hex.encodeHexString( sha2.digest() ) );
     }
+
 
 }
 

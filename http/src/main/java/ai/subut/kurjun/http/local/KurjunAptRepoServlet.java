@@ -48,7 +48,7 @@ class KurjunAptRepoServlet extends HttpServletBase
     public void init() throws ServletException
     {
         context = HttpServer.CONTEXT;
-        repository = repositoryFactory.createLocalKurjun( context );
+        repository = repositoryFactory.createLocalApt( context );
     }
 
 

@@ -3,9 +3,8 @@ package ai.subut.kurjun.model.repository;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Path;
 
-import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
+import ai.subut.kurjun.model.metadata.Metadata;
 
 
 /**
@@ -15,13 +14,13 @@ public interface LocalRepository extends Repository
 {
 
     /**
-     * Gets base directory of the repository.
+     * Puts supplied package stream into the repository. Package data obtained from stream should be parsed and, if
+     * valid data is found, should be saved accordingly.
      *
-     * @return path to base directory
+     * @param is stream to read package data from
+     * @return package meta data
+     * @throws IOException
      */
-    Path getBaseDirectory();
-
-
-    PackageMetadata put( InputStream is ) throws IOException;
+    Metadata put( InputStream is ) throws IOException;
 }
 

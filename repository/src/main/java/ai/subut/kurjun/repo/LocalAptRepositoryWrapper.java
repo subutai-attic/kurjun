@@ -25,6 +25,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.model.index.ReleaseFile;
+import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.repo.http.PathBuilder;
@@ -35,9 +36,9 @@ import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
  * Local non-virtual apt repository.
  *
  */
-class LocalAptRepositoryImpl extends RepositoryBase implements LocalRepository
+class LocalAptRepositoryWrapper extends RepositoryBase implements LocalRepository
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger( LocalAptRepositoryImpl.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( LocalAptRepositoryWrapper.class );
 
     private ReleaseIndexParser releaseIndexParser;
 
@@ -54,7 +55,7 @@ class LocalAptRepositoryImpl extends RepositoryBase implements LocalRepository
      * @param baseDirectory local apt base directory
      */
     @Inject
-    public LocalAptRepositoryImpl( ReleaseIndexParser releaseIndexParser, @Assisted String baseDirectory )
+    public LocalAptRepositoryWrapper( ReleaseIndexParser releaseIndexParser, @Assisted String baseDirectory )
     {
         Path path = Paths.get( baseDirectory );
         if ( !Files.exists( path ) )
@@ -124,16 +125,16 @@ class LocalAptRepositoryImpl extends RepositoryBase implements LocalRepository
 
 
     @Override
-    public Path getBaseDirectory()
+    public PackageMetadata put( InputStream is ) throws IOException
     {
-        return baseDirectory;
+        throw new IOException( "Not supported in non-virtual local apt repository." );
     }
 
 
     @Override
-    public PackageMetadata put( InputStream is ) throws IOException
+    public InputStream getPackage( Metadata metadata )
     {
-        throw new IOException( "Not supported in non-virtual local apt repository." );
+        throw new UnsupportedOperationException( "Not supported yet." );
     }
 
 

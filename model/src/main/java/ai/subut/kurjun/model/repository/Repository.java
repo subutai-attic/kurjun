@@ -1,22 +1,27 @@
 package ai.subut.kurjun.model.repository;
 
 
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Set;
 
 import ai.subut.kurjun.model.index.ReleaseFile;
+import ai.subut.kurjun.model.metadata.Metadata;
 
 
 /**
  * Interface to represent a Repository.
  */
-public interface Repository {
+public interface Repository
+{
 
     /**
      * Gets this Repository's URL which is composed from the protocol, port, server, and path components.
+     *
      * @return the URL to this Repository
      */
     URL getUrl();
+
 
     /**
      * Gets the Repository's path after the server's hostname and port in the URL.
@@ -43,8 +48,7 @@ public interface Repository {
 
 
     /**
-     * Gets whether or not the repository is using a secure (confidential) transport
-     * protocol.
+     * Gets whether or not the repository is using a secure (confidential) transport protocol.
      *
      * @return true if transport is confidential, false otherwise
      */
@@ -60,8 +64,7 @@ public interface Repository {
 
 
     /**
-     * Checks to see if this Repository is of the Kurjun type with extra
-     * functionality.
+     * Checks to see if this Repository is of the Kurjun type with extra functionality.
      *
      * @return true if of Kurjun type, false otherwise
      */
@@ -74,4 +77,19 @@ public interface Repository {
      * @return a set of release distributions
      */
     Set<ReleaseFile> getDistributions();
+
+
+    /**
+     * Gets package identified by supplied meta data. Unique identifiers like package md5 checksum shall be used for
+     * lookup. If unique identifiers are not set, then identifying field collections shall be used like package name and
+     * version. When md5 is not set and name has value but without version, then lookup shall be done by name and, if
+     * more than one package is found, the one with latest version shall be selected (versions are represented as
+     * string, so simple alphabetic comparison is assumed).
+     *
+     * @param metadata metadata used to lookup for package
+     * @return package stream if found; {@code null} otherwise
+     */
+    InputStream getPackage( Metadata metadata );
+
 }
+
