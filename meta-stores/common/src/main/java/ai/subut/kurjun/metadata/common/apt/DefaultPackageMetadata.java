@@ -58,7 +58,7 @@ public class DefaultPackageMetadata implements PackageMetadata, SerializableMeta
     public void setMd5( byte[] md5 )
     {
 
-        this.md5 = Arrays.copyOf( md5, md5.length );
+        this.md5 = md5 != null ? Arrays.copyOf( md5, md5.length ) : null;
     }
 
 

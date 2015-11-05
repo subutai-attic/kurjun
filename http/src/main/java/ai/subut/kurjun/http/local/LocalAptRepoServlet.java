@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -24,13 +25,15 @@ class LocalAptRepoServlet extends HttpServletBase
 {
 
     private LocalRepository repository;
+    private Path baseDirectory;
 
 
     @Inject
     public LocalAptRepoServlet( RepositoryFactory repositoryFactory )
     {
         // TODO: parent dir from config
-        repository = repositoryFactory.createLocal( "/var/www/repos/apt/hub" );
+        this.baseDirectory = Paths.get( "/var/www/repos/apt/hub" );
+        repository = repositoryFactory.createLocal( baseDirectory.toString() );
     }
 
 
@@ -42,7 +45,7 @@ class LocalAptRepoServlet extends HttpServletBase
 
         String pathWithoutLeadingSlash = req.getPathInfo().substring( 1 );
 
-        Path path = repository.getBaseDirectory().resolve( pathWithoutLeadingSlash );
+        Path path = baseDirectory.resolve( pathWithoutLeadingSlash );
         if ( Files.exists( path ) )
         {
             try ( ServletOutputStream out = resp.getOutputStream() )

@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
@@ -28,6 +31,7 @@ import org.apache.commons.io.FileUtils;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
+import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.ar.DebAr;
 import ai.subut.kurjun.ar.DefaultDebAr;
 import ai.subut.kurjun.cfparser.service.ControlFileParser;
@@ -39,20 +43,22 @@ import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
+import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
-import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.riparser.DefaultRelease;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 
 /**
- * Virtual apt repository implementation.
+ * Local virtual apt repository implementation.
  *
  */
-class KurjunLocalRepository extends RepositoryBase implements LocalRepository
+class LocalAptRepository extends LocalRepositoryBase
 {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( LocalAptRepository.class );
 
     private ControlFileParser controlFileParser;
     private FileStoreFactory fileStoreFactory;
@@ -65,7 +71,7 @@ class KurjunLocalRepository extends RepositoryBase implements LocalRepository
 
 
     @Inject
-    public KurjunLocalRepository(
+    public LocalAptRepository(
             ControlFileParser controlFileParser,
             FileStoreFactory fileStoreFactory,
             PackageMetadataStoreFactory metadataStoreFactory,
@@ -98,13 +104,6 @@ class KurjunLocalRepository extends RepositoryBase implements LocalRepository
 
 
     @Override
-    public Path getBaseDirectory()
-    {
-        throw new UnsupportedOperationException( "Local virtual reposiitory does not have base directory." );
-    }
-
-
-    @Override
     public URL getUrl()
     {
         return url;
@@ -126,12 +125,24 @@ class KurjunLocalRepository extends RepositoryBase implements LocalRepository
 
 
     @Override
-    public PackageMetadata put( InputStream is ) throws IOException
+    public Metadata put( InputStream is ) throws IOException
+    {
+        return put( is, CompressionType.NONE );
+    }
+
+
+    @Override
+    public PackageMetadata put( InputStream is, CompressionType compressionType ) throws IOException
     {
         PackageMetadataStore metadataStore = metadataStoreFactory.create( context );
         FileStore fileStore = fileStoreFactory.create( context );
 
-        Path target = Files.createTempFile( null, null );
+        String ext = null;
+        if ( compressionType != null && compressionType != CompressionType.NONE )
+        {
+            ext = "." + compressionType.getExtension();
+        }
+        Path target = Files.createTempFile( null, ext );
         Path tempDir = Files.createTempDirectory( null );
 
         try ( DigestInputStream wrapped = new DigestInputStream( is, DigestUtils.getMd5Digest() ) )
@@ -167,6 +178,27 @@ class KurjunLocalRepository extends RepositoryBase implements LocalRepository
     }
 
 
+    @Override
+    protected Logger getLogger()
+    {
+        return LOGGER;
+    }
+
+
+    @Override
+    protected PackageMetadataStore getMetadataStore()
+    {
+        return metadataStoreFactory.create( context );
+    }
+
+
+    @Override
+    protected FileStore getFileStore()
+    {
+        return fileStoreFactory.create( context );
+    }
+
+
     private void addExtraData( DefaultPackageMetadata metadata, Path packageFile ) throws IOException
     {
         long totalBytes = 0;
@@ -188,6 +220,7 @@ class KurjunLocalRepository extends RepositoryBase implements LocalRepository
         metadata.getExtra().put( IndexPackageMetaData.SHA1_FIELD, Hex.encodeHexString( sha1.digest() ) );
         metadata.getExtra().put( IndexPackageMetaData.SHA256_FIELD, Hex.encodeHexString( sha2.digest() ) );
     }
+
 
 }
 

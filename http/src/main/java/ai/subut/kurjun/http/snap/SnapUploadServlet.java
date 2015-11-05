@@ -3,10 +3,6 @@ package ai.subut.kurjun.http.snap;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -22,13 +18,8 @@ import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.http.HttpServer;
 import ai.subut.kurjun.http.HttpServletBase;
 import ai.subut.kurjun.http.ServletUtils;
-import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
-import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
-import ai.subut.kurjun.model.metadata.PackageMetadataStore;
-import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
-import ai.subut.kurjun.model.storage.FileStore;
-import ai.subut.kurjun.snap.service.SnapMetadataParser;
-import ai.subut.kurjun.storage.factory.FileStoreFactory;
+import ai.subut.kurjun.model.repository.LocalRepository;
+import ai.subut.kurjun.repo.RepositoryFactory;
 
 
 @Singleton
@@ -37,13 +28,7 @@ class SnapUploadServlet extends HttpServletBase
 {
 
     @Inject
-    private SnapMetadataParser metadataParser;
-
-    @Inject
-    private PackageMetadataStoreFactory metadataStoreFactory;
-
-    @Inject
-    private FileStoreFactory fileStoreFactory;
+    private RepositoryFactory repositoryFactory;
 
     private KurjunContext context;
 
@@ -82,45 +67,27 @@ class SnapUploadServlet extends HttpServletBase
 
     private void parsePackageFile( Part part, HttpServletResponse resp ) throws IOException
     {
-        byte[] md5 = null;
-        SnapMetadata meta;
-
-        // define file extension based on submitted file name
+        // define file compression type based on submitted file name
         String fileName = part.getSubmittedFileName();
-        String ext = CompressionType.getExtension( fileName );
-        if ( ext != null )
-        {
-            ext = "." + ext;
-        }
+        CompressionType compressionType = CompressionType.getCompressionType( fileName );
 
-        FileStore fileStore = fileStoreFactory.create( HttpServer.CONTEXT );
-
-        Path path = Files.createTempFile( "snap-uplaod", ext );
         try ( InputStream is = part.getInputStream() )
         {
-            Files.copy( is, path, StandardCopyOption.REPLACE_EXISTING );
-
-            meta = metadataParser.parse( path.toFile() );
-            md5 = fileStore.put( path.toFile() );
-        }
-        finally
-        {
-            Files.delete( path );
-        }
-
-        if ( Arrays.equals( meta.getMd5Sum(), md5 ) )
-        {
-            PackageMetadataStore metadataStore = metadataStoreFactory.create( context );
-            metadataStore.put( MetadataUtils.serializableSnapMetadata( meta ) );
+            LocalRepository repo = getRepository();
+            repo.put( is, compressionType );
             ok( resp, "Package successfully saved" );
         }
-        else
+        catch ( IOException ex )
         {
-            fileStore.remove( md5 );
-            internalServerError( resp, "Package integrity failure" );
+            internalServerError( resp, "Failed to upload package: " + ex.getMessage() );
         }
     }
 
+
+    private LocalRepository getRepository()
+    {
+        return repositoryFactory.createLocalSnap( context );
+    }
 
 }
 

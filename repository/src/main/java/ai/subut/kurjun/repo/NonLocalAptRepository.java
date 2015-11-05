@@ -13,6 +13,8 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.model.index.ReleaseFile;
+import ai.subut.kurjun.model.metadata.Metadata;
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.NonLocalRepository;
 import ai.subut.kurjun.repo.http.HttpHandler;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
@@ -23,9 +25,9 @@ import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
  * for {@link NonLocalRepository} implementation.
  *
  */
-class NonLocalRepositoryImpl extends RepositoryBase implements NonLocalRepository
+class NonLocalAptRepository extends RepositoryBase implements NonLocalRepository
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger( NonLocalRepositoryImpl.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( NonLocalAptRepository.class );
 
     private final HttpHandler httpHandler = new HttpHandler( this );
     private URL url;
@@ -39,7 +41,7 @@ class NonLocalRepositoryImpl extends RepositoryBase implements NonLocalRepositor
      * @param url URL of the remote repository
      */
     @Inject
-    public NonLocalRepositoryImpl( ReleaseIndexParser releaseIndexParser, @Assisted URL url )
+    public NonLocalAptRepository( ReleaseIndexParser releaseIndexParser, @Assisted URL url )
     {
         this.releaseIndexParser = releaseIndexParser;
         this.url = url;
@@ -65,6 +67,20 @@ class NonLocalRepositoryImpl extends RepositoryBase implements NonLocalRepositor
     public Set<ReleaseFile> getDistributions()
     {
         throw new UnsupportedOperationException( "TODO: how to get releases from a remote repo" );
+    }
+
+
+    @Override
+    public SerializableMetadata getPackageInfo( Metadata metadata )
+    {
+        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+    }
+
+
+    @Override
+    public InputStream getPackageStream( Metadata metadata )
+    {
+        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
     }
 
 

@@ -6,7 +6,7 @@ import ai.subut.kurjun.model.repository.Repository;
 
 
 /**
- * Abstract base class for non-virtual apt repository. This can be a base for either local or remote apt repositories.
+ * Abstract base class for repositories. This can be a base for either local or remote repositories.
  *
  */
 abstract class RepositoryBase implements Repository

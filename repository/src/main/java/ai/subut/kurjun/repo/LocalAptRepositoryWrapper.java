@@ -24,8 +24,10 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
+import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.model.index.ReleaseFile;
-import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
+import ai.subut.kurjun.model.metadata.Metadata;
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.repo.http.PathBuilder;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
@@ -35,9 +37,9 @@ import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
  * Local non-virtual apt repository.
  *
  */
-class LocalAptRepositoryImpl extends RepositoryBase implements LocalRepository
+class LocalAptRepositoryWrapper extends RepositoryBase implements LocalRepository
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger( LocalAptRepositoryImpl.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( LocalAptRepositoryWrapper.class );
 
     private ReleaseIndexParser releaseIndexParser;
 
@@ -54,7 +56,7 @@ class LocalAptRepositoryImpl extends RepositoryBase implements LocalRepository
      * @param baseDirectory local apt base directory
      */
     @Inject
-    public LocalAptRepositoryImpl( ReleaseIndexParser releaseIndexParser, @Assisted String baseDirectory )
+    public LocalAptRepositoryWrapper( ReleaseIndexParser releaseIndexParser, @Assisted String baseDirectory )
     {
         Path path = Paths.get( baseDirectory );
         if ( !Files.exists( path ) )
@@ -124,16 +126,37 @@ class LocalAptRepositoryImpl extends RepositoryBase implements LocalRepository
 
 
     @Override
-    public Path getBaseDirectory()
+    public Metadata put( InputStream is ) throws IOException
     {
-        return baseDirectory;
+        return put( is, CompressionType.NONE );
     }
 
 
     @Override
-    public PackageMetadata put( InputStream is ) throws IOException
+    public Metadata put( InputStream is, CompressionType compressionType ) throws IOException
     {
-        throw new IOException( "Not supported in non-virtual local apt repository." );
+        throw new UnsupportedOperationException( "Not supported in non-virtual local apt repository." );
+    }
+
+
+    @Override
+    public SerializableMetadata getPackageInfo( Metadata metadata )
+    {
+        throw new UnsupportedOperationException( "Not supported yet." );
+    }
+
+
+    @Override
+    public InputStream getPackageStream( Metadata metadata )
+    {
+        throw new UnsupportedOperationException( "Not supported yet." );
+    }
+
+
+    @Override
+    public boolean delete( byte[] md5 ) throws IOException
+    {
+        throw new UnsupportedOperationException( "Not supported in non-virtual local apt repository." );
     }
 
 

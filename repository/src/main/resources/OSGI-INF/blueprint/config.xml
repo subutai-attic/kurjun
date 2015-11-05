@@ -16,6 +16,7 @@
   <reference id="metaStoreFactory" interface="ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory"/>
   <reference id="releaseIndexParser" interface="ai.subut.kurjun.riparser.service.ReleaseIndexParser"/>
   <reference id="controlFileParser" interface="ai.subut.kurjun.cfparser.service.ControlFileParser"/>
+  <reference id="snapParser" interface="ai.subut.kurjun.snap.service.SnapMetadataParser"/>
 
 
   <service interface="ai.subut.kurjun.repo.util.AptIndexBuilderFactory">
@@ -29,6 +30,7 @@
     <bean class="ai.subut.kurjun.repo.RepositoryFactoryImpl">
       <argument ref="releaseIndexParser"/>
       <argument ref="controlFileParser"/>
+      <argument ref="snapParser"/>
       <argument ref="fileStoreFactory"/>
       <argument ref="metaStoreFactory"/>
     </bean>

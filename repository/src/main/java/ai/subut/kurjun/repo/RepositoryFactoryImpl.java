@@ -6,6 +6,7 @@ import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
+import ai.subut.kurjun.snap.service.SnapMetadataParser;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 
@@ -17,6 +18,7 @@ class RepositoryFactoryImpl implements RepositoryFactory
 {
     private ReleaseIndexParser releaseIndexParser;
     private ControlFileParser controlFileParser;
+    private SnapMetadataParser snapParser;
     private FileStoreFactory fileStoreFactory;
     private PackageMetadataStoreFactory metadataStoreFactory;
 
@@ -24,11 +26,13 @@ class RepositoryFactoryImpl implements RepositoryFactory
     public RepositoryFactoryImpl(
             ReleaseIndexParser releaseIndexParser,
             ControlFileParser controlFileParser,
+            SnapMetadataParser snapMetadataParser,
             FileStoreFactory fileStoreFactory,
             PackageMetadataStoreFactory metadataStoreFactory )
     {
         this.releaseIndexParser = releaseIndexParser;
         this.controlFileParser = controlFileParser;
+        this.snapParser = snapMetadataParser;
         this.fileStoreFactory = fileStoreFactory;
         this.metadataStoreFactory = metadataStoreFactory;
     }
@@ -37,15 +41,23 @@ class RepositoryFactoryImpl implements RepositoryFactory
     @Override
     public LocalRepository createLocal( String baseDirectory )
     {
-        return new LocalAptRepositoryImpl( releaseIndexParser, baseDirectory );
+        return new LocalAptRepositoryWrapper( releaseIndexParser, baseDirectory );
     }
 
 
     @Override
-    public LocalRepository createLocalKurjun( KurjunContext kurjunContext )
+    public LocalRepository createLocalApt( KurjunContext context )
     {
-        return new KurjunLocalRepository( controlFileParser, fileStoreFactory, metadataStoreFactory, kurjunContext );
+        return new LocalAptRepository( controlFileParser, fileStoreFactory, metadataStoreFactory, context );
     }
+
+
+    @Override
+    public LocalRepository createLocalSnap( KurjunContext context )
+    {
+        return new LocalSnapRepository( metadataStoreFactory, fileStoreFactory, snapParser, context );
+    }
+
 
 }
 
