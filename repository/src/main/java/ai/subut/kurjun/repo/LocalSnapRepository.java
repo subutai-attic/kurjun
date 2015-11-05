@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
+import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
@@ -81,10 +82,22 @@ public class LocalSnapRepository extends LocalRepositoryBase
     @Override
     public Metadata put( InputStream is ) throws IOException
     {
+        return put( is, CompressionType.NONE );
+    }
+
+
+    @Override
+    public Metadata put( InputStream is, CompressionType compressionType ) throws IOException
+    {
         PackageMetadataStore metadataStore = getMetadataStore();
         FileStore fileStore = getFileStore();
 
-        Path temp = Files.createTempFile( "snap-upload", null );
+        String ext = null;
+        if ( compressionType != null && compressionType != CompressionType.NONE )
+        {
+            ext = "." + compressionType.getExtension();
+        }
+        Path temp = Files.createTempFile( "snap-upload", ext );
         try
         {
             Files.copy( is, temp, StandardCopyOption.REPLACE_EXISTING );

@@ -24,9 +24,10 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
+import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
-import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.repo.http.PathBuilder;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
@@ -125,16 +126,37 @@ class LocalAptRepositoryWrapper extends RepositoryBase implements LocalRepositor
 
 
     @Override
-    public PackageMetadata put( InputStream is ) throws IOException
+    public Metadata put( InputStream is ) throws IOException
     {
-        throw new IOException( "Not supported in non-virtual local apt repository." );
+        return put( is, CompressionType.NONE );
     }
 
 
     @Override
-    public InputStream getPackage( Metadata metadata )
+    public Metadata put( InputStream is, CompressionType compressionType ) throws IOException
+    {
+        throw new UnsupportedOperationException( "Not supported in non-virtual local apt repository." );
+    }
+
+
+    @Override
+    public SerializableMetadata getPackageInfo( Metadata metadata )
     {
         throw new UnsupportedOperationException( "Not supported yet." );
+    }
+
+
+    @Override
+    public InputStream getPackageStream( Metadata metadata )
+    {
+        throw new UnsupportedOperationException( "Not supported yet." );
+    }
+
+
+    @Override
+    public boolean delete( byte[] md5 ) throws IOException
+    {
+        throw new UnsupportedOperationException( "Not supported in non-virtual local apt repository." );
     }
 
 

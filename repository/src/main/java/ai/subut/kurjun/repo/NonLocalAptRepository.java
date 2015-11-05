@@ -14,6 +14,7 @@ import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.NonLocalRepository;
 import ai.subut.kurjun.repo.http.HttpHandler;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
@@ -70,7 +71,14 @@ class NonLocalAptRepository extends RepositoryBase implements NonLocalRepository
 
 
     @Override
-    public InputStream getPackage( Metadata metadata )
+    public SerializableMetadata getPackageInfo( Metadata metadata )
+    {
+        throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+    }
+
+
+    @Override
+    public InputStream getPackageStream( Metadata metadata )
     {
         throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
     }

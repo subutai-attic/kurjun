@@ -21,7 +21,7 @@ public interface RepositoryFactory
      * @param baseDirectory base directory of the local repository
      * @return
      */
-    @Named( "NONVIRTUAL_APT_REPO" )
+    @Named( "APT_WRAPPER" )
     LocalRepository createLocal( String baseDirectory );
 
 

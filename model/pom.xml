@@ -15,5 +15,15 @@
   <properties>
     <osgi.export-package>{local-packages}</osgi.export-package>
   </properties>
-  
+
+  <dependencies>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>ar</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+  </dependencies>
+
 </project>

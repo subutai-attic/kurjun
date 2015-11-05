@@ -31,6 +31,7 @@ import org.apache.commons.io.FileUtils;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
+import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.ar.DebAr;
 import ai.subut.kurjun.ar.DefaultDebAr;
 import ai.subut.kurjun.cfparser.service.ControlFileParser;
@@ -42,6 +43,7 @@ import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
+import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.storage.FileStore;
@@ -123,12 +125,24 @@ class LocalAptRepository extends LocalRepositoryBase
 
 
     @Override
-    public PackageMetadata put( InputStream is ) throws IOException
+    public Metadata put( InputStream is ) throws IOException
+    {
+        return put( is, CompressionType.NONE );
+    }
+
+
+    @Override
+    public PackageMetadata put( InputStream is, CompressionType compressionType ) throws IOException
     {
         PackageMetadataStore metadataStore = metadataStoreFactory.create( context );
         FileStore fileStore = fileStoreFactory.create( context );
 
-        Path target = Files.createTempFile( null, null );
+        String ext = null;
+        if ( compressionType != null && compressionType != CompressionType.NONE )
+        {
+            ext = "." + compressionType.getExtension();
+        }
+        Path target = Files.createTempFile( null, ext );
         Path tempDir = Files.createTempDirectory( null );
 
         try ( DigestInputStream wrapped = new DigestInputStream( is, DigestUtils.getMd5Digest() ) )

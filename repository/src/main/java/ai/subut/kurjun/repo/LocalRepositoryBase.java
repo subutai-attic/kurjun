@@ -23,25 +23,69 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
 
 
     @Override
-    public InputStream getPackage( Metadata metadata )
+    public SerializableMetadata getPackageInfo( Metadata metadata )
     {
+        PackageMetadataStore metadataStore = getMetadataStore();
         try
         {
             if ( metadata.getMd5Sum() != null )
             {
-                return getPackageByMd5( metadata.getMd5Sum() );
+                return metadataStore.get( metadata.getMd5Sum() );
             }
             if ( metadata.getName() != null )
             {
-                return getPackage( metadata.getName(), metadata.getVersion() );
+                return getMetadataByName( metadata.getName(), metadata.getVersion() );
+            }
+        }
+        catch ( IOException ex )
+        {
+            getLogger().error( "Failed to get package info", ex );
+        }
+        return null;
+    }
+
+
+    @Override
+    public InputStream getPackageStream( Metadata metadata )
+    {
+        SerializableMetadata m = getPackageInfo( metadata );
+        if ( m == null )
+        {
+            return null;
+        }
+        try
+        {
+            FileStore fileStore = getFileStore();
+            if ( fileStore.contains( m.getMd5Sum() ) )
+            {
+                return fileStore.get( m.getMd5Sum() );
+            }
+            else
+            {
+                throw new IllegalStateException( "File not found for metadata" );
             }
         }
         catch ( IOException ex )
         {
             getLogger().error( "Failed to get package", ex );
-            return null;
         }
-        throw new IllegalArgumentException( "Metadata has neither md5 checksum nor name and version" );
+        return null;
+    }
+
+
+    @Override
+    public boolean delete( byte[] md5 ) throws IOException
+    {
+        PackageMetadataStore metadataStore = getMetadataStore();
+        FileStore fileStore = getFileStore();
+
+        if ( metadataStore.contains( md5 ) )
+        {
+            fileStore.remove( md5 );
+            metadataStore.remove( md5 );
+            return true;
+        }
+        return false;
     }
 
 
@@ -69,29 +113,9 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
     protected abstract FileStore getFileStore();
 
 
-    private InputStream getPackageByMd5( byte[] md5Sum ) throws IOException
+    private SerializableMetadata getMetadataByName( String name, String version ) throws IOException
     {
-        PackageMetadataStore metadataStore = getMetadataStore();
-        FileStore fileStore = getFileStore();
-
-        if ( metadataStore.contains( md5Sum ) )
-        {
-            if ( fileStore.contains( md5Sum ) )
-            {
-                return fileStore.get( md5Sum );
-            }
-            throw new IllegalStateException( "File does not exist for metadata" );
-        }
-        return null;
-    }
-
-
-    private InputStream getPackage( String name, String version ) throws IOException
-    {
-        PackageMetadataStore metadataStore = getMetadataStore();
-        FileStore fileStore = getFileStore();
-
-        List<SerializableMetadata> items = metadataStore.get( name );
+        List<SerializableMetadata> items = getMetadataStore().get( name );
         if ( items.isEmpty() )
         {
             return null;
@@ -99,21 +123,14 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
 
         if ( version != null )
         {
-            for ( SerializableMetadata item : items )
-            {
-                if ( version.equals( item.getVersion() ) )
-                {
-                    return fileStore.get( item.getMd5Sum() );
-                }
-            }
+            return items.stream().filter( m -> version.equals( m.getVersion() ) ).findFirst().orElse( null );
         }
         else
         {
             // sort by version in descending fasion and get the first item which is will be the latest version
             items.sort( (m1, m2) -> -1 * m1.getVersion().compareTo( m2.getVersion() ) );
-            return fileStore.get( items.get( 0 ).getMd5Sum() );
+            return items.get( 0 );
         }
-        return null;
     }
 }
 

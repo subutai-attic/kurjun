@@ -22,6 +22,7 @@ public class RepositoryModule extends AbstractModule
     protected void configure()
     {
         Module module = new FactoryModuleBuilder()
+                .implement( LocalRepository.class, Names.named( "APT_WRAPPER" ), LocalAptRepositoryWrapper.class )
                 .implement( LocalRepository.class, Names.named( PackageType.DEB ), LocalAptRepository.class )
                 .implement( LocalRepository.class, Names.named( PackageType.SNAP ), LocalSnapRepository.class )
                 .build( RepositoryFactory.class );

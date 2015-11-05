@@ -7,6 +7,7 @@ import java.util.Set;
 
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
 
 
 /**
@@ -80,16 +81,31 @@ public interface Repository
 
 
     /**
-     * Gets package identified by supplied meta data. Unique identifiers like package md5 checksum shall be used for
-     * lookup. If unique identifiers are not set, then identifying field collections shall be used like package name and
-     * version. When md5 is not set and name has value but without version, then lookup shall be done by name and, if
-     * more than one package is found, the one with latest version shall be selected (versions are represented as
-     * string, so simple alphabetic comparison is assumed).
+     * Gets package info identified by supplied meta data. Refer to
+     * {@link Repository#getPackageStream(ai.subut.kurjun.model.metadata.Metadata)} for more info about package
+     * identification.
      *
-     * @param metadata metadata used to lookup for package
-     * @return package stream if found; {@code null} otherwise
+     * @param metadata meta data used to lookup for package
+     * @return package meta data if found; {@code null} otherwise
+     * @see Repository#getPackageStream(ai.subut.kurjun.model.metadata.Metadata)
      */
-    InputStream getPackage( Metadata metadata );
+    SerializableMetadata getPackageInfo( Metadata metadata );
+
+
+    /**
+     * Gets package data identified by supplied meta data. Unique identifiers like package md5 checksum shall be used
+     * for lookup. If unique identifiers are not set, then identifying field collections shall be used like package name
+     * and version. When md5 is not set and name has value but without version, then lookup shall be done by name and,
+     * if more than one package is found, the one with latest version shall be selected (versions are represented as
+     * string, so simple alphabetic comparison is assumed).
+     * <p>
+     * When supplied meta data does not contain enough identifying information, this method should return {@code null}.
+     *
+     * @param metadata meta data used to lookup for package
+     * @return package stream if found; {@code null} otherwise
+     * @see Repository#getPackageInfo(ai.subut.kurjun.model.metadata.Metadata)
+     */
+    InputStream getPackageStream( Metadata metadata );
 
 }
 
