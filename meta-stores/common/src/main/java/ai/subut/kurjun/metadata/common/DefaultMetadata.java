@@ -23,13 +23,13 @@ public class DefaultMetadata implements SerializableMetadata
     @Override
     public byte[] getMd5Sum()
     {
-        return Arrays.copyOf( md5sum, md5sum.length );
+        return md5sum != null ? Arrays.copyOf( md5sum, md5sum.length ) : null;
     }
 
 
     public void setMd5sum( byte[] md5sum )
     {
-        this.md5sum = Arrays.copyOf( md5sum, md5sum.length );
+        this.md5sum = md5sum != null ? Arrays.copyOf( md5sum, md5sum.length ) : null;
     }
 
 

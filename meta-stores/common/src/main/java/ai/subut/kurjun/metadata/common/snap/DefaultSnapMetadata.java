@@ -10,6 +10,10 @@ import ai.subut.kurjun.model.metadata.snap.Framework;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
 
 
+/**
+ * Default POJO implementation of {@link SnapMetadata}.
+ *
+ */
 public class DefaultSnapMetadata implements SnapMetadata, SerializableMetadata
 {
 
@@ -30,7 +34,7 @@ public class DefaultSnapMetadata implements SnapMetadata, SerializableMetadata
 
     public void setMd5Sum( byte[] md5Sum )
     {
-        this.md5Sum = Arrays.copyOf( md5Sum, md5Sum.length );
+        this.md5Sum = md5Sum != null ? Arrays.copyOf( md5Sum, md5Sum.length ) : null;
     }
 
 

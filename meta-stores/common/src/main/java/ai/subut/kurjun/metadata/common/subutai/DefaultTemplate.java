@@ -31,7 +31,7 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
 
     public void setMd5Sum( byte[] md5Sum )
     {
-        this.md5Sum = Arrays.copyOf( md5Sum, md5Sum.length );
+        this.md5Sum = md5Sum != null ? Arrays.copyOf( md5Sum, md5Sum.length ) : null;
     }
 
 

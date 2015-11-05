@@ -16,6 +16,7 @@ import org.apache.commons.io.FileUtils;
 
 import com.google.inject.Inject;
 
+import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.ar.DefaultTar;
 import ai.subut.kurjun.ar.Tar;
 import ai.subut.kurjun.common.utils.SnapUtils;
@@ -51,7 +52,7 @@ class SnapMetadataParserImpl implements SnapMetadataParser
             Path pathToPackageMetadata = target.resolve( "meta/package.yaml" );
             try ( InputStream is = new FileInputStream( pathToPackageMetadata.toFile() ) )
             {
-                return parse( is, md5 );
+                return parseMetadataFile( is, md5 );
             }
         }
         finally
@@ -64,7 +65,20 @@ class SnapMetadataParserImpl implements SnapMetadataParser
     @Override
     public SnapMetadata parse( InputStream packageStream ) throws IOException
     {
-        Path target = Files.createTempFile( null, null );
+        return parse( packageStream, CompressionType.NONE );
+    }
+
+
+    @Override
+    public SnapMetadata parse( InputStream packageStream, CompressionType compressionType ) throws IOException
+    {
+        String ext = null;
+        if ( compressionType != null && compressionType != CompressionType.NONE )
+        {
+            ext = "." + compressionType.getExtension();
+        }
+
+        Path target = Files.createTempFile( null, ext );
         try
         {
             Files.copy( packageStream, target, StandardCopyOption.REPLACE_EXISTING );
@@ -90,11 +104,11 @@ class SnapMetadataParserImpl implements SnapMetadataParser
     @Override
     public SnapMetadata parseMetadata( InputStream metadataFileStream ) throws IOException
     {
-        return parse( metadataFileStream, null );
+        return parseMetadataFile( metadataFileStream, null );
     }
 
 
-    private DefaultSnapMetadata parse( InputStream stream, byte[] md5 )
+    private DefaultSnapMetadata parseMetadataFile( InputStream stream, byte[] md5 )
     {
         DefaultSnapMetadata m = yaml.loadAs( stream, DefaultSnapMetadata.class );
 

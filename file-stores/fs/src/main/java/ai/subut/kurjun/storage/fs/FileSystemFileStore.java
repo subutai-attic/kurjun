@@ -162,7 +162,9 @@ class FileSystemFileStore implements FileStore
             String path = fileDb.get( MAP_NAME, hexMd5, String.class );
             if ( path != null )
             {
-                Files.deleteIfExists( Paths.get( path ) );
+                Path p = Paths.get( path );
+                Files.deleteIfExists( p );
+                deleteDirIfEmpty( p.getParent() );
                 fileDb.remove( MAP_NAME, hexMd5 );
                 return true;
             }
