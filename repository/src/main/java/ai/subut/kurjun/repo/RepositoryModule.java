@@ -7,7 +7,9 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
 
 import ai.subut.kurjun.model.repository.LocalRepository;
+import ai.subut.kurjun.model.repository.NonLocalRepository;
 import ai.subut.kurjun.model.repository.PackageType;
+import ai.subut.kurjun.model.repository.UnifiedRepository;
 import ai.subut.kurjun.repo.util.AptIndiceBuilderModule;
 
 
@@ -25,6 +27,11 @@ public class RepositoryModule extends AbstractModule
                 .implement( LocalRepository.class, Names.named( "APT_WRAPPER" ), LocalAptRepositoryWrapper.class )
                 .implement( LocalRepository.class, Names.named( PackageType.DEB ), LocalAptRepository.class )
                 .implement( LocalRepository.class, Names.named( PackageType.SNAP ), LocalSnapRepository.class )
+                // non-local repositries
+                .implement( NonLocalRepository.class, Names.named( PackageType.SNAP ), NonLocalSnapRepository.class )
+                // unified repositories
+                .implement( UnifiedRepository.class, UnifiedRepositoryImpl.class )
+                // finally build the module
                 .build( RepositoryFactory.class );
 
         install( module );
