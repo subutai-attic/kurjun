@@ -29,6 +29,7 @@ import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.storage.FileStore;
+import ai.subut.kurjun.security.service.AuthManager;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 
@@ -40,6 +41,9 @@ class TemplateServlet extends TemplateServletBase
     public static final String RESPONSE_TYPE_MD5 = "md5";
 
     private static final Logger LOGGER = LoggerFactory.getLogger( TemplateServlet.class );
+
+    @Inject
+    private AuthManager authManager;
 
     @Inject
     private FileStoreFactory fileStoreFactory;
@@ -55,6 +59,7 @@ class TemplateServlet extends TemplateServletBase
         if ( pathItems.size() == 2 && pathItems.get( 1 ).equals( GET_PATH ) )
         {
             String repo = pathItems.get( 0 );
+            setCurrentTemplateType( repo );
             KurjunContext context = getContextForType( repo );
             if ( context == null )
             {
@@ -97,6 +102,7 @@ class TemplateServlet extends TemplateServletBase
         if ( paths.size() == 1 && md5hex != null )
         {
             String repo = paths.get( 0 );
+            setCurrentTemplateType( repo );
             KurjunContext context = getContextForType( repo );
             if ( context == null )
             {
@@ -130,6 +136,13 @@ class TemplateServlet extends TemplateServletBase
         {
             badRequest( resp, "Invalid request. Example: /public?md5=..." );
         }
+    }
+
+
+    @Override
+    protected AuthManager getAuthManager()
+    {
+        return authManager;
     }
 
 

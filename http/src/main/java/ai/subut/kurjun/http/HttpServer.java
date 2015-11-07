@@ -27,6 +27,7 @@ import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreModule;
 import ai.subut.kurjun.repo.RepositoryModule;
 import ai.subut.kurjun.riparser.ReleaseIndexParserModule;
+import ai.subut.kurjun.security.SecurityModule;
 import ai.subut.kurjun.snap.SnapMetadataParserModule;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 import ai.subut.kurjun.storage.factory.FileStoreModule;
@@ -81,6 +82,7 @@ public class HttpServer
         bootstrap.addModule( new PackageMetadataStoreModule() );
 
         bootstrap.addModule( new RepositoryModule() );
+        bootstrap.addModule( new SecurityModule() );
 
         //bootstrap.addModule( new LocalAptRepoServletModule().setServletPath( "/apt" ) );
         bootstrap.addModule( new KurjunAptRepoServletModule().setServletPath( "/vapt" ) );

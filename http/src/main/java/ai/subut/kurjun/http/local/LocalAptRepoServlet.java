@@ -15,14 +15,19 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.http.HttpServletBase;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.repo.RepositoryFactory;
+import ai.subut.kurjun.security.service.AuthManager;
 
 
 @Singleton
 class LocalAptRepoServlet extends HttpServletBase
 {
+
+    @Inject
+    private AuthManager authManager;
 
     private LocalRepository repository;
     private Path baseDirectory;
@@ -57,6 +62,20 @@ class LocalAptRepoServlet extends HttpServletBase
         {
             notFound( resp, "Specified path does not exist or is not a file" );
         }
+    }
+
+
+    @Override
+    protected KurjunContext getContext()
+    {
+        throw new UnsupportedOperationException( "No context for apt repo wrapper." );
+    }
+
+
+    @Override
+    protected AuthManager getAuthManager()
+    {
+        return authManager;
     }
 
 

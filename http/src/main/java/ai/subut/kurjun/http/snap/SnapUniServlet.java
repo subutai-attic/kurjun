@@ -14,6 +14,7 @@ import org.apache.commons.codec.binary.Hex;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.http.HttpServer;
 import ai.subut.kurjun.http.HttpServletBase;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
@@ -21,6 +22,7 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.NonLocalRepository;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
 import ai.subut.kurjun.repo.RepositoryFactory;
+import ai.subut.kurjun.security.service.AuthManager;
 
 import static ai.subut.kurjun.http.HttpServletBase.MD5_PARAM;
 import static ai.subut.kurjun.http.HttpServletBase.NAME_PARAM;
@@ -75,6 +77,20 @@ public class SnapUniServlet extends HttpServletBase
         {
             notFound( resp, "Package not found." );
         }
+    }
+
+
+    @Override
+    protected KurjunContext getContext()
+    {
+        throw new UnsupportedOperationException( "Not supported yet." );
+    }
+
+
+    @Override
+    protected AuthManager getAuthManager()
+    {
+        throw new UnsupportedOperationException( "Not supported yet." );
     }
 
 

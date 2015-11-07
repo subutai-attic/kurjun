@@ -19,7 +19,9 @@ import ai.subut.kurjun.http.HttpServer;
 import ai.subut.kurjun.http.HttpServletBase;
 import ai.subut.kurjun.http.ServletUtils;
 import ai.subut.kurjun.model.repository.LocalRepository;
+import ai.subut.kurjun.model.security.Permission;
 import ai.subut.kurjun.repo.RepositoryFactory;
+import ai.subut.kurjun.security.service.AuthManager;
 
 
 @Singleton
@@ -29,6 +31,9 @@ class SnapUploadServlet extends HttpServletBase
 
     @Inject
     private RepositoryFactory repositoryFactory;
+
+    @Inject
+    private AuthManager authManager;
 
     private KurjunContext context;
 
@@ -43,6 +48,12 @@ class SnapUploadServlet extends HttpServletBase
     @Override
     protected void doPost( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException
     {
+        if ( !authenticationCheck( req, Permission.ADD_PACKAGE ) )
+        {
+            forbidden( resp, "Forbidden for supplied identity in header " + HEADER_NAME_FINGERPRINT );
+            return;
+        }
+
         if ( ServletUtils.isMultipart( req ) )
         {
             ServletUtils.setMultipartConfig( req, this.getClass() );
@@ -62,6 +73,20 @@ class SnapUploadServlet extends HttpServletBase
         {
             badRequest( resp, "Request is not a multipart request" );
         }
+    }
+
+
+    @Override
+    protected KurjunContext getContext()
+    {
+        return context;
+    }
+
+
+    @Override
+    protected AuthManager getAuthManager()
+    {
+        return authManager;
     }
 
 

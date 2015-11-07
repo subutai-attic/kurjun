@@ -35,8 +35,8 @@ public class RoleManagerImplTest
 
         sampleRole = new DefaultRole();
         sampleRole.setName( "role-name" );
-        sampleRole.getPermissions().add( Permission.ADD_DEB );
-        sampleRole.getPermissions().add( Permission.DEL_DEB );
+        sampleRole.getPermissions().add( Permission.ADD_PACKAGE );
+        sampleRole.getPermissions().add( Permission.DEL_PACKAGE );
 
         this.roleManager.addRole( sampleRole );
     }
