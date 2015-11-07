@@ -3,6 +3,7 @@ package ai.subut.kurjun.http.snap;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -38,6 +39,7 @@ class SnapServlet extends HttpServletBase
     private static final Logger LOGGER = LoggerFactory.getLogger( SnapServlet.class );
 
     static final String SNAPS_GET_PATH = "get";
+    static final String SNAPS_INFO_PATH = "info";
 
     @Inject
     private RepositoryFactory repositoryFactory;
@@ -56,21 +58,33 @@ class SnapServlet extends HttpServletBase
     protected void doGet( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException
     {
         List<String> paths = ServletUtils.splitPath( req.getPathInfo() );
-        if ( paths.size() == 1 && paths.get( 0 ).equals( SNAPS_GET_PATH ) )
+        if ( paths.size() == 1 )
         {
+            String pathItem = paths.get( 0 );
+
             DefaultMetadata meta = new DefaultMetadata();
             meta.setMd5sum( getMd5ParameterValue( req, MD5_PARAM ) );
             meta.setName( req.getParameter( NAME_PARAM ) );
             meta.setVersion( req.getParameter( VERSION_PARAM ) );
 
-            if ( meta.getMd5Sum() != null || meta.getName() != null )
-            {
-                streamPackage( meta, resp );
-            }
-            else
+            if ( meta.getMd5Sum() == null && meta.getName() == null )
             {
                 String msg = "Neither 'md5' nor 'name' and 'version' params specified";
                 badRequest( resp, msg );
+                return;
+            }
+
+            if ( pathItem.equals( SNAPS_GET_PATH ) )
+            {
+                streamPackage( meta, resp );
+            }
+            else if ( pathItem.equals( SNAPS_INFO_PATH ) )
+            {
+                respondPackageInfo( meta, resp );
+            }
+            else
+            {
+                badRequest( resp, "Invalid request path: " + req.getPathInfo() );
             }
         }
         else
@@ -134,6 +148,25 @@ class SnapServlet extends HttpServletBase
                 resp.setStatus( HttpServletResponse.SC_OK );
                 resp.setHeader( "Content-Disposition", "attachment; filename=" + SnapUtils.makeFileName( m ) );
                 IOUtils.copy( is, resp.getOutputStream() );
+            }
+        }
+        else
+        {
+            notFound( resp, "Package not found." );
+        }
+    }
+
+
+    private void respondPackageInfo( Metadata meta, HttpServletResponse resp ) throws IOException
+    {
+        LocalRepository repo = getRepository();
+        SerializableMetadata m = repo.getPackageInfo( meta );
+        if ( m != null )
+        {
+            resp.setContentType( "application/json" );
+            try ( PrintWriter writer = resp.getWriter() )
+            {
+                writer.print( m.serialize() );
             }
         }
         else

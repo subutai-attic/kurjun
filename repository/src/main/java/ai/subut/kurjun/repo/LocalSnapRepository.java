@@ -29,17 +29,16 @@ import ai.subut.kurjun.snap.service.SnapMetadataParser;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 
-public class LocalSnapRepository extends LocalRepositoryBase
+/**
+ * Local snap repository implementation.
+ *
+ */
+class LocalSnapRepository extends LocalRepositoryBase
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( LocalSnapRepository.class );
 
-    @Inject
     private PackageMetadataStoreFactory metadataStoreFactory;
-
-    @Inject
     private FileStoreFactory fileStoreFactory;
-
-    @Inject
     private SnapMetadataParser metadataParser;
 
     private KurjunContext context;

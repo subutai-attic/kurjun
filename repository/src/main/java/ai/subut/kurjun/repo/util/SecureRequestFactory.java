@@ -47,7 +47,7 @@ public class SecureRequestFactory
         // merge repository path and supplied path
         StringBuilder pathBuilder = new StringBuilder();
         pathBuilder.append( remoteRepository.getPath() );
-        if ( !remoteRepository.getPath().endsWith( "/" ) )
+        if ( !path.startsWith( "/" ) )
         {
             pathBuilder.append( "/" );
         }
@@ -59,6 +59,10 @@ public class SecureRequestFactory
         {
             for ( Map.Entry< String, String> e : queryParams.entrySet() )
             {
+                if ( queryBuilder.length() > 0 )
+                {
+                    queryBuilder.append( "&" );
+                }
                 queryBuilder.append( e.getKey() ).append( "=" ).append( e.getValue() );
             }
         }

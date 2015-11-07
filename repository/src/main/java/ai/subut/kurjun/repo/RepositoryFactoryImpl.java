@@ -5,6 +5,8 @@ import ai.subut.kurjun.cfparser.service.ControlFileParser;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.repository.LocalRepository;
+import ai.subut.kurjun.model.repository.NonLocalRepository;
+import ai.subut.kurjun.model.repository.UnifiedRepository;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
 import ai.subut.kurjun.snap.service.SnapMetadataParser;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
@@ -56,6 +58,20 @@ class RepositoryFactoryImpl implements RepositoryFactory
     public LocalRepository createLocalSnap( KurjunContext context )
     {
         return new LocalSnapRepository( metadataStoreFactory, fileStoreFactory, snapParser, context );
+    }
+
+
+    @Override
+    public NonLocalRepository createNonLocalSnap( String url )
+    {
+        return new NonLocalSnapRepository( url );
+    }
+
+
+    @Override
+    public UnifiedRepository createUnifiedRepo()
+    {
+        return new UnifiedRepositoryImpl();
     }
 
 

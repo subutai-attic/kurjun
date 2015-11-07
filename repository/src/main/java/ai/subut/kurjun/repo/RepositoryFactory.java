@@ -5,7 +5,9 @@ import com.google.inject.name.Named;
 
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.repository.LocalRepository;
+import ai.subut.kurjun.model.repository.NonLocalRepository;
 import ai.subut.kurjun.model.repository.PackageType;
+import ai.subut.kurjun.model.repository.UnifiedRepository;
 
 
 /**
@@ -35,7 +37,33 @@ public interface RepositoryFactory
     LocalRepository createLocalApt( KurjunContext context );
 
 
+    /**
+     * Creates local snap repository for the supplied context.
+     *
+     * @param context context
+     * @return local snap repository
+     */
     @Named( PackageType.SNAP )
     LocalRepository createLocalSnap( KurjunContext context );
+
+
+    /**
+     * Creates non-local snap repository at specified URL.
+     *
+     * @param url URL to remote repository
+     * @return non-local snap repository
+     */
+    @Named( PackageType.SNAP )
+    NonLocalRepository createNonLocalSnap( String url );
+
+
+    /**
+     * Creates unified repository at specified URL.
+     *
+     * @return
+     */
+    UnifiedRepository createUnifiedRepo();
+
+
 }
 
