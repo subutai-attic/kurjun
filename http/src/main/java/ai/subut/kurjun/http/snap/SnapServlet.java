@@ -64,7 +64,7 @@ class SnapServlet extends HttpServletBase
     {
         if ( !authenticationCheck( req, Permission.GET_PACKAGE ) )
         {
-            forbidden( resp, "Forbidden for supplied identity in header " + HEADER_NAME_FINGERPRINT );
+            forbidden( resp, "No permissions." );
             return;
         }
 
@@ -110,7 +110,7 @@ class SnapServlet extends HttpServletBase
     {
         if ( !authenticationCheck( req, Permission.DEL_PACKAGE ) )
         {
-            forbidden( resp, "Forbidden for supplied identity in header " + HEADER_NAME_FINGERPRINT );
+            forbidden( resp, "No permissions." );
             return;
         }
 

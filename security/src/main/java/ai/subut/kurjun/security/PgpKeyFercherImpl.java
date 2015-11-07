@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
+import ai.subut.kurjun.common.service.KurjunConstants;
 import ai.subut.kurjun.common.service.KurjunProperties;
-import ai.subut.kurjun.common.service.KurjunPropertyKey;
 import ai.subut.kurjun.security.service.PgpKeyFetcher;
 import ai.subut.kurjun.security.utils.PGPUtils;
 
@@ -31,7 +31,7 @@ class PgpKeyFercherImpl implements PgpKeyFetcher
     @Inject
     public PgpKeyFercherImpl( KurjunProperties kurjunProperties ) throws MalformedURLException
     {
-        this( kurjunProperties.get( KurjunPropertyKey.SECURITY_KEYSERVER_URL ) );
+        this( kurjunProperties.get( KurjunConstants.SECURITY_KEYSERVER_URL ) );
     }
 
 

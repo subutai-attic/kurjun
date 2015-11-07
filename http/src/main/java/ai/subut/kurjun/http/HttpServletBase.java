@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import ai.subut.kurjun.common.service.KurjunConstants;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.security.Permission;
 import ai.subut.kurjun.security.service.AuthManager;
@@ -20,7 +21,6 @@ import ai.subut.kurjun.security.service.AuthManager;
 public abstract class HttpServletBase extends HttpServlet
 {
 
-    public static final String HEADER_NAME_FINGERPRINT = "X-Subutai-Fingerprint";
     public static final String FINGERPRINT_PARAM = "fingerprint";
 
     public static final String MD5_PARAM = "md5";
@@ -32,7 +32,7 @@ public abstract class HttpServletBase extends HttpServlet
     public boolean authenticationCheck( HttpServletRequest req, Permission permission )
     {
         // try to get fingerprint from header
-        String fingerprint = req.getHeader( HEADER_NAME_FINGERPRINT );
+        String fingerprint = req.getHeader( KurjunConstants.HTTP_HEADER_FINGERPRINT );
 
         // if not set in header, check params
         if ( fingerprint == null )

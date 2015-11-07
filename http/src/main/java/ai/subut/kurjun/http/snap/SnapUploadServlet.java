@@ -50,7 +50,7 @@ class SnapUploadServlet extends HttpServletBase
     {
         if ( !authenticationCheck( req, Permission.ADD_PACKAGE ) )
         {
-            forbidden( resp, "Forbidden for supplied identity in header " + HEADER_NAME_FINGERPRINT );
+            forbidden( resp, "No permissions." );
             return;
         }
 
