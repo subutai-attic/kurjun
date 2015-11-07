@@ -52,7 +52,7 @@ public class SnapUniServlet extends HttpServletBase
     @Override
     protected void doGet( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException
     {
-        NonLocalRepository remote = repositoryFactory.createNonLocalSnap( "http://10.0.3.156:8080/snaps" );
+        NonLocalRepository remote = repositoryFactory.createNonLocalSnap( "http://10.0.3.156:8080/snaps", null );
 
         UnifiedRepository uni = repositoryFactory.createUnifiedRepo();
         uni.getRepositories().add( remote );

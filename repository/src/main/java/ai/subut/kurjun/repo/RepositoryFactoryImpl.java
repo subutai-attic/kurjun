@@ -7,6 +7,7 @@ import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.repository.NonLocalRepository;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
+import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
 import ai.subut.kurjun.snap.service.SnapMetadataParser;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
@@ -62,9 +63,9 @@ class RepositoryFactoryImpl implements RepositoryFactory
 
 
     @Override
-    public NonLocalRepository createNonLocalSnap( String url )
+    public NonLocalRepository createNonLocalSnap( String url, Identity identity )
     {
-        return new NonLocalSnapRepository( url );
+        return new NonLocalSnapRepository( url, identity );
     }
 
 

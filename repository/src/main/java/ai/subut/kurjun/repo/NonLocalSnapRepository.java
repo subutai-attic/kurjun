@@ -22,11 +22,13 @@ import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
+import ai.subut.kurjun.common.service.KurjunConstants;
 import ai.subut.kurjun.metadata.common.snap.DefaultSnapMetadata;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.NonLocalRepository;
+import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.repo.util.SecureRequestFactory;
 
 
@@ -46,11 +48,13 @@ class NonLocalSnapRepository extends RepositoryBase implements NonLocalRepositor
     private Gson gson;
 
     private final URL url;
+    private final Identity identity;
 
 
     @Inject
-    public NonLocalSnapRepository( @Assisted String url )
+    public NonLocalSnapRepository( @Assisted String url, @Assisted Identity identity )
     {
+        this.identity = identity;
         try
         {
             this.url = new URL( url );
@@ -59,6 +63,13 @@ class NonLocalSnapRepository extends RepositoryBase implements NonLocalRepositor
         {
             throw new IllegalArgumentException( "Invalid url", ex );
         }
+    }
+
+
+    @Override
+    public Identity getIdentity()
+    {
+        return identity;
     }
 
 
@@ -88,6 +99,10 @@ class NonLocalSnapRepository extends RepositoryBase implements NonLocalRepositor
     {
         SecureRequestFactory secreq = new SecureRequestFactory( this );
         WebClient webClient = secreq.makeClient( INFO_PATH, makeParamsMap( metadata ) );
+        if ( identity != null )
+        {
+            webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
+        }
 
         Response resp = webClient.get();
         if ( resp.getStatus() == Response.Status.OK.getStatusCode() )
@@ -114,6 +129,10 @@ class NonLocalSnapRepository extends RepositoryBase implements NonLocalRepositor
     {
         SecureRequestFactory secreq = new SecureRequestFactory( this );
         WebClient webClient = secreq.makeClient( GET_PATH, makeParamsMap( metadata ) );
+        if ( identity != null )
+        {
+            webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
+        }
 
         Response resp = webClient.get();
         if ( resp.getStatus() == Response.Status.OK.getStatusCode() )

@@ -8,6 +8,7 @@ import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.repository.NonLocalRepository;
 import ai.subut.kurjun.model.repository.PackageType;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
+import ai.subut.kurjun.model.security.Identity;
 
 
 /**
@@ -51,10 +52,11 @@ public interface RepositoryFactory
      * Creates non-local snap repository at specified URL.
      *
      * @param url URL to remote repository
+     * @param identity identity to be used for requests for remote repo, maybe {@code null}
      * @return non-local snap repository
      */
     @Named( PackageType.SNAP )
-    NonLocalRepository createNonLocalSnap( String url );
+    NonLocalRepository createNonLocalSnap( String url, Identity identity );
 
 
     /**
