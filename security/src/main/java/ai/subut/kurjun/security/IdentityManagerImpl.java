@@ -68,6 +68,24 @@ class IdentityManagerImpl implements IdentityManager
 
 
     @Override
+    public Identity addIdentity( String fingerprint ) throws IOException
+    {
+        PGPPublicKey key = keyFetcher.get( fingerprint );
+        if ( key == null )
+        {
+            LOGGER.info( "Key not found for fingerprint: {}", fingerprint );
+            return null;
+        }
+        Identity id = new DefaultIdentity( key );
+        try ( FileDb fileDb = fileDbProvider.get() )
+        {
+            fileDb.put( MAP_NAME, id.getKeyFingerprint(), id );
+        }
+        return id;
+    }
+
+
+    @Override
     public Identity addIdentity( String fingerprint, String signedFingerprint ) throws IOException
     {
         PGPPublicKey key = keyFetcher.get( fingerprint );
@@ -85,7 +103,7 @@ class IdentityManagerImpl implements IdentityManager
             Identity id = new DefaultIdentity( key );
             try ( FileDb fileDb = fileDbProvider.get() )
             {
-                fileDb.put( MAP_NAME, fingerprint, id );
+                fileDb.put( MAP_NAME, id.getKeyFingerprint(), id );
             }
             return id;
         }

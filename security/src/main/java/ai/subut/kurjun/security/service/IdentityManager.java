@@ -29,6 +29,16 @@ public interface IdentityManager
 
 
     /**
+     * Adds identity with supplied fingerprint.
+     *
+     * @param fingerprint fingerprint of the PGP key which is used as identity
+     * @return identity instance if key for supplied fingerprint was found; {@code null} otherwise
+     * @throws IOException
+     */
+    Identity addIdentity( String fingerprint ) throws IOException;
+
+
+    /**
      * Adds identity to the store. To ensure the identity this method expects fingerprint and signed form of that
      * identity so that we can be sure that identity is provided by its real owner.
      *
