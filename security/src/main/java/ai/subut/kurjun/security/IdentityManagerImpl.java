@@ -62,7 +62,7 @@ class IdentityManagerImpl implements IdentityManager
     {
         try ( FileDb fileDb = fileDbProvider.get() )
         {
-            return fileDb.get( MAP_NAME, fingerprint, DefaultIdentity.class );
+            return fileDb.get( MAP_NAME, fingerprint.toLowerCase(), DefaultIdentity.class );
         }
     }
 
