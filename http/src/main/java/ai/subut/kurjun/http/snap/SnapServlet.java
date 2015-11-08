@@ -29,7 +29,9 @@ import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
+import ai.subut.kurjun.model.security.Permission;
 import ai.subut.kurjun.repo.RepositoryFactory;
+import ai.subut.kurjun.security.service.AuthManager;
 
 
 @Singleton
@@ -44,6 +46,9 @@ class SnapServlet extends HttpServletBase
     @Inject
     private RepositoryFactory repositoryFactory;
 
+    @Inject
+    private AuthManager authManager;
+
     private KurjunContext context;
 
 
@@ -57,6 +62,12 @@ class SnapServlet extends HttpServletBase
     @Override
     protected void doGet( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException
     {
+        if ( !authenticationCheck( req, Permission.GET_PACKAGE ) )
+        {
+            forbidden( resp, "No permissions." );
+            return;
+        }
+
         List<String> paths = ServletUtils.splitPath( req.getPathInfo() );
         if ( paths.size() == 1 )
         {
@@ -97,6 +108,12 @@ class SnapServlet extends HttpServletBase
     @Override
     protected void doDelete( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException
     {
+        if ( !authenticationCheck( req, Permission.DEL_PACKAGE ) )
+        {
+            forbidden( resp, "No permissions." );
+            return;
+        }
+
         byte[] md5 = getMd5ParameterValue( req, MD5_PARAM );
         if ( md5 != null )
         {
@@ -116,6 +133,20 @@ class SnapServlet extends HttpServletBase
         {
             badRequest( resp, "Provide md5 checksum of the package to remove" );
         }
+    }
+
+
+    @Override
+    protected KurjunContext getContext()
+    {
+        return context;
+    }
+
+
+    @Override
+    protected AuthManager getAuthManager()
+    {
+        return authManager;
     }
 
 

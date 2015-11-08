@@ -19,6 +19,7 @@ import ai.subut.kurjun.http.HttpServletBase;
 import ai.subut.kurjun.http.ServletUtils;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.repo.RepositoryFactory;
+import ai.subut.kurjun.security.service.AuthManager;
 
 
 @Singleton
@@ -26,17 +27,20 @@ import ai.subut.kurjun.repo.RepositoryFactory;
 class KurjunAptRepoUploadServlet extends HttpServletBase
 {
 
+    @Inject
+    private AuthManager authManager;
 
     @Inject
     private RepositoryFactory repositoryFactory;
 
     private LocalRepository repository;
+    private KurjunContext context;
 
 
     @Override
     public void init() throws ServletException
     {
-        KurjunContext context = HttpServer.CONTEXT;
+        context = HttpServer.CONTEXT;
         repository = repositoryFactory.createLocalApt( context );
     }
 
@@ -65,6 +69,20 @@ class KurjunAptRepoUploadServlet extends HttpServletBase
             String msg = String.format( "No package attached with name '%s'", PACKAGE_FILE_PART_NAME );
             badRequest( resp, msg );
         }
+    }
+
+
+    @Override
+    protected KurjunContext getContext()
+    {
+        return context;
+    }
+
+
+    @Override
+    protected AuthManager getAuthManager()
+    {
+        return authManager;
     }
 
 }

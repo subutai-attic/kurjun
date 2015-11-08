@@ -24,6 +24,7 @@ import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.repo.service.PackagesIndexBuilder;
 import ai.subut.kurjun.repo.util.AptIndexBuilderFactory;
 import ai.subut.kurjun.repo.util.ReleaseIndexBuilder;
+import ai.subut.kurjun.security.service.AuthManager;
 
 
 /**
@@ -32,6 +33,9 @@ import ai.subut.kurjun.repo.util.ReleaseIndexBuilder;
 @Singleton
 class KurjunAptRepoServlet extends HttpServletBase
 {
+
+    @Inject
+    private AuthManager authManager;
 
     @Inject
     private AptIndexBuilderFactory indexBuilderFactory;
@@ -72,6 +76,20 @@ class KurjunAptRepoServlet extends HttpServletBase
         {
             notFound( resp, "Specified path does not exist or is not a file" );
         }
+    }
+
+
+    @Override
+    protected KurjunContext getContext()
+    {
+        return context;
+    }
+
+
+    @Override
+    protected AuthManager getAuthManager()
+    {
+        return authManager;
     }
 
 

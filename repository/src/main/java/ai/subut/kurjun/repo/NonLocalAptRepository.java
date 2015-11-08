@@ -16,6 +16,7 @@ import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.NonLocalRepository;
+import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.repo.http.HttpHandler;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
 
@@ -45,6 +46,13 @@ class NonLocalAptRepository extends RepositoryBase implements NonLocalRepository
     {
         this.releaseIndexParser = releaseIndexParser;
         this.url = url;
+    }
+
+
+    @Override
+    public Identity getIdentity()
+    {
+        return null;
     }
 
 

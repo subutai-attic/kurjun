@@ -53,6 +53,10 @@ class AuthManagerImpl implements AuthManager
         try
         {
             Identity id = identityManager.getIdentity( fingerprint );
+            if ( id == null )
+            {
+                return false;
+            }
             Set<Role> roles = identityManager.getRoles( id, context );
             for ( Role role : roles )
             {

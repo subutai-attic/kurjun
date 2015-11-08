@@ -62,8 +62,26 @@ class IdentityManagerImpl implements IdentityManager
     {
         try ( FileDb fileDb = fileDbProvider.get() )
         {
-            return fileDb.get( MAP_NAME, fingerprint, DefaultIdentity.class );
+            return fileDb.get( MAP_NAME, fingerprint.toLowerCase(), DefaultIdentity.class );
         }
+    }
+
+
+    @Override
+    public Identity addIdentity( String fingerprint ) throws IOException
+    {
+        PGPPublicKey key = keyFetcher.get( fingerprint );
+        if ( key == null )
+        {
+            LOGGER.info( "Key not found for fingerprint: {}", fingerprint );
+            return null;
+        }
+        Identity id = new DefaultIdentity( key );
+        try ( FileDb fileDb = fileDbProvider.get() )
+        {
+            fileDb.put( MAP_NAME, id.getKeyFingerprint(), id );
+        }
+        return id;
     }
 
 
@@ -85,7 +103,7 @@ class IdentityManagerImpl implements IdentityManager
             Identity id = new DefaultIdentity( key );
             try ( FileDb fileDb = fileDbProvider.get() )
             {
-                fileDb.put( MAP_NAME, fingerprint, id );
+                fileDb.put( MAP_NAME, id.getKeyFingerprint(), id );
             }
             return id;
         }
@@ -158,6 +176,9 @@ class IdentityManagerImpl implements IdentityManager
     @Override
     public void addRole( Role role, Identity identity, KurjunContext context ) throws IOException
     {
+        // add role first, will be updated if already existed
+        roleManager.addRole( role );
+
         try ( FileDb fileDb = fileDbProvider.get() )
         {
             // get role names the identity belongs to

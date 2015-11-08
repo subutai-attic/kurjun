@@ -16,6 +16,21 @@ import ai.subut.kurjun.http.HttpServletBase;
  */
 abstract class TemplateServletBase extends HttpServletBase
 {
+    private String currentTemplateType;
+
+
+    @Override
+    protected KurjunContext getContext()
+    {
+        return getContextForType( currentTemplateType );
+    }
+
+
+    public void setCurrentTemplateType( String currentTemplateType )
+    {
+        this.currentTemplateType = currentTemplateType;
+    }
+
 
     protected KurjunContext getContextForType( String type )
     {

@@ -99,6 +99,12 @@
 
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>security</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>file-store-factory</artifactId>
       <version>${project.version}</version>
     </dependency>

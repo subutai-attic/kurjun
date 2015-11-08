@@ -27,12 +27,16 @@ import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.repo.service.PackageFilenameBuilder;
 import ai.subut.kurjun.repo.service.PackageFilenameParser;
+import ai.subut.kurjun.security.service.AuthManager;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 
 @Singleton
 class KurjunAptPoolServlet extends HttpServletBase
 {
+
+    @Inject
+    private AuthManager authManager;
 
     @Inject
     private PackageMetadataStoreFactory metadataStoreFactory;
@@ -104,6 +108,20 @@ class KurjunAptPoolServlet extends HttpServletBase
         {
             notFound( resp, "Package not found" );
         }
+    }
+
+
+    @Override
+    protected KurjunContext getContext()
+    {
+        return context;
+    }
+
+
+    @Override
+    protected AuthManager getAuthManager()
+    {
+        return authManager;
     }
 
 

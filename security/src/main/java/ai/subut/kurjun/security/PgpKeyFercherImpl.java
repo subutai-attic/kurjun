@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
+import ai.subut.kurjun.common.service.KurjunConstants;
 import ai.subut.kurjun.common.service.KurjunProperties;
-import ai.subut.kurjun.common.service.KurjunPropertyKey;
 import ai.subut.kurjun.security.service.PgpKeyFetcher;
 import ai.subut.kurjun.security.utils.PGPUtils;
 
@@ -31,7 +31,7 @@ class PgpKeyFercherImpl implements PgpKeyFetcher
     @Inject
     public PgpKeyFercherImpl( KurjunProperties kurjunProperties ) throws MalformedURLException
     {
-        this( kurjunProperties.get( KurjunPropertyKey.SECURITY_KEYSERVER_URL ) );
+        this( kurjunProperties.get( KurjunConstants.SECURITY_KEYSERVER_URL ) );
     }
 
 
@@ -45,10 +45,19 @@ class PgpKeyFercherImpl implements PgpKeyFetcher
     @Override
     public PGPPublicKey get( String fingerprint )
     {
+        // carefully build path so that there are no double slashes
+        StringBuilder pathBuilder = new StringBuilder();
+        pathBuilder.append( keyserverUrl.getPath() );
+        if ( pathBuilder.charAt( pathBuilder.length() - 1 ) != '/' )
+        {
+            pathBuilder.append( '/' );
+        }
+        pathBuilder.append( "pks/lookup" );
+
         try
         {
             URI uri = new URI( keyserverUrl.getProtocol(), null, keyserverUrl.getHost(), keyserverUrl.getPort(),
-                               keyserverUrl.getPath() + "/pks/lookup",
+                               pathBuilder.toString(),
                                "op=get&search=0x" + fingerprint,
                                null );
             HttpURLConnection conn = ( HttpURLConnection ) uri.toURL().openConnection();
@@ -63,6 +72,7 @@ class PgpKeyFercherImpl implements PgpKeyFetcher
         }
         return null;
     }
+
 
 }
 

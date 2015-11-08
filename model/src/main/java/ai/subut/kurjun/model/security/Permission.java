@@ -6,5 +6,8 @@ package ai.subut.kurjun.model.security;
  */
 public enum Permission
 {
-    ADD_REPO, DEL_REPO, MOD_REPO, ADD_DEB, DEL_DEB, REP_DEB
+    ADD_REPO, DEL_REPO, MOD_REPO,
+    GET_PACKAGE,
+    ADD_PACKAGE,
+    DEL_PACKAGE,
 }

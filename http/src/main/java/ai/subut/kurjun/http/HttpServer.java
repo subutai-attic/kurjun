@@ -1,6 +1,7 @@
 package ai.subut.kurjun.http;
 
 
+import java.io.IOException;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Properties;
@@ -11,6 +12,8 @@ import javax.servlet.DispatcherType;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceFilter;
@@ -25,8 +28,13 @@ import ai.subut.kurjun.http.subutai.TemplateServletModule;
 import ai.subut.kurjun.index.PackagesIndexParserModule;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreModule;
+import ai.subut.kurjun.model.security.Identity;
+import ai.subut.kurjun.model.security.Permission;
 import ai.subut.kurjun.repo.RepositoryModule;
 import ai.subut.kurjun.riparser.ReleaseIndexParserModule;
+import ai.subut.kurjun.security.DefaultRole;
+import ai.subut.kurjun.security.SecurityModule;
+import ai.subut.kurjun.security.service.IdentityManager;
 import ai.subut.kurjun.snap.SnapMetadataParserModule;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 import ai.subut.kurjun.storage.factory.FileStoreModule;
@@ -40,6 +48,8 @@ public class HttpServer
     public static final KurjunContext CONTEXT = new KurjunContext( "my" );
     public static final Set<KurjunContext> TEMPLATE_CONTEXTS = new HashSet<>();
 
+    private static final Logger LOGGER = LoggerFactory.getLogger( HttpServer.class );
+
 
     public static void main( String[] args ) throws Exception
     {
@@ -47,6 +57,7 @@ public class HttpServer
         Injector injector = bootstrapDI();
         KurjunProperties properties = injector.getInstance( KurjunProperties.class );
         setContexts( properties );
+        setPermissions( injector.getInstance( IdentityManager.class ) );
 
         FilterHolder f = new FilterHolder( injector.getInstance( GuiceFilter.class ) );
 
@@ -81,6 +92,7 @@ public class HttpServer
         bootstrap.addModule( new PackageMetadataStoreModule() );
 
         bootstrap.addModule( new RepositoryModule() );
+        bootstrap.addModule( new SecurityModule() );
 
         //bootstrap.addModule( new LocalAptRepoServletModule().setServletPath( "/apt" ) );
         bootstrap.addModule( new KurjunAptRepoServletModule().setServletPath( "/vapt" ) );
@@ -110,6 +122,29 @@ public class HttpServer
             kcp.putAll( p );
         }
 
+    }
+
+
+    private static void setPermissions( IdentityManager identityManager )
+    {
+        DefaultRole role = new DefaultRole();
+        role.setName( "admin" );
+        role.getPermissions().add( Permission.GET_PACKAGE );
+        role.getPermissions().add( Permission.ADD_PACKAGE );
+
+        try
+        {
+            // add sample identity to work
+            Identity id = identityManager.addIdentity( "1EB4A4CCADF438434450BF1F364CD558014A08B4" );
+            if ( id != null )
+            {
+                identityManager.addRole( role, id, CONTEXT );
+            }
+        }
+        catch ( IOException ex )
+        {
+            LOGGER.error( "Failed to setup permissions", ex );
+        }
     }
 }
 

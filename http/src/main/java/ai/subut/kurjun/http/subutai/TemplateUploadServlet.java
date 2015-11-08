@@ -25,6 +25,7 @@ import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 import ai.subut.kurjun.model.storage.FileStore;
+import ai.subut.kurjun.security.service.AuthManager;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
 
@@ -33,6 +34,9 @@ import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
 @MultipartConfig
 class TemplateUploadServlet extends TemplateServletBase
 {
+    @Inject
+    private AuthManager authManager;
+
     @Inject
     private PackageMetadataStoreFactory metadataStoreFactory;
 
@@ -57,6 +61,7 @@ class TemplateUploadServlet extends TemplateServletBase
         if ( pathItems.size() == 1 )
         {
             String repo = pathItems.get( 0 );
+            setCurrentTemplateType( repo );
             KurjunContext context = getContextForType( repo );
             if ( context == null )
             {
@@ -78,6 +83,13 @@ class TemplateUploadServlet extends TemplateServletBase
         {
             badRequest( resp, "Specify repository to upload to" );
         }
+    }
+
+
+    @Override
+    protected AuthManager getAuthManager()
+    {
+        return authManager;
     }
 
 

@@ -68,7 +68,7 @@ public class DefaultGroup implements Group, Serializable
     {
         for ( Identity id : identities )
         {
-            if ( id.getKeyFingerprint().equals( fingerprint ) )
+            if ( id.getKeyFingerprint().equalsIgnoreCase( fingerprint ) )
             {
                 return id;
             }
