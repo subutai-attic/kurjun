@@ -176,6 +176,9 @@ class IdentityManagerImpl implements IdentityManager
     @Override
     public void addRole( Role role, Identity identity, KurjunContext context ) throws IOException
     {
+        // add role first, will be updated if already existed
+        roleManager.addRole( role );
+
         try ( FileDb fileDb = fileDbProvider.get() )
         {
             // get role names the identity belongs to

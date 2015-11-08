@@ -45,10 +45,19 @@ class PgpKeyFercherImpl implements PgpKeyFetcher
     @Override
     public PGPPublicKey get( String fingerprint )
     {
+        // carefully build path so that there are no double slashes
+        StringBuilder pathBuilder = new StringBuilder();
+        pathBuilder.append( keyserverUrl.getPath() );
+        if ( pathBuilder.charAt( pathBuilder.length() - 1 ) != '/' )
+        {
+            pathBuilder.append( '/' );
+        }
+        pathBuilder.append( "pks/lookup" );
+
         try
         {
             URI uri = new URI( keyserverUrl.getProtocol(), null, keyserverUrl.getHost(), keyserverUrl.getPort(),
-                               keyserverUrl.getPath() + "/pks/lookup",
+                               pathBuilder.toString(),
                                "op=get&search=0x" + fingerprint,
                                null );
             HttpURLConnection conn = ( HttpURLConnection ) uri.toURL().openConnection();
@@ -63,6 +72,7 @@ class PgpKeyFercherImpl implements PgpKeyFetcher
         }
         return null;
     }
+
 
 }
 

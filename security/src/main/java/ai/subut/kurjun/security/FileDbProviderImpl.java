@@ -22,7 +22,7 @@ class FileDbProviderImpl implements FileDbProvider
     public FileDbProviderImpl( KurjunProperties kurjunProperties )
     {
         this.file = kurjunProperties.getWithDefault( KurjunConstants.SECURITY_FILEDB_PATH,
-                                                     "./securty.db" );
+                                                     "./security.db" );
     }
 
 
