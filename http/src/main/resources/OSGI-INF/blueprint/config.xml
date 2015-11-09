@@ -16,6 +16,12 @@
     </cxf:features>
   </cxf:bus>
 
+  <reference id="repositoryFactory" interface="ai.subut.kurjun.repo.RepositoryFactory">
+  </reference>
+
+  <reference id="authManager" interface="ai.subut.kurjun.security.service.AuthManager">
+  </reference>
+  
   <reference id="fileStoreFactory" interface="ai.subut.kurjun.storage.factory.FileStoreFactory">
   </reference>
 
@@ -25,6 +31,14 @@
   <reference id="templateParser" interface="ai.subut.kurjun.subutai.service.SubutaiTemplateParser">
   </reference>
 
+
+  <!-- HTTP service for snap packages -->
+  <bean id="snapsHttpService" class="ai.subut.kurjun.http.snap.SnapHttpServiceImpl">
+    <argument ref="repositoryFactory" />
+    <argument ref="authManager" />
+    <!-- provide context name here -->
+    <argument value="my" />
+  </bean>
 
   <!-- HTTP service for Subutai templates -->
   <bean id="templatesHttpService" class="ai.subut.kurjun.http.subutai.HttpServiceImpl">
@@ -36,6 +50,7 @@
 
   <jaxrs:server id="kurjunHttpService" address="/kurjun" >
     <jaxrs:serviceBeans>
+      <ref component-id="snapsHttpService" />
       <ref component-id="templatesHttpService" />
     </jaxrs:serviceBeans>
   </jaxrs:server>
