@@ -11,7 +11,7 @@
     </bean>
   </service>
 
-
+  <reference id="kurjunProperties" interface="ai.subut.kurjun.common.service.KurjunProperties" />
   <reference id="fileStoreFactory" interface="ai.subut.kurjun.storage.factory.FileStoreFactory"/>
   <reference id="metaStoreFactory" interface="ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory"/>
   <reference id="releaseIndexParser" interface="ai.subut.kurjun.riparser.service.ReleaseIndexParser"/>
@@ -33,6 +33,12 @@
       <argument ref="snapParser"/>
       <argument ref="fileStoreFactory"/>
       <argument ref="metaStoreFactory"/>
+      <argument>
+        <bean class="ai.subut.kurjun.repo.cache.PackageCache">
+          <argument ref="kurjunProperties"/>
+          <argument ref="fileStoreFactory"/>
+        </bean>
+      </argument>
     </bean>
   </service>
   

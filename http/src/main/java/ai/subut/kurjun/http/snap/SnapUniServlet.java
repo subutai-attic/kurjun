@@ -2,6 +2,8 @@ package ai.subut.kurjun.http.snap;
 
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
@@ -10,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.IOUtils;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -21,6 +24,7 @@ import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.NonLocalRepository;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
+import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.security.service.AuthManager;
 
@@ -42,17 +46,20 @@ public class SnapUniServlet extends HttpServletBase
     @Inject
     private RepositoryFactory repositoryFactory;
 
+    private Identity identity;
+
 
     @Override
     public void init() throws ServletException
     {
+        this.identity = HttpServer.getIdentity();
     }
 
 
     @Override
     protected void doGet( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException
     {
-        NonLocalRepository remote = repositoryFactory.createNonLocalSnap( "http://10.0.3.156:8080/snaps", null );
+        NonLocalRepository remote = repositoryFactory.createNonLocalSnap( "http://10.0.3.156:8080/snaps", identity );
 
         UnifiedRepository uni = repositoryFactory.createUnifiedRepo();
         uni.getRepositories().add( remote );
@@ -67,10 +74,22 @@ public class SnapUniServlet extends HttpServletBase
         SerializableMetadata m = uni.getPackageInfo( meta );
         if ( m != null )
         {
-            resp.setContentType( "application/json" );
-            try ( PrintWriter writer = resp.getWriter() )
+            // TODO: add dedicated path to get package file
+            if ( req.getParameter( "file" ) != null )
             {
-                writer.print( m.serialize() );
+                try ( InputStream is = uni.getPackageStream( m );
+                      OutputStream os = resp.getOutputStream() )
+                {
+                    IOUtils.copy( is, os );
+                }
+            }
+            else
+            {
+                resp.setContentType( "application/json" );
+                try ( PrintWriter writer = resp.getWriter() )
+                {
+                    writer.print( m.serialize() );
+                }
             }
         }
         else

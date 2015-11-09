@@ -50,6 +50,8 @@ public class HttpServer
 
     private static final Logger LOGGER = LoggerFactory.getLogger( HttpServer.class );
 
+    private static Identity identity;
+
 
     public static void main( String[] args ) throws Exception
     {
@@ -70,6 +72,12 @@ public class HttpServer
 
         server.start();
         server.join();
+    }
+
+
+    public static Identity getIdentity()
+    {
+        return identity;
     }
 
 
@@ -135,10 +143,10 @@ public class HttpServer
         try
         {
             // add sample identity to work
-            Identity id = identityManager.addIdentity( "1EB4A4CCADF438434450BF1F364CD558014A08B4" );
-            if ( id != null )
+            identity = identityManager.addIdentity( "1EB4A4CCADF438434450BF1F364CD558014A08B4" );
+            if ( identity != null )
             {
-                identityManager.addRole( role, id, CONTEXT );
+                identityManager.addRole( role, identity, CONTEXT );
             }
         }
         catch ( IOException ex )

@@ -21,6 +21,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
+import ai.subut.kurjun.common.service.KurjunConstants;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.db.file.FileDb;
@@ -48,8 +49,17 @@ class FileSystemFileStore implements FileStore
     @Inject
     public FileSystemFileStore( KurjunProperties properties, @Assisted KurjunContext context )
     {
-        String parentDirectory = properties.get( FileSystemFileStoreModule.ROOT_DIRECTORY );
-        this.rootLocation = Paths.get( parentDirectory, context.getName() );
+        // check if context has explicit location
+        String path = properties.getContextProperties( context ).getProperty( KurjunConstants.FILE_STORE_FS_DIR_PATH );
+        if ( path != null )
+        {
+            this.rootLocation = Paths.get( path );
+        }
+        else
+        {
+            String parentDirectory = properties.get( KurjunConstants.FILE_STORE_FS_ROOT_DIR );
+            this.rootLocation = Paths.get( parentDirectory, context.getName() );
+        }
     }
 
 

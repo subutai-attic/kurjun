@@ -15,11 +15,6 @@ import ai.subut.kurjun.model.storage.FileStore;
 public class FileSystemFileStoreModule extends AbstractModule
 {
 
-    /**
-     * Property key for root directory of the file system backed file store.
-     */
-    public static final String ROOT_DIRECTORY = "storage.fs.root.directory";
-
 
     @Override
     protected void configure()

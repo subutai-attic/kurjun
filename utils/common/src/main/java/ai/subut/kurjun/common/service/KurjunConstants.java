@@ -21,9 +21,15 @@ public final class KurjunConstants
     public static final String REPO_PACKAGE_TYPE = "repo.package.type";
 
     /**
-     * Parent directory for file system backed file store implementation.
+     * Property key for root directory of the file system backed file store.
      */
-    public static final String FILE_SYSTEM_PARENT_DIR = "file.store.fs.parent.dir";
+    public static final String FILE_STORE_FS_ROOT_DIR = "file.store.fs.root.dir";
+
+    /**
+     * Property key to explicitly specify directory for file system backed file store. This property can only be used in
+     * context properties.
+     */
+    public static final String FILE_STORE_FS_DIR_PATH = "file.store.fs.path";
 
     /**
      * Path to file where security related data is stored.
