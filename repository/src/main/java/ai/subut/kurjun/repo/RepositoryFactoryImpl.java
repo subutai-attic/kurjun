@@ -8,6 +8,7 @@ import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.repository.NonLocalRepository;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
 import ai.subut.kurjun.model.security.Identity;
+import ai.subut.kurjun.repo.cache.PackageCache;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
 import ai.subut.kurjun.snap.service.SnapMetadataParser;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
@@ -24,6 +25,7 @@ class RepositoryFactoryImpl implements RepositoryFactory
     private SnapMetadataParser snapParser;
     private FileStoreFactory fileStoreFactory;
     private PackageMetadataStoreFactory metadataStoreFactory;
+    private PackageCache cache;
 
 
     public RepositoryFactoryImpl(
@@ -31,13 +33,16 @@ class RepositoryFactoryImpl implements RepositoryFactory
             ControlFileParser controlFileParser,
             SnapMetadataParser snapMetadataParser,
             FileStoreFactory fileStoreFactory,
-            PackageMetadataStoreFactory metadataStoreFactory )
+            PackageMetadataStoreFactory metadataStoreFactory,
+            PackageCache cache
+    )
     {
         this.releaseIndexParser = releaseIndexParser;
         this.controlFileParser = controlFileParser;
         this.snapParser = snapMetadataParser;
         this.fileStoreFactory = fileStoreFactory;
         this.metadataStoreFactory = metadataStoreFactory;
+        this.cache = cache;
     }
 
 
@@ -65,7 +70,7 @@ class RepositoryFactoryImpl implements RepositoryFactory
     @Override
     public NonLocalRepository createNonLocalSnap( String url, Identity identity )
     {
-        return new NonLocalSnapRepository( url, identity );
+        return new NonLocalSnapRepository( cache, url, identity );
     }
 
 

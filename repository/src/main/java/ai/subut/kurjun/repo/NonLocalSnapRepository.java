@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -29,6 +32,7 @@ import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.NonLocalRepository;
 import ai.subut.kurjun.model.security.Identity;
+import ai.subut.kurjun.repo.cache.PackageCache;
 import ai.subut.kurjun.repo.util.SecureRequestFactory;
 
 
@@ -46,14 +50,16 @@ class NonLocalSnapRepository extends RepositoryBase implements NonLocalRepositor
 
     @Inject
     private Gson gson;
+    private PackageCache cache;
 
     private final URL url;
     private final Identity identity;
 
 
     @Inject
-    public NonLocalSnapRepository( @Assisted String url, @Assisted Identity identity )
+    public NonLocalSnapRepository( PackageCache cache, @Assisted String url, @Assisted Identity identity )
     {
+        this.cache = cache;
         this.identity = identity;
         try
         {
@@ -127,6 +133,12 @@ class NonLocalSnapRepository extends RepositoryBase implements NonLocalRepositor
     @Override
     public InputStream getPackageStream( Metadata metadata )
     {
+        InputStream cachedStream = checkCache( metadata );
+        if ( cachedStream != null )
+        {
+            return cachedStream;
+        }
+
         SecureRequestFactory secreq = new SecureRequestFactory( this );
         WebClient webClient = secreq.makeClient( GET_PATH, makeParamsMap( metadata ) );
         if ( identity != null )
@@ -139,7 +151,8 @@ class NonLocalSnapRepository extends RepositoryBase implements NonLocalRepositor
         {
             if ( resp.getEntity() instanceof InputStream )
             {
-                return ( InputStream ) resp.getEntity();
+                byte[] md5 = cacheStream( ( InputStream ) resp.getEntity() );
+                return cache.get( md5 );
             }
         }
         return null;
@@ -153,11 +166,61 @@ class NonLocalSnapRepository extends RepositoryBase implements NonLocalRepositor
         {
             params.put( "md5", Hex.encodeHexString( metadata.getMd5Sum() ) );
         }
-        params.put( "name", metadata.getName() );
-        params.put( "version", metadata.getVersion() );
+        if ( metadata.getName() != null )
+        {
+            params.put( "name", metadata.getName() );
+        }
+        if ( metadata.getVersion() != null )
+        {
+            params.put( "version", metadata.getVersion() );
+        }
         return params;
     }
 
+
+    private InputStream checkCache( Metadata metadata )
+    {
+        if ( metadata.getMd5Sum() != null )
+        {
+            if ( cache.contains( metadata.getMd5Sum() ) )
+            {
+                return cache.get( metadata.getMd5Sum() );
+            }
+        }
+        else
+        {
+            SerializableMetadata m = getPackageInfo( metadata );
+            if ( m != null && cache.contains( m.getMd5Sum() ) )
+            {
+                return cache.get( m.getMd5Sum() );
+            }
+        }
+        return null;
+    }
+
+
+    private byte[] cacheStream( InputStream is )
+    {
+        Path target = null;
+        try
+        {
+            target = Files.createTempFile( null, null );
+            Files.copy( is, target, StandardCopyOption.REPLACE_EXISTING );
+            return cache.put( target.toFile() );
+        }
+        catch ( IOException ex )
+        {
+            LOGGER.error( "Failed to cache package", ex );
+        }
+        finally
+        {
+            if ( target != null )
+            {
+                target.toFile().delete();
+            }
+        }
+        return null;
+    }
 
 }
 
