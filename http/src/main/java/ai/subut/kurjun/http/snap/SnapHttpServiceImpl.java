@@ -5,17 +5,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Optional;
 
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 
@@ -23,9 +19,9 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.ar.CompressionType;
-import ai.subut.kurjun.common.service.KurjunConstants;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.utils.SnapUtils;
+import ai.subut.kurjun.http.HttpServiceBase;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
@@ -35,19 +31,13 @@ import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.security.service.AuthManager;
 
 
-class SnapHttpServiceImpl implements SnapHttpService
+class SnapHttpServiceImpl extends HttpServiceBase implements SnapHttpService
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( SnapHttpServiceImpl.class );
 
     private RepositoryFactory repositoryFactory;
     private AuthManager authManager;
     private KurjunContext context;
-
-    @HeaderParam( KurjunConstants.HTTP_HEADER_FINGERPRINT )
-    private String fingerprintHeader;
-
-    @QueryParam( "fingerprint" )
-    private String fingerprintParam;
 
 
     @Inject
@@ -169,16 +159,24 @@ class SnapHttpServiceImpl implements SnapHttpService
     }
 
 
-    /**
-     * TODO: move authentication check to some base class so that it is reusable
-     *
-     * @param permission
-     * @return
-     */
-    private boolean checkAuthentication( Permission permission )
+    @Override
+    protected Logger getLogger()
     {
-        String f = Optional.ofNullable( fingerprintHeader ).orElse( fingerprintParam );
-        return authManager.isAllowed( f, permission, context );
+        return LOGGER;
+    }
+
+
+    @Override
+    protected KurjunContext getContext()
+    {
+        return context;
+    }
+
+
+    @Override
+    protected AuthManager getAuthManager()
+    {
+        return authManager;
     }
 
 
@@ -187,19 +185,6 @@ class SnapHttpServiceImpl implements SnapHttpService
         return repositoryFactory.createLocalSnap( context );
     }
 
-
-    private byte[] decodeMd5Param( String md5 )
-    {
-        try
-        {
-            return Hex.decodeHex( md5.toCharArray() );
-        }
-        catch ( DecoderException ex )
-        {
-            LOGGER.info( "Invalid md5 checksum", ex );
-            return null;
-        }
-    }
 
 }
 
