@@ -21,8 +21,6 @@ import ai.subut.kurjun.security.service.AuthManager;
 public abstract class HttpServletBase extends HttpServlet
 {
 
-    public static final String FINGERPRINT_PARAM = "fingerprint";
-
     public static final String MD5_PARAM = "md5";
     public static final String NAME_PARAM = "name";
     public static final String VERSION_PARAM = "version";
@@ -44,7 +42,7 @@ public abstract class HttpServletBase extends HttpServlet
         // if not set in header, check params
         if ( fingerprint == null )
         {
-            fingerprint = req.getParameter( FINGERPRINT_PARAM );
+            fingerprint = req.getParameter( KurjunConstants.HTTP_PARAM_FINGERPRINT );
         }
 
         if ( fingerprint != null )

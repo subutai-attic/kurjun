@@ -45,5 +45,10 @@ public final class KurjunConstants
      * HTTP header for key fingerprints used for identifying purposes.
      */
     public static final String HTTP_HEADER_FINGERPRINT = "X-Subutai-Fingerprint";
+
+    /**
+     * HTTP parameter name for fingerprints.
+     */
+    public static final String HTTP_PARAM_FINGERPRINT = "fingerprint";
 }
 
