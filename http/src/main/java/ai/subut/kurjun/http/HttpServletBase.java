@@ -31,6 +31,13 @@ public abstract class HttpServletBase extends HttpServlet
 
     public boolean authenticationCheck( HttpServletRequest req, Permission permission )
     {
+        // this is to avoid using pgp key fingerprint in dev mode
+        boolean dev = true;
+        if ( dev )
+        {
+            return true;
+        }
+
         // try to get fingerprint from header
         String fingerprint = req.getHeader( KurjunConstants.HTTP_HEADER_FINGERPRINT );
 
