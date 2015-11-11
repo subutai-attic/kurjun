@@ -12,6 +12,7 @@ import ai.subut.kurjun.repo.cache.PackageCache;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
 import ai.subut.kurjun.snap.service.SnapMetadataParser;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
+import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
 
 
 /**
@@ -23,6 +24,7 @@ class RepositoryFactoryImpl implements RepositoryFactory
     private ReleaseIndexParser releaseIndexParser;
     private ControlFileParser controlFileParser;
     private SnapMetadataParser snapParser;
+    private SubutaiTemplateParser templateParser;
     private FileStoreFactory fileStoreFactory;
     private PackageMetadataStoreFactory metadataStoreFactory;
     private PackageCache cache;
@@ -32,6 +34,7 @@ class RepositoryFactoryImpl implements RepositoryFactory
             ReleaseIndexParser releaseIndexParser,
             ControlFileParser controlFileParser,
             SnapMetadataParser snapMetadataParser,
+            SubutaiTemplateParser templateParser,
             FileStoreFactory fileStoreFactory,
             PackageMetadataStoreFactory metadataStoreFactory,
             PackageCache cache
@@ -40,6 +43,7 @@ class RepositoryFactoryImpl implements RepositoryFactory
         this.releaseIndexParser = releaseIndexParser;
         this.controlFileParser = controlFileParser;
         this.snapParser = snapMetadataParser;
+        this.templateParser = templateParser;
         this.fileStoreFactory = fileStoreFactory;
         this.metadataStoreFactory = metadataStoreFactory;
         this.cache = cache;
@@ -56,7 +60,8 @@ class RepositoryFactoryImpl implements RepositoryFactory
     @Override
     public LocalRepository createLocalApt( KurjunContext context )
     {
-        return new LocalAptRepository( controlFileParser, fileStoreFactory, metadataStoreFactory, context );
+        return new LocalAptRepository( controlFileParser, templateParser, fileStoreFactory, metadataStoreFactory,
+                                       context );
     }
 
 

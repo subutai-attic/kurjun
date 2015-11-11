@@ -24,6 +24,7 @@ public class DefaultDebAr implements DebAr
     public static final String DEBIAN_BINARY  = "debian-binary";
     public static final String DEBIAN_VERSION = "2.0";
     public static final String DEBIAN_CONTROL = "control.tar";
+    public static final String DEBIAN_DATA = "data.tar";
 
     private final File controlFile;
     private final File md5sumsFile;
