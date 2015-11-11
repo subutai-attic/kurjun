@@ -13,8 +13,8 @@ public enum Architecture
 
     /**
      * Gets architecture by name. This method does case-insensitive matching for architecture enum items. This method is
-     * preferred to {@link Enum#valueOf(java.lang.Class, java.lang.String)} because in most of the places arch field are
-     * in lower case whereas enum items are defined in upper case.
+     * preferred to {@link Enum#valueOf(java.lang.Class, java.lang.String)} because in most of the places arch fields
+     * are in lower case whereas enum items are defined in upper case.
      *
      * @param arch
      * @return

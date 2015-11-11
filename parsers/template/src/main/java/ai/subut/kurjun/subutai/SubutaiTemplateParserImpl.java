@@ -9,8 +9,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
@@ -20,14 +23,11 @@ import ai.subut.kurjun.ar.Tar;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
+import ai.subut.kurjun.subutai.service.TemplateProperties;
 
 
 class SubutaiTemplateParserImpl implements SubutaiTemplateParser
 {
-
-    public static final Pattern NAME_LINE_PATTERN = Pattern.compile( "lxc.utsname\\s*=\\s*(.+)" );
-    public static final Pattern ARCH_LINE_PATTERN = Pattern.compile( "lxc.arch\\s*=\\s*(.+)" );
-    public static final Pattern VERSION_LINE_PATTERN = Pattern.compile( "subutai.template.version\\s*=\\s*(.+)" );
 
 
     @Override
@@ -67,34 +67,12 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
 
     private SubutaiTemplateMetadata parseConfigFile( InputStream stream, byte[] md5 ) throws IOException
     {
-        String name = null;
-        String version = null;
-        Architecture arch = null;
-
+        // Subutai config files complies to standard java properties file, so reading it as properties
+        Properties prop = new Properties();
         try ( BufferedReader br = new BufferedReader( new InputStreamReader( stream ) ) )
         {
-            String line;
-            while ( ( line = br.readLine() ) != null )
-            {
-                Matcher matcher = NAME_LINE_PATTERN.matcher( line );
-                if ( matcher.matches() )
-                {
-                    name = matcher.group( 1 );
-                }
-                else if ( ( matcher = VERSION_LINE_PATTERN.matcher( line ) ).matches() )
-                {
-                    version = matcher.group( 1 );
-                }
-                else if ( ( matcher = ARCH_LINE_PATTERN.matcher( line ) ).matches() )
-                {
-                    arch = Architecture.getByValue( matcher.group( 1 ) );
-                }
-            }
+            prop.load( br );
         }
-
-        final String fname = name;
-        final String fversion = version;
-        final Architecture farch = arch;
 
         return new SubutaiTemplateMetadata()
         {
@@ -102,7 +80,8 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
             @Override
             public Architecture getArchitecture()
             {
-                return farch;
+                String a = prop.getProperty( TemplateProperties.ARCH );
+                return Architecture.getByValue( a );
             }
 
 
@@ -116,14 +95,34 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
             @Override
             public String getName()
             {
-                return fname;
+                return prop.getProperty( TemplateProperties.NAME );
             }
 
 
             @Override
             public String getVersion()
             {
-                return fversion;
+                return prop.getProperty( TemplateProperties.VERSION );
+            }
+
+
+            @Override
+            public Map<String, String> getExtra()
+            {
+                Set<String> skipProperties = new HashSet<>();
+                skipProperties.add( TemplateProperties.NAME );
+                skipProperties.add( TemplateProperties.VERSION );
+                skipProperties.add( TemplateProperties.ARCH );
+
+                Map< String, String> map = new HashMap<>();
+                for ( String key : prop.stringPropertyNames() )
+                {
+                    if ( !skipProperties.contains( key ) )
+                    {
+                        map.put( key, prop.getProperty( key ) );
+                    }
+                }
+                return map;
             }
         };
     }

@@ -2,6 +2,8 @@ package ai.subut.kurjun.metadata.common.subutai;
 
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.metadata.Architecture;
@@ -20,6 +22,7 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
     private String name;
     private String version;
     private Architecture architecture;
+    private Map< String, String> extra = new HashMap<>();
 
 
     @Override
@@ -71,6 +74,19 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
     public void setArchitecture( Architecture architecture )
     {
         this.architecture = architecture;
+    }
+
+
+    @Override
+    public Map<String, String> getExtra()
+    {
+        return extra;
+    }
+
+
+    public void setExtra( Map<String, String> extra )
+    {
+        this.extra = extra;
     }
 
 

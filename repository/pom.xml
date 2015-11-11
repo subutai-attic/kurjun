@@ -65,6 +65,12 @@
     </dependency>
 
     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>kurjun-template-parser</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>ai.subut.kurjun</groupId>
       <artifactId>kurjun-packages-parser</artifactId>
       <version>${project.version}</version>
