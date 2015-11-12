@@ -38,7 +38,7 @@ class LocalAptRepoServlet extends HttpServletBase
     {
         // TODO: parent dir from config
         this.baseDirectory = Paths.get( "/var/www/repos/apt/hub" );
-        repository = repositoryFactory.createLocal( baseDirectory.toString() );
+        repository = repositoryFactory.createLocalAptWrapper( baseDirectory.toString() );
     }
 
 

@@ -27,7 +27,7 @@ public abstract class HttpServletBase extends HttpServlet
     public static final String PACKAGE_FILE_PART_NAME = "package";
 
 
-    public boolean authenticationCheck( HttpServletRequest req, Permission permission )
+    public boolean checkAuthentication( HttpServletRequest req, Permission permission )
     {
         // this is to avoid using pgp key fingerprint in dev mode
         boolean dev = true;
@@ -74,6 +74,12 @@ public abstract class HttpServletBase extends HttpServlet
     protected void forbidden( HttpServletResponse resp, String msg ) throws IOException
     {
         writeResponse( resp, HttpServletResponse.SC_FORBIDDEN, msg );
+    }
+
+
+    protected void forbidden( HttpServletResponse resp ) throws IOException
+    {
+        writeResponse( resp, HttpServletResponse.SC_FORBIDDEN, "No permissions." );
     }
 
 

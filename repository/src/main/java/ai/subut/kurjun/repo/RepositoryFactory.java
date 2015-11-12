@@ -25,7 +25,7 @@ public interface RepositoryFactory
      * @return
      */
     @Named( "APT_WRAPPER" )
-    LocalRepository createLocal( String baseDirectory );
+    LocalRepository createLocalAptWrapper( String baseDirectory );
 
 
     /**

@@ -11,8 +11,8 @@ import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 public interface PackageFilenameBuilder
 {
     /**
-     * Makes a filename field value for the supplied meta data. Filename field indicates the path to package file
-     * relative to repositories base directory. Usually it formatted in the following way:
+     * Makes a "filename" field value for the supplied meta data. Filename field indicates the path to package file
+     * relative to repositories base directory. Usually it is formatted in the following way:
      * <p>
      * {@code pool/{component}/{first-letter-of-package}/{package}/{package-file} } where {@code {package-file}} has
      * format {@code {package}_{version}_{arch}.deb}

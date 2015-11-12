@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 
@@ -93,6 +94,30 @@ public abstract class HttpServiceBase
             getLogger().info( "Invalid md5 checksum", ex );
             return null;
         }
+    }
+
+
+    protected Response notFoundResponse( String msg )
+    {
+        return Response.status( Response.Status.NOT_FOUND ).entity( msg ).build();
+    }
+
+
+    protected Response packageNotFoundResponse()
+    {
+        return notFoundResponse( "Package not found." );
+    }
+
+
+    protected Response forbiddenResponse( String msg )
+    {
+        return Response.status( Response.Status.FORBIDDEN ).entity( msg ).build();
+    }
+
+
+    protected Response forbiddenResponse()
+    {
+        return forbiddenResponse( "No permission." );
     }
 
 

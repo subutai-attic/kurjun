@@ -20,6 +20,7 @@ import ai.subut.kurjun.http.HttpServletBase;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.repository.LocalRepository;
+import ai.subut.kurjun.model.security.Permission;
 import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.repo.service.PackagesIndexBuilder;
 import ai.subut.kurjun.repo.util.AptIndexBuilderFactory;
@@ -31,7 +32,7 @@ import ai.subut.kurjun.security.service.AuthManager;
  * Servlet to serve repository metadata like release and package index files, keys, etc of a virtual apt repository.
  */
 @Singleton
-class KurjunAptRepoServlet extends HttpServletBase
+class AptRepoServlet extends HttpServletBase
 {
 
     @Inject
@@ -45,20 +46,23 @@ class KurjunAptRepoServlet extends HttpServletBase
 
     private KurjunContext context;
 
-    private LocalRepository repository;
-
 
     @Override
     public void init() throws ServletException
     {
         context = HttpServer.CONTEXT;
-        repository = repositoryFactory.createLocalApt( context );
     }
 
 
     @Override
     protected void doGet( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException
     {
+        if ( !checkAuthentication( req, Permission.GET_PACKAGE ) )
+        {
+            forbidden( resp );
+            return;
+        }
+
         resp.setContentType( "text/plain" );
         resp.setCharacterEncoding( StandardCharsets.UTF_8.name() );
 
@@ -93,9 +97,16 @@ class KurjunAptRepoServlet extends HttpServletBase
     }
 
 
+    private LocalRepository getRepository()
+    {
+        return repositoryFactory.createLocalApt( context );
+    }
+
+
     private void generatePackagesIndex( String release, String component, Architecture arch,
                                         CompressionType compressionType, HttpServletResponse resp ) throws IOException
     {
+        LocalRepository repository = getRepository();
         Optional<ReleaseFile> distr = repository.getDistributions().stream()
                 .filter( r -> r.getCodename().equals( release ) ).findFirst();
         if ( !distr.isPresent() )
@@ -131,6 +142,7 @@ class KurjunAptRepoServlet extends HttpServletBase
 
     private void generateReleaseIndexFile( String release, HttpServletResponse resp ) throws IOException
     {
+        LocalRepository repository = getRepository();
         Optional<ReleaseFile> item = repository.getDistributions().stream()
                 .filter( r -> r.getCodename().equals( release ) ).findFirst();
         if ( item.isPresent() )

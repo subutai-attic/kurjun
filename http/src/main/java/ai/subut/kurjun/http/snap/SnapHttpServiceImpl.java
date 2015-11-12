@@ -56,7 +56,7 @@ class SnapHttpServiceImpl extends HttpServiceBase implements SnapHttpService
     {
         if ( checkAuthentication( Permission.GET_PACKAGE ) )
         {
-            return Response.status( Status.FORBIDDEN ).entity( "No permission." ).build();
+            return forbiddenResponse();
         }
 
         DefaultMetadata meta = new DefaultMetadata();
@@ -71,7 +71,7 @@ class SnapHttpServiceImpl extends HttpServiceBase implements SnapHttpService
         }
         else
         {
-            return Response.status( Status.NOT_FOUND ).entity( "Package not found." ).build();
+            return packageNotFoundResponse();
         }
     }
 
@@ -81,7 +81,7 @@ class SnapHttpServiceImpl extends HttpServiceBase implements SnapHttpService
     {
         if ( checkAuthentication( Permission.GET_PACKAGE ) )
         {
-            return Response.status( Status.FORBIDDEN ).entity( "No permission." ).build();
+            return forbiddenResponse();
         }
 
         DefaultMetadata m = new DefaultMetadata();
@@ -101,7 +101,7 @@ class SnapHttpServiceImpl extends HttpServiceBase implements SnapHttpService
         }
         else
         {
-            return Response.status( Status.NOT_FOUND ).entity( "Package not found." ).build();
+            return packageNotFoundResponse();
         }
     }
 
@@ -111,7 +111,7 @@ class SnapHttpServiceImpl extends HttpServiceBase implements SnapHttpService
     {
         if ( checkAuthentication( Permission.ADD_PACKAGE ) )
         {
-            return Response.status( Status.FORBIDDEN ).entity( "No permission." ).build();
+            return forbiddenResponse();
         }
 
         // define file extension based on submitted file name
@@ -137,7 +137,7 @@ class SnapHttpServiceImpl extends HttpServiceBase implements SnapHttpService
     {
         if ( checkAuthentication( Permission.DEL_PACKAGE ) )
         {
-            return Response.status( Status.FORBIDDEN ).entity( "No permission." ).build();
+            return forbiddenResponse();
         }
 
         byte[] md5bin = decodeMd5Param( md5 );

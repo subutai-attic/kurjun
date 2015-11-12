@@ -3,7 +3,6 @@ package ai.subut.kurjun.http.local;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -18,31 +17,26 @@ import com.google.inject.Singleton;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.http.HttpServer;
 import ai.subut.kurjun.http.HttpServletBase;
+import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
-import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
-import ai.subut.kurjun.model.metadata.MetadataListing;
-import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
-import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
-import ai.subut.kurjun.model.storage.FileStore;
+import ai.subut.kurjun.model.repository.LocalRepository;
+import ai.subut.kurjun.model.security.Permission;
+import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.repo.service.PackageFilenameBuilder;
 import ai.subut.kurjun.repo.service.PackageFilenameParser;
 import ai.subut.kurjun.security.service.AuthManager;
-import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 
 @Singleton
-class KurjunAptPoolServlet extends HttpServletBase
+class AptPoolServlet extends HttpServletBase
 {
 
     @Inject
+    private RepositoryFactory repositoryFactory;
+
+    @Inject
     private AuthManager authManager;
-
-    @Inject
-    private PackageMetadataStoreFactory metadataStoreFactory;
-
-    @Inject
-    private FileStoreFactory fileStoreFactory;
 
     @Inject
     private PackageFilenameParser filenameParser;
@@ -67,6 +61,12 @@ class KurjunAptPoolServlet extends HttpServletBase
     @Override
     protected void doGet( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException
     {
+        if ( !checkAuthentication( req, Permission.GET_PACKAGE ) )
+        {
+            forbidden( resp );
+            return;
+        }
+
         String path = "/pool" + req.getPathInfo();
         String packageName = filenameParser.getPackageFromFilename( path );
         String version = filenameParser.getVersionFromFilename( path );
@@ -76,25 +76,21 @@ class KurjunAptPoolServlet extends HttpServletBase
             return;
         }
 
-        PackageMetadataStore metadataStore = metadataStoreFactory.create( context );
+        DefaultMetadata m = new DefaultMetadata();
+        m.setName( packageName );
+        m.setVersion( version );
 
-        MetadataListing list = metadataStore.list();
-        PackageMetadata metadata = findMetadata( packageName, version, list.getPackageMetadata() );
-
-        while ( metadata == null && list.isTruncated() )
-        {
-            list = metadataStore.listNextBatch( list );
-            metadata = findMetadata( packageName, version, list.getPackageMetadata() );
-        }
+        LocalRepository repo = repositoryFactory.createLocalApt( context );
+        SerializableMetadata metadata = repo.getPackageInfo( m );
 
         if ( metadata != null )
         {
-            FileStore fileStore = fileStoreFactory.create( context );
-            try ( InputStream is = fileStore.get( metadata.getMd5Sum() ) )
+            try ( InputStream is = repo.getPackageStream( metadata ) )
             {
                 if ( is != null )
                 {
-                    String filename = filenameBuilder.makePackageFilename( metadata );
+                    DefaultPackageMetadata pm = gson.fromJson( metadata.serialize(), DefaultPackageMetadata.class );
+                    String filename = filenameBuilder.makePackageFilename( pm );
                     resp.setHeader( "Content-Disposition", "attachment; filename=" + filename );
                     IOUtils.copy( is, resp.getOutputStream() );
                 }
@@ -122,19 +118,6 @@ class KurjunAptPoolServlet extends HttpServletBase
     protected AuthManager getAuthManager()
     {
         return authManager;
-    }
-
-
-    private PackageMetadata findMetadata( String packageName, String version, Collection<SerializableMetadata> ls )
-    {
-        for ( SerializableMetadata m : ls )
-        {
-            if ( m.getName().equals( packageName ) && m.getVersion().equals( version ) )
-            {
-                return gson.fromJson( m.serialize(), DefaultPackageMetadata.class );
-            }
-        }
-        return null;
     }
 
 
