@@ -51,7 +51,7 @@ class RepositoryFactoryImpl implements RepositoryFactory
 
 
     @Override
-    public LocalRepository createLocal( String baseDirectory )
+    public LocalRepository createLocalAptWrapper( String baseDirectory )
     {
         return new LocalAptRepositoryWrapper( releaseIndexParser, baseDirectory );
     }

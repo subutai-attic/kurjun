@@ -24,7 +24,7 @@ import ai.subut.kurjun.security.service.AuthManager;
 
 @Singleton
 @MultipartConfig
-class KurjunAptRepoUploadServlet extends HttpServletBase
+class AptRepoUploadServlet extends HttpServletBase
 {
 
     @Inject

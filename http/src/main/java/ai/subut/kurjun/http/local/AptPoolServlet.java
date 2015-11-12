@@ -32,7 +32,7 @@ import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 
 @Singleton
-class KurjunAptPoolServlet extends HttpServletBase
+class AptPoolServlet extends HttpServletBase
 {
 
     @Inject

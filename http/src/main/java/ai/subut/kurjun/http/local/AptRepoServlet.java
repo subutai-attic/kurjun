@@ -31,7 +31,7 @@ import ai.subut.kurjun.security.service.AuthManager;
  * Servlet to serve repository metadata like release and package index files, keys, etc of a virtual apt repository.
  */
 @Singleton
-class KurjunAptRepoServlet extends HttpServletBase
+class AptRepoServlet extends HttpServletBase
 {
 
     @Inject
