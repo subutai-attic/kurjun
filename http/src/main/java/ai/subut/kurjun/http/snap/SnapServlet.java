@@ -62,9 +62,9 @@ class SnapServlet extends HttpServletBase
     @Override
     protected void doGet( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException
     {
-        if ( !authenticationCheck( req, Permission.GET_PACKAGE ) )
+        if ( !checkAuthentication( req, Permission.GET_PACKAGE ) )
         {
-            forbidden( resp, "No permissions." );
+            forbidden( resp );
             return;
         }
 
@@ -108,9 +108,9 @@ class SnapServlet extends HttpServletBase
     @Override
     protected void doDelete( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException
     {
-        if ( !authenticationCheck( req, Permission.DEL_PACKAGE ) )
+        if ( !checkAuthentication( req, Permission.DEL_PACKAGE ) )
         {
-            forbidden( resp, "No permissions." );
+            forbidden( resp );
             return;
         }
 

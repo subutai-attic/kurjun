@@ -18,6 +18,7 @@ import ai.subut.kurjun.http.HttpServer;
 import ai.subut.kurjun.http.HttpServletBase;
 import ai.subut.kurjun.http.ServletUtils;
 import ai.subut.kurjun.model.repository.LocalRepository;
+import ai.subut.kurjun.model.security.Permission;
 import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.security.service.AuthManager;
 
@@ -33,7 +34,6 @@ class AptRepoUploadServlet extends HttpServletBase
     @Inject
     private RepositoryFactory repositoryFactory;
 
-    private LocalRepository repository;
     private KurjunContext context;
 
 
@@ -41,13 +41,17 @@ class AptRepoUploadServlet extends HttpServletBase
     public void init() throws ServletException
     {
         context = HttpServer.CONTEXT;
-        repository = repositoryFactory.createLocalApt( context );
     }
 
 
     @Override
     protected void doPost( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException
     {
+        if ( !checkAuthentication( req, Permission.ADD_PACKAGE ) )
+        {
+            forbidden( resp );
+            return;
+        }
         if ( !ServletUtils.isMultipart( req ) )
         {
             badRequest( resp, "Not a multipart request" );
@@ -59,6 +63,7 @@ class AptRepoUploadServlet extends HttpServletBase
         Part part = req.getPart( PACKAGE_FILE_PART_NAME );
         if ( part != null )
         {
+            LocalRepository repository = repositoryFactory.createLocalApt( context );
             try ( InputStream is = part.getInputStream() )
             {
                 repository.put( is );

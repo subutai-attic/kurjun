@@ -48,9 +48,9 @@ class SnapUploadServlet extends HttpServletBase
     @Override
     protected void doPost( HttpServletRequest req, HttpServletResponse resp ) throws ServletException, IOException
     {
-        if ( !authenticationCheck( req, Permission.ADD_PACKAGE ) )
+        if ( !checkAuthentication( req, Permission.ADD_PACKAGE ) )
         {
-            forbidden( resp, "No permissions." );
+            forbidden( resp );
             return;
         }
 
