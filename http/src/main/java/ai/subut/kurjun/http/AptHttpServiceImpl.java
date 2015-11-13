@@ -1,4 +1,4 @@
-package ai.subut.kurjun.http.local;
+package ai.subut.kurjun.http;
 
 
 import java.io.ByteArrayInputStream;
@@ -29,7 +29,7 @@ import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
-import ai.subut.kurjun.http.HttpServiceBase;
+import ai.subut.kurjun.http.service.AptHttpService;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
 import ai.subut.kurjun.model.index.ReleaseFile;
@@ -47,7 +47,7 @@ import ai.subut.kurjun.repo.util.ReleaseIndexBuilder;
 import ai.subut.kurjun.security.service.AuthManager;
 
 
-public class AptHttpServiceImpl extends HttpServiceBase implements AptHttpService
+class AptHttpServiceImpl extends HttpServiceBase implements AptHttpService
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( AptHttpServiceImpl.class );
 

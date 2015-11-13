@@ -23,7 +23,7 @@ import ai.subut.kurjun.security.service.AuthManager;
  * in all other implementations.
  *
  */
-public abstract class HttpServiceBase
+abstract class HttpServiceBase
 {
 
     /**

@@ -73,6 +73,13 @@ class RepositoryFactoryImpl implements RepositoryFactory
 
 
     @Override
+    public LocalRepository craeteLocalTemplate( KurjunContext context )
+    {
+        return new LocalTemplateRepository( metadataStoreFactory, fileStoreFactory, templateParser, context );
+    }
+
+
+    @Override
     public NonLocalRepository createNonLocalSnap( String url, Identity identity )
     {
         return new NonLocalSnapRepository( cache, url, identity );

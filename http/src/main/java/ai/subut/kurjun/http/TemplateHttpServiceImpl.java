@@ -1,4 +1,4 @@
-package ai.subut.kurjun.http.subutai;
+package ai.subut.kurjun.http;
 
 
 import java.io.IOException;
@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -23,7 +24,8 @@ import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
-import ai.subut.kurjun.http.HttpServer;
+import ai.subut.kurjun.http.service.HttpServiceConstants;
+import ai.subut.kurjun.http.service.TemplateHttpService;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.metadata.Metadata;
@@ -34,22 +36,20 @@ import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
 
-import static ai.subut.kurjun.http.subutai.TemplateServlet.RESPONSE_TYPE_MD5;
 
-
-class HttpServiceImpl implements HttpService
+class TemplateHttpServiceImpl implements TemplateHttpService
 {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( HttpServiceImpl.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( TemplateHttpServiceImpl.class );
 
     private FileStoreFactory fileStoreFactory;
     private PackageMetadataStoreFactory metadataStoreFactory;
     private SubutaiTemplateParser templateParser;
 
 
-    public HttpServiceImpl( FileStoreFactory fileStoreFactory,
-                            PackageMetadataStoreFactory metadataStoreFactory,
-                            SubutaiTemplateParser templateParser )
+    public TemplateHttpServiceImpl( FileStoreFactory fileStoreFactory,
+                                    PackageMetadataStoreFactory metadataStoreFactory,
+                                    SubutaiTemplateParser templateParser )
     {
         this.fileStoreFactory = fileStoreFactory;
         this.metadataStoreFactory = metadataStoreFactory;
@@ -157,7 +157,11 @@ class HttpServiceImpl implements HttpService
      */
     protected KurjunContext getContextByRepoType( String type )
     {
-        Set<KurjunContext> set = HttpServer.TEMPLATE_CONTEXTS;
+        // TODO:
+        Set<KurjunContext> set = new HashSet<>();
+        set.add( new KurjunContext( "public" ) );
+        set.add( new KurjunContext( "trust" ) );
+
         for ( Iterator<KurjunContext> it = set.iterator(); it.hasNext(); )
         {
             KurjunContext c = it.next();
@@ -212,7 +216,7 @@ class HttpServiceImpl implements HttpService
         Objects.requireNonNull( name, "name parameter" );
         Objects.requireNonNull( type, "type parameter" );
 
-        if ( type.equals( RESPONSE_TYPE_MD5 ) )
+        if ( type.equals( HttpServiceConstants.RESPONSE_TYPE_MD5 ) )
         {
             return respondMd5( name, version, context );
         }

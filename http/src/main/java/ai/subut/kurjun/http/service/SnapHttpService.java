@@ -1,4 +1,4 @@
-package ai.subut.kurjun.http.snap;
+package ai.subut.kurjun.http.service;
 
 
 import javax.ws.rs.Consumes;
@@ -26,24 +26,24 @@ public interface SnapHttpService
     @GET
     @Path( "info" )
     @Produces( MediaType.APPLICATION_JSON )
-    Response getSnapInfo( @QueryParam( SnapServlet.MD5_PARAM ) String md5,
-                          @QueryParam( SnapServlet.NAME_PARAM ) String name,
-                          @QueryParam( SnapServlet.VERSION_PARAM ) String version );
+    Response getSnapInfo( @QueryParam( HttpServiceConstants.MD5_PARAM ) String md5,
+                          @QueryParam( HttpServiceConstants.NAME_PARAM ) String name,
+                          @QueryParam( HttpServiceConstants.VERSION_PARAM ) String version );
 
 
     @GET
     @Path( "get" )
-    Response getSnapFile( @QueryParam( SnapServlet.MD5_PARAM ) String md5 );
+    Response getSnapFile( @QueryParam( HttpServiceConstants.MD5_PARAM ) String md5 );
 
 
     @POST
     @Path( "upload" )
     @Consumes( MediaType.MULTIPART_FORM_DATA )
-    Response upload( @Multipart( SnapServlet.PACKAGE_FILE_PART_NAME ) Attachment attachment );
+    Response upload( @Multipart( HttpServiceConstants.PACKAGE_FILE_PART_NAME ) Attachment attachment );
 
 
     @DELETE
     @Path( "" )
-    Response deleteTemplates( @QueryParam( SnapServlet.MD5_PARAM ) String md5 );
+    Response deleteTemplates( @QueryParam( HttpServiceConstants.MD5_PARAM ) String md5 );
 }
 

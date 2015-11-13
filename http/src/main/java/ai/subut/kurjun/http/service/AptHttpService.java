@@ -1,4 +1,4 @@
-package ai.subut.kurjun.http.local;
+package ai.subut.kurjun.http.service;
 
 
 import javax.ws.rs.Consumes;
@@ -49,20 +49,20 @@ public interface AptHttpService
     @GET
     @Path( "info" )
     @Produces( MediaType.APPLICATION_JSON )
-    Response getPackageInfo( @QueryParam( AptRepoServlet.MD5_PARAM ) String md5,
-                             @QueryParam( AptRepoServlet.NAME_PARAM ) String name,
-                             @QueryParam( AptRepoServlet.VERSION_PARAM ) String version );
+    Response getPackageInfo( @QueryParam( HttpServiceConstants.MD5_PARAM ) String md5,
+                             @QueryParam( HttpServiceConstants.NAME_PARAM ) String name,
+                             @QueryParam( HttpServiceConstants.VERSION_PARAM ) String version );
 
 
     @GET
     @Path( "get" )
-    Response getPackage( @QueryParam( AptRepoServlet.MD5_PARAM ) String md5 );
+    Response getPackage( @QueryParam( HttpServiceConstants.MD5_PARAM ) String md5 );
 
 
     @POST
     @Path( "upload" )
     @Consumes( MediaType.MULTIPART_FORM_DATA )
-    Response upload( @Multipart( AptRepoServlet.PACKAGE_FILE_PART_NAME ) Attachment attachment );
+    Response upload( @Multipart( HttpServiceConstants.PACKAGE_FILE_PART_NAME ) Attachment attachment );
 
 }
 

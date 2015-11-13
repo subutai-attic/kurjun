@@ -87,4 +87,23 @@ public enum  CompressionType
         }
         return NONE;
     }
+
+
+    /**
+     * Makes string extension with dot prepended to be ready for use with standard file creation methods of JDK.
+     *
+     * @param compressionType compression type to make extension for
+     * @return dot prepended extension if known compression type is supplied; otherwise {@code null} is returned, this
+     * case includes {@link #NONE}.
+     */
+    public static String makeFileExtenstion( CompressionType compressionType )
+    {
+        if ( compressionType != null && compressionType != NONE )
+        {
+            return "." + compressionType.extension;
+        }
+        return null;
+    }
+
+
 }

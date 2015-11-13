@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 
+import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
@@ -70,6 +71,13 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
             getLogger().error( "Failed to get package", ex );
         }
         return null;
+    }
+
+
+    @Override
+    public Metadata put( InputStream is ) throws IOException
+    {
+        return put( is, CompressionType.NONE );
     }
 
 

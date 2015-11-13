@@ -1,5 +1,7 @@
-package ai.subut.kurjun.http.snap;
+package ai.subut.kurjun.http;
 
+
+import ai.subut.kurjun.http.service.SnapHttpService;
 
 import java.io.IOException;
 import java.io.InputStream;

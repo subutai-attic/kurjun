@@ -27,6 +27,7 @@ public class RepositoryModule extends AbstractModule
                 .implement( LocalRepository.class, Names.named( "APT_WRAPPER" ), LocalAptRepositoryWrapper.class )
                 .implement( LocalRepository.class, Names.named( PackageType.DEB ), LocalAptRepository.class )
                 .implement( LocalRepository.class, Names.named( PackageType.SNAP ), LocalSnapRepository.class )
+                .implement( LocalRepository.class, Names.named( PackageType.SUBUTAI ), LocalTemplateRepository.class )
                 // non-local repositries
                 .implement( NonLocalRepository.class, Names.named( PackageType.SNAP ), NonLocalSnapRepository.class )
                 // unified repositories

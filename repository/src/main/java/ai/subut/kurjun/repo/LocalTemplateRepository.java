@@ -1,11 +1,11 @@
 package ai.subut.kurjun.repo;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Set;
@@ -23,36 +23,36 @@ import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
-import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
+import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 import ai.subut.kurjun.model.storage.FileStore;
-import ai.subut.kurjun.snap.service.SnapMetadataParser;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
+import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
 
 
 /**
- * Local snap repository implementation.
+ * Local repository for Subutai templates.
  *
  */
-class LocalSnapRepository extends LocalRepositoryBase
+public class LocalTemplateRepository extends LocalRepositoryBase
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger( LocalSnapRepository.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( LocalTemplateRepository.class );
 
     private PackageMetadataStoreFactory metadataStoreFactory;
     private FileStoreFactory fileStoreFactory;
-    private SnapMetadataParser metadataParser;
+    private SubutaiTemplateParser templateParser;
 
     private KurjunContext context;
 
 
     @Inject
-    public LocalSnapRepository( PackageMetadataStoreFactory metadataStoreFactory,
-                                FileStoreFactory fileStoreFactory,
-                                SnapMetadataParser metadataParser,
-                                @Assisted KurjunContext context )
+    public LocalTemplateRepository( PackageMetadataStoreFactory metadataStoreFactory,
+                                    FileStoreFactory fileStoreFactory,
+                                    SubutaiTemplateParser templateParser,
+                                    @Assisted KurjunContext context )
     {
         this.metadataStoreFactory = metadataStoreFactory;
         this.fileStoreFactory = fileStoreFactory;
-        this.metadataParser = metadataParser;
+        this.templateParser = templateParser;
         this.context = context;
     }
 
@@ -60,7 +60,7 @@ class LocalSnapRepository extends LocalRepositoryBase
     @Override
     public URL getUrl()
     {
-        throw new UnsupportedOperationException( "TODO: set url" );
+        throw new UnsupportedOperationException( "TODO: Not supported yet." );
     }
 
 
@@ -74,7 +74,7 @@ class LocalSnapRepository extends LocalRepositoryBase
     @Override
     public Set<ReleaseFile> getDistributions()
     {
-        throw new UnsupportedOperationException( "Not supported for snap repositories." );
+        throw new UnsupportedOperationException( "Not supported for template repositories." );
     }
 
 
@@ -85,16 +85,16 @@ class LocalSnapRepository extends LocalRepositoryBase
         FileStore fileStore = getFileStore();
 
         String ext = CompressionType.makeFileExtenstion( compressionType );
-        Path temp = Files.createTempFile( "snap-upload", ext );
+        File temp = Files.createTempFile( "template", ext ).toFile();
         try
         {
-            Files.copy( is, temp, StandardCopyOption.REPLACE_EXISTING );
-            SnapMetadata meta = metadataParser.parse( temp.toFile() );
+            Files.copy( is, temp.toPath(), StandardCopyOption.REPLACE_EXISTING );
+            SubutaiTemplateMetadata meta = templateParser.parseTemplate( temp );
 
-            byte[] md5 = fileStore.put( temp.toFile() );
+            byte[] md5 = fileStore.put( temp );
             if ( Arrays.equals( md5, meta.getMd5Sum() ) )
             {
-                metadataStore.put( MetadataUtils.serializableSnapMetadata( meta ) );
+                metadataStore.put( MetadataUtils.serializableTemplateMetadata( meta ) );
             }
             else
             {
@@ -105,7 +105,7 @@ class LocalSnapRepository extends LocalRepositoryBase
         }
         finally
         {
-            Files.delete( temp );
+            temp.delete();
         }
     }
 
