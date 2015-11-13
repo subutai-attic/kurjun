@@ -72,12 +72,7 @@ class SnapMetadataParserImpl implements SnapMetadataParser
     @Override
     public SnapMetadata parse( InputStream packageStream, CompressionType compressionType ) throws IOException
     {
-        String ext = null;
-        if ( compressionType != null && compressionType != CompressionType.NONE )
-        {
-            ext = "." + compressionType.getExtension();
-        }
-
+        String ext = CompressionType.makeFileExtenstion( compressionType );
         Path target = Files.createTempFile( null, ext );
         try
         {

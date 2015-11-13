@@ -46,7 +46,6 @@ import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
-import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
@@ -133,23 +132,12 @@ class LocalAptRepository extends LocalRepositoryBase
 
 
     @Override
-    public Metadata put( InputStream is ) throws IOException
-    {
-        return put( is, CompressionType.NONE );
-    }
-
-
-    @Override
     public PackageMetadata put( InputStream is, CompressionType compressionType ) throws IOException
     {
         PackageMetadataStore metadataStore = metadataStoreFactory.create( context );
         FileStore fileStore = fileStoreFactory.create( context );
 
-        String ext = null;
-        if ( compressionType != null && compressionType != CompressionType.NONE )
-        {
-            ext = "." + compressionType.getExtension();
-        }
+        String ext = CompressionType.makeFileExtenstion( compressionType );
         Path target = Files.createTempFile( null, ext );
         Path tempDir = Files.createTempDirectory( null );
 

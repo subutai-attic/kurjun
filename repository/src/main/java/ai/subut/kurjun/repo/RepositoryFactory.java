@@ -49,6 +49,16 @@ public interface RepositoryFactory
 
 
     /**
+     * Creates local templates repository for the supplied context.
+     *
+     * @param context
+     * @return
+     */
+    @Named( PackageType.SUBUTAI )
+    LocalRepository craeteLocalTemplate( KurjunContext context );
+
+
+    /**
      * Creates non-local snap repository at specified URL.
      *
      * @param url URL to remote repository
