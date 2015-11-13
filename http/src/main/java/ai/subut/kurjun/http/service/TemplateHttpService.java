@@ -1,4 +1,4 @@
-package ai.subut.kurjun.http.subutai;
+package ai.subut.kurjun.http.service;
 
 
 import javax.ws.rs.Consumes;
@@ -21,17 +21,17 @@ import org.apache.cxf.jaxrs.ext.multipart.Multipart;
  *
  */
 @Path( "templates" )
-public interface HttpService
+public interface TemplateHttpService
 {
 
     @GET
     @Path( "{repository}/get" )
     @Produces( MediaType.TEXT_PLAIN )
     Response getTemplate( @PathParam( "repository" ) String repository,
-                          @QueryParam( TemplateServlet.MD5_PARAM ) String md5,
-                          @QueryParam( TemplateServlet.NAME_PARAM ) String name,
-                          @QueryParam( TemplateServlet.VERSION_PARAM ) String version,
-                          @QueryParam( TemplateServlet.TYPE_PARAM ) String type
+                          @QueryParam( HttpServiceConstants.MD5_PARAM ) String md5,
+                          @QueryParam( HttpServiceConstants.NAME_PARAM ) String name,
+                          @QueryParam( HttpServiceConstants.VERSION_PARAM ) String version,
+                          @QueryParam( HttpServiceConstants.TYPE_PARAM ) String type
     );
 
 
@@ -40,7 +40,7 @@ public interface HttpService
     @Produces( MediaType.TEXT_PLAIN )
     @Consumes( MediaType.MULTIPART_FORM_DATA )
     Response uploadTemplate( @PathParam( "repository" ) String repository,
-                             @Multipart( TemplateUploadServlet.PACKAGE_FILE_PART_NAME ) Attachment attachment
+                             @Multipart( HttpServiceConstants.PACKAGE_FILE_PART_NAME ) Attachment attachment
     );
 
 
@@ -48,7 +48,7 @@ public interface HttpService
     @Path( "{repository}" )
     @Produces( MediaType.TEXT_PLAIN )
     Response deleteTemplates( @PathParam( "repository" ) String repository,
-                              @QueryParam( TemplateServlet.MD5_PARAM ) String md5
+                              @QueryParam( HttpServiceConstants.MD5_PARAM ) String md5
     );
 }
 

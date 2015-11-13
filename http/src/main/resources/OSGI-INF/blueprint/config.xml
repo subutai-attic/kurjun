@@ -33,7 +33,7 @@
 
 
   <!-- HTTP service for snap packages -->
-  <bean id="snapsHttpService" class="ai.subut.kurjun.http.snap.SnapHttpServiceImpl">
+  <bean id="snapsHttpService" class="ai.subut.kurjun.http.SnapHttpServiceImpl">
     <argument ref="repositoryFactory" />
     <argument ref="authManager" />
     <!-- provide context name here -->
@@ -41,7 +41,7 @@
   </bean>
 
   <!-- HTTP service for Subutai templates -->
-  <bean id="templatesHttpService" class="ai.subut.kurjun.http.subutai.HttpServiceImpl">
+  <bean id="templatesHttpService" class="ai.subut.kurjun.http.TemplateHttpServiceImpl">
     <argument ref="fileStoreFactory" />
     <argument ref="metaStoreFactory" />
     <argument ref="templateParser" />
