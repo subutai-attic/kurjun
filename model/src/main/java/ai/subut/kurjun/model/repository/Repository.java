@@ -3,6 +3,7 @@ package ai.subut.kurjun.model.repository;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.List;
 import java.util.Set;
 
 import ai.subut.kurjun.model.index.ReleaseFile;
@@ -106,6 +107,15 @@ public interface Repository
      * @see Repository#getPackageInfo(ai.subut.kurjun.model.metadata.Metadata)
      */
     InputStream getPackageStream( Metadata metadata );
+
+
+    /**
+     * List packages in the repository.
+     *
+     * @return list of package in the repository, never {@code null}.
+     */
+    List<SerializableMetadata> listPackages();
+
 
 }
 

@@ -3,12 +3,14 @@ package ai.subut.kurjun.repo;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.model.metadata.Metadata;
+import ai.subut.kurjun.model.metadata.MetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
@@ -71,6 +73,30 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
             getLogger().error( "Failed to get package", ex );
         }
         return null;
+    }
+
+
+    @Override
+    public List<SerializableMetadata> listPackages()
+    {
+        PackageMetadataStore metadataStore = getMetadataStore();
+        List<SerializableMetadata> result = new LinkedList<>();
+        try
+        {
+            MetadataListing list = metadataStore.list();
+            result.addAll( list.getPackageMetadata() );
+
+            while ( list.isTruncated() )
+            {
+                MetadataListing next = metadataStore.listNextBatch( list );
+                result.addAll( next.getPackageMetadata() );
+            }
+        }
+        catch ( IOException ex )
+        {
+            getLogger().error( "Failed to list package in metadata store", ex );
+        }
+        return result;
     }
 
 

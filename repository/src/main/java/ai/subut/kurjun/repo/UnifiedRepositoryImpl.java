@@ -6,6 +6,8 @@ import java.net.URL;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import ai.subut.kurjun.model.index.ReleaseFile;
@@ -95,6 +97,18 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
             }
         }
         return null;
+    }
+
+
+    @Override
+    public List<SerializableMetadata> listPackages()
+    {
+        List<SerializableMetadata> result = new LinkedList<>();
+        for ( Repository repo : repositories )
+        {
+            result.addAll( repo.listPackages() );
+        }
+        return result;
     }
 
 

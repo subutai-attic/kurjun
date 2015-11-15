@@ -4,6 +4,7 @@ package ai.subut.kurjun.repo;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -89,6 +90,13 @@ class NonLocalAptRepository extends RepositoryBase implements NonLocalRepository
     public InputStream getPackageStream( Metadata metadata )
     {
         throw new UnsupportedOperationException( "Not supported yet." ); //To change body of generated methods, choose Tools | Templates.
+    }
+
+
+    @Override
+    public List<SerializableMetadata> listPackages()
+    {
+        throw new UnsupportedOperationException( "TODO: retrieve packages index and parse." );
     }
 
 
