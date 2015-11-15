@@ -1,8 +1,6 @@
 package ai.subut.kurjun.common;
 
 
-import ai.subut.kurjun.common.service.KurjunContext;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -21,6 +19,7 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import com.google.inject.Binder;
 import com.google.inject.name.Names;
 
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.service.KurjunProperties;
 
 
@@ -42,7 +41,10 @@ class KurjunPropertiesImpl implements KurjunProperties
 
     public KurjunPropertiesImpl() throws ConfigurationException
     {
-        conf = new PropertiesConfiguration( CONF_FILE_PATH );
+        // TODO: check for other cases than OSGi
+        //conf = new PropertiesConfiguration( CONF_FILE_PATH );
+        conf = new PropertiesConfiguration(
+                this.getClass().getClassLoader().getResource( "/" + CONF_FILE_PATH ).toExternalForm() );
         conf.setThrowExceptionOnMissing( false );
     }
 

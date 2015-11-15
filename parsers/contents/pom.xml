@@ -5,7 +5,7 @@
   <parent>
     <artifactId>kurjun-parsers</artifactId>
     <groupId>ai.subut.kurjun</groupId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
   </parent>
 
   <artifactId>kurjun-contents-parser</artifactId>

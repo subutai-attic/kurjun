@@ -154,6 +154,13 @@ class LocalAptRepositoryWrapper extends RepositoryBase implements LocalRepositor
 
 
     @Override
+    public List<SerializableMetadata> listPackages()
+    {
+        throw new UnsupportedOperationException( "TODO: get packages index and parse." );
+    }
+
+
+    @Override
     public boolean delete( byte[] md5 ) throws IOException
     {
         throw new UnsupportedOperationException( "Not supported in non-virtual local apt repository." );

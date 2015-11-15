@@ -8,7 +8,10 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,6 +29,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.common.service.KurjunConstants;
+import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.snap.DefaultSnapMetadata;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
@@ -47,6 +51,7 @@ class NonLocalSnapRepository extends RepositoryBase implements NonLocalRepositor
 
     static final String INFO_PATH = "info";
     static final String GET_PATH = "get";
+    static final String LIST_PATH = "list";
 
     @Inject
     private Gson gson;
@@ -159,6 +164,36 @@ class NonLocalSnapRepository extends RepositoryBase implements NonLocalRepositor
     }
 
 
+    @Override
+    public List<SerializableMetadata> listPackages()
+    {
+        SecureRequestFactory secreq = new SecureRequestFactory( this );
+        WebClient webClient = secreq.makeClient( INFO_PATH, makeParamsMap( new DefaultMetadata() ) );
+        if ( identity != null )
+        {
+            webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
+        }
+
+        Response resp = webClient.get();
+        if ( resp.getStatus() == Response.Status.OK.getStatusCode() )
+        {
+            if ( resp.getEntity() instanceof InputStream )
+            {
+                try
+                {
+                    List<String> items = IOUtils.readLines( ( InputStream ) resp.getEntity() );
+                    return parseItems( items );
+                }
+                catch ( IOException ex )
+                {
+                    LOGGER.error( "Failed to read packages list", ex );
+                }
+            }
+        }
+        return Collections.emptyList();
+    }
+
+
     private Map< String, String> makeParamsMap( Metadata metadata )
     {
         Map<String, String> params = new HashMap<>();
@@ -220,6 +255,18 @@ class NonLocalSnapRepository extends RepositoryBase implements NonLocalRepositor
             }
         }
         return null;
+    }
+
+
+    private List<SerializableMetadata> parseItems( List<String> items )
+    {
+        List<SerializableMetadata> ls = new LinkedList<>();
+        for ( String item : items )
+        {
+            DefaultMetadata m = gson.fromJson( item, DefaultMetadata.class );
+            ls.add( m );
+        }
+        return ls;
     }
 
 }

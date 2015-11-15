@@ -55,7 +55,7 @@ public interface RepositoryFactory
      * @return
      */
     @Named( PackageType.SUBUTAI )
-    LocalRepository craeteLocalTemplate( KurjunContext context );
+    LocalRepository createLocalTemplate( KurjunContext context );
 
 
     /**
