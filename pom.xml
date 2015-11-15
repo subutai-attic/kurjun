@@ -9,7 +9,7 @@
 
   <artifactId>kurjun-parent</artifactId>
   <groupId>ai.subut.kurjun</groupId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
   <modelVersion>4.0.0</modelVersion>
   <name>Kurjun Parent</name>
 
@@ -176,14 +176,14 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>2.5</version>
-        <configuration>
+        <!--        <configuration>
           <archive>
             <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
           </archive>
-        </configuration>
+        </configuration>-->
       </plugin>
       
-      <plugin>
+      <!--      <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
         <version>2.3.4</version>
@@ -194,7 +194,7 @@
             <forced>true</forced>
           </archive>
           <instructions>
-            <!-- use default generated values for Bundle-SymbolicName, Bundle-Name -->
+             use default generated values for Bundle-SymbolicName, Bundle-Name 
             <Class-Path>${osgi.classpath}</Class-Path>
             <Export-Package>${osgi.export-package}</Export-Package>
             <Bundle-Activator>${osgi.bundle-activator}</Bundle-Activator>
@@ -212,7 +212,7 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
+      </plugin>-->
 
     </plugins>
 
