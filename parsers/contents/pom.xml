@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <artifactId>kurjun-parsers</artifactId>
@@ -8,32 +8,32 @@
     <version>1.0</version>
   </parent>
 
-  <artifactId>kurjun-contents-parser</artifactId>
-  <packaging>jar</packaging>
-  <name>Kurjun Contents Index Parser</name>
+    <artifactId>kurjun-contents-parser</artifactId>
+    <packaging>jar</packaging>
+    <name>Kurjun Contents Index Parser</name>
 
-  <properties>
-  </properties>
+    <properties>
+    </properties>
 
-  <build>
-    <testResources>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>true</filtering>
-        <includes>
-          <include>**/*.properties</include>
-        </includes>
-      </testResource>
-    </testResources>
-  </build>
+    <build>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </testResource>
+        </testResources>
+    </build>
 
-  <dependencies>
+    <dependencies>
 
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>model</artifactId>
-      <version>${project.version}</version>
-    </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
-  </dependencies>
+    </dependencies>
 </project>

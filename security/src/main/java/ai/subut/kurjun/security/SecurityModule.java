@@ -22,7 +22,7 @@ public class SecurityModule extends AbstractModule
     protected void configure()
     {
         bind( FileDbProvider.class ).to( FileDbProviderImpl.class );
-        bind( PgpKeyFetcher.class ).to( PgpKeyFercherImpl.class );
+        bind( PgpKeyFetcher.class ).to( PgpKeyFetcherImpl.class );
 
         bind( GroupManager.class ).to( GroupManagerImpl.class );
         bind( IdentityManager.class ).to( IdentityManagerImpl.class );

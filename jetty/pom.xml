@@ -9,6 +9,7 @@
 
   <name>Kurjun Http Jetty</name>
   <artifactId>jetty</artifactId>
+  <description>Kurjun Standalone Jetty Server</description>
   <packaging>jar</packaging>
 
 

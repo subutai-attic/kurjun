@@ -6,7 +6,7 @@ import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 
 
-class SqlDbPackageMetadataStoreFactoryImpl implements SqlDbPackageMetadataStoreFactory
+public class SqlDbPackageMetadataStoreFactoryImpl implements SqlDbPackageMetadataStoreFactory
 {
     private KurjunProperties kurjunProperties;
 

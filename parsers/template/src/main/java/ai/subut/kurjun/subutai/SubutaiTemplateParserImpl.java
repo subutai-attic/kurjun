@@ -26,7 +26,7 @@ import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
 import ai.subut.kurjun.subutai.service.TemplateProperties;
 
 
-class SubutaiTemplateParserImpl implements SubutaiTemplateParser
+public class SubutaiTemplateParserImpl implements SubutaiTemplateParser
 {
 
 

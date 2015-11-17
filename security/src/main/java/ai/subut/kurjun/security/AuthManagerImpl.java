@@ -17,7 +17,7 @@ import ai.subut.kurjun.security.service.AuthManager;
 import ai.subut.kurjun.security.service.IdentityManager;
 
 
-class AuthManagerImpl implements AuthManager
+public class AuthManagerImpl implements AuthManager
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( AuthManagerImpl.class );
 

@@ -28,7 +28,7 @@ import ai.subut.kurjun.common.service.KurjunProperties;
  * {@link KurjunPropertiesImpl#CONF_FILE_PATH}.
  *
  */
-class KurjunPropertiesImpl implements KurjunProperties
+public class KurjunPropertiesImpl implements KurjunProperties
 {
 
     public static final String CONF_FILE_PATH = "kurjun.properties";
@@ -47,6 +47,23 @@ class KurjunPropertiesImpl implements KurjunProperties
                 this.getClass().getClassLoader().getResource( "/" + CONF_FILE_PATH ).toExternalForm() );
         conf.setThrowExceptionOnMissing( false );
     }
+    
+//    public KurjunPropertiesImpl() throws ConfigurationException
+//    {
+//        // TODO: check for other cases than OSGi
+//        
+//        
+//        LOGGER.error( ". = " +this.getClass().getResource("."));
+//        LOGGER.error( "/ = " +this.getClass().getResource(""));
+//        
+//        LOGGER.error( ". = " +this.getClass().getClassLoader().getResource("."));
+//        LOGGER.error( "/ = " +this.getClass().getClassLoader().getResource(""));
+//        
+////        conf = new PropertiesConfiguration( CONF_FILE_PATH );
+////        conf = new PropertiesConfiguration(
+////                this.getClass().getClassLoader().getResource( "/" + CONF_FILE_PATH ).toExternalForm() );
+////        conf.setThrowExceptionOnMissing( false );
+//    }
 
 
     public KurjunPropertiesImpl( Properties properties )

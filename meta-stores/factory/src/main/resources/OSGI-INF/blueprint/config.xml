@@ -8,7 +8,7 @@
   <reference id="sql" interface="ai.subut.kurjun.metadata.storage.sql.SqlDbPackageMetadataStoreFactory"/>
 
   <service interface="ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory">
-    <bean class="ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory">
+    <bean class="ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactoryImpl">
       <argument ref="kurjunProperties"/>
       <argument ref="file"/>
       <argument ref="nosql"/>

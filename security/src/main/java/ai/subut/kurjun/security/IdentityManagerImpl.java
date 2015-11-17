@@ -30,7 +30,7 @@ import ai.subut.kurjun.security.service.RoleManager;
 import ai.subut.kurjun.security.utils.PGPUtils;
 
 
-class IdentityManagerImpl implements IdentityManager
+public class IdentityManagerImpl implements IdentityManager
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( IdentityManagerImpl.class );
 

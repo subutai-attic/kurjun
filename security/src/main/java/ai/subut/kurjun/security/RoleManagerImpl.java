@@ -11,7 +11,7 @@ import ai.subut.kurjun.security.service.FileDbProvider;
 import ai.subut.kurjun.security.service.RoleManager;
 
 
-class RoleManagerImpl implements RoleManager
+public class RoleManagerImpl implements RoleManager
 {
     private static final String MAP_NAME = "roles";
 

@@ -10,7 +10,7 @@ import ai.subut.kurjun.model.storage.FileStore;
  * File system backed file store factory implementation. Used for OSGi DI.
  *
  */
-class FileSystemFileStoreFactoryImpl implements FileSystemFileStoreFactory
+public class FileSystemFileStoreFactoryImpl implements FileSystemFileStoreFactory
 {
     private KurjunProperties properties;
 

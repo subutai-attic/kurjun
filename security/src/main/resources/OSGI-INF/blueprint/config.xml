@@ -37,7 +37,7 @@
   </service>
 
   <service interface="ai.subut.kurjun.security.service.AuthManager">
-    <bean class="ai.subut.kurjun.security.AuthManager">
+    <bean class="ai.subut.kurjun.security.AuthManagerImpl">
       <argument ref="identityManager" />
     </bean>
   </service>

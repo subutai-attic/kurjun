@@ -26,7 +26,7 @@ import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
 
 
-class PackagesIndexParserImpl implements PackagesIndexParser
+public class PackagesIndexParserImpl implements PackagesIndexParser
 {
 
     @Override

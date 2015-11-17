@@ -33,7 +33,7 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
  * {@link SqlStatements} for table structure.
  *
  */
-class SqlDbPackageMetadataStore implements PackageMetadataStore
+public class SqlDbPackageMetadataStore implements PackageMetadataStore
 {
 
     int batchSize = 1000;

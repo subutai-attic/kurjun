@@ -11,7 +11,7 @@ import ai.subut.kurjun.storage.factory.FileStoreFactory;
  * Simple implementation of {@link AptIndexBuilderFactory}. Used in Blueprint config file.
  *
  */
-class AptIndexBuilderFactoryImpl implements AptIndexBuilderFactory
+public class AptIndexBuilderFactoryImpl implements AptIndexBuilderFactory
 {
 
     private FileStoreFactory fileStoreFactory;

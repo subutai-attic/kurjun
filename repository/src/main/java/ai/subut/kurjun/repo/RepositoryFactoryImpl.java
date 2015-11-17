@@ -19,7 +19,7 @@ import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
  * Implementation of {@link RepositoryFactory}. Used in Blueprint config file.
  *
  */
-class RepositoryFactoryImpl implements RepositoryFactory
+public class RepositoryFactoryImpl implements RepositoryFactory
 {
     private ReleaseIndexParser releaseIndexParser;
     private ControlFileParser controlFileParser;

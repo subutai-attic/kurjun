@@ -12,7 +12,7 @@ import ai.subut.kurjun.security.service.FileDbProvider;
 import ai.subut.kurjun.security.service.GroupManager;
 
 
-class GroupManagerImpl implements GroupManager
+public class GroupManagerImpl implements GroupManager
 {
     private static final String MAP_NAME = "groups";
 
