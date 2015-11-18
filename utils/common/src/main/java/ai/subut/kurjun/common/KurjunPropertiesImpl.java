@@ -24,8 +24,8 @@ import ai.subut.kurjun.common.service.KurjunProperties;
 
 
 /**
- * Implementation of {@link KurjunProperties} that reads properties from file specified by
- * {@link KurjunPropertiesImpl#CONF_FILE_PATH}.
+ * Implementation of {@link KurjunProperties} that reads properties from file
+ * specified by {@link KurjunPropertiesImpl#CONF_FILE_PATH}.
  *
  */
 public class KurjunPropertiesImpl implements KurjunProperties
@@ -41,29 +41,11 @@ public class KurjunPropertiesImpl implements KurjunProperties
 
     public KurjunPropertiesImpl() throws ConfigurationException
     {
-        // TODO: check for other cases than OSGi
-        //conf = new PropertiesConfiguration( CONF_FILE_PATH );
+        // conf = new PropertiesConfiguration( CONF_FILE_PATH );
         conf = new PropertiesConfiguration(
-                this.getClass().getClassLoader().getResource( "/" + CONF_FILE_PATH ).toExternalForm() );
+                this.getClass().getResource( "/" + CONF_FILE_PATH ).toExternalForm() );
         conf.setThrowExceptionOnMissing( false );
     }
-    
-//    public KurjunPropertiesImpl() throws ConfigurationException
-//    {
-//        // TODO: check for other cases than OSGi
-//        
-//        
-//        LOGGER.error( ". = " +this.getClass().getResource("."));
-//        LOGGER.error( "/ = " +this.getClass().getResource(""));
-//        
-//        LOGGER.error( ". = " +this.getClass().getClassLoader().getResource("."));
-//        LOGGER.error( "/ = " +this.getClass().getClassLoader().getResource(""));
-//        
-////        conf = new PropertiesConfiguration( CONF_FILE_PATH );
-////        conf = new PropertiesConfiguration(
-////                this.getClass().getClassLoader().getResource( "/" + CONF_FILE_PATH ).toExternalForm() );
-////        conf.setThrowExceptionOnMissing( false );
-//    }
 
 
     public KurjunPropertiesImpl( Properties properties )
@@ -191,4 +173,3 @@ public class KurjunPropertiesImpl implements KurjunProperties
         Names.bindProperties( binder, ConfigurationConverter.getProperties( conf ) );
     }
 }
-
