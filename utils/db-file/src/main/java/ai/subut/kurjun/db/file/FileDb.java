@@ -27,6 +27,7 @@ public class FileDb implements Closeable
     protected final TxMaker txMaker;
 
 
+
     /**
      * Constructs file based db backed by supplied file.
      *
@@ -57,11 +58,25 @@ public class FileDb implements Closeable
         {
             dbMaker.readOnly();
         }
-        this.txMaker = dbMaker
-                .closeOnJvmShutdown()
-                .mmapFileEnableIfSupported()
-                .snapshotEnable()
-                .makeTxMaker();
+        
+        // TODO: Check on standalone env of temporary CL swapping
+
+        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+
+        try
+        {
+            Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
+
+            this.txMaker = dbMaker
+                    .closeOnJvmShutdown()
+                    .mmapFileEnableIfSupported()
+                    .snapshotEnable()
+                    .makeTxMaker();
+        }
+        finally
+        {
+            Thread.currentThread().setContextClassLoader( tccl );
+        }
     }
 
 
@@ -81,19 +96,30 @@ public class FileDb implements Closeable
      *
      * @param mapName name of the map to check
      * @param key key to check association for
-     * @return {@code true} if map contains association for the key; {@code false} otherwise
+     * @return {@code true} if map contains association for the key;
+     * {@code false} otherwise
      */
     public boolean contains( String mapName, Object key )
     {
-        DB db = txMaker.makeTx();
+        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         try
         {
-            return db.getHashMap( mapName ).containsKey( key );
+            Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
+
+            DB db = txMaker.makeTx();
+            try
+            {
+                return db.getHashMap( mapName ).containsKey( key );
+            }
+            finally
+            {
+                db.commit();
+                db.close();
+            }
         }
         finally
         {
-            db.commit();
-            db.close();
+            Thread.currentThread().setContextClassLoader( tccl );
         }
     }
 
@@ -109,15 +135,25 @@ public class FileDb implements Closeable
      */
     public <T> T get( String mapName, Object key, Class<T> clazz )
     {
-        DB db = txMaker.makeTx();
+        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         try
         {
-            return ( T ) db.getHashMap( mapName ).get( key );
+            Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
+
+            DB db = txMaker.makeTx();
+            try
+            {
+                return ( T ) db.getHashMap( mapName ).get( key );
+            }
+            finally
+            {
+                db.commit();
+                db.close();
+            }
         }
         finally
         {
-            db.commit();
-            db.close();
+            Thread.currentThread().setContextClassLoader( tccl );
         }
     }
 
@@ -136,19 +172,29 @@ public class FileDb implements Closeable
         // it occurs when there was no map with given name and tried to get a snapshot
         contains( mapName, "dummy-key" );
 
-        Map<K, V> result = new HashMap<>();
-        DB db = txMaker.makeTx();
+        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         try
         {
-            Map<K, V> snapshot = ( Map<K, V> ) db.getHashMap( mapName ).snapshot();
-            result.putAll( snapshot );
+            Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
+
+            Map<K, V> result = new HashMap<>();
+            DB db = txMaker.makeTx();
+            try
+            {
+                Map<K, V> snapshot = ( Map<K, V> ) db.getHashMap( mapName ).snapshot();
+                result.putAll( snapshot );
+            }
+            finally
+            {
+                db.commit();
+                db.close();
+            }
+            return Collections.unmodifiableMap( result );
         }
         finally
         {
-            db.commit();
-            db.close();
+            Thread.currentThread().setContextClassLoader( tccl );
         }
-        return Collections.unmodifiableMap( result );
     }
 
 
@@ -159,20 +205,31 @@ public class FileDb implements Closeable
      * @param mapName name of the map to put mapping to
      * @param key key value
      * @param value value to be associated with the key
-     * @return the previous value associated with key, or null if there was no mapping for key
+     * @return the previous value associated with key, or null if there was no
+     * mapping for key
      */
     public <T> T put( String mapName, Object key, T value )
     {
-        DB db = txMaker.makeTx();
+        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         try
         {
-            T put = ( T ) db.getHashMap( mapName ).put( key, value );
-            db.commit();
-            return put;
+            Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
+
+            DB db = txMaker.makeTx();
+            try
+            {
+                T put = ( T ) db.getHashMap( mapName ).put( key, value );
+                db.commit();
+                return put;
+            }
+            finally
+            {
+                db.close();
+            }
         }
         finally
         {
-            db.close();
+            Thread.currentThread().setContextClassLoader( tccl );
         }
     }
 
@@ -183,20 +240,30 @@ public class FileDb implements Closeable
      * @param <T> type of the value
      * @param mapName map name
      * @param key key value to remove mapping for
-     * @return the previous value associated with key, or null if there was no mapping for key
+     * @return the previous value associated with key, or null if there was no
+     * mapping for key
      */
     public <T> T remove( String mapName, Object key )
     {
-        DB db = txMaker.makeTx();
+        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         try
         {
-            T removed = ( T ) db.getHashMap( mapName ).remove( key );
-            db.commit();
-            return removed;
+            Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
+            DB db = txMaker.makeTx();
+            try
+            {
+                T removed = ( T ) db.getHashMap( mapName ).remove( key );
+                db.commit();
+                return removed;
+            }
+            finally
+            {
+                db.close();
+            }
         }
         finally
         {
-            db.close();
+            Thread.currentThread().setContextClassLoader( tccl );
         }
     }
 
@@ -211,4 +278,3 @@ public class FileDb implements Closeable
     }
 
 }
-
