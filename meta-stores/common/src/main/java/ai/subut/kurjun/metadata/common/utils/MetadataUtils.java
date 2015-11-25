@@ -129,7 +129,10 @@ public class MetadataUtils
         m.setMd5Sum( metadata.getMd5Sum() );
         m.setName( metadata.getName() );
         m.setVersion( metadata.getVersion() );
+        m.setParent( metadata.getParent() );
+        m.setPackage( metadata.getPackage() );
         m.setArchitecture( metadata.getArchitecture() );
+        m.setExtra( metadata.getExtra() );
         return m;
     }
 
