@@ -21,6 +21,8 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
     private byte[] md5Sum;
     private String name;
     private String version;
+    private String parent;
+    private String packageName;
     private Architecture architecture;
     private Map< String, String> extra = new HashMap<>();
 
@@ -77,6 +79,32 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
     }
 
 
+    @Override
+    public String getParent()
+    {
+        return parent;
+    }
+
+
+    public void setParent( String parent )
+    {
+        this.parent = parent;
+    }
+
+
+    @Override
+    public String getPackage()
+    {
+        return packageName;
+    }
+
+
+    public void setPackage( String packageName )
+    {
+        this.packageName = packageName;
+    }
+
+    
     @Override
     public Map<String, String> getExtra()
     {

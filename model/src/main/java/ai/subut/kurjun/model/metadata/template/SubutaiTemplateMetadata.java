@@ -23,10 +23,25 @@ public interface SubutaiTemplateMetadata extends Metadata
 
 
     /**
+     * Gets parent template name.
+     *
+     * @return parent template name
+     */
+    String getParent();
+    
+    
+    /**
+     * Gets package with absolute path.
+     *
+     * @return package with absolute path
+     */
+    String getPackage();
+
+
+    /**
      * Gets additional properties map of the Subutai template.
      *
      * @return map of property values
      */
     Map< String, String> getExtra();
 }
-

@@ -86,6 +86,20 @@ public class SubutaiTemplateParserImpl implements SubutaiTemplateParser
 
 
             @Override
+            public String getParent()
+            {
+                return prop.getProperty( TemplateProperties.PARENT );
+            }
+
+
+            @Override
+            public String getPackage()
+            {
+                return prop.getProperty( TemplateProperties.PACKAGE );
+            }
+            
+
+            @Override
             public byte[] getMd5Sum()
             {
                 return md5;
@@ -113,6 +127,8 @@ public class SubutaiTemplateParserImpl implements SubutaiTemplateParser
                 skipProperties.add( TemplateProperties.NAME );
                 skipProperties.add( TemplateProperties.VERSION );
                 skipProperties.add( TemplateProperties.ARCH );
+                skipProperties.add( TemplateProperties.PARENT );
+                skipProperties.add( TemplateProperties.PACKAGE );
 
                 Map< String, String> map = new HashMap<>();
                 for ( String key : prop.stringPropertyNames() )
