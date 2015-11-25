@@ -4,6 +4,7 @@ package ai.subut.kurjun.repo;
 import com.google.inject.name.Named;
 
 import ai.subut.kurjun.common.service.KurjunContext;
+import ai.subut.kurjun.model.annotation.Nullable;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.repository.NonLocalRepository;
 import ai.subut.kurjun.model.repository.PackageType;
@@ -66,7 +67,17 @@ public interface RepositoryFactory
      * @return non-local snap repository
      */
     @Named( PackageType.SNAP )
-    NonLocalRepository createNonLocalSnap( String url, Identity identity );
+    NonLocalRepository createNonLocalSnap( String url, @Nullable Identity identity );
+
+    /**
+     * Creates non-local template repository at specified URL.
+     *
+     * @param url URL to remote repository
+     * @param identity identity to be used for requests for remote repo, maybe {@code null}
+     * @return non-local template repository
+     */
+    @Named( PackageType.SUBUTAI )
+    NonLocalRepository createNonLocalTemplate( String url, @Nullable Identity identity );
 
 
     /**

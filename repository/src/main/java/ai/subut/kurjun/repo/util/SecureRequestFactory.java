@@ -20,7 +20,7 @@ import io.subutai.common.util.RestUtil;
 public class SecureRequestFactory
 {
 
-    private Repository remoteRepository;
+    private final Repository remoteRepository;
 
 
     /**
@@ -38,15 +38,16 @@ public class SecureRequestFactory
      * Prepares a web client that can do secure requests to the repository at specified path with supplied query
      * parameters.
      *
+     * @param repositoryPath repository path
      * @param path path to make a request
      * @param queryParams optional query parameters with map keys as parameter names and values as parameter values
      * @return
      */
-    public WebClient makeClient( String path, Map<String, String> queryParams )
+    public WebClient makeClient( String repositoryPath, String path, Map<String, String> queryParams )
     {
         // merge repository path and supplied path
         StringBuilder pathBuilder = new StringBuilder();
-        pathBuilder.append( remoteRepository.getPath() );
+        pathBuilder.append( repositoryPath );
         if ( !path.startsWith( "/" ) )
         {
             pathBuilder.append( "/" );
@@ -66,7 +67,7 @@ public class SecureRequestFactory
                 queryBuilder.append( e.getKey() ).append( "=" ).append( e.getValue() );
             }
         }
-
+        
         try
         {
             URI uri = new URI( remoteRepository.getProtocol().toString(), null,
@@ -78,12 +79,25 @@ public class SecureRequestFactory
 
             // refer to design page at https://confluence.subutai.io/x/HQS3AQ
             String alias = SecuritySettings.KEYSTORE_PX2_ROOT_ALIAS;
-            return RestUtil.createTrustedWebClientWithAuth( uri.toURL().toString(), alias );
+            return RestUtil.createTrustedWebClient( uri.toURL().toString(), alias );
         }
         catch ( URISyntaxException | MalformedURLException ex )
         {
             throw new IllegalArgumentException( "Failed to build URL", ex );
         }
+    }
+    
+    /**
+     * Prepares a web client that can do secure requests to the repository at specified path with supplied query
+     * parameters.
+     *
+     * @param path path to make a request
+     * @param queryParams optional query parameters with map keys as parameter names and values as parameter values
+     * @return
+     */
+    public WebClient makeClient( String path, Map<String, String> queryParams )
+    {
+        return makeClient( remoteRepository.getPath(), path, queryParams );
     }
 }
 

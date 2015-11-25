@@ -31,6 +31,7 @@ import com.google.inject.assistedinject.Assisted;
 import ai.subut.kurjun.common.service.KurjunConstants;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.snap.DefaultSnapMetadata;
+import ai.subut.kurjun.model.annotation.Nullable;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
@@ -62,7 +63,7 @@ class NonLocalSnapRepository extends RepositoryBase implements NonLocalRepositor
 
 
     @Inject
-    public NonLocalSnapRepository( PackageCache cache, @Assisted String url, @Assisted Identity identity )
+    public NonLocalSnapRepository( PackageCache cache, @Assisted String url, @Assisted @Nullable Identity identity )
     {
         this.cache = cache;
         this.identity = identity;
@@ -270,4 +271,3 @@ class NonLocalSnapRepository extends RepositoryBase implements NonLocalRepositor
     }
 
 }
-

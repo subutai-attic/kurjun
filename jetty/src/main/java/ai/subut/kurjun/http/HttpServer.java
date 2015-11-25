@@ -39,6 +39,7 @@ import ai.subut.kurjun.snap.SnapMetadataParserModule;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 import ai.subut.kurjun.storage.factory.FileStoreModule;
 import ai.subut.kurjun.subutai.SubutaiTemplateParserModule;
+import org.eclipse.jetty.server.ServerConnector;
 
 
 public class HttpServer
@@ -67,7 +68,15 @@ public class HttpServer
         handler.setContextPath( "/" );
         handler.addFilter( f, "/*", EnumSet.allOf( DispatcherType.class ) );
 
-        Server server = new Server( properties.getIntegerWithDefault( HTTP_PORT_KEY, 8080 ) );
+        Server server = new Server();
+
+        ServerConnector http = new ServerConnector( server );
+        // http.setHost( "0.0.0.0" );
+        http.setHost( "localhost" );
+        http.setPort( properties.getIntegerWithDefault( HTTP_PORT_KEY, 8080 ) );
+        http.setIdleTimeout( 30000 );
+
+        server.addConnector( http );
         server.setHandler( handler );
 
         server.start();

@@ -84,6 +84,12 @@ public class RepositoryFactoryImpl implements RepositoryFactory
     {
         return new NonLocalSnapRepository( cache, url, identity );
     }
+    
+    @Override
+    public NonLocalRepository createNonLocalTemplate( String url, Identity identity )
+    {
+        return new NonLocalTemplateRepository(cache, url, identity );
+    }
 
 
     @Override
