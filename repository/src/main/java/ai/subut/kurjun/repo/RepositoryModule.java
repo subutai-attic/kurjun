@@ -30,6 +30,7 @@ public class RepositoryModule extends AbstractModule
                 .implement( LocalRepository.class, Names.named( PackageType.SUBUTAI ), LocalTemplateRepository.class )
                 // non-local repositries
                 .implement( NonLocalRepository.class, Names.named( PackageType.SNAP ), NonLocalSnapRepository.class )
+                .implement( NonLocalRepository.class, Names.named( PackageType.SUBUTAI ), NonLocalTemplateRepository.class )
                 // unified repositories
                 .implement( UnifiedRepository.class, UnifiedRepositoryImpl.class )
                 // finally build the module
