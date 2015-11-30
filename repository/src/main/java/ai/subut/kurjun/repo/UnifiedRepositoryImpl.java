@@ -19,16 +19,18 @@ import ai.subut.kurjun.model.repository.UnifiedRepository;
 
 
 /**
- * Unified repository implementation. This implementation does not differentiate repository package types. It is just a
- * wrapper to a collection of repository instances. All repository instances have suitable operations and so there is no
- * need to differentiate package types. Package type related flags or operations maybe added in future.
+ * Unified repository implementation. This implementation does not differentiate
+ * repository package types. It is just a wrapper to a collection of repository
+ * instances. All repository instances have suitable operations and so there is
+ * no need to differentiate package types. Package type related flags or
+ * operations maybe added in future.
  *
  */
 class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
 {
 
     private URL url;
-    private Set<Repository> repositories;
+    private final Set<Repository> repositories;
 
 
     public UnifiedRepositoryImpl()
@@ -106,7 +108,14 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
         List<SerializableMetadata> result = new LinkedList<>();
         for ( Repository repo : repositories )
         {
-            result.addAll( repo.listPackages() );
+            List<SerializableMetadata> list = repo.listPackages();
+            for ( SerializableMetadata meta : list )
+            {
+                if ( !result.contains( meta ) )
+                {
+                    result.add( meta );
+                }
+            }
         }
         return result;
     }
@@ -114,19 +123,13 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
 
     private Comparator<Repository> makeLocalsFirstComparator()
     {
-        return new Comparator<Repository>()
+        return ( Repository r1, Repository r2 ) ->
         {
-            @Override
-            public int compare( Repository r1, Repository r2 )
-            {
-                // local repo shall go first so it shall have lesser value
-                int i1 = r1 instanceof LocalRepository ? 0 : 1;
-                int i2 = r2 instanceof LocalRepository ? 0 : 1;
-                return Integer.compare( i1, i2 );
-            }
+            // local repo shall go first so it shall have lesser value
+            int i1 = r1 instanceof LocalRepository ? 0 : 1;
+            int i2 = r2 instanceof LocalRepository ? 0 : 1;
+            return Integer.compare( i1, i2 );
         };
     }
 
-
 }
-

@@ -13,10 +13,14 @@ import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
 import ai.subut.kurjun.metadata.common.snap.DefaultSnapMetadata;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
+import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.apt.Dependency;
 import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
+import java.util.HashMap;
+import java.util.Map;
+import org.apache.commons.codec.binary.Hex;
 
 
 public class MetadataUtils
@@ -134,6 +138,25 @@ public class MetadataUtils
         m.setArchitecture( metadata.getArchitecture() );
         m.setExtra( metadata.getExtra() );
         return m;
+    }
+    
+    
+    public static Map< String, String> makeParamsMap( Metadata metadata )
+    {
+        Map<String, String> params = new HashMap<>();
+        if ( metadata.getMd5Sum() != null )
+        {
+            params.put( "md5", Hex.encodeHexString( metadata.getMd5Sum() ) );
+        }
+        if ( metadata.getName() != null )
+        {
+            params.put( "name", metadata.getName() );
+        }
+        if ( metadata.getVersion() != null )
+        {
+            params.put( "version", metadata.getVersion() );
+        }
+        return params;
     }
 
 

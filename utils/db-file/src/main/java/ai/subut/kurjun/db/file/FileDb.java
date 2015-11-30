@@ -60,6 +60,8 @@ public class FileDb implements Closeable
         }
         
         // TODO: Check on standalone env of temporary CL swapping
+        // In newer version there is a setter for CL. See: https://github.com/jankotek/mapdb/issues/555
+        // By using this setter CL swapping can be avoided.
 
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
 

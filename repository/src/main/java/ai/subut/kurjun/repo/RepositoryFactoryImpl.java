@@ -13,6 +13,7 @@ import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
 import ai.subut.kurjun.snap.service.SnapMetadataParser;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
+import java.net.URL;
 
 
 /**
@@ -61,7 +62,7 @@ public class RepositoryFactoryImpl implements RepositoryFactory
     public LocalRepository createLocalApt( KurjunContext context )
     {
         return new LocalAptRepository( controlFileParser, templateParser, fileStoreFactory, metadataStoreFactory,
-                                       context );
+                context );
     }
 
 
@@ -84,11 +85,19 @@ public class RepositoryFactoryImpl implements RepositoryFactory
     {
         return new NonLocalSnapRepository( cache, url, identity );
     }
-    
+
+
     @Override
     public NonLocalRepository createNonLocalTemplate( String url, Identity identity )
     {
-        return new NonLocalTemplateRepository(cache, url, identity );
+        return new NonLocalTemplateRepository( cache, url, identity );
+    }
+
+
+    @Override
+    public NonLocalRepository createNonLocalApt( URL url )
+    {
+        return new NonLocalAptRepository( cache, releaseIndexParser, url );
     }
 
 
@@ -98,6 +107,4 @@ public class RepositoryFactoryImpl implements RepositoryFactory
         return new UnifiedRepositoryImpl();
     }
 
-
 }
-

@@ -4,6 +4,7 @@ package ai.subut.kurjun.repo;
 import ai.subut.kurjun.common.service.KurjunConstants;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
+import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.annotation.Nullable;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
@@ -26,14 +27,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.slf4j.Logger;
@@ -48,6 +47,8 @@ public class NonLocalTemplateRepository extends RepositoryBase implements NonLoc
 
     private static final Logger LOGGER = LoggerFactory.getLogger( NonLocalTemplateRepository.class );
 
+    static final String INFO_PATH = "info";
+    static final String LIST_PATH = "list";
     static final String GET_PATH = "get";
     static final String TOKEN_PATH = "rest/v1/identity/gettoken";
 
@@ -109,7 +110,7 @@ public class NonLocalTemplateRepository extends RepositoryBase implements NonLoc
     public SerializableMetadata getPackageInfo( Metadata metadata )
     {
         SecureRequestFactory secreq = new SecureRequestFactory( this );
-        WebClient webClient = secreq.makeClient( GET_PATH, makeParamsMap( metadata ) );
+        WebClient webClient = secreq.makeClient( INFO_PATH, makeParamsMap( metadata ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -168,7 +169,7 @@ public class NonLocalTemplateRepository extends RepositoryBase implements NonLoc
     public List<SerializableMetadata> listPackages()
     {
         SecureRequestFactory secreq = new SecureRequestFactory( this );
-        WebClient webClient = secreq.makeClient( "", makeParamsMap( new DefaultMetadata() ) );
+        WebClient webClient = secreq.makeClient( LIST_PATH, makeParamsMap( new DefaultMetadata() ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -196,25 +197,13 @@ public class NonLocalTemplateRepository extends RepositoryBase implements NonLoc
 
     private Map< String, String> makeParamsMap( Metadata metadata )
     {
-        Map<String, String> params = new HashMap<>();
+        Map<String, String> params = MetadataUtils.makeParamsMap( metadata );
 
         if ( useToken )
         {
             params.put( "sptoken", getRemoteToken() );
         }
 
-        if ( metadata.getMd5Sum() != null )
-        {
-            params.put( "md5", Hex.encodeHexString( metadata.getMd5Sum() ) );
-        }
-        if ( metadata.getName() != null )
-        {
-            params.put( "name", metadata.getName() );
-        }
-        if ( metadata.getVersion() != null )
-        {
-            params.put( "version", metadata.getVersion() );
-        }
         return params;
     }
 

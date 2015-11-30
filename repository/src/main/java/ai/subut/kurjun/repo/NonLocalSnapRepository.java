@@ -31,6 +31,7 @@ import com.google.inject.assistedinject.Assisted;
 import ai.subut.kurjun.common.service.KurjunConstants;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.snap.DefaultSnapMetadata;
+import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.annotation.Nullable;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
@@ -110,7 +111,7 @@ class NonLocalSnapRepository extends RepositoryBase implements NonLocalRepositor
     public SerializableMetadata getPackageInfo( Metadata metadata )
     {
         SecureRequestFactory secreq = new SecureRequestFactory( this );
-        WebClient webClient = secreq.makeClient( INFO_PATH, makeParamsMap( metadata ) );
+        WebClient webClient = secreq.makeClient( INFO_PATH, MetadataUtils.makeParamsMap( metadata ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -146,7 +147,7 @@ class NonLocalSnapRepository extends RepositoryBase implements NonLocalRepositor
         }
 
         SecureRequestFactory secreq = new SecureRequestFactory( this );
-        WebClient webClient = secreq.makeClient( GET_PATH, makeParamsMap( metadata ) );
+        WebClient webClient = secreq.makeClient( GET_PATH, MetadataUtils.makeParamsMap( metadata ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -169,7 +170,7 @@ class NonLocalSnapRepository extends RepositoryBase implements NonLocalRepositor
     public List<SerializableMetadata> listPackages()
     {
         SecureRequestFactory secreq = new SecureRequestFactory( this );
-        WebClient webClient = secreq.makeClient( INFO_PATH, makeParamsMap( new DefaultMetadata() ) );
+        WebClient webClient = secreq.makeClient( INFO_PATH, MetadataUtils.makeParamsMap( new DefaultMetadata() ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -192,25 +193,6 @@ class NonLocalSnapRepository extends RepositoryBase implements NonLocalRepositor
             }
         }
         return Collections.emptyList();
-    }
-
-
-    private Map< String, String> makeParamsMap( Metadata metadata )
-    {
-        Map<String, String> params = new HashMap<>();
-        if ( metadata.getMd5Sum() != null )
-        {
-            params.put( "md5", Hex.encodeHexString( metadata.getMd5Sum() ) );
-        }
-        if ( metadata.getName() != null )
-        {
-            params.put( "name", metadata.getName() );
-        }
-        if ( metadata.getVersion() != null )
-        {
-            params.put( "version", metadata.getVersion() );
-        }
-        return params;
     }
 
 

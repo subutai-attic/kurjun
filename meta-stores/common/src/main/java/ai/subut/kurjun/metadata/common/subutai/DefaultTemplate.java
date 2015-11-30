@@ -124,5 +124,36 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
         return MetadataUtils.JSON.toJson( this );
     }
 
+
+    @Override
+    public int hashCode()
+    {
+        int hash = 3;
+        hash = 17 * hash + Arrays.hashCode( this.md5Sum );
+        return hash;
+    }
+
+
+    @Override
+    public boolean equals( Object obj )
+    {
+        if ( obj == null )
+        {
+            return false;
+        }
+        if ( getClass() != obj.getClass() )
+        {
+            return false;
+        }
+        final DefaultTemplate other = ( DefaultTemplate ) obj;
+        if ( !Arrays.equals( this.md5Sum, other.md5Sum ) )
+        {
+            return false;
+        }
+        return true;
+    }
+    
+    
+
 }
 
