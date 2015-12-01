@@ -128,6 +128,13 @@ public class DefaultTar implements Tar
                 }
                 else if ( entry.isFile() )
                 {
+                    File dir = new File( extractTo, entry.getName() );
+
+                    if ( !dir.getParentFile().exists() )
+                    {
+                        checkState( dir.getParentFile().mkdirs() );
+                    }
+                    
                     int readBytes;
                     byte[] buffer = new byte[1024];
                     File outFile = new File( extractTo, entry.getName() );
