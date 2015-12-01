@@ -6,9 +6,9 @@ package ai.subut.kurjun.model.metadata;
  */
 public enum Architecture
 {
-    ALL,
-    AMD64,
-    i386;
+    ALL, AMD64, i386,
+    I686, X86_64, IA64, ALPHA, ARM, ARMEB, ARMEL, HPPA, M32R, M68K, MIPS, MIPSEL, POWERPC, PPC64, S390,
+    S390X, SH3, SH3EB, SH4, SH4EB, SPARC, ARMHF, ARMV7;
 
 
     /**
