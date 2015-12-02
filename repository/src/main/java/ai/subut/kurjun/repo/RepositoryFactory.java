@@ -75,10 +75,12 @@ public interface RepositoryFactory
      *
      * @param url URL to remote repository
      * @param identity identity to be used for requests for remote repo, maybe {@code null}
+     * @param useToken flag to indicate where to request access token from remote url and add this token
+     * to query parameters of the next request
      * @return non-local template repository
      */
     @Named( PackageType.SUBUTAI )
-    NonLocalRepository createNonLocalTemplate( String url, @Nullable Identity identity );
+    NonLocalRepository createNonLocalTemplate( String url, @Nullable Identity identity, boolean useToken );
     
     /**
      * Creates non-local virtual apt repository at specified URL.

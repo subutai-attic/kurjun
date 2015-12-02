@@ -59,14 +59,15 @@ public class NonLocalTemplateRepository extends RepositoryBase implements NonLoc
     private final URL url;
     private final Identity identity;
 
-    private boolean useToken = true;
+    private boolean useToken = false;
 
 
     @Inject
-    public NonLocalTemplateRepository( PackageCache cache, @Assisted String url, @Assisted @Nullable Identity identity )
+    public NonLocalTemplateRepository( PackageCache cache, @Assisted String url, @Assisted @Nullable Identity identity, @Assisted boolean useToken )
     {
         this.cache = cache;
         this.identity = identity;
+        this.useToken = useToken;
         try
         {
             this.url = new URL( url );
