@@ -67,7 +67,7 @@
         </executions>
       </plugin>
 
-<!--      <plugin>
+      <!--      <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <descriptor>src/main/resources/assembly.xml</descriptor>
@@ -104,54 +104,6 @@
       <version>${subutai.version}</version>
     </dependency>
     
-    <dependency>
-      <groupId>ai.subut.kurjun</groupId>
-      <artifactId>model</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>common-utils</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>repository</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>security</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>file-store-factory</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>metadata-store-factory</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>snap-parser</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>kurjun-template-parser</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-        
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-frontend-jaxrs</artifactId>
