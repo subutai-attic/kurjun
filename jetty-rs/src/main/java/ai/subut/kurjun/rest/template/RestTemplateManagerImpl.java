@@ -40,7 +40,7 @@ public class RestTemplateManagerImpl extends RestManagerBase implements RestTemp
 
     public RestTemplateManagerImpl()
     {
-        TemplateManagerImpl impl = new TemplateManagerImpl( null );
+        TemplateManagerImpl impl = new TemplateManagerImpl( null, null );
         impl.init();
         this.templateManager = impl;
     }
