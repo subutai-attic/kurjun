@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<assembly>
+
+  <id>bundle</id>
+
+  <formats>
+    <format>zip</format>
+    <format>tgz</format>
+  </formats>
+
+  <includeBaseDirectory>false</includeBaseDirectory>
+
+  <fileSets>
+    <fileSet>
+      <directory>${project.build.directory}/lib</directory>
+      <outputDirectory>lib</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${project.build.directory}</directory>
+      <includes>
+        <include>${project.build.finalName}.jar</include>
+      </includes>
+      <outputDirectory>.</outputDirectory>
+    </fileSet>
+  </fileSets>
+
+</assembly>
