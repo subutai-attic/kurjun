@@ -23,6 +23,8 @@ import io.subutai.core.kurjun.api.TemplateManager;
 import io.subutai.common.protocol.TemplateKurjun;
 import ai.subut.kurjun.rest.RestManagerBase;
 import io.subutai.core.kurjun.impl.TemplateManagerImpl;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.codec.binary.Hex;
@@ -35,17 +37,20 @@ public class RestTemplateManagerImpl extends RestManagerBase implements RestTemp
 
     private static final Gson GSON = new GsonBuilder().create();
 
+    private final boolean iskurjun = true;
+    
     private TemplateManager templateManager = null;
 
 
-    public RestTemplateManagerImpl()
+    
+    public RestTemplateManagerImpl() throws MalformedURLException
     {
         TemplateManagerImpl impl = new TemplateManagerImpl( null, null );
         impl.init();
         this.templateManager = impl;
     }
-
-
+    
+    
     @Override
     public Response getTemplate( String repository, String md5, String name, String version, String type )
     {
@@ -54,8 +59,8 @@ public class RestTemplateManagerImpl extends RestManagerBase implements RestTemp
             byte[] md5bytes = decodeMd5( md5 );
             if ( md5bytes != null )
             {
-                TemplateKurjun template = templateManager.getTemplate( repository, md5bytes );
-                InputStream is = templateManager.getTemplateData( repository, md5bytes );
+                TemplateKurjun template = templateManager.getTemplate( repository, md5bytes, iskurjun );
+                InputStream is = templateManager.getTemplateData( repository, md5bytes, iskurjun );
                 if ( template != null && is != null )
                 {
                     return Response.ok( is )
@@ -66,7 +71,7 @@ public class RestTemplateManagerImpl extends RestManagerBase implements RestTemp
             }
             else
             {
-                TemplateKurjun template = templateManager.getTemplate( repository, name, version );
+                TemplateKurjun template = templateManager.getTemplate( repository, name, version, iskurjun );
 
                 if ( template != null && RestTemplateManager.RESPONSE_TYPE_MD5.equals( type ) )
                 {
@@ -92,14 +97,14 @@ public class RestTemplateManagerImpl extends RestManagerBase implements RestTemp
             byte[] md5bytes = decodeMd5( md5 );
             if ( md5bytes != null )
             {
-                TemplateKurjun template = templateManager.getTemplate( repository, md5bytes );
+                TemplateKurjun template = templateManager.getTemplate( repository, md5bytes, iskurjun );
                 if ( template != null )
                 {
                     return Response.ok( GSON.toJson( convertToDefaultTemplate( template ) ) ).build();
                 }
             }
 
-            TemplateKurjun template = templateManager.getTemplate( repository, name, version );
+            TemplateKurjun template = templateManager.getTemplate( repository, name, version, iskurjun );
 
             if ( template != null )
             {
@@ -121,7 +126,7 @@ public class RestTemplateManagerImpl extends RestManagerBase implements RestTemp
     {
         try
         {
-            List<TemplateKurjun> list = templateManager.list( repository );
+            List<TemplateKurjun> list = templateManager.list( repository, iskurjun );
             if ( list != null )
             {
                 List<DefaultTemplate> deflist = list.stream().map( t -> convertToDefaultTemplate( t ) ).collect( Collectors.toList() );
