@@ -205,6 +205,9 @@ public class NonLocalTemplateRepository extends RepositoryBase implements NonLoc
             params.put( "sptoken", getRemoteToken() );
         }
 
+        // Set parameter kc=kurjun_client to indicate this request is going from Kurjun
+        params.put( "kc", Boolean.TRUE.toString() );
+
         return params;
     }
 
