@@ -16,14 +16,13 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.repository.Repository;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
+import java.util.stream.Collectors;
 
 
 /**
- * Unified repository implementation. This implementation does not differentiate
- * repository package types. It is just a wrapper to a collection of repository
- * instances. All repository instances have suitable operations and so there is
- * no need to differentiate package types. Package type related flags or
- * operations maybe added in future.
+ * Unified repository implementation. This implementation does not differentiate repository package types. It is just a
+ * wrapper to a collection of repository instances. All repository instances have suitable operations and so there is no
+ * need to differentiate package types. Package type related flags or operations maybe added in future.
  *
  */
 class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
@@ -31,12 +30,14 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
 
     private URL url;
     private final Set<Repository> repositories;
+    private final Set<Repository> secondaryRepositories;
 
 
     public UnifiedRepositoryImpl()
     {
         // TODO: set url
         this.repositories = new HashSet<>();
+        this.secondaryRepositories = new HashSet<>();
     }
 
 
@@ -71,8 +72,7 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
     @Override
     public SerializableMetadata getPackageInfo( Metadata metadata )
     {
-        Comparator<Repository> c = makeLocalsFirstComparator();
-        Iterator<Repository> it = repositories.stream().sorted( c ).iterator();
+        Iterator<Repository> it = getAllRepositories().iterator();
         while ( it.hasNext() )
         {
             SerializableMetadata m = it.next().getPackageInfo( metadata );
@@ -88,8 +88,7 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
     @Override
     public InputStream getPackageStream( Metadata metadata )
     {
-        Comparator<Repository> c = makeLocalsFirstComparator();
-        Iterator<Repository> it = repositories.stream().sorted( c ).iterator();
+        Iterator<Repository> it = getAllRepositories().iterator();
         while ( it.hasNext() )
         {
             InputStream is = it.next().getPackageStream( metadata );
@@ -106,7 +105,7 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
     public List<SerializableMetadata> listPackages()
     {
         List<SerializableMetadata> result = new LinkedList<>();
-        for ( Repository repo : repositories )
+        for ( Repository repo : getAllRepositories() )
         {
             List<SerializableMetadata> list = repo.listPackages();
             for ( SerializableMetadata meta : list )
@@ -130,6 +129,23 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
             int i2 = r2 instanceof LocalRepository ? 0 : 1;
             return Integer.compare( i1, i2 );
         };
+    }
+    
+    @Override
+    public Set<Repository> getSecondaryRepositories()
+    {
+        return secondaryRepositories;
+    }
+
+
+    private List<Repository> getAllRepositories()
+    {
+        Comparator<Repository> c = makeLocalsFirstComparator();
+        List<Repository> sorted = repositories.stream().sorted( c ).collect( Collectors.toList() );
+        List<Repository> list = new LinkedList<>();
+        list.addAll( sorted );
+        list.addAll( secondaryRepositories );
+        return list;
     }
 
 }

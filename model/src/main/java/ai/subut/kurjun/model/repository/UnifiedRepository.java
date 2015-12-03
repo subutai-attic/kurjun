@@ -10,4 +10,6 @@ import java.util.Set;
 public interface UnifiedRepository extends Repository
 {
     Set<Repository> getRepositories();
+    
+    Set<Repository> getSecondaryRepositories();
 }
