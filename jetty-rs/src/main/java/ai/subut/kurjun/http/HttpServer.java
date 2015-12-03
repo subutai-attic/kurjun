@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import ai.subut.kurjun.rest.template.RestTemplateManagerImpl;
 import ai.subut.kurjun.rest.vapt.RestAptManagerImpl;
 import org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
@@ -35,6 +36,14 @@ public class HttpServer
                     + RestTemplateManagerImpl.class.getName() );
 
             server.setHandler( context );
+
+            ServerConnector http = new ServerConnector( server );
+            http.setHost( "0.0.0.0" );
+//            http.setHost( "localhost" );
+            http.setIdleTimeout( 30000 );
+
+            server.addConnector( http );
+
             server.start();
             LOGGER.info( "Kurjun Jetty Server Started." );
             server.join();
