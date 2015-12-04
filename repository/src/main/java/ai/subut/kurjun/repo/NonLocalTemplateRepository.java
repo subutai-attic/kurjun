@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.ws.rs.client.ClientException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.commons.io.IOUtils;
@@ -38,9 +39,10 @@ import org.apache.cxf.jaxrs.client.WebClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 /**
  * TODO: Refactor common methods of all non local repos into base one.
- * 
+ *
  */
 public class NonLocalTemplateRepository extends RepositoryBase implements NonLocalRepository
 {
@@ -117,8 +119,8 @@ public class NonLocalTemplateRepository extends RepositoryBase implements NonLoc
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
         }
 
-        Response resp = webClient.get();
-        if ( resp.getStatus() == Response.Status.OK.getStatusCode() )
+        Response resp = doGet( webClient );
+        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
         {
             if ( resp.getEntity() instanceof InputStream )
             {
@@ -153,8 +155,8 @@ public class NonLocalTemplateRepository extends RepositoryBase implements NonLoc
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
         }
 
-        Response resp = webClient.get();
-        if ( resp.getStatus() == Response.Status.OK.getStatusCode() )
+        Response resp = doGet( webClient );
+        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
         {
             if ( resp.getEntity() instanceof InputStream )
             {
@@ -176,8 +178,8 @@ public class NonLocalTemplateRepository extends RepositoryBase implements NonLoc
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
         }
 
-        Response resp = webClient.get();
-        if ( resp.getStatus() == Response.Status.OK.getStatusCode() )
+        Response resp = doGet( webClient );
+        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
         {
             if ( resp.getEntity() instanceof InputStream )
             {
@@ -196,7 +198,21 @@ public class NonLocalTemplateRepository extends RepositoryBase implements NonLoc
     }
 
 
-    private Map< String, String> makeParamsMap( Metadata metadata )
+    private Response doGet( WebClient webClient )
+    {
+        try
+        {
+            return webClient.get();
+        }
+        catch ( ClientException e )
+        {
+            LOGGER.warn( "Failed to do GET.", e );
+            return null;
+        }
+    }
+
+
+    private Map<String, String> makeParamsMap( Metadata metadata )
     {
         Map<String, String> params = MetadataUtils.makeParamsMap( metadata );
 
@@ -219,10 +235,10 @@ public class NonLocalTemplateRepository extends RepositoryBase implements NonLoc
                 ImmutableMap.of( "username", "admin", "password", "secret" ) );
 
         webClient.accept( MediaType.TEXT_PLAIN );
-        Response response = webClient.get();
-        if ( response.getStatus() == Response.Status.OK.getStatusCode() )
+        Response resp = doGet( webClient );
+        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
         {
-            return response.readEntity( String.class );
+            return resp.readEntity( String.class );
         }
         else
         {
