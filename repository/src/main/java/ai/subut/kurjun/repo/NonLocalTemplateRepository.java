@@ -36,6 +36,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.transport.http.HTTPConduit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +63,8 @@ public class NonLocalTemplateRepository extends RepositoryBase implements NonLoc
     private final Identity identity;
 
     private boolean useToken = false;
+
+    private static final long CONN_TIMEOUT = 3000;
 
 
     @Inject
@@ -202,6 +205,8 @@ public class NonLocalTemplateRepository extends RepositoryBase implements NonLoc
     {
         try
         {
+            HTTPConduit httpConduit = ( HTTPConduit ) WebClient.getConfig( webClient ).getConduit();
+            httpConduit.getClient().setConnectionTimeout( CONN_TIMEOUT );
             return webClient.get();
         }
         catch ( ClientException e )
