@@ -10,8 +10,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 
 import com.google.inject.Inject;
@@ -28,7 +26,6 @@ import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.security.service.AuthManager;
 
-import static ai.subut.kurjun.http.HttpServletBase.MD5_PARAM;
 import static ai.subut.kurjun.http.HttpServletBase.NAME_PARAM;
 import static ai.subut.kurjun.http.HttpServletBase.VERSION_PARAM;
 
@@ -67,7 +64,7 @@ public class SnapUniServlet extends HttpServletBase
 
 
         DefaultMetadata meta = new DefaultMetadata();
-        meta.setMd5sum( getMd5ParameterValue( req, MD5_PARAM ) );
+        meta.setMd5sum( getMd5ParameterValue( req ) );
         meta.setName( req.getParameter( NAME_PARAM ) );
         meta.setVersion( req.getParameter( VERSION_PARAM ) );
 
@@ -113,20 +110,5 @@ public class SnapUniServlet extends HttpServletBase
     }
 
 
-    private byte[] getMd5ParameterValue( HttpServletRequest req, String paramName )
-    {
-        String md5 = req.getParameter( paramName );
-        if ( md5 != null )
-        {
-            try
-            {
-                return Hex.decodeHex( md5.toCharArray() );
-            }
-            catch ( DecoderException ex )
-            {
-            }
-        }
-        return null;
-    }
 }
 

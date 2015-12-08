@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 
@@ -66,10 +65,17 @@ class TemplateServlet extends TemplateServletBase
                 badRequest( resp, "Invalid template type: " + repo );
                 return;
             }
-            String md5 = req.getParameter( MD5_PARAM );
-            if ( md5 != null )
+            if ( req.getParameter( MD5_PARAM ) != null )
             {
-                getByMd5( md5, resp, context );
+                byte[] md5 = getMd5ParameterValue( req );
+                if ( md5 != null )
+                {
+                    getByMd5( md5, resp, context );
+                }
+                else
+                {
+                    badRequest( resp, "Invalid MD5 checksum." );
+                }
             }
             else
             {
@@ -109,14 +115,9 @@ class TemplateServlet extends TemplateServletBase
                 badRequest( resp, "Invalid template type: " + repo );
                 return;
             }
-            byte[] md5;
-            try
+            byte[] md5 = getMd5ParameterValue( req );
+            if ( md5 == null )
             {
-                md5 = Hex.decodeHex( md5hex.toCharArray() );
-            }
-            catch ( DecoderException ex )
-            {
-                LOGGER.warn( ex.getMessage() );
                 badRequest( resp, "Invalid md5 value" );
                 return;
             }
@@ -146,20 +147,8 @@ class TemplateServlet extends TemplateServletBase
     }
 
 
-    private void getByMd5( String md5hex, HttpServletResponse resp, KurjunContext context ) throws IOException
+    private void getByMd5( byte[] md5, HttpServletResponse resp, KurjunContext context ) throws IOException
     {
-        byte[] md5;
-        try
-        {
-            md5 = Hex.decodeHex( md5hex.toCharArray() );
-        }
-        catch ( DecoderException ex )
-        {
-            LOGGER.warn( ex.getMessage() );
-            badRequest( resp, "Invalid md5 value" );
-            return;
-        }
-
         PackageMetadataStore metadataStore = metadataStoreFactory.create( context );
         SerializableMetadata meta = metadataStore.get( md5 );
         if ( meta == null )
