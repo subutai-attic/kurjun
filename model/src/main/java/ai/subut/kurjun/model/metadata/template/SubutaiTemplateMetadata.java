@@ -28,8 +28,8 @@ public interface SubutaiTemplateMetadata extends Metadata
      * @return parent template name
      */
     String getParent();
-    
-    
+
+
     /**
      * Gets package with absolute path.
      *
@@ -39,9 +39,26 @@ public interface SubutaiTemplateMetadata extends Metadata
 
 
     /**
+     * Gets contents of the "config" file of this template.
+     *
+     * @return contents of the "config" file
+     */
+    String getConfigContents();
+
+
+    /**
+     * Gets contents of the "packages" file of this template.
+     *
+     * @return contents of the "packages" file
+     */
+    String getPackagesContents();
+
+
+    /**
      * Gets additional properties map of the Subutai template.
      *
      * @return map of property values
      */
     Map< String, String> getExtra();
 }
+

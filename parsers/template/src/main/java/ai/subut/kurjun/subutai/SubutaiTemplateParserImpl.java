@@ -1,12 +1,12 @@
 package ai.subut.kurjun.subutai;
 
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -17,6 +17,7 @@ import java.util.Set;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 import ai.subut.kurjun.ar.DefaultTar;
 import ai.subut.kurjun.ar.Tar;
@@ -28,6 +29,10 @@ import ai.subut.kurjun.subutai.service.TemplateProperties;
 
 public class SubutaiTemplateParserImpl implements SubutaiTemplateParser
 {
+
+    static final String MD5_KEY = "x-md5";
+    static final String CONFIG_FILE_CONTENTS_KEY = "x-config";
+    static final String PACKAGES_FILE_CONTENTS_KEY = "x-packages";
 
 
     @Override
@@ -46,9 +51,11 @@ public class SubutaiTemplateParserImpl implements SubutaiTemplateParser
             tar.extract( targetDir.toFile() );
 
             Path configPath = targetDir.resolve( "config" );
-            try ( InputStream is = new FileInputStream( configPath.toFile() ) )
+            Path packagesPath = targetDir.resolve( "packages" );
+            try ( InputStream cis = new FileInputStream( configPath.toFile() );
+                  InputStream pis = new FileInputStream( packagesPath.toFile() ) )
             {
-                return parseConfigFile( is, md5 );
+                return parseConfigFile( cis, pis, md5 );
             }
         }
         finally
@@ -61,19 +68,41 @@ public class SubutaiTemplateParserImpl implements SubutaiTemplateParser
     @Override
     public SubutaiTemplateMetadata parseTemplateConfigFile( InputStream stream ) throws IOException
     {
-        return parseConfigFile( stream, null );
+        return parseConfigFile( stream, null, null );
     }
 
 
-    private SubutaiTemplateMetadata parseConfigFile( InputStream stream, byte[] md5 ) throws IOException
+    private SubutaiTemplateMetadata parseConfigFile( InputStream stream, InputStream packagesStream, byte[] md5 ) throws IOException
     {
+        if ( stream == null )
+        {
+            throw new IOException( "Input stream is null." );
+        }
+
+        String txt = IOUtils.toString( stream );
+
         // Subutai config files complies to standard java properties file, so reading it as properties
         Properties prop = new Properties();
-        try ( BufferedReader br = new BufferedReader( new InputStreamReader( stream ) ) )
+        prop.put( CONFIG_FILE_CONTENTS_KEY, txt );
+        try ( Reader br = new InputStreamReader( IOUtils.toInputStream( txt ) ) )
         {
             prop.load( br );
         }
+        if ( packagesStream != null )
+        {
+            prop.put( PACKAGES_FILE_CONTENTS_KEY, IOUtils.toString( packagesStream ) );
+        }
+        if ( md5 != null )
+        {
+            prop.put( MD5_KEY, md5 );
+        }
 
+        return makeMetadata( prop );
+    }
+
+
+    private SubutaiTemplateMetadata makeMetadata( Properties prop )
+    {
         return new SubutaiTemplateMetadata()
         {
 
@@ -97,12 +126,12 @@ public class SubutaiTemplateParserImpl implements SubutaiTemplateParser
             {
                 return prop.getProperty( TemplateProperties.PACKAGE );
             }
-            
+
 
             @Override
             public byte[] getMd5Sum()
             {
-                return md5;
+                return ( byte[] ) prop.get( MD5_KEY );
             }
 
 
@@ -121,6 +150,20 @@ public class SubutaiTemplateParserImpl implements SubutaiTemplateParser
 
 
             @Override
+            public String getConfigContents()
+            {
+                return prop.getProperty( CONFIG_FILE_CONTENTS_KEY );
+            }
+
+
+            @Override
+            public String getPackagesContents()
+            {
+                return prop.getProperty( PACKAGES_FILE_CONTENTS_KEY );
+            }
+
+
+            @Override
             public Map<String, String> getExtra()
             {
                 Set<String> skipProperties = new HashSet<>();
@@ -129,6 +172,9 @@ public class SubutaiTemplateParserImpl implements SubutaiTemplateParser
                 skipProperties.add( TemplateProperties.ARCH );
                 skipProperties.add( TemplateProperties.PARENT );
                 skipProperties.add( TemplateProperties.PACKAGE );
+                skipProperties.add( MD5_KEY );
+                skipProperties.add( CONFIG_FILE_CONTENTS_KEY );
+                skipProperties.add( PACKAGES_FILE_CONTENTS_KEY );
 
                 Map< String, String> map = new HashMap<>();
                 for ( String key : prop.stringPropertyNames() )

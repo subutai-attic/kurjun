@@ -24,6 +24,8 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
     private String parent;
     private String packageName;
     private Architecture architecture;
+    private String configContents;
+    private String packagesContents;
     private Map< String, String> extra = new HashMap<>();
 
 
@@ -104,7 +106,33 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
         this.packageName = packageName;
     }
 
-    
+
+    @Override
+    public String getConfigContents()
+    {
+        return configContents;
+    }
+
+
+    public void setConfigContents( String configContents )
+    {
+        this.configContents = configContents;
+    }
+
+
+    @Override
+    public String getPackagesContents()
+    {
+        return packagesContents;
+    }
+
+
+    public void setPackagesContents( String packagesContents )
+    {
+        this.packagesContents = packagesContents;
+    }
+
+
     @Override
     public Map<String, String> getExtra()
     {
@@ -137,23 +165,14 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
     @Override
     public boolean equals( Object obj )
     {
-        if ( obj == null )
+        if ( obj instanceof DefaultTemplate )
         {
-            return false;
+            DefaultTemplate other = ( DefaultTemplate ) obj;
+            return Arrays.equals( this.md5Sum, other.md5Sum );
         }
-        if ( getClass() != obj.getClass() )
-        {
-            return false;
-        }
-        final DefaultTemplate other = ( DefaultTemplate ) obj;
-        if ( !Arrays.equals( this.md5Sum, other.md5Sum ) )
-        {
-            return false;
-        }
-        return true;
+        return false;
     }
-    
-    
+
 
 }
 

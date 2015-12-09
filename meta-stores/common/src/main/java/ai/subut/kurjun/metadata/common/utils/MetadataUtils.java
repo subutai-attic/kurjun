@@ -2,7 +2,11 @@ package ai.subut.kurjun.metadata.common.utils;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.codec.binary.Hex;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -18,9 +22,6 @@ import ai.subut.kurjun.model.metadata.apt.Dependency;
 import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.commons.codec.binary.Hex;
 
 
 public class MetadataUtils
@@ -136,11 +137,13 @@ public class MetadataUtils
         m.setParent( metadata.getParent() );
         m.setPackage( metadata.getPackage() );
         m.setArchitecture( metadata.getArchitecture() );
+        m.setConfigContents( metadata.getConfigContents() );
+        m.setPackagesContents( metadata.getPackagesContents() );
         m.setExtra( metadata.getExtra() );
         return m;
     }
-    
-    
+
+
     public static Map< String, String> makeParamsMap( Metadata metadata )
     {
         Map<String, String> params = new HashMap<>();
