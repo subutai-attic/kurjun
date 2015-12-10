@@ -43,17 +43,23 @@ public class ReleaseIndexBuilder
 
     private final Set<CompressionType> compressionTypes = new HashSet<>();
 
+    private final KurjunContext context;
     private PackagesIndexBuilder packagesIndexBuilder;
+    private PackagesProviderFactory packagesProviderFactory;
 
 
     @Inject
-    public ReleaseIndexBuilder( AptIndexBuilderFactory indexBuilderFactory, @Assisted KurjunContext context )
+    public ReleaseIndexBuilder( AptIndexBuilderFactory indexBuilderFactory,
+                                PackagesProviderFactory packagesProviderFactory,
+                                @Assisted KurjunContext context )
     {
         compressionTypes.add( CompressionType.NONE );
         compressionTypes.add( CompressionType.GZIP );
         compressionTypes.add( CompressionType.BZIP2 );
 
+        this.context = context;
         packagesIndexBuilder = indexBuilderFactory.createPackagesIndexBuilder( context );
+        this.packagesProviderFactory = packagesProviderFactory;
     }
 
 
@@ -179,7 +185,8 @@ public class ReleaseIndexBuilder
                     }
                     try ( ByteArrayOutputStream os = new ByteArrayOutputStream() )
                     {
-                        packagesIndexBuilder.buildIndex( component, arch, os, compressionType );
+                        packagesIndexBuilder.buildIndex( packagesProviderFactory.create( context, component, arch ),
+                                                         os, compressionType );
 
                         byte[] md5 = md5Digest.digest( os.toByteArray() );
                         byte[] sha1 = sha1Digest.digest( os.toByteArray() );

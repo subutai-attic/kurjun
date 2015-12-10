@@ -29,14 +29,14 @@ public class AptIndexBuilderFactoryImpl implements AptIndexBuilderFactory
     @Override
     public PackagesIndexBuilder createPackagesIndexBuilder( KurjunContext context )
     {
-        return new PackagesIndexBuilderImpl( fileStoreFactory, metadataStoreFactory, context );
+        return new PackagesIndexBuilderImpl( fileStoreFactory, context );
     }
 
 
     @Override
     public ReleaseIndexBuilder createReleaseIndexBuilder( KurjunContext context )
     {
-        return new ReleaseIndexBuilder( this, context );
+        return null; // TODO: new ReleaseIndexBuilder( this, context );
     }
 
 }

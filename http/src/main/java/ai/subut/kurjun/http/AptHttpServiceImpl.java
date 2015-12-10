@@ -38,6 +38,7 @@ import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.security.Permission;
+import ai.subut.kurjun.repo.util.PackagesProviderFactory;
 import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.repo.service.PackageFilenameBuilder;
 import ai.subut.kurjun.repo.service.PackageFilenameParser;
@@ -54,6 +55,7 @@ class AptHttpServiceImpl extends HttpServiceBase implements AptHttpService
     private RepositoryFactory repositoryFactory;
     private AuthManager authManager;
     private AptIndexBuilderFactory indexBuilderFactory;
+    private PackagesProviderFactory packagesProviderFactory;
     private PackageFilenameParser filenameParser;
     private PackageFilenameBuilder filenameBuilder;
     private Gson gson;
@@ -65,6 +67,7 @@ class AptHttpServiceImpl extends HttpServiceBase implements AptHttpService
     public AptHttpServiceImpl( RepositoryFactory repositoryFactory,
                                AuthManager authManager,
                                AptIndexBuilderFactory indexBuilderFactory,
+                               PackagesProviderFactory packagesProviderFactory,
                                PackageFilenameParser filenameParser,
                                PackageFilenameBuilder filenameBuilder,
                                Gson gson,
@@ -73,6 +76,7 @@ class AptHttpServiceImpl extends HttpServiceBase implements AptHttpService
         this.repositoryFactory = repositoryFactory;
         this.authManager = authManager;
         this.indexBuilderFactory = indexBuilderFactory;
+        this.packagesProviderFactory = packagesProviderFactory;
         this.filenameParser = filenameParser;
         this.filenameBuilder = filenameBuilder;
         this.gson = gson;
@@ -131,7 +135,8 @@ class AptHttpServiceImpl extends HttpServiceBase implements AptHttpService
         PackagesIndexBuilder packagesIndexBuilder = indexBuilderFactory.createPackagesIndexBuilder( context );
         try ( ByteArrayOutputStream os = new ByteArrayOutputStream() )
         {
-            packagesIndexBuilder.buildIndex( component, architecture, os, compressionType );
+            PackagesIndexBuilder.PackagesProvider packs = packagesProviderFactory.create( repo, component, architecture );
+            packagesIndexBuilder.buildIndex( packs, os, compressionType );
             return rb.entity( new ByteArrayInputStream( os.toByteArray() ) ).build();
         }
         catch ( IOException ex )

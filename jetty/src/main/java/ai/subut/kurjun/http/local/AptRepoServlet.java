@@ -21,6 +21,7 @@ import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.security.Permission;
+import ai.subut.kurjun.repo.util.PackagesProviderFactory;
 import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.repo.service.PackagesIndexBuilder;
 import ai.subut.kurjun.repo.util.AptIndexBuilderFactory;
@@ -40,6 +41,9 @@ class AptRepoServlet extends HttpServletBase
 
     @Inject
     private AptIndexBuilderFactory indexBuilderFactory;
+
+    @Inject
+    private PackagesProviderFactory packagesProviderFactory;
 
     @Inject
     private RepositoryFactory repositoryFactory;
@@ -135,7 +139,8 @@ class AptRepoServlet extends HttpServletBase
         PackagesIndexBuilder packagesIndexBuilder = indexBuilderFactory.createPackagesIndexBuilder( context );
         try ( OutputStream os = resp.getOutputStream() )
         {
-            packagesIndexBuilder.buildIndex( component, arch, os, compressionType );
+            packagesIndexBuilder.buildIndex( packagesProviderFactory.create( repository, component, arch ), os,
+                                             compressionType );
         }
     }
 

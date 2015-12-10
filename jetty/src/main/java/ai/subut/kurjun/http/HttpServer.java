@@ -10,6 +10,7 @@ import java.util.Set;
 import javax.servlet.DispatcherType;
 
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.slf4j.Logger;
@@ -39,7 +40,6 @@ import ai.subut.kurjun.snap.SnapMetadataParserModule;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 import ai.subut.kurjun.storage.factory.FileStoreModule;
 import ai.subut.kurjun.subutai.SubutaiTemplateParserModule;
-import org.eclipse.jetty.server.ServerConnector;
 
 
 public class HttpServer
@@ -72,7 +72,7 @@ public class HttpServer
 
         ServerConnector http = new ServerConnector( server );
         // http.setHost( "0.0.0.0" );
-        http.setHost( "localhost" );
+        // http.setHost( "localhost" );
         http.setPort( properties.getIntegerWithDefault( HTTP_PORT_KEY, 8080 ) );
         http.setIdleTimeout( 30000 );
 

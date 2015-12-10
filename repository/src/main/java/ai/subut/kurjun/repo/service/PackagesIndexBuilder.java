@@ -3,9 +3,11 @@ package ai.subut.kurjun.repo.service;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 import ai.subut.kurjun.ar.CompressionType;
-import ai.subut.kurjun.model.metadata.Architecture;
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.repo.util.PackagesProviderFactory;
 
 
 /**
@@ -15,29 +17,29 @@ import ai.subut.kurjun.model.metadata.Architecture;
 public interface PackagesIndexBuilder
 {
 
-    /**
-     * Builds packages index file for the supplied component and architecture. Output will be plain stream without
-     * compression.
-     *
-     * @param component component name to build packages index
-     * @param arch architecture of packages to be included in the index
-     * @param os sink to output packages index stream
-     * @throws IOException
-     */
-    void buildIndex( String component, Architecture arch, OutputStream os ) throws IOException;
-
 
     /**
-     * Builds packages index file for the supplied component and architecture. Output will be compressed by specified
-     * compression type.
+     * Builds packages index file for packages provided by {@link PackagesProvider}. Output will be compresses by
+     * specified compression type. To produce plain output without compression use {@link CompressionType#NONE}.
      *
-     * @param component component name to build packages index
-     * @param arch architecture of packages to be included in the index
-     * @param os sink to output packages index stream
+     * @param provider packages provider whose packages will be used to build packages index
+     * @param os sink to output packages index contents
      * @param compressionType compression type to compress output stream
      * @throws IOException
      */
-    void buildIndex( String component, Architecture arch, OutputStream os, CompressionType compressionType ) throws IOException;
+    void buildIndex( PackagesProvider provider, OutputStream os, CompressionType compressionType ) throws IOException;
+
+
+    /**
+     * Packages provider for packages index builder. Packages index is usually built for some certain component and
+     * architecture. Those parameters are expected to be present when creating instances of this class.
+     *
+     * @see PackagesProviderFactory
+     */
+    interface PackagesProvider
+    {
+        List<SerializableMetadata> getPackages();
+    }
 
 
 }
