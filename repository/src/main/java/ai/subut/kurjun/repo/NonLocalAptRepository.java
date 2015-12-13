@@ -1,52 +1,68 @@
 package ai.subut.kurjun.repo;
 
 
-import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
-import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.cxf.jaxrs.client.WebClient;
+
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
+import ai.subut.kurjun.ar.CompressionType;
+import ai.subut.kurjun.index.service.PackagesIndexParser;
+import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
+import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
+import ai.subut.kurjun.model.index.Checksum;
+import ai.subut.kurjun.model.index.ChecksummedResource;
+import ai.subut.kurjun.model.index.IndexPackageMetaData;
 import ai.subut.kurjun.model.index.ReleaseFile;
+import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.NonLocalRepository;
 import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.repo.cache.PackageCache;
-import ai.subut.kurjun.repo.http.HttpHandler;
+import ai.subut.kurjun.repo.http.PathBuilder;
 import ai.subut.kurjun.repo.util.SecureRequestFactory;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.HashSet;
-import javax.ws.rs.core.Response;
-import org.apache.commons.io.IOUtils;
-import org.apache.cxf.jaxrs.client.WebClient;
 
 
 /**
- * Nonlocal repository implementation. Remote repositories can be either
- * non-virtual or virtual, this does not matter for {@link NonLocalRepository}
- * implementation.
+ * Nonlocal repository implementation. Remote repositories can be either non-virtual or virtual, this does not matter
+ * for {@link NonLocalRepository} implementation.
  *
  */
 class NonLocalAptRepository extends RepositoryBase implements NonLocalRepository
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( NonLocalAptRepository.class );
 
-    private final HttpHandler httpHandler = new HttpHandler( this );
     private final URL url;
-    private final ReleaseIndexParser releaseIndexParser;
-    private final PackageCache cache;
+
+    @Inject
+    ReleaseIndexParser releaseIndexParser;
+
+    @Inject
+    PackagesIndexParser packagesIndexParser;
+
+    @Inject
+    PackageCache cache;
 
     static final String INFO_PATH = "info";
     static final String GET_PATH = "get";
@@ -59,15 +75,12 @@ class NonLocalAptRepository extends RepositoryBase implements NonLocalRepository
     /**
      * Constructs nonlocal repository located by the specified URL.
      *
-     * @param releaseIndexParser
      * @param url URL of the remote repository
      */
     @Inject
-    public NonLocalAptRepository( PackageCache cache, ReleaseIndexParser releaseIndexParser, @Assisted URL url )
+    public NonLocalAptRepository( @Assisted URL url )
     {
-        this.releaseIndexParser = releaseIndexParser;
         this.url = url;
-        this.cache = cache;
     }
 
 
@@ -96,7 +109,7 @@ class NonLocalAptRepository extends RepositoryBase implements NonLocalRepository
     @Override
     public Set<ReleaseFile> getDistributions()
     {
-        
+
         SecureRequestFactory secreq = new SecureRequestFactory( this );
         WebClient webClient = secreq.makeClient( RELEASE_PATH, null );
 
@@ -173,6 +186,29 @@ class NonLocalAptRepository extends RepositoryBase implements NonLocalRepository
     }
 
 
+    @Override
+    public List<SerializableMetadata> listPackages()
+    {
+        List<SerializableMetadata> result = new LinkedList<>();
+        Set<ReleaseFile> distributions = getDistributions();
+
+        for ( ReleaseFile distr : distributions )
+        {
+            PathBuilder pb = PathBuilder.instance().setRelease( distr );
+            for ( String component : distr.getComponents() )
+            {
+                for ( Architecture arch : distr.getArchitectures() )
+                {
+                    String path = pb.setResource( makePackagesIndexResource( component, arch ) ).build();
+                    List<SerializableMetadata> items = fetchPackagesMetadata( path, component );
+                    result.addAll( items );
+                }
+            }
+        }
+        return result;
+    }
+
+
     private InputStream checkCache( Metadata metadata )
     {
         if ( metadata.getMd5Sum() != null )
@@ -218,16 +254,60 @@ class NonLocalAptRepository extends RepositoryBase implements NonLocalRepository
     }
 
 
-    @Override
-    public List<SerializableMetadata> listPackages()
+    private ChecksummedResource makePackagesIndexResource( String component, Architecture architecture )
     {
-        throw new UnsupportedOperationException( "TODO: retrieve packages index and parse." );
+        return new ChecksummedResource()
+        {
+            @Override
+            public String getRelativePath()
+            {
+                return String.format( "%s/binary-%s/Packages", component, architecture.toString() );
+            }
+
+
+            @Override
+            public long getSize()
+            {
+                throw new UnsupportedOperationException( "Not to be used." );
+            }
+
+
+            @Override
+            public byte[] getChecksum( Checksum type )
+            {
+                throw new UnsupportedOperationException( "Not to be used." );
+            }
+        };
     }
 
 
-    protected InputStream openReleaseIndexFileStream( String release ) throws IOException
+    private List<SerializableMetadata> fetchPackagesMetadata( String path, String component )
     {
-        return httpHandler.streamReleaseIndexFile( release, false );
+        SecureRequestFactory secreq = new SecureRequestFactory( this );
+        WebClient webClient = secreq.makeClient( path, null );
+
+        Response resp = webClient.get();
+        if ( resp.getStatus() == Response.Status.OK.getStatusCode() && resp.getEntity() instanceof InputStream )
+        {
+            try ( InputStream is = ( InputStream ) resp.getEntity() )
+            {
+                List<IndexPackageMetaData> items = packagesIndexParser.parse( is, CompressionType.NONE, component );
+
+                List<SerializableMetadata> result = new ArrayList<>( items.size() );
+                for ( IndexPackageMetaData item : items )
+                {
+                    result.add( MetadataUtils.serializableIndexPackageMetadata( item ) );
+                }
+                return result;
+
+            }
+            catch ( IOException ex )
+            {
+                LOGGER.error( "Invalid packages index at {}", path, ex );
+            }
+        }
+        return Collections.emptyList();
     }
 
 }
+

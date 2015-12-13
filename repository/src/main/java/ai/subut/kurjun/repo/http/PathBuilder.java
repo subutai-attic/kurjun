@@ -8,7 +8,7 @@ import ai.subut.kurjun.model.index.ReleaseFile;
 
 /**
  * Utility class to build paths for apt repository items like release index files, package index files, and artifact
- * files. Note that the result path of this class does not gave slash ("/") in the beginning because the paths returned
+ * files. Note that the result path of this class does not have slash ("/") in the beginning because the paths returned
  * are not absolute paths.
  *
  */

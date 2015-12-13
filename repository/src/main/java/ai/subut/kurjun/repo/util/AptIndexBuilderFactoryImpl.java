@@ -29,7 +29,7 @@ public class AptIndexBuilderFactoryImpl implements AptIndexBuilderFactory
     @Override
     public PackagesIndexBuilder createPackagesIndexBuilder( KurjunContext context )
     {
-        return new PackagesIndexBuilderImpl( fileStoreFactory, context );
+        return new PackagesIndexBuilderImpl();
     }
 
 

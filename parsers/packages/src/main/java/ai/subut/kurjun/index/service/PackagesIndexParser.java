@@ -18,11 +18,11 @@ public interface PackagesIndexParser
 {
 
     /**
-     * Parses specified packages index file and returns package metadata items. Specified file may a plain file or
+     * Parses specified packages index file and returns package metadata items. Specified file may be a plain file or
      * compressed one with either of algorithms specified in {@link CompressionType} enum.
      *
      * @param indexFile packages index file
-     * @param component the component supplied packages index belongs to
+     * @param component the component that supplied packages index belongs to
      * @throws IOException
      * @return list of packages meta data
      */

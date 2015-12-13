@@ -149,7 +149,6 @@ public class PackagesIndexBuilderImplTest
             }
         } );
 
-        indexBuilder.fileStore = fileStore;
         indexBuilder.filenameBuilder = filenameBuilder;
         indexBuilder.gson = MetadataUtils.JSON;
 

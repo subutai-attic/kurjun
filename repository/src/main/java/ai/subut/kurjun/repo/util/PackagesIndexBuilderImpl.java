@@ -8,6 +8,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.vafer.jdeb.debian.BinaryPackageControlFile;
 import org.vafer.jdeb.debian.ControlFile;
 
@@ -17,25 +19,25 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorOutputStream;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.ar.CompressionType;
-import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.index.PackageIndexFieldsParser;
+import ai.subut.kurjun.metadata.common.apt.DefaultIndexPackageMetaData;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.metadata.apt.Dependency;
 import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
-import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.repo.service.PackageFilenameBuilder;
 import ai.subut.kurjun.repo.service.PackagesIndexBuilder;
-import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 
 class PackagesIndexBuilderImpl implements PackagesIndexBuilder
 {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( PackagesIndexBuilderImpl.class );
 
     @Inject
     PackageFilenameBuilder filenameBuilder;
@@ -43,37 +45,47 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
     @Inject
     Gson gson;
 
-    FileStore fileStore;
-
-
-    @Inject
-    public PackagesIndexBuilderImpl( FileStoreFactory fileStoreFactory, @Assisted KurjunContext context )
-    {
-        this.fileStore = fileStoreFactory.create( context );
-    }
-
-
-    PackagesIndexBuilderImpl()
-    {
-    }
-
 
     @Override
     public void buildIndex( PackagesProvider provider, OutputStream out, CompressionType compressionType ) throws IOException
     {
-        // used down in the used methods
-        Objects.requireNonNull( fileStore, "File store" );
-
         List<SerializableMetadata> items = provider.getPackages();
         try ( OutputStream os = wrapStream( out, compressionType ) )
         {
             for ( SerializableMetadata item : items )
             {
-                DefaultPackageMetadata meta = gson.fromJson( item.serialize(), DefaultPackageMetadata.class );
+                DefaultPackageMetadata meta = deserializeMetadata( item );
                 String s = formatPackageMetadata( meta );
                 writeString( s, os );
             }
         }
+    }
+
+
+    private DefaultPackageMetadata deserializeMetadata( SerializableMetadata meta )
+    {
+        DefaultPackageMetadata res = gson.fromJson( meta.serialize(), DefaultPackageMetadata.class );
+        try
+        {
+            DefaultIndexPackageMetaData ipm = gson.fromJson( meta.serialize(), DefaultIndexPackageMetaData.class );
+            if ( ipm.getSHA1() != null )
+            {
+                res.getExtra().put( IndexPackageMetaData.SHA1_FIELD, Hex.encodeHexString( ipm.getSHA1() ) );
+            }
+            if ( ipm.getSHA256() != null )
+            {
+                res.getExtra().put( IndexPackageMetaData.SHA256_FIELD, Hex.encodeHexString( ipm.getSHA256() ) );
+            }
+            if ( ipm.getSize() > 0 )
+            {
+                res.getExtra().put( IndexPackageMetaData.SIZE_FIELD, Long.toString( ipm.getSize() ) );
+            }
+        }
+        catch ( JsonSyntaxException ex )
+        {
+            LOGGER.error( "Meta data is not index package metadata. Using it as plain package metadata.", ex );
+        }
+        return res;
     }
 
 
@@ -115,10 +127,6 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
 
     private String formatPackageMetadata( DefaultPackageMetadata meta ) throws IOException
     {
-        if ( !fileStore.contains( meta.getMd5Sum() ) )
-        {
-            throw new IllegalStateException( "Corresponding file not found in file store" );
-        }
 
         BinaryPackageControlFile cf = new BinaryPackageControlFile();
 
