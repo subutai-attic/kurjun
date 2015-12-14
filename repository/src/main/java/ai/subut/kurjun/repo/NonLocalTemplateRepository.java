@@ -67,7 +67,7 @@ public class NonLocalTemplateRepository extends RepositoryBase implements NonLoc
 
 
     @Inject
-    public NonLocalTemplateRepository( PackageCache cache, @Assisted String url, @Assisted @Nullable Identity identity, @Assisted String token )
+    public NonLocalTemplateRepository( PackageCache cache, @Assisted("url") String url, @Assisted @Nullable Identity identity, @Assisted("token") String token )
     {
         this.cache = cache;
         this.identity = identity;
