@@ -38,12 +38,12 @@ import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.security.Permission;
-import ai.subut.kurjun.repo.util.PackagesProviderFactory;
 import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.repo.service.PackageFilenameBuilder;
 import ai.subut.kurjun.repo.service.PackageFilenameParser;
 import ai.subut.kurjun.repo.service.PackagesIndexBuilder;
 import ai.subut.kurjun.repo.util.AptIndexBuilderFactory;
+import ai.subut.kurjun.repo.util.PackagesProviderFactory;
 import ai.subut.kurjun.repo.util.ReleaseIndexBuilder;
 import ai.subut.kurjun.security.service.AuthManager;
 
@@ -93,7 +93,7 @@ class AptHttpServiceImpl extends HttpServiceBase implements AptHttpService
 
         if ( rel.isPresent() )
         {
-            ReleaseIndexBuilder rib = indexBuilderFactory.createReleaseIndexBuilder( context );
+            ReleaseIndexBuilder rib = indexBuilderFactory.createReleaseIndexBuilder( repo, context );
             String releaseIndex = rib.build( rel.get(), repo.isKurjun() );
             return Response.ok( releaseIndex ).build();
         }

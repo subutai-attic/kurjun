@@ -3,6 +3,7 @@ package ai.subut.kurjun.repo.util;
 
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
+import ai.subut.kurjun.model.repository.Repository;
 import ai.subut.kurjun.repo.service.PackagesIndexBuilder;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
@@ -34,9 +35,9 @@ public class AptIndexBuilderFactoryImpl implements AptIndexBuilderFactory
 
 
     @Override
-    public ReleaseIndexBuilder createReleaseIndexBuilder( KurjunContext context )
+    public ReleaseIndexBuilder createReleaseIndexBuilder( Repository repository, KurjunContext context )
     {
-        return null; // TODO: new ReleaseIndexBuilder( this, context );
+        return new ReleaseIndexBuilder( repository, context );
     }
 
 }
