@@ -15,6 +15,8 @@ public class AptRepoServletModule extends ServletModuleBase
     protected void configureServlets()
     {
 
+        serve( getServletPath() + "/uni/*" ).with( AptUniServlet.class );
+
         serve( getServletPath() + "/upload" ).with( AptRepoUploadServlet.class );
         serve( getServletPath() + "/pool/*" ).with( AptPoolServlet.class );
         serve( getServletPath() + "/*" ).with( AptRepoServlet.class );
