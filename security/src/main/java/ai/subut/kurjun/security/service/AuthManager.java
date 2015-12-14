@@ -23,13 +23,13 @@ public interface AuthManager
 
 
     /**
-     * Checks if supplied identity has permission on supplied context.
+     * Checks if supplied identity has permission on supplied resource.
      *
      * @param fingerprint identity fingerprint
      * @param permission permission to check
-     * @param context context for permission
+     * @param resource resource for permission
      * @return
      */
-    boolean isAllowed( String fingerprint, Permission permission, KurjunContext context );
+    boolean isAllowed( String fingerprint, Permission permission, String resource );
 }
 

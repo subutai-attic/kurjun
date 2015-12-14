@@ -50,7 +50,7 @@ public abstract class HttpServletBase extends HttpServlet
 
         if ( fingerprint != null )
         {
-            return getAuthManager().isAllowed( fingerprint, permission, getContext() );
+            return getAuthManager().isAllowed( fingerprint, permission, getContext().getName() );
         }
         return false;
     }

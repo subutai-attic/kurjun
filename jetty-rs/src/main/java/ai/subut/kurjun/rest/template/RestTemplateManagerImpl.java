@@ -45,7 +45,7 @@ public class RestTemplateManagerImpl extends RestManagerBase implements RestTemp
     
     public RestTemplateManagerImpl() throws MalformedURLException
     {
-        TemplateManagerImpl impl = new TemplateManagerImpl( null, null );
+        TemplateManagerImpl impl = new TemplateManagerImpl( null, null, null );
         impl.init();
         this.templateManager = impl;
     }
