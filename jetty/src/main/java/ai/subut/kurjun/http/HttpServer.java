@@ -152,10 +152,10 @@ public class HttpServer
         try
         {
             // add sample identity to work
-            identity = identityManager.addIdentity( "1EB4A4CCADF438434450BF1F364CD558014A08B4" );
+            identity = identityManager.addIdentity( "1EB4A4CCADF438434450BF1F364CD558014A08B4", true );
             if ( identity != null )
             {
-                identityManager.addRole( role, identity, CONTEXT );
+                identityManager.addResourcePermission(Permission.GET_PACKAGE, identity, CONTEXT.getName() );
             }
         }
         catch ( IOException ex )

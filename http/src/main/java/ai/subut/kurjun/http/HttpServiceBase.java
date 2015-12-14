@@ -69,7 +69,7 @@ abstract class HttpServiceBase
         if ( getAuthManager() != null )
         {
             String f = Optional.ofNullable( fingerprintHeader ).orElse( fingerprintParam );
-            return getAuthManager().isAllowed( f, permission, getContext() );
+            return getAuthManager().isAllowed( f, permission, getContext().getName() );
         }
         // if auth manager is not set, that means we do not have to check authentiaction
         return true;

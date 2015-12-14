@@ -37,6 +37,12 @@ public class DefaultIdentity implements Identity, Serializable
     }
 
 
+    public DefaultIdentity( String keyFingerprint )
+    {
+        this.keyFingerprint = keyFingerprint;
+    }
+
+
     public DefaultIdentity( PGPPublicKey key )
     {
         this.keyId = String.format( "%016X", key.getKeyID() );
