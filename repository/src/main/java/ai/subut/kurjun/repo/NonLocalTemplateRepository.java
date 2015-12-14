@@ -53,7 +53,6 @@ public class NonLocalTemplateRepository extends RepositoryBase implements NonLoc
     static final String INFO_PATH = "info";
     static final String LIST_PATH = "list";
     static final String GET_PATH = "get";
-    static final String TOKEN_PATH = "rest/v1/identity/gettoken";
 
     @Inject
     private Gson gson;
@@ -62,17 +61,17 @@ public class NonLocalTemplateRepository extends RepositoryBase implements NonLoc
     private final URL url;
     private final Identity identity;
 
-    private boolean useToken = false;
+    private String token = null;
 
     private static final long CONN_TIMEOUT = 3000;
 
 
     @Inject
-    public NonLocalTemplateRepository( PackageCache cache, @Assisted String url, @Assisted @Nullable Identity identity, @Assisted boolean useToken )
+    public NonLocalTemplateRepository( PackageCache cache, @Assisted String url, @Assisted @Nullable Identity identity, @Assisted String token )
     {
         this.cache = cache;
         this.identity = identity;
-        this.useToken = useToken;
+        this.token = token;
         try
         {
             this.url = new URL( url );
@@ -221,9 +220,9 @@ public class NonLocalTemplateRepository extends RepositoryBase implements NonLoc
     {
         Map<String, String> params = MetadataUtils.makeParamsMap( metadata );
 
-        if ( useToken )
+        if ( token != null )
         {
-            params.put( "sptoken", getRemoteToken() );
+            params.put( "sptoken", token );
         }
 
         // Set parameter kc=kurjun_client to indicate this request is going from Kurjun
@@ -232,26 +231,7 @@ public class NonLocalTemplateRepository extends RepositoryBase implements NonLoc
         return params;
     }
 
-
-    private String getRemoteToken()
-    {
-        SecureRequestFactory secreq = new SecureRequestFactory( this );
-        WebClient webClient = secreq.makeClient( "", TOKEN_PATH,
-                ImmutableMap.of( "username", "admin", "password", "secret" ) );
-
-        webClient.accept( MediaType.TEXT_PLAIN );
-        Response resp = doGet( webClient );
-        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
-        {
-            return resp.readEntity( String.class );
-        }
-        else
-        {
-            throw new RuntimeException( "Unable to get token from the remote server = " + getUrl() + " and path = " + TOKEN_PATH );
-        }
-    }
-
-
+ 
     private InputStream checkCache( Metadata metadata )
     {
         if ( metadata.getMd5Sum() != null )

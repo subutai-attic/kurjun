@@ -89,9 +89,9 @@ public class RepositoryFactoryImpl implements RepositoryFactory
 
 
     @Override
-    public NonLocalRepository createNonLocalTemplate( String url, Identity identity, boolean useToken )
+    public NonLocalRepository createNonLocalTemplate( String url, Identity identity, String token )
     {
-        return new NonLocalTemplateRepository( cache, url, identity, useToken );
+        return new NonLocalTemplateRepository( cache, url, identity, token );
     }
 
 
