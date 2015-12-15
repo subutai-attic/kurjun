@@ -2,6 +2,7 @@ package ai.subut.kurjun.metadata.common.utils;
 
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,29 @@ public class MetadataUtils
     private MetadataUtils()
     {
         // utility class
+    }
+
+
+    /**
+     * Makes a comparator that compares meta data instances by their versions. Returned comparator sorts items in
+     * ascending order by version values and takes into account null versions.
+     *
+     * @return
+     */
+    public static Comparator<Metadata> makeVersionComparator()
+    {
+        return (Metadata m1, Metadata m2) ->
+        {
+            if ( m1.getVersion() != null )
+            {
+                return m2.getVersion() != null ? m1.getVersion().compareTo( m2.getVersion() ) : 1;
+            }
+            else
+            {
+                // m1 version is null here
+                return m2.getVersion() == null ? 0 : -1;
+            }
+        };
     }
 
 

@@ -21,10 +21,10 @@ import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.security.Permission;
-import ai.subut.kurjun.repo.util.PackagesProviderFactory;
 import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.repo.service.PackagesIndexBuilder;
 import ai.subut.kurjun.repo.util.AptIndexBuilderFactory;
+import ai.subut.kurjun.repo.util.PackagesProviderFactory;
 import ai.subut.kurjun.repo.util.ReleaseIndexBuilder;
 import ai.subut.kurjun.security.service.AuthManager;
 
@@ -152,7 +152,7 @@ class AptRepoServlet extends HttpServletBase
                 .filter( r -> r.getCodename().equals( release ) ).findFirst();
         if ( item.isPresent() )
         {
-            ReleaseIndexBuilder releaseIndexBuilder = indexBuilderFactory.createReleaseIndexBuilder( context );
+            ReleaseIndexBuilder releaseIndexBuilder = indexBuilderFactory.createReleaseIndexBuilder( repository, context );
             String releaseIndex = releaseIndexBuilder.build( item.get(), repository.isKurjun() );
             ok( resp, releaseIndex );
         }

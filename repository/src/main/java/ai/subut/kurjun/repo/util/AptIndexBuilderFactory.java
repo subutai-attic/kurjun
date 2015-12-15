@@ -2,6 +2,7 @@ package ai.subut.kurjun.repo.util;
 
 
 import ai.subut.kurjun.common.service.KurjunContext;
+import ai.subut.kurjun.model.repository.Repository;
 import ai.subut.kurjun.repo.service.PackagesIndexBuilder;
 
 
@@ -24,9 +25,11 @@ public interface AptIndexBuilderFactory
     /**
      * Created release index builder for the supplied context.
      *
+     * @param repository repository to build release index for
      * @param context
      * @return release index builder
      */
-    ReleaseIndexBuilder createReleaseIndexBuilder( KurjunContext context );
+    ReleaseIndexBuilder createReleaseIndexBuilder( Repository repository, KurjunContext context );
+
 }
 

@@ -8,10 +8,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.ws.rs.core.Response;
@@ -19,9 +22,9 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
 
+import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
@@ -62,11 +65,10 @@ class NonLocalAptRepository extends RepositoryBase implements NonLocalRepository
     PackagesIndexParser packagesIndexParser;
 
     @Inject
-    PackageCache cache;
+    Gson gson;
 
-    static final String INFO_PATH = "info";
-    static final String GET_PATH = "get";
-    static final String LIST_PATH = "list";
+    @Inject
+    PackageCache cache;
 
     // TODO: Kairat parameterize release path params
     static final String RELEASE_PATH = "dists/trusty/Release";
@@ -138,40 +140,38 @@ class NonLocalAptRepository extends RepositoryBase implements NonLocalRepository
     @Override
     public SerializableMetadata getPackageInfo( Metadata metadata )
     {
-        SecureRequestFactory secreq = new SecureRequestFactory( this );
-        WebClient webClient = secreq.makeClient( INFO_PATH, MetadataUtils.makeParamsMap( metadata ) );
+        List<SerializableMetadata> items = listPackages();
 
-        Response resp = webClient.get();
-        if ( resp.getStatus() == Response.Status.OK.getStatusCode() )
+        if ( metadata.getMd5Sum() != null )
         {
-            if ( resp.getEntity() instanceof InputStream )
-            {
-                try
-                {
-                    String json = IOUtils.toString( ( InputStream ) resp.getEntity() );
-                    return MetadataUtils.JSON.fromJson( json, DefaultPackageMetadata.class );
-                }
-                catch ( IOException ex )
-                {
-                    LOGGER.error( "Failed to read response data", ex );
-                }
-            }
+            return findByMd5( metadata.getMd5Sum(), items );
         }
-        return null;
+        else
+        {
+            return findByName( metadata.getName(), metadata.getVersion(), items );
+        }
     }
 
 
     @Override
     public InputStream getPackageStream( Metadata metadata )
     {
-        InputStream cachedStream = checkCache( metadata );
+        SerializableMetadata m = getPackageInfo( metadata );
+        if ( m == null )
+        {
+            return null;
+        }
+
+        InputStream cachedStream = checkCache( m );
         if ( cachedStream != null )
         {
             return cachedStream;
         }
 
+        DefaultPackageMetadata pm = gson.fromJson( m.serialize(), DefaultPackageMetadata.class );
+
         SecureRequestFactory secreq = new SecureRequestFactory( this );
-        WebClient webClient = secreq.makeClient( GET_PATH, MetadataUtils.makeParamsMap( metadata ) );
+        WebClient webClient = secreq.makeClient( pm.getFilename(), null );
 
         Response resp = webClient.get();
         if ( resp.getStatus() == Response.Status.OK.getStatusCode() )
@@ -248,6 +248,46 @@ class NonLocalAptRepository extends RepositoryBase implements NonLocalRepository
             if ( target != null )
             {
                 target.toFile().delete();
+            }
+        }
+        return null;
+    }
+
+
+    private SerializableMetadata findByMd5( byte[] md5Sum, List<SerializableMetadata> items )
+    {
+        for ( SerializableMetadata item : items )
+        {
+            if ( Arrays.equals( item.getMd5Sum(), md5Sum ) )
+            {
+                return item;
+            }
+        }
+        return null;
+    }
+
+
+    private SerializableMetadata findByName( String name, String version, List<SerializableMetadata> items )
+    {
+        Objects.requireNonNull( name, "Package name not specified." );
+
+        if ( version != null )
+        {
+            for ( SerializableMetadata item : items )
+            {
+                if ( name.equals( item.getName() ) && version.equals( item.getVersion() ) )
+                {
+                    return item;
+                }
+            }
+        }
+        else
+        {
+            Comparator<Metadata> cmp = Collections.reverseOrder( MetadataUtils.makeVersionComparator() );
+            Object[] arr = items.stream().filter( m -> m.getName().equals( name ) ).sorted( cmp ).toArray();
+            if ( arr.length > 0 )
+            {
+                return ( SerializableMetadata ) arr[0];
             }
         }
         return null;

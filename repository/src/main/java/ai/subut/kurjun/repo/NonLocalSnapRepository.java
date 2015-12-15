@@ -9,10 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.core.Response;
@@ -20,7 +18,6 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
 
@@ -170,7 +167,7 @@ class NonLocalSnapRepository extends RepositoryBase implements NonLocalRepositor
     public List<SerializableMetadata> listPackages()
     {
         SecureRequestFactory secreq = new SecureRequestFactory( this );
-        WebClient webClient = secreq.makeClient( INFO_PATH, MetadataUtils.makeParamsMap( new DefaultMetadata() ) );
+        WebClient webClient = secreq.makeClient( INFO_PATH, null );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -253,3 +250,4 @@ class NonLocalSnapRepository extends RepositoryBase implements NonLocalRepositor
     }
 
 }
+

@@ -24,6 +24,7 @@ import ai.subut.kurjun.model.index.Checksum;
 import ai.subut.kurjun.model.index.ChecksummedResource;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
+import ai.subut.kurjun.model.repository.Repository;
 import ai.subut.kurjun.repo.service.PackagesIndexBuilder;
 import ai.subut.kurjun.riparser.ReleaseChecksummedResource;
 
@@ -43,23 +44,26 @@ public class ReleaseIndexBuilder
 
     private final Set<CompressionType> compressionTypes = new HashSet<>();
 
+    private final Repository repository;
     private final KurjunContext context;
-    private PackagesIndexBuilder packagesIndexBuilder;
+
+    @Inject
+    private AptIndexBuilderFactory indexBuilderFactory;
+
+    @Inject
     private PackagesProviderFactory packagesProviderFactory;
 
 
     @Inject
-    public ReleaseIndexBuilder( AptIndexBuilderFactory indexBuilderFactory,
-                                PackagesProviderFactory packagesProviderFactory,
+    public ReleaseIndexBuilder( @Assisted Repository repository,
                                 @Assisted KurjunContext context )
     {
         compressionTypes.add( CompressionType.NONE );
         compressionTypes.add( CompressionType.GZIP );
         compressionTypes.add( CompressionType.BZIP2 );
 
+        this.repository = repository;
         this.context = context;
-        packagesIndexBuilder = indexBuilderFactory.createPackagesIndexBuilder( context );
-        this.packagesProviderFactory = packagesProviderFactory;
     }
 
 
@@ -170,6 +174,8 @@ public class ReleaseIndexBuilder
         MessageDigest sha1Digest = DigestUtils.getSha1Digest();
         MessageDigest sha2Digest = DigestUtils.getSha256Digest();
 
+        PackagesIndexBuilder packagesIndexBuilder = indexBuilderFactory.createPackagesIndexBuilder( context );
+
         List<ChecksummedResource> packagesIndices = new ArrayList<>();
         for ( String component : components )
         {
@@ -185,7 +191,7 @@ public class ReleaseIndexBuilder
                     }
                     try ( ByteArrayOutputStream os = new ByteArrayOutputStream() )
                     {
-                        packagesIndexBuilder.buildIndex( packagesProviderFactory.create( context, component, arch ),
+                        packagesIndexBuilder.buildIndex( packagesProviderFactory.create( repository, component, arch ),
                                                          os, compressionType );
 
                         byte[] md5 = md5Digest.digest( os.toByteArray() );

@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
@@ -16,7 +17,6 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.repository.Repository;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
-import java.util.stream.Collectors;
 
 
 /**
@@ -58,7 +58,16 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
     @Override
     public Set<ReleaseFile> getDistributions()
     {
-        throw new UnsupportedOperationException( "Not supported yet." );
+        if ( RepositoryHelpers.isAptRepository( this ) )
+        {
+            Set<ReleaseFile> releases = new HashSet<>();
+            for ( Repository r : repositories )
+            {
+                releases.addAll( r.getDistributions() );
+            }
+            return releases;
+        }
+        throw new UnsupportedOperationException( "Not supported for non-apt repositories." );
     }
 
 
@@ -122,7 +131,7 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
 
     private Comparator<Repository> makeLocalsFirstComparator()
     {
-        return ( Repository r1, Repository r2 ) ->
+        return (Repository r1, Repository r2) ->
         {
             // local repo shall go first so it shall have lesser value
             int i1 = r1 instanceof LocalRepository ? 0 : 1;
@@ -130,7 +139,8 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
             return Integer.compare( i1, i2 );
         };
     }
-    
+
+
     @Override
     public Set<Repository> getSecondaryRepositories()
     {
@@ -149,3 +159,4 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
     }
 
 }
+
