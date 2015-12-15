@@ -25,7 +25,7 @@ import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
 import ai.subut.kurjun.snap.service.SnapMetadataParser;
 
 
-public class SnapMetadataParserImpl implements SnapMetadataParser
+class SnapMetadataParserImpl implements SnapMetadataParser
 {
 
     Yaml yaml;

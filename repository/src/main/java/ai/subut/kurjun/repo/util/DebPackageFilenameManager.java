@@ -14,7 +14,7 @@ import ai.subut.kurjun.repo.service.PackageFilenameParser;
  * Builder and parser of Filename field of a Debian package meta data.
  *
  */
-public class DebPackageFilenameManager implements PackageFilenameBuilder, PackageFilenameParser
+class DebPackageFilenameManager implements PackageFilenameBuilder, PackageFilenameParser
 {
 
     /**

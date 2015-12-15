@@ -25,7 +25,7 @@ import ai.subut.kurjun.riparser.pgp.PGPVerification;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
 
 
-public class ReleaseIndexParserImpl implements ReleaseIndexParser
+class ReleaseIndexParserImpl implements ReleaseIndexParser
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( ReleaseIndexParserImpl.class );
 

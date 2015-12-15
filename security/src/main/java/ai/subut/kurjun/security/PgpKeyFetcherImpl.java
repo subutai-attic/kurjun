@@ -21,9 +21,9 @@ import ai.subut.kurjun.security.service.PgpKeyFetcher;
 import ai.subut.kurjun.security.utils.PGPUtils;
 
 
-public class PgpKeyFetcherImpl implements PgpKeyFetcher
+class PgpKeyFetcherImpl implements PgpKeyFetcher
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PgpKeyFetcherImpl.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( PgpKeyFetcherImpl.class );
 
     private URL keyserverUrl;
 

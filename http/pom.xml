@@ -1,114 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>ai.subut.kurjun</groupId>
-        <artifactId>kurjun-parent</artifactId>
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>ai.subut.kurjun</groupId>
+    <artifactId>kurjun-parent</artifactId>
     <version>1.0</version>
-    </parent>
+  </parent>
 
-    <name>Kurjun Http Services</name>
-    <artifactId>http</artifactId>
-    <packaging>jar</packaging>
-    <description></description>
+  <name>Kurjun Http Services</name>
+  <artifactId>http</artifactId>
+  <packaging>jar</packaging>
+  <description></description>
 
-    <properties>
-        <osgi.export-package>{local-packages};version=${project.version};-noimport:=true</osgi.export-package>
-        <osgi.import-package>${project.groupId}*, org.slf4j, org.apache.cxf*, javax.ws.rs*, org.apache.commons.codec, !*</osgi.import-package>
-        <osgi.embed-dependency></osgi.embed-dependency>
-        <osgi.embed-transitive>false</osgi.embed-transitive>
-    </properties>
+  <properties>
+    <osgi.export-package>{local-packages};version=${project.version};-noimport:=true</osgi.export-package>
+    <osgi.import-package>${project.groupId}*, org.slf4j, org.apache.cxf*, javax.ws.rs*, org.apache.commons.codec, !*</osgi.import-package>
+    <osgi.embed-dependency></osgi.embed-dependency>
+    <osgi.embed-transitive>false</osgi.embed-transitive>
+  </properties>
     
-    <dependencies>
+  <dependencies>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>model</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>model</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>common-utils</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>common-utils</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>repository</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>repository</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>security</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>security</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>file-store-factory</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>file-store-factory</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>metadata-store-factory</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>metadata-store-factory</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>snap-parser</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>snap-parser</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>kurjun-template-parser</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>kurjun-template-parser</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
-    </dependencies>
-    
-    
-<!--    <build>
-        <plugins>
-            
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.7</version>
-                <executions>
-                    <execution>
-                        <id>copy-pom-files</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-
-                        <configuration>
-                            <outputDirectory>/home/kair/Desktop/dada/poms</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>/home/kair/.m2/repository/ai/subut/kurjun</directory>
-                                    <filtering>true</filtering>
-                                    <excludes>
-                                        <exclude>**/http-1.0.pom</exclude>
-                                        <exclude>**/jetty-1.0.pom</exclude>
-                                        <exclude>**/karaf-1.0.pom</exclude>
-                                        <exclude>**/kurjun-contents-parser-1.0.pom</exclude>
-                                    </excludes>
-                                    <includes>
-                                        <include>**/*.pom</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            
-        </plugins>
-    </build>-->
+  </dependencies>
     
 </project>

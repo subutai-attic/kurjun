@@ -15,6 +15,7 @@ import org.bouncycastle.openpgp.PGPPublicKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 
 import ai.subut.kurjun.db.file.FileDb;
@@ -27,10 +28,9 @@ import ai.subut.kurjun.security.service.IdentityManager;
 import ai.subut.kurjun.security.service.PgpKeyFetcher;
 import ai.subut.kurjun.security.service.RoleManager;
 import ai.subut.kurjun.security.utils.PGPUtils;
-import com.google.common.collect.Sets;
 
 
-public class IdentityManagerImpl implements IdentityManager
+class IdentityManagerImpl implements IdentityManager
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( IdentityManagerImpl.class );
 

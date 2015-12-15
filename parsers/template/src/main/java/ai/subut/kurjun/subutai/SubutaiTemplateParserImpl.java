@@ -27,7 +27,7 @@ import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
 import ai.subut.kurjun.subutai.service.TemplateProperties;
 
 
-public class SubutaiTemplateParserImpl implements SubutaiTemplateParser
+class SubutaiTemplateParserImpl implements SubutaiTemplateParser
 {
 
     static final String MD5_KEY = "x-md5";

@@ -13,7 +13,7 @@ import ai.subut.kurjun.storage.fs.FileSystemFileStoreFactory;
 import ai.subut.kurjun.storage.s3.S3FileStoreFactory;
 
 
-public class FileStoreFactoryImpl implements FileStoreFactory
+class FileStoreFactoryImpl implements FileStoreFactory
 {
 
     private KurjunProperties properties;
