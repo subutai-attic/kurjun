@@ -17,7 +17,7 @@
   <reference id="releaseIndexParser" interface="ai.subut.kurjun.riparser.service.ReleaseIndexParser"/>
   <reference id="controlFileParser" interface="ai.subut.kurjun.cfparser.service.ControlFileParser"/>
   <reference id="snapParser" interface="ai.subut.kurjun.snap.service.SnapMetadataParser"/>
-  <reference id="templateParser" interface="ai.subut.kurjun.subutai.service.SubutaiTemplateParser."/>
+  <reference id="templateParser" interface="ai.subut.kurjun.subutai.service.SubutaiTemplateParser"/>
 
 
   <service interface="ai.subut.kurjun.repo.util.AptIndexBuilderFactory">

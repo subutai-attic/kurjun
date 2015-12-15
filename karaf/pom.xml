@@ -10,6 +10,8 @@
 
   <name>Kurjun Karaf Plugin</name>
   <artifactId>karaf</artifactId>
+  <!--<packaging>jar</packaging>-->
+  <description></description>
 
   <build>
 

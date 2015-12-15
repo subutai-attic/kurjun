@@ -15,13 +15,13 @@ import org.bouncycastle.openpgp.PGPPublicKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 
-import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.model.security.Group;
 import ai.subut.kurjun.model.security.Identity;
-import ai.subut.kurjun.model.security.Role;
+import ai.subut.kurjun.model.security.Permission;
 import ai.subut.kurjun.security.service.FileDbProvider;
 import ai.subut.kurjun.security.service.GroupManager;
 import ai.subut.kurjun.security.service.IdentityManager;
@@ -36,7 +36,7 @@ class IdentityManagerImpl implements IdentityManager
 
     private static final String MAP_NAME = "identities";
     private static final String GROUPS_MAP_NAME = "identity-groups";
-    private static final String ROLES_MAP_NAME = "identity-roles";
+    private static final String PERMISSIONS_MAP_NAME = "identity-permissions";
 
     private FileDbProvider fileDbProvider;
     private PgpKeyFetcher keyFetcher;
@@ -68,18 +68,28 @@ class IdentityManagerImpl implements IdentityManager
 
 
     @Override
-    public Identity addIdentity( String fingerprint ) throws IOException
+    public Identity addIdentity( String fingerprint, boolean checkKeyExistence ) throws IOException
     {
-        PGPPublicKey key = keyFetcher.get( fingerprint );
-        if ( key == null )
+        Identity id;
+
+        if ( checkKeyExistence )
         {
-            LOGGER.info( "Key not found for fingerprint: {}", fingerprint );
-            return null;
+            PGPPublicKey key = keyFetcher.get( fingerprint );
+            if ( key == null )
+            {
+                LOGGER.info( "Key not found for fingerprint: {}", fingerprint );
+                return null;
+            }
+            id = new DefaultIdentity( key );
         }
-        Identity id = new DefaultIdentity( key );
+        else
+        {
+            id = new DefaultIdentity( fingerprint );
+        }
+
         try ( FileDb fileDb = fileDbProvider.get() )
         {
-            fileDb.put( MAP_NAME, id.getKeyFingerprint(), id );
+            fileDb.put( MAP_NAME, id.getKeyFingerprint().toLowerCase(), id );
         }
         return id;
     }
@@ -142,107 +152,91 @@ class IdentityManagerImpl implements IdentityManager
 
 
     @Override
-    public Set<Role> getRoles( Identity identity, KurjunContext context ) throws IOException
+    public Set<Permission> getPermissions( Identity identity, String resource ) throws IOException
     {
         try ( FileDb fileDb = fileDbProvider.get() )
         {
-            // get role names the identity belongs to
-            Set items = fileDb.get( ROLES_MAP_NAME, identity.getKeyFingerprint(), Set.class );
-            if ( items == null )
+            Set<ResourceControl> controls = fileDb.get( PERMISSIONS_MAP_NAME, identity.getKeyFingerprint(), Set.class );
+            if ( controls == null )
             {
                 return Collections.emptySet();
             }
 
-            ContextRoles contextRoles = getContextRolesItem( context, items );
-            if ( contextRoles == null )
+            ResourceControl control = findResourceControl( resource, controls );
+            if ( control == null )
             {
                 return Collections.emptySet();
             }
 
-            Set<Role> roles = new HashSet<>();
-            for ( String role : contextRoles.roles )
-            {
-                Role r = roleManager.getRole( role );
-                if ( r != null )
-                {
-                    roles.add( r );
-                }
-            }
-            return roles;
+            return Sets.immutableEnumSet( control.permissions );
         }
     }
 
 
     @Override
-    public void addRole( Role role, Identity identity, KurjunContext context ) throws IOException
+    public void addResourcePermission( Permission permission, Identity identity, String resource ) throws IOException
     {
-        // add role first, will be updated if already existed
-        roleManager.addRole( role );
-
         try ( FileDb fileDb = fileDbProvider.get() )
         {
-            // get role names the identity belongs to
-            Set items = fileDb.get( ROLES_MAP_NAME, identity.getKeyFingerprint(), Set.class );
-            if ( items == null )
+            Set<ResourceControl> controls = fileDb.get( PERMISSIONS_MAP_NAME, identity.getKeyFingerprint(), Set.class );
+            if ( controls == null )
             {
-                items = new HashSet();
+                controls = new HashSet();
             }
 
-            ContextRoles cr = getContextRolesItem( context, items );
-            if ( cr == null )
+            ResourceControl control = findResourceControl( resource, controls );
+            if ( control == null )
             {
-                cr = new ContextRoles( context.getName() );
-                items.add( cr );
+                control = new ResourceControl( resource );
+                controls.add( control );
             }
-            cr.roles.add( role.getName() );
-            fileDb.put( ROLES_MAP_NAME, identity.getKeyFingerprint(), items );
+            control.permissions.add( permission );
+            fileDb.put( PERMISSIONS_MAP_NAME, identity.getKeyFingerprint(), controls );
         }
     }
 
 
     @Override
-    public void removeRole( Role role, Identity identity, KurjunContext context ) throws IOException
+    public void removeResourcePermission( Permission permission, Identity identity, String resource ) throws IOException
     {
         try ( FileDb fileDb = fileDbProvider.get() )
         {
-            // get role names the identity belongs to
-            Set items = fileDb.get( ROLES_MAP_NAME, identity.getKeyFingerprint(), Set.class );
-            if ( items != null )
+            Set<ResourceControl> controls = fileDb.get( PERMISSIONS_MAP_NAME, identity.getKeyFingerprint(), Set.class );
+            if ( controls != null )
             {
-                ContextRoles cr = getContextRolesItem( context, items );
-                if ( cr != null && cr.roles.remove( role.getName() ) )
+                ResourceControl control = findResourceControl( resource, controls );
+                if ( control != null && control.permissions.remove( permission ) )
                 {
-                    fileDb.put( ROLES_MAP_NAME, identity.getKeyFingerprint(), items );
+                    fileDb.put( PERMISSIONS_MAP_NAME, identity.getKeyFingerprint(), controls );
                 }
             }
         }
     }
 
 
-    private ContextRoles getContextRolesItem( KurjunContext context, Set items )
+    private ResourceControl findResourceControl( String resource, Set<ResourceControl> controls )
     {
-        for ( Object item : items )
+        for ( ResourceControl control : controls )
         {
-            ContextRoles temp = ( ContextRoles ) item;
-            if ( temp.context.equals( context.getName() ) )
+            if ( control.resource.equals( resource  ) )
             {
-                return temp;
+                return control;
             }
         }
         return null;
     }
 
 
-    private static class ContextRoles implements Serializable
+    private static class ResourceControl implements Serializable
     {
-        private String context;
-        private Set<String> roles;
+        private String resource;
+        private Set<Permission> permissions;
 
 
-        public ContextRoles( String context )
+        public ResourceControl( String resource )
         {
-            this.context = context;
-            this.roles = new HashSet<>();
+            this.resource = resource;
+            this.permissions = new HashSet<>();
         }
 
 
@@ -250,7 +244,7 @@ class IdentityManagerImpl implements IdentityManager
         public int hashCode()
         {
             int hash = 7;
-            hash = 29 * hash + Objects.hashCode( this.context );
+            hash = 29 * hash + Objects.hashCode( this.resource );
             return hash;
         }
 
@@ -258,9 +252,9 @@ class IdentityManagerImpl implements IdentityManager
         @Override
         public boolean equals( Object obj )
         {
-            if ( obj instanceof ContextRoles )
+            if ( obj instanceof ResourceControl )
             {
-                return Objects.equals( this.context, ( ( ContextRoles ) obj ).context );
+                return Objects.equals( this.resource, ( ( ResourceControl ) obj ).resource );
             }
             return false;
         }

@@ -10,7 +10,7 @@ import ai.subut.kurjun.model.storage.FileStore;
  * Amazon S3 backed file store factory. Used for OSGi DI.
  *
  */
-class S3FileStoreFactoryImpl implements S3FileStoreFactory
+public class S3FileStoreFactoryImpl implements S3FileStoreFactory
 {
     private KurjunProperties properties;
 

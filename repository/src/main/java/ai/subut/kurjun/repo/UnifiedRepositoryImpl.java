@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
@@ -28,13 +29,15 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
 {
 
     private URL url;
-    private Set<Repository> repositories;
+    private final Set<Repository> repositories;
+    private final Set<Repository> secondaryRepositories;
 
 
     public UnifiedRepositoryImpl()
     {
         // TODO: set url
         this.repositories = new HashSet<>();
+        this.secondaryRepositories = new HashSet<>();
     }
 
 
@@ -55,7 +58,16 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
     @Override
     public Set<ReleaseFile> getDistributions()
     {
-        throw new UnsupportedOperationException( "Not supported yet." );
+        if ( RepositoryHelpers.isAptRepository( this ) )
+        {
+            Set<ReleaseFile> releases = new HashSet<>();
+            for ( Repository r : repositories )
+            {
+                releases.addAll( r.getDistributions() );
+            }
+            return releases;
+        }
+        throw new UnsupportedOperationException( "Not supported for non-apt repositories." );
     }
 
 
@@ -69,8 +81,7 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
     @Override
     public SerializableMetadata getPackageInfo( Metadata metadata )
     {
-        Comparator<Repository> c = makeLocalsFirstComparator();
-        Iterator<Repository> it = repositories.stream().sorted( c ).iterator();
+        Iterator<Repository> it = getAllRepositories().iterator();
         while ( it.hasNext() )
         {
             SerializableMetadata m = it.next().getPackageInfo( metadata );
@@ -86,8 +97,7 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
     @Override
     public InputStream getPackageStream( Metadata metadata )
     {
-        Comparator<Repository> c = makeLocalsFirstComparator();
-        Iterator<Repository> it = repositories.stream().sorted( c ).iterator();
+        Iterator<Repository> it = getAllRepositories().iterator();
         while ( it.hasNext() )
         {
             InputStream is = it.next().getPackageStream( metadata );
@@ -104,9 +114,16 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
     public List<SerializableMetadata> listPackages()
     {
         List<SerializableMetadata> result = new LinkedList<>();
-        for ( Repository repo : repositories )
+        for ( Repository repo : getAllRepositories() )
         {
-            result.addAll( repo.listPackages() );
+            List<SerializableMetadata> list = repo.listPackages();
+            for ( SerializableMetadata meta : list )
+            {
+                if ( !result.contains( meta ) )
+                {
+                    result.add( meta );
+                }
+            }
         }
         return result;
     }
@@ -114,19 +131,32 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
 
     private Comparator<Repository> makeLocalsFirstComparator()
     {
-        return new Comparator<Repository>()
+        return (Repository r1, Repository r2) ->
         {
-            @Override
-            public int compare( Repository r1, Repository r2 )
-            {
-                // local repo shall go first so it shall have lesser value
-                int i1 = r1 instanceof LocalRepository ? 0 : 1;
-                int i2 = r2 instanceof LocalRepository ? 0 : 1;
-                return Integer.compare( i1, i2 );
-            }
+            // local repo shall go first so it shall have lesser value
+            int i1 = r1 instanceof LocalRepository ? 0 : 1;
+            int i2 = r2 instanceof LocalRepository ? 0 : 1;
+            return Integer.compare( i1, i2 );
         };
     }
 
+
+    @Override
+    public Set<Repository> getSecondaryRepositories()
+    {
+        return secondaryRepositories;
+    }
+
+
+    private List<Repository> getAllRepositories()
+    {
+        Comparator<Repository> c = makeLocalsFirstComparator();
+        List<Repository> sorted = repositories.stream().sorted( c ).collect( Collectors.toList() );
+        List<Repository> list = new LinkedList<>();
+        list.addAll( sorted );
+        list.addAll( secondaryRepositories );
+        return list;
+    }
 
 }
 

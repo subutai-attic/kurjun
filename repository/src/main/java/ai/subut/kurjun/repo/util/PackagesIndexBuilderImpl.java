@@ -5,10 +5,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.vafer.jdeb.debian.BinaryPackageControlFile;
 import org.vafer.jdeb.debian.ControlFile;
 
@@ -18,29 +19,25 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorOutputStream;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.ar.CompressionType;
-import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.index.PackageIndexFieldsParser;
+import ai.subut.kurjun.metadata.common.apt.DefaultIndexPackageMetaData;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
-import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
-import ai.subut.kurjun.model.metadata.Architecture;
-import ai.subut.kurjun.model.metadata.MetadataListing;
-import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.metadata.apt.Dependency;
 import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
-import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.repo.service.PackageFilenameBuilder;
 import ai.subut.kurjun.repo.service.PackagesIndexBuilder;
-import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 
 class PackagesIndexBuilderImpl implements PackagesIndexBuilder
 {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( PackagesIndexBuilderImpl.class );
 
     @Inject
     PackageFilenameBuilder filenameBuilder;
@@ -48,68 +45,47 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
     @Inject
     Gson gson;
 
-    PackageMetadataStore metadataStore;
-    FileStore fileStore;
-
-
-    @Inject
-    public PackagesIndexBuilderImpl(
-            FileStoreFactory fileStoreFactory,
-            PackageMetadataStoreFactory metadataStoreFactory,
-            @Assisted KurjunContext context )
-    {
-        this.fileStore = fileStoreFactory.create( context );
-        this.metadataStore = metadataStoreFactory.create( context );
-    }
-
-
-    public PackagesIndexBuilderImpl( PackageMetadataStore metadataStore, FileStore fileStore )
-    {
-        this.metadataStore = metadataStore;
-        this.fileStore = fileStore;
-    }
-
-
-    PackagesIndexBuilderImpl()
-    {
-    }
-
 
     @Override
-    public void buildIndex( String component, Architecture arch, OutputStream os ) throws IOException
+    public void buildIndex( PackagesProvider provider, OutputStream out, CompressionType compressionType ) throws IOException
     {
-        buildIndex( component, arch, os, CompressionType.NONE );
-    }
-
-
-    @Override
-    public void buildIndex( String component, Architecture arch, OutputStream out, CompressionType compressionType )
-            throws IOException
-    {
-        Objects.requireNonNull( fileStore, "File store" );
-        Objects.requireNonNull( metadataStore, "Package metadata store" );
-        Objects.requireNonNull( component, "component to build packages index for" );
-
+        List<SerializableMetadata> items = provider.getPackages();
         try ( OutputStream os = wrapStream( out, compressionType ) )
         {
-            MetadataListing list = metadataStore.list();
-            List<DefaultPackageMetadata> filtered = filterMetadata( component, arch, list );
-            for ( DefaultPackageMetadata pm : filtered )
+            for ( SerializableMetadata item : items )
             {
-                String s = formatPackageMetadata( pm );
+                DefaultPackageMetadata meta = deserializeMetadata( item );
+                String s = formatPackageMetadata( meta );
                 writeString( s, os );
             }
-            while ( list.isTruncated() )
+        }
+    }
+
+
+    private DefaultPackageMetadata deserializeMetadata( SerializableMetadata meta )
+    {
+        DefaultPackageMetadata res = gson.fromJson( meta.serialize(), DefaultPackageMetadata.class );
+        try
+        {
+            DefaultIndexPackageMetaData ipm = gson.fromJson( meta.serialize(), DefaultIndexPackageMetaData.class );
+            if ( ipm.getSHA1() != null )
             {
-                list = metadataStore.listNextBatch( list );
-                filtered = filterMetadata( component, arch, list );
-                for ( DefaultPackageMetadata pm : filtered )
-                {
-                    String s = formatPackageMetadata( pm );
-                    writeString( s, os );
-                }
+                res.getExtra().put( IndexPackageMetaData.SHA1_FIELD, Hex.encodeHexString( ipm.getSHA1() ) );
+            }
+            if ( ipm.getSHA256() != null )
+            {
+                res.getExtra().put( IndexPackageMetaData.SHA256_FIELD, Hex.encodeHexString( ipm.getSHA256() ) );
+            }
+            if ( ipm.getSize() > 0 )
+            {
+                res.getExtra().put( IndexPackageMetaData.SIZE_FIELD, Long.toString( ipm.getSize() ) );
             }
         }
+        catch ( JsonSyntaxException ex )
+        {
+            LOGGER.error( "Meta data is not index package metadata. Using it as plain package metadata.", ex );
+        }
+        return res;
     }
 
 
@@ -149,27 +125,8 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
     }
 
 
-    private List<DefaultPackageMetadata> filterMetadata( String component, Architecture arch, MetadataListing ls )
-    {
-        List<DefaultPackageMetadata> res = new LinkedList<>();
-        for ( SerializableMetadata m : ls.getPackageMetadata() )
-        {
-            DefaultPackageMetadata pm = gson.fromJson( m.serialize(), DefaultPackageMetadata.class );
-            if ( component.equals( pm.getComponent() ) && arch == pm.getArchitecture() )
-            {
-                res.add( pm );
-            }
-        }
-        return res;
-    }
-
-
     private String formatPackageMetadata( DefaultPackageMetadata meta ) throws IOException
     {
-        if ( !fileStore.contains( meta.getMd5Sum() ) )
-        {
-            throw new IllegalStateException( "Corresponding file not found in file store" );
-        }
 
         BinaryPackageControlFile cf = new BinaryPackageControlFile();
 

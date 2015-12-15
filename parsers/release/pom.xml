@@ -14,8 +14,11 @@
 
   <properties>
 
-    <osgi.export-package>ai.subut.kurjun.riparser.service</osgi.export-package>
-
+    <osgi.export-package>{local-packages};version=${project.version};-noimport:=true</osgi.export-package>
+    <osgi.import-package>ai.subut.kurjun.*, org.bouncycastle.openpgp, org.slf4j, !*</osgi.import-package>
+    <osgi.embed-dependency>groupId=com.google.inject|aopalliance|javax.inject|commons-codec|org.vafer</osgi.embed-dependency>
+    <osgi.embed-transitive>true</osgi.embed-transitive>
+        
     <test.release.codename>trusty</test.release.codename>
     <test.release.url>
       http://archive.ubuntu.com/ubuntu/dists/trusty/Release

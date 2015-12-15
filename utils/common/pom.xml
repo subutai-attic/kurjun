@@ -13,7 +13,10 @@
   <packaging>jar</packaging>
 
   <properties>
-    <osgi.export-package>${project.groupId}.common.service</osgi.export-package>
+    <osgi.export-package>{local-packages};version=${project.version};-noimport:=true</osgi.export-package>
+    <osgi.import-package>ai.subut.kurjun.*, org.slf4j.*, !*</osgi.import-package>
+    <osgi.embed-dependency>groupId=com.google.inject|aopalliance|javax.inject|commons-configuration|commons-lang|commons-logging</osgi.embed-dependency>
+    <osgi.embed-transitive>true</osgi.embed-transitive>
   </properties>
 
   <dependencies>
@@ -33,7 +36,7 @@
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
     </dependency>
-    
+        
   </dependencies>
   
 </project>

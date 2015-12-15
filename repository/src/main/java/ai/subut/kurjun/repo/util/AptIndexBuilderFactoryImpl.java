@@ -3,6 +3,7 @@ package ai.subut.kurjun.repo.util;
 
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
+import ai.subut.kurjun.model.repository.Repository;
 import ai.subut.kurjun.repo.service.PackagesIndexBuilder;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
@@ -11,7 +12,7 @@ import ai.subut.kurjun.storage.factory.FileStoreFactory;
  * Simple implementation of {@link AptIndexBuilderFactory}. Used in Blueprint config file.
  *
  */
-class AptIndexBuilderFactoryImpl implements AptIndexBuilderFactory
+public class AptIndexBuilderFactoryImpl implements AptIndexBuilderFactory
 {
 
     private FileStoreFactory fileStoreFactory;
@@ -29,14 +30,14 @@ class AptIndexBuilderFactoryImpl implements AptIndexBuilderFactory
     @Override
     public PackagesIndexBuilder createPackagesIndexBuilder( KurjunContext context )
     {
-        return new PackagesIndexBuilderImpl( fileStoreFactory, metadataStoreFactory, context );
+        return new PackagesIndexBuilderImpl();
     }
 
 
     @Override
-    public ReleaseIndexBuilder createReleaseIndexBuilder( KurjunContext context )
+    public ReleaseIndexBuilder createReleaseIndexBuilder( Repository repository, KurjunContext context )
     {
-        return new ReleaseIndexBuilder( this, context );
+        return new ReleaseIndexBuilder( repository, context );
     }
 
 }

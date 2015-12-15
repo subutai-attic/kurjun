@@ -12,7 +12,12 @@
   <packaging>jar</packaging>
   <name>Kurjun DB File Store</name>
 
+  
   <properties>
+    <osgi.export-package>{local-packages};version=${project.version};-noimport:=true</osgi.export-package>
+    <osgi.import-package>ai.subut.kurjun.*, !*</osgi.import-package>
+    <osgi.embed-dependency></osgi.embed-dependency>
+    <osgi.embed-transitive>false</osgi.embed-transitive>
   </properties>
 
   <build>

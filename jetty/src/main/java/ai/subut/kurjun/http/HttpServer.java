@@ -10,6 +10,7 @@ import java.util.Set;
 import javax.servlet.DispatcherType;
 
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.slf4j.Logger;
@@ -22,7 +23,7 @@ import ai.subut.kurjun.cfparser.ControlFileParserModule;
 import ai.subut.kurjun.common.KurjunBootstrap;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.service.KurjunProperties;
-import ai.subut.kurjun.http.local.AptRepoServletModule;
+import ai.subut.kurjun.http.apt.AptRepoServletModule;
 import ai.subut.kurjun.http.snap.SnapServletModule;
 import ai.subut.kurjun.http.subutai.TemplateServletModule;
 import ai.subut.kurjun.index.PackagesIndexParserModule;
@@ -67,7 +68,15 @@ public class HttpServer
         handler.setContextPath( "/" );
         handler.addFilter( f, "/*", EnumSet.allOf( DispatcherType.class ) );
 
-        Server server = new Server( properties.getIntegerWithDefault( HTTP_PORT_KEY, 8080 ) );
+        Server server = new Server();
+
+        ServerConnector http = new ServerConnector( server );
+        // http.setHost( "0.0.0.0" );
+        // http.setHost( "localhost" );
+        http.setPort( properties.getIntegerWithDefault( HTTP_PORT_KEY, 8080 ) );
+        http.setIdleTimeout( 30000 );
+
+        server.addConnector( http );
         server.setHandler( handler );
 
         server.start();
@@ -143,10 +152,10 @@ public class HttpServer
         try
         {
             // add sample identity to work
-            identity = identityManager.addIdentity( "1EB4A4CCADF438434450BF1F364CD558014A08B4" );
+            identity = identityManager.addIdentity( "1EB4A4CCADF438434450BF1F364CD558014A08B4", true );
             if ( identity != null )
             {
-                identityManager.addRole( role, identity, CONTEXT );
+                identityManager.addResourcePermission(Permission.GET_PACKAGE, identity, CONTEXT.getName() );
             }
         }
         catch ( IOException ex )

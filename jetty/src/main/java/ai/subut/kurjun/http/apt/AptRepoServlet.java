@@ -1,4 +1,4 @@
-package ai.subut.kurjun.http.local;
+package ai.subut.kurjun.http.apt;
 
 
 import java.io.IOException;
@@ -24,6 +24,7 @@ import ai.subut.kurjun.model.security.Permission;
 import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.repo.service.PackagesIndexBuilder;
 import ai.subut.kurjun.repo.util.AptIndexBuilderFactory;
+import ai.subut.kurjun.repo.util.PackagesProviderFactory;
 import ai.subut.kurjun.repo.util.ReleaseIndexBuilder;
 import ai.subut.kurjun.security.service.AuthManager;
 
@@ -40,6 +41,9 @@ class AptRepoServlet extends HttpServletBase
 
     @Inject
     private AptIndexBuilderFactory indexBuilderFactory;
+
+    @Inject
+    private PackagesProviderFactory packagesProviderFactory;
 
     @Inject
     private RepositoryFactory repositoryFactory;
@@ -135,7 +139,8 @@ class AptRepoServlet extends HttpServletBase
         PackagesIndexBuilder packagesIndexBuilder = indexBuilderFactory.createPackagesIndexBuilder( context );
         try ( OutputStream os = resp.getOutputStream() )
         {
-            packagesIndexBuilder.buildIndex( component, arch, os, compressionType );
+            packagesIndexBuilder.buildIndex( packagesProviderFactory.create( repository, component, arch ), os,
+                                             compressionType );
         }
     }
 
@@ -147,7 +152,7 @@ class AptRepoServlet extends HttpServletBase
                 .filter( r -> r.getCodename().equals( release ) ).findFirst();
         if ( item.isPresent() )
         {
-            ReleaseIndexBuilder releaseIndexBuilder = indexBuilderFactory.createReleaseIndexBuilder( context );
+            ReleaseIndexBuilder releaseIndexBuilder = indexBuilderFactory.createReleaseIndexBuilder( repository, context );
             String releaseIndex = releaseIndexBuilder.build( item.get(), repository.isKurjun() );
             ok( resp, releaseIndex );
         }

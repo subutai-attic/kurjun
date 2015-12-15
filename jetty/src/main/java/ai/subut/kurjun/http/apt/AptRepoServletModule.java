@@ -1,4 +1,4 @@
-package ai.subut.kurjun.http.local;
+package ai.subut.kurjun.http.apt;
 
 
 import ai.subut.kurjun.http.ServletModuleBase;
@@ -14,6 +14,8 @@ public class AptRepoServletModule extends ServletModuleBase
     @Override
     protected void configureServlets()
     {
+
+        serve( getServletPath() + "/uni/*" ).with( AptUniServlet.class );
 
         serve( getServletPath() + "/upload" ).with( AptRepoUploadServlet.class );
         serve( getServletPath() + "/pool/*" ).with( AptPoolServlet.class );

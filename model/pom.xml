@@ -11,9 +11,13 @@
   <artifactId>model</artifactId>
   <packaging>jar</packaging>
   <name>Kurjun Model</name>
+  <description></description>
   
   <properties>
-    <osgi.export-package>{local-packages}</osgi.export-package>
+    <osgi.export-package>{local-packages};version=${project.version};-noimport:=true</osgi.export-package>
+    <osgi.import-package>ai.subut.kurjun.*, !*</osgi.import-package>
+    <osgi.embed-dependency></osgi.embed-dependency>
+    <osgi.embed-transitive>false</osgi.embed-transitive>
   </properties>
 
   <dependencies>
@@ -25,5 +29,5 @@
     </dependency>
 
   </dependencies>
-
+    
 </project>

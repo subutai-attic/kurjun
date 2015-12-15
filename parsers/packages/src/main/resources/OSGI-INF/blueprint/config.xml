@@ -3,7 +3,7 @@
 
   <service interface="ai.subut.kurjun.index.service.PackagesIndexParser" >
 
-    <bean class="ai.subut.kurjun.index.service.PackagesIndexParserImpl">
+    <bean class="ai.subut.kurjun.index.PackagesIndexParserImpl">
     </bean>
     
   </service>

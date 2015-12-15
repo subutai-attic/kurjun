@@ -13,6 +13,11 @@
   <name>Kurjun SQL DB Store</name>
 
   <properties>
+      
+    <osgi.export-package>{local-packages};version=${project.version};-noimport:=true</osgi.export-package>
+    <osgi.import-package>ai.subut.kurjun.*, !*</osgi.import-package>
+    <osgi.embed-dependency>groupId=com.zaxxer|org.mybatis|org.mariadb.jdbc</osgi.embed-dependency>
+    <osgi.embed-transitive>true</osgi.embed-transitive>
 
     <test.db.className>org.mariadb.jdbc.MySQLDataSource</test.db.className>
     <test.db.server>localhost</test.db.server>

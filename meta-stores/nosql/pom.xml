@@ -13,6 +13,10 @@
   <name>Kurjun NoSQL Store</name>
 
   <properties>
+    <osgi.export-package>{local-packages};version=${project.version};-noimport:=true</osgi.export-package>
+    <osgi.import-package>ai.subut.kurjun.*, org.slf4j, !*</osgi.import-package>
+    <osgi.embed-dependency>groupId=com.datastax.cassandra</osgi.embed-dependency>
+    <osgi.embed-transitive>true</osgi.embed-transitive>
 
     <test.cassandra.node>localhost</test.cassandra.node>
     <test.cassandra.port>0</test.cassandra.port>

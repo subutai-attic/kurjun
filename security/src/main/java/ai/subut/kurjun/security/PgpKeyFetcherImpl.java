@@ -21,21 +21,21 @@ import ai.subut.kurjun.security.service.PgpKeyFetcher;
 import ai.subut.kurjun.security.utils.PGPUtils;
 
 
-class PgpKeyFercherImpl implements PgpKeyFetcher
+class PgpKeyFetcherImpl implements PgpKeyFetcher
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger( PgpKeyFercherImpl.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( PgpKeyFetcherImpl.class );
 
     private URL keyserverUrl;
 
 
     @Inject
-    public PgpKeyFercherImpl( KurjunProperties kurjunProperties ) throws MalformedURLException
+    public PgpKeyFetcherImpl( KurjunProperties kurjunProperties ) throws MalformedURLException
     {
         this( kurjunProperties.get( KurjunConstants.SECURITY_KEYSERVER_URL ) );
     }
 
 
-    public PgpKeyFercherImpl( String url ) throws MalformedURLException
+    public PgpKeyFetcherImpl( String url ) throws MalformedURLException
     {
         this.keyserverUrl = new URL( url );
 

@@ -2,13 +2,13 @@ package ai.subut.kurjun.repo.http;
 
 
 import ai.subut.kurjun.model.index.ChecksummedResource;
-import ai.subut.kurjun.model.index.IndexPackageMetaData;
 import ai.subut.kurjun.model.index.ReleaseFile;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 
 
 /**
  * Utility class to build paths for apt repository items like release index files, package index files, and artifact
- * files. Note that the result path of this class does not gave slash ("/") in the beginning because the paths returned
+ * files. Note that the result path of this class does not have slash ("/") in the beginning because the paths returned
  * are not absolute paths.
  *
  */
@@ -20,7 +20,7 @@ public class PathBuilder
 
     private String release;
     private ChecksummedResource resource;
-    private IndexPackageMetaData packageMetaData;
+    private PackageMetadata packageMetaData;
 
 
     PathBuilder()
@@ -117,7 +117,7 @@ public class PathBuilder
      * @param packageMetaData
      * @return
      */
-    public PathBuilder setPackageMetaData( IndexPackageMetaData packageMetaData )
+    public PathBuilder setPackageMetaData( PackageMetadata packageMetaData )
     {
         if ( releaseIndexFile )
         {

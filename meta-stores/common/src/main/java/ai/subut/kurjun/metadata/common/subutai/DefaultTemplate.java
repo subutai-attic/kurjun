@@ -21,7 +21,11 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
     private byte[] md5Sum;
     private String name;
     private String version;
+    private String parent;
+    private String packageName;
     private Architecture architecture;
+    private String configContents;
+    private String packagesContents;
     private Map< String, String> extra = new HashMap<>();
 
 
@@ -78,6 +82,58 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
 
 
     @Override
+    public String getParent()
+    {
+        return parent;
+    }
+
+
+    public void setParent( String parent )
+    {
+        this.parent = parent;
+    }
+
+
+    @Override
+    public String getPackage()
+    {
+        return packageName;
+    }
+
+
+    public void setPackage( String packageName )
+    {
+        this.packageName = packageName;
+    }
+
+
+    @Override
+    public String getConfigContents()
+    {
+        return configContents;
+    }
+
+
+    public void setConfigContents( String configContents )
+    {
+        this.configContents = configContents;
+    }
+
+
+    @Override
+    public String getPackagesContents()
+    {
+        return packagesContents;
+    }
+
+
+    public void setPackagesContents( String packagesContents )
+    {
+        this.packagesContents = packagesContents;
+    }
+
+
+    @Override
     public Map<String, String> getExtra()
     {
         return extra;
@@ -95,6 +151,28 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
     {
         return MetadataUtils.JSON.toJson( this );
     }
+
+
+    @Override
+    public int hashCode()
+    {
+        int hash = 3;
+        hash = 17 * hash + Arrays.hashCode( this.md5Sum );
+        return hash;
+    }
+
+
+    @Override
+    public boolean equals( Object obj )
+    {
+        if ( obj instanceof DefaultTemplate )
+        {
+            DefaultTemplate other = ( DefaultTemplate ) obj;
+            return Arrays.equals( this.md5Sum, other.md5Sum );
+        }
+        return false;
+    }
+
 
 }
 

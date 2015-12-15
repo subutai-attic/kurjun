@@ -24,10 +24,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import org.apache.commons.io.IOUtils;
 
-import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.security.Group;
 import ai.subut.kurjun.model.security.Identity;
-import ai.subut.kurjun.model.security.Role;
+import ai.subut.kurjun.model.security.Permission;
 import ai.subut.kurjun.security.service.FileDbProvider;
 import ai.subut.kurjun.security.service.GroupManager;
 import ai.subut.kurjun.security.service.IdentityManager;
@@ -49,7 +48,6 @@ public class IdentityManagerImplTest
     private IdentityManager identityManager;
     private Identity sampleIdentity;
     private DefaultGroup group;
-    private DefaultRole role;
 
     @Mock
     private PgpKeyFetcher keyFetcher;
@@ -93,13 +91,10 @@ public class IdentityManagerImplTest
         this.file = temporaryFolder.newFile();
         this.group = new DefaultGroup();
         this.group.setName( "some-group" );
-        this.role = new DefaultRole();
-        this.role.setName( "some-role" );
 
         FileDbProvider fileDbProvider = new FileDbProviderImpl( file.getAbsolutePath() );
         Mockito.when( keyFetcher.get( sampleIdentity.getKeyFingerprint() ) ).thenReturn( sampleKey );
         Mockito.when( groupManager.getGroup( group.getName() ) ).thenReturn( group );
-        Mockito.when( roleManager.getRole( role.getName() ) ).thenReturn( role );
         this.identityManager = new IdentityManagerImpl( fileDbProvider, keyFetcher, groupManager, roleManager );
 
         this.identityManager.addIdentity( sampleIdentity.getKeyFingerprint(), signedFingerprint );
@@ -141,27 +136,29 @@ public class IdentityManagerImplTest
 
 
     @Test
-    public void testGetRoles() throws Exception
+    public void testGetPermissions() throws Exception
     {
-        Set<Role> roles = identityManager.getRoles( sampleIdentity, new KurjunContext( "test" ) );
-        Assert.assertEquals( 0, roles.size() );
+        Set<Permission> permissions = identityManager.getPermissions( sampleIdentity, "test" );
+        Assert.assertEquals( 0, permissions.size() );
     }
 
 
     @Test
-    public void testAddRemoveRole() throws Exception
+    public void testAddRemovePermissions() throws Exception
     {
-        KurjunContext context = new KurjunContext( "test" );
+        String resource = "test";
+        
+        Permission permission = Permission.ADD_PACKAGE;
 
-        identityManager.addRole( role, sampleIdentity, context );
+        identityManager.addResourcePermission(permission, sampleIdentity, resource );
 
-        Set<Role> roles = identityManager.getRoles( sampleIdentity, context );
-        Assert.assertEquals( 1, roles.size() );
-        Assert.assertTrue( roles.contains( role ) );
+        Set<Permission> permissions = identityManager.getPermissions( sampleIdentity, resource );
+        Assert.assertEquals( 1, permissions.size() );
+        Assert.assertTrue( permissions.contains( permission ) );
 
-        identityManager.removeRole( role, sampleIdentity, context );
-        roles = identityManager.getRoles( sampleIdentity, context );
-        Assert.assertFalse( roles.contains( role ) );
+        identityManager.removeResourcePermission( permission, sampleIdentity, resource );
+        permissions = identityManager.getPermissions( sampleIdentity, resource );
+        Assert.assertFalse( permissions.contains( permission ) );
     }
 
 }

@@ -9,10 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.core.Response;
@@ -20,7 +18,6 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
 
@@ -31,6 +28,8 @@ import com.google.inject.assistedinject.Assisted;
 import ai.subut.kurjun.common.service.KurjunConstants;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.snap.DefaultSnapMetadata;
+import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
+import ai.subut.kurjun.model.annotation.Nullable;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
@@ -62,7 +61,7 @@ class NonLocalSnapRepository extends RepositoryBase implements NonLocalRepositor
 
 
     @Inject
-    public NonLocalSnapRepository( PackageCache cache, @Assisted String url, @Assisted Identity identity )
+    public NonLocalSnapRepository( PackageCache cache, @Assisted String url, @Assisted @Nullable Identity identity )
     {
         this.cache = cache;
         this.identity = identity;
@@ -109,7 +108,7 @@ class NonLocalSnapRepository extends RepositoryBase implements NonLocalRepositor
     public SerializableMetadata getPackageInfo( Metadata metadata )
     {
         SecureRequestFactory secreq = new SecureRequestFactory( this );
-        WebClient webClient = secreq.makeClient( INFO_PATH, makeParamsMap( metadata ) );
+        WebClient webClient = secreq.makeClient( INFO_PATH, MetadataUtils.makeParamsMap( metadata ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -145,7 +144,7 @@ class NonLocalSnapRepository extends RepositoryBase implements NonLocalRepositor
         }
 
         SecureRequestFactory secreq = new SecureRequestFactory( this );
-        WebClient webClient = secreq.makeClient( GET_PATH, makeParamsMap( metadata ) );
+        WebClient webClient = secreq.makeClient( GET_PATH, MetadataUtils.makeParamsMap( metadata ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -168,7 +167,7 @@ class NonLocalSnapRepository extends RepositoryBase implements NonLocalRepositor
     public List<SerializableMetadata> listPackages()
     {
         SecureRequestFactory secreq = new SecureRequestFactory( this );
-        WebClient webClient = secreq.makeClient( INFO_PATH, makeParamsMap( new DefaultMetadata() ) );
+        WebClient webClient = secreq.makeClient( INFO_PATH, null );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -191,25 +190,6 @@ class NonLocalSnapRepository extends RepositoryBase implements NonLocalRepositor
             }
         }
         return Collections.emptyList();
-    }
-
-
-    private Map< String, String> makeParamsMap( Metadata metadata )
-    {
-        Map<String, String> params = new HashMap<>();
-        if ( metadata.getMd5Sum() != null )
-        {
-            params.put( "md5", Hex.encodeHexString( metadata.getMd5Sum() ) );
-        }
-        if ( metadata.getName() != null )
-        {
-            params.put( "name", metadata.getName() );
-        }
-        if ( metadata.getVersion() != null )
-        {
-            params.put( "version", metadata.getVersion() );
-        }
-        return params;
     }
 
 

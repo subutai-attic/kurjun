@@ -26,7 +26,7 @@ public class SnapMetadataParserModule extends AbstractModule
 
 
     @Provides
-    Yaml makeYamlParser()
+    public Yaml makeYamlParser()
     {
         // make yaml parser ignore missing fields instead of throwing exceptions
         Representer representer = new Representer();

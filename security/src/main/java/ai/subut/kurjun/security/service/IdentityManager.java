@@ -4,10 +4,9 @@ package ai.subut.kurjun.security.service;
 import java.io.IOException;
 import java.util.Set;
 
-import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.security.Group;
 import ai.subut.kurjun.model.security.Identity;
-import ai.subut.kurjun.model.security.Role;
+import ai.subut.kurjun.model.security.Permission;
 
 
 /**
@@ -32,10 +31,11 @@ public interface IdentityManager
      * Adds identity with supplied fingerprint.
      *
      * @param fingerprint fingerprint of the PGP key which is used as identity
+     * @param checkKeyExistence flag to check the existence of PGP key from the configured key server for the given fingerprint
      * @return identity instance if key for supplied fingerprint was found; {@code null} otherwise
      * @throws IOException
      */
-    Identity addIdentity( String fingerprint ) throws IOException;
+    Identity addIdentity( String fingerprint, boolean checkKeyExistence ) throws IOException;
 
 
     /**
@@ -61,36 +61,36 @@ public interface IdentityManager
 
 
     /**
-     * Gets roles of supplied identity in a given context.
+     * Gets permissions of supplied identity for the given resource.
      *
      * @param identity
-     * @param context
+     * @param resource
      * @return
      * @throws IOException
      */
-    Set<Role> getRoles( Identity identity, KurjunContext context ) throws IOException;
+    Set<Permission> getPermissions( Identity identity, String resource ) throws IOException;
 
 
     /**
-     * Adds role to the identity in a given context.
+     * Adds permission to the identity for the given resource.
      *
-     * @param role role to add
-     * @param identity identity to add tole to
-     * @param context
+     * @param permission permission to add
+     * @param identity identity to add permission to
+     * @param resource
      * @throws IOException
      */
-    void addRole( Role role, Identity identity, KurjunContext context ) throws IOException;
+    void addResourcePermission( Permission permission, Identity identity, String resource ) throws IOException;
 
 
     /**
-     * Removes role from the identity in a given context.
+     * Removes permission from the identity for a given resource.
      *
-     * @param role role to remove
-     * @param identity identity to remove role from
-     * @param context
+     * @param permission permission to remove
+     * @param identity identity to remove permission from
+     * @param resource
      * @throws IOException
      */
-    void removeRole( Role role, Identity identity, KurjunContext context ) throws IOException;
+    void removeResourcePermission( Permission permission, Identity identity, String resource ) throws IOException;
 
 
 }

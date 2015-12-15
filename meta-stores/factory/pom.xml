@@ -11,7 +11,13 @@
   <name>Kurjun Metadata Store Factory</name>
   <artifactId>metadata-store-factory</artifactId>
   <packaging>jar</packaging>
-
+  
+  <properties>
+    <osgi.export-package>{local-packages};version=${project.version};-noimport:=true</osgi.export-package>
+    <osgi.import-package>${project.groupId}.*, !*</osgi.import-package>
+    <osgi.embed-dependency>commons-codec, gson, groupId=com.google.inject|aopalliance|javax.inject</osgi.embed-dependency>
+    <osgi.embed-transitive>true</osgi.embed-transitive>
+  </properties>
 
   <dependencies>
 

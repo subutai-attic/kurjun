@@ -11,7 +11,15 @@
   <name>Kurjun Http Services</name>
   <artifactId>http</artifactId>
   <packaging>jar</packaging>
+  <description></description>
 
+  <properties>
+    <osgi.export-package>{local-packages};version=${project.version};-noimport:=true</osgi.export-package>
+    <osgi.import-package>${project.groupId}*, org.slf4j, org.apache.cxf*, javax.ws.rs*, org.apache.commons.codec, !*</osgi.import-package>
+    <osgi.embed-dependency></osgi.embed-dependency>
+    <osgi.embed-transitive>false</osgi.embed-transitive>
+  </properties>
+    
   <dependencies>
 
     <dependency>
@@ -25,7 +33,7 @@
       <artifactId>common-utils</artifactId>
       <version>${project.version}</version>
     </dependency>
-
+    
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>repository</artifactId>
@@ -63,5 +71,5 @@
     </dependency>
 
   </dependencies>
-
+    
 </project>

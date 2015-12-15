@@ -26,7 +26,12 @@
   </build>
 
   <properties>
-    <osgi.export-package>ai.subut.kurjun.subutai.service</osgi.export-package>
+    <osgi.export-package>{local-packages};version=${project.version};-noimport:=true</osgi.export-package>
+    <osgi.import-package>ai.subut.kurjun.*, !*</osgi.import-package>
+    <osgi.embed-dependency>
+      groupId=com.google.inject|aopalliance|javax.inject|commons-codec
+    </osgi.embed-dependency>
+    <osgi.embed-transitive>true</osgi.embed-transitive>
   </properties>
 
   <dependencies>

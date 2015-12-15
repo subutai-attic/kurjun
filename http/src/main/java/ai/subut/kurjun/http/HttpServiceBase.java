@@ -19,8 +19,8 @@ import ai.subut.kurjun.security.service.AuthManager;
 
 
 /**
- * Abstract base class for HTTP service classes implemented using JAX-RS. This class an authentication method to be used
- * in all other implementations.
+ * Abstract base class for HTTP service classes implemented using JAX-RS. This class has an authentication method to be
+ * used in all other implementations.
  *
  */
 abstract class HttpServiceBase
@@ -69,7 +69,7 @@ abstract class HttpServiceBase
         if ( getAuthManager() != null )
         {
             String f = Optional.ofNullable( fingerprintHeader ).orElse( fingerprintParam );
-            return getAuthManager().isAllowed( f, permission, getContext() );
+            return getAuthManager().isAllowed( f, permission, getContext().getName() );
         }
         // if auth manager is not set, that means we do not have to check authentiaction
         return true;

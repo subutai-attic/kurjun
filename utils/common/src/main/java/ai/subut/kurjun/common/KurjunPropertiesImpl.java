@@ -24,11 +24,11 @@ import ai.subut.kurjun.common.service.KurjunProperties;
 
 
 /**
- * Implementation of {@link KurjunProperties} that reads properties from file specified by
- * {@link KurjunPropertiesImpl#CONF_FILE_PATH}.
+ * Implementation of {@link KurjunProperties} that reads properties from file
+ * specified by {@link KurjunPropertiesImpl#CONF_FILE_PATH}.
  *
  */
-class KurjunPropertiesImpl implements KurjunProperties
+public class KurjunPropertiesImpl implements KurjunProperties
 {
 
     public static final String CONF_FILE_PATH = "kurjun.properties";
@@ -41,10 +41,9 @@ class KurjunPropertiesImpl implements KurjunProperties
 
     public KurjunPropertiesImpl() throws ConfigurationException
     {
-        // TODO: check for other cases than OSGi
-        //conf = new PropertiesConfiguration( CONF_FILE_PATH );
+        // conf = new PropertiesConfiguration( CONF_FILE_PATH );
         conf = new PropertiesConfiguration(
-                this.getClass().getClassLoader().getResource( "/" + CONF_FILE_PATH ).toExternalForm() );
+                this.getClass().getResource( "/" + CONF_FILE_PATH ).toExternalForm() );
         conf.setThrowExceptionOnMissing( false );
     }
 
@@ -174,4 +173,3 @@ class KurjunPropertiesImpl implements KurjunProperties
         Names.bindProperties( binder, ConfigurationConverter.getProperties( conf ) );
     }
 }
-

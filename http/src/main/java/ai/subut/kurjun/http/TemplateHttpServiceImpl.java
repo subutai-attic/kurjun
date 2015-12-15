@@ -37,7 +37,7 @@ import ai.subut.kurjun.storage.factory.FileStoreFactory;
 import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
 
 
-class TemplateHttpServiceImpl implements TemplateHttpService
+public class TemplateHttpServiceImpl implements TemplateHttpService
 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger( TemplateHttpServiceImpl.class );

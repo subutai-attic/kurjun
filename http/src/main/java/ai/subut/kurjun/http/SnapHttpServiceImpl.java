@@ -33,7 +33,7 @@ import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.security.service.AuthManager;
 
 
-class SnapHttpServiceImpl extends HttpServiceBase implements SnapHttpService
+public class SnapHttpServiceImpl extends HttpServiceBase implements SnapHttpService
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( SnapHttpServiceImpl.class );
 

@@ -1,6 +1,8 @@
 package ai.subut.kurjun.repo;
 
 
+import java.net.URL;
+
 import ai.subut.kurjun.cfparser.service.ControlFileParser;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
@@ -19,7 +21,7 @@ import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
  * Implementation of {@link RepositoryFactory}. Used in Blueprint config file.
  *
  */
-class RepositoryFactoryImpl implements RepositoryFactory
+public class RepositoryFactoryImpl implements RepositoryFactory
 {
     private ReleaseIndexParser releaseIndexParser;
     private ControlFileParser controlFileParser;
@@ -87,11 +89,28 @@ class RepositoryFactoryImpl implements RepositoryFactory
 
 
     @Override
+    public NonLocalRepository createNonLocalTemplate( String url, Identity identity, String token )
+    {
+        return new NonLocalTemplateRepository( cache, url, identity, token );
+    }
+
+
+    @Override
+    public NonLocalRepository createNonLocalApt( URL url )
+    {
+        NonLocalAptRepository repo = new NonLocalAptRepository( url );
+        repo.releaseIndexParser = releaseIndexParser;
+        repo.packagesIndexParser = null; // TODO: 
+        repo.cache = cache;
+        return repo;
+    }
+
+
+    @Override
     public UnifiedRepository createUnifiedRepo()
     {
         return new UnifiedRepositoryImpl();
     }
-
 
 }
 

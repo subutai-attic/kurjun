@@ -9,10 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
-import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.model.security.Permission;
-import ai.subut.kurjun.model.security.Role;
 import ai.subut.kurjun.security.service.AuthManager;
 import ai.subut.kurjun.security.service.IdentityManager;
 
@@ -21,7 +19,7 @@ class AuthManagerImpl implements AuthManager
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( AuthManagerImpl.class );
 
-    private IdentityManager identityManager;
+    private final IdentityManager identityManager;
 
 
     @Inject
@@ -48,7 +46,7 @@ class AuthManagerImpl implements AuthManager
 
 
     @Override
-    public boolean isAllowed( String fingerprint, Permission permission, KurjunContext context )
+    public boolean isAllowed( String fingerprint, Permission permission, String resource )
     {
         try
         {
@@ -57,13 +55,10 @@ class AuthManagerImpl implements AuthManager
             {
                 return false;
             }
-            Set<Role> roles = identityManager.getRoles( id, context );
-            for ( Role role : roles )
+            Set<Permission> permissions = identityManager.getPermissions( id, resource );
+            if ( permissions.contains( permission ) )
             {
-                if ( role.hasPermission( permission ) )
-                {
-                    return true;
-                }
+                return true;
             }
         }
         catch ( IOException ex )

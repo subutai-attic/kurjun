@@ -128,9 +128,16 @@ public class DefaultTar implements Tar
                 }
                 else if ( entry.isFile() )
                 {
+                    File outFile = new File( extractTo, entry.getName() );
+
+                    // Some tar archives do not include directory indices, so check path for files also.
+                    if ( !outFile.getParentFile().exists() )
+                    {
+                        checkState( outFile.getParentFile().mkdirs() );
+                    }
+                    
                     int readBytes;
                     byte[] buffer = new byte[1024];
-                    File outFile = new File( extractTo, entry.getName() );
 
                     try ( FileOutputStream out = new FileOutputStream( outFile ) )
                     {

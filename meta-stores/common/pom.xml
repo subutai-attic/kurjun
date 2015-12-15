@@ -13,7 +13,10 @@
   <name>Kurjun Metadata Common</name>
 
   <properties>
-    <osgi.export-package>{local-packages}</osgi.export-package>
+    <osgi.export-package>{local-packages};version=${project.version};-noimport:=true</osgi.export-package>
+    <osgi.import-package>${project.groupId}*, !*</osgi.import-package>
+    <osgi.embed-dependency>groupId=com.google.inject|aopalliance|javax.inject</osgi.embed-dependency>
+    <osgi.embed-transitive>true</osgi.embed-transitive>
   </properties>
 
   <build>

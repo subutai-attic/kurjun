@@ -6,7 +6,7 @@
   <reference id="s3FileStoreFactory" interface="ai.subut.kurjun.storage.s3.S3FileStoreFactory"/>
 
   <bean id="fileStoreFactory" class="ai.subut.kurjun.storage.factory.FileStoreFactoryImpl">
-    <property name="property" ref="kurjunProperties"/>
+    <property name="properties" ref="kurjunProperties"/>
     <property name="fileSystemFileStoreFactory" ref="fsFileStoreFactory"/>
     <property name="s3FileStoreFactory" ref="s3FileStoreFactory"/>
   </bean>

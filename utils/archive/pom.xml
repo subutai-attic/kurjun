@@ -14,7 +14,10 @@
 
   <properties>
 
-    <osgi.export-package>{local-packages}</osgi.export-package>
+    <osgi.export-package>{local-packages};version=${project.version};-noimport:=true</osgi.export-package>
+    <osgi.import-package>ai.subut.kurjun.*, !*</osgi.import-package>
+    <osgi.embed-dependency>artifactId=commons-compress|xz</osgi.embed-dependency>
+    <osgi.embed-transitive>false</osgi.embed-transitive>
     
     <test.pkg.filename>
       apt-transport-https_1.0.9.3ubuntu1_amd64.deb
@@ -43,7 +46,7 @@
       </testResource>
     </testResources>
   </build>
-
+  
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>

@@ -13,8 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 
 import com.google.inject.Inject;
@@ -74,7 +72,7 @@ class SnapServlet extends HttpServletBase
             String pathItem = paths.get( 0 );
 
             DefaultMetadata meta = new DefaultMetadata();
-            meta.setMd5sum( getMd5ParameterValue( req, MD5_PARAM ) );
+            meta.setMd5sum( getMd5ParameterValue( req ) );
             meta.setName( req.getParameter( NAME_PARAM ) );
             meta.setVersion( req.getParameter( VERSION_PARAM ) );
 
@@ -114,7 +112,7 @@ class SnapServlet extends HttpServletBase
             return;
         }
 
-        byte[] md5 = getMd5ParameterValue( req, MD5_PARAM );
+        byte[] md5 = getMd5ParameterValue( req );
         if ( md5 != null )
         {
             LocalRepository repo = getRepository();
@@ -147,24 +145,6 @@ class SnapServlet extends HttpServletBase
     protected AuthManager getAuthManager()
     {
         return authManager;
-    }
-
-
-    private byte[] getMd5ParameterValue( HttpServletRequest req, String paramName )
-    {
-        String md5 = req.getParameter( paramName );
-        if ( md5 != null )
-        {
-            try
-            {
-                return Hex.decodeHex( md5.toCharArray() );
-            }
-            catch ( DecoderException ex )
-            {
-                LOGGER.info( "Invalid md5 checksum value", ex );
-            }
-        }
-        return null;
     }
 
 

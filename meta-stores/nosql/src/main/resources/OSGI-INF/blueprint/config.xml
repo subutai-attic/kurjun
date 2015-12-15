@@ -5,7 +5,7 @@
 
   <bean id="sessionProvider" scope="singleton"
         class="ai.subut.kurjun.metadata.storage.nosql.CassandraSessionProvider">
-    <argument reg="kurjunProperties"/>
+    <argument ref="kurjunProperties"/>
   </bean>
 
   <service interface="ai.subut.kurjun.metadata.storage.nosql.NoSqlPackageMetadataStoreFactory" >

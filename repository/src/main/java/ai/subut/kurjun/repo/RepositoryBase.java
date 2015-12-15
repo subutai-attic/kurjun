@@ -58,7 +58,15 @@ abstract class RepositoryBase implements Repository
     @Override
     public String toString()
     {
-        return "Kurjun repository: " + getUrl();
+        try
+        {
+            return "Kurjun repository: " + getUrl();
+        }
+        // TODO: clear try-catch after resolving getUrl for LocalRepositories
+        catch ( UnsupportedOperationException e )
+        {
+            return "Kurjun repository: Local Repo";
+        }
     }
 
 

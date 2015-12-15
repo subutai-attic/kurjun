@@ -10,7 +10,15 @@
     
   <artifactId>security</artifactId>
   <name>Kurjun Security</name>
+  <description></description>
   <packaging>jar</packaging>
+  
+  <properties>
+    <osgi.export-package>{local-packages};version=${project.version};-noimport:=true</osgi.export-package>
+    <osgi.import-package>${project.groupId}*, org.slf4j, !*</osgi.import-package>
+    <osgi.embed-dependency>groupId=org.bouncycastle|commons-codec|com.google.inject|aopalliance|javax.inject</osgi.embed-dependency>
+    <osgi.embed-transitive>true</osgi.embed-transitive>
+  </properties>
 
   <dependencies>
 

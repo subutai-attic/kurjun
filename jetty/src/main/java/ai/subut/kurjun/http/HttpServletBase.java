@@ -8,6 +8,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
+
 import ai.subut.kurjun.common.service.KurjunConstants;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.security.Permission;
@@ -47,7 +50,7 @@ public abstract class HttpServletBase extends HttpServlet
 
         if ( fingerprint != null )
         {
-            return getAuthManager().isAllowed( fingerprint, permission, getContext() );
+            return getAuthManager().isAllowed( fingerprint, permission, getContext().getName() );
         }
         return false;
     }
@@ -57,6 +60,29 @@ public abstract class HttpServletBase extends HttpServlet
 
 
     protected abstract AuthManager getAuthManager();
+
+
+    /**
+     * Gets decoded MD5 checksum value from request parameters.
+     *
+     * @param req http request from which parameter value is extracted
+     * @return MD5 checksum if valid value is found; {@code null} otherwise
+     */
+    protected byte[] getMd5ParameterValue( HttpServletRequest req )
+    {
+        String md5 = req.getParameter( MD5_PARAM );
+        if ( md5 != null )
+        {
+            try
+            {
+                return Hex.decodeHex( md5.toCharArray() );
+            }
+            catch ( DecoderException ex )
+            {
+            }
+        }
+        return null;
+    }
 
 
     protected void ok( HttpServletResponse resp, String msg ) throws IOException

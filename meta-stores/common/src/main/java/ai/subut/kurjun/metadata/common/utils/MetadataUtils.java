@@ -2,7 +2,12 @@ package ai.subut.kurjun.metadata.common.utils;
 
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.codec.binary.Hex;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -13,6 +18,7 @@ import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
 import ai.subut.kurjun.metadata.common.snap.DefaultSnapMetadata;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
+import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.apt.Dependency;
 import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
@@ -40,6 +46,29 @@ public class MetadataUtils
     private MetadataUtils()
     {
         // utility class
+    }
+
+
+    /**
+     * Makes a comparator that compares meta data instances by their versions. Returned comparator sorts items in
+     * ascending order by version values and takes into account null versions.
+     *
+     * @return
+     */
+    public static Comparator<Metadata> makeVersionComparator()
+    {
+        return (Metadata m1, Metadata m2) ->
+        {
+            if ( m1.getVersion() != null )
+            {
+                return m2.getVersion() != null ? m1.getVersion().compareTo( m2.getVersion() ) : 1;
+            }
+            else
+            {
+                // m1 version is null here
+                return m2.getVersion() == null ? 0 : -1;
+            }
+        };
     }
 
 
@@ -129,8 +158,32 @@ public class MetadataUtils
         m.setMd5Sum( metadata.getMd5Sum() );
         m.setName( metadata.getName() );
         m.setVersion( metadata.getVersion() );
+        m.setParent( metadata.getParent() );
+        m.setPackage( metadata.getPackage() );
         m.setArchitecture( metadata.getArchitecture() );
+        m.setConfigContents( metadata.getConfigContents() );
+        m.setPackagesContents( metadata.getPackagesContents() );
+        m.setExtra( metadata.getExtra() );
         return m;
+    }
+
+
+    public static Map< String, String> makeParamsMap( Metadata metadata )
+    {
+        Map<String, String> params = new HashMap<>();
+        if ( metadata.getMd5Sum() != null )
+        {
+            params.put( "md5", Hex.encodeHexString( metadata.getMd5Sum() ) );
+        }
+        if ( metadata.getName() != null )
+        {
+            params.put( "name", metadata.getName() );
+        }
+        if ( metadata.getVersion() != null )
+        {
+            params.put( "version", metadata.getVersion() );
+        }
+        return params;
     }
 
 

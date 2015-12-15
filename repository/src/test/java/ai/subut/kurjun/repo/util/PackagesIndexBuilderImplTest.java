@@ -31,18 +31,22 @@ import org.slf4j.LoggerFactory;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 
+import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.ar.DebAr;
 import ai.subut.kurjun.ar.DefaultDebAr;
 import ai.subut.kurjun.cfparser.DefaultControlFileParser;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
+import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.Metadata;
-import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.metadata.MetadataListing;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.repo.service.PackageFilenameBuilder;
+import ai.subut.kurjun.repo.service.PackagesIndexBuilder;
 
 
 @RunWith( MockitoJUnitRunner.class )
@@ -61,9 +65,14 @@ public class PackagesIndexBuilderImplTest
     private PackageMetadataStore metadataStore;
 
     @Mock
+    private PackageMetadataStoreFactory metadataStoreFactory;
+
+    @Mock
     private PackageFilenameBuilder filenameBuilder;
 
     private PackagesIndexBuilderImpl indexBuilder = new PackagesIndexBuilderImpl();
+    private PackagesProviderFactory packagesProviderFactory = new PackagesProviderFactory();
+    private KurjunContext context = new KurjunContext( "test" );
 
 
     @BeforeClass
@@ -117,7 +126,7 @@ public class PackagesIndexBuilderImplTest
         Assume.assumeFalse( testPackageFiles.isEmpty() );
         Assume.assumeTrue( metadata.size() == testPackageFiles.size() );
 
-        MetadataListing listing = Mockito.mock(MetadataListing.class );
+        MetadataListing listing = Mockito.mock( MetadataListing.class );
         Mockito.when( listing.getPackageMetadata() ).thenReturn( metadata.values() );
         Mockito.when( listing.isTruncated() ).thenReturn( false );
 
@@ -140,10 +149,12 @@ public class PackagesIndexBuilderImplTest
             }
         } );
 
-        indexBuilder.fileStore = fileStore;
-        indexBuilder.metadataStore = metadataStore;
         indexBuilder.filenameBuilder = filenameBuilder;
         indexBuilder.gson = MetadataUtils.JSON;
+
+        Mockito.when( metadataStoreFactory.create( context ) ).thenReturn( metadataStore );
+        packagesProviderFactory.metadataStoreFactory = metadataStoreFactory;
+        packagesProviderFactory.gson = MetadataUtils.JSON;
 
     }
 
@@ -157,8 +168,10 @@ public class PackagesIndexBuilderImplTest
     @Test
     public void testBuildIndex() throws Exception
     {
+        PackagesIndexBuilder.PackagesProvider packs = packagesProviderFactory.create( context, "main",
+                                                                                      Architecture.AMD64 );
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        indexBuilder.buildIndex( "main", Architecture.AMD64, os );
+        indexBuilder.buildIndex( packs, os, CompressionType.NONE );
 
         String s = new String( os.toByteArray() );
         LOGGER.info( "Packages index:\n{}", s );

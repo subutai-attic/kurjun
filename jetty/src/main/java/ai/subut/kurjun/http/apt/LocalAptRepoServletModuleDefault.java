@@ -1,4 +1,4 @@
-package ai.subut.kurjun.http.local;
+package ai.subut.kurjun.http.apt;
 
 
 import org.eclipse.jetty.servlet.DefaultServlet;
