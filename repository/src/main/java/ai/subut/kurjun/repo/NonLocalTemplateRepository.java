@@ -1,23 +1,6 @@
 package ai.subut.kurjun.repo;
 
 
-import ai.subut.kurjun.common.service.KurjunConstants;
-import ai.subut.kurjun.metadata.common.DefaultMetadata;
-import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
-import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
-import ai.subut.kurjun.model.annotation.Nullable;
-import ai.subut.kurjun.model.index.ReleaseFile;
-import ai.subut.kurjun.model.metadata.Metadata;
-import ai.subut.kurjun.model.metadata.SerializableMetadata;
-import ai.subut.kurjun.model.repository.NonLocalRepository;
-import ai.subut.kurjun.model.security.Identity;
-import ai.subut.kurjun.repo.cache.PackageCache;
-import ai.subut.kurjun.repo.util.SecureRequestFactory;
-import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
@@ -31,14 +14,34 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.ws.rs.client.ClientException;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.http.HTTPConduit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+
+import ai.subut.kurjun.common.service.KurjunConstants;
+import ai.subut.kurjun.metadata.common.DefaultMetadata;
+import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
+import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
+import ai.subut.kurjun.model.annotation.Nullable;
+import ai.subut.kurjun.model.index.ReleaseFile;
+import ai.subut.kurjun.model.metadata.Metadata;
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.repository.NonLocalRepository;
+import ai.subut.kurjun.model.security.Identity;
+import ai.subut.kurjun.repo.cache.PackageCache;
+import ai.subut.kurjun.repo.util.SecureRequestFactory;
 
 
 /**
@@ -67,7 +70,7 @@ public class NonLocalTemplateRepository extends RepositoryBase implements NonLoc
 
 
     @Inject
-    public NonLocalTemplateRepository( PackageCache cache, @Assisted("url") String url, @Assisted @Nullable Identity identity, @Assisted("token") String token )
+    public NonLocalTemplateRepository( PackageCache cache, @Assisted("url") String url, @Assisted @Nullable Identity identity, @Assisted("token") @Nullable String token )
     {
         this.cache = cache;
         this.identity = identity;

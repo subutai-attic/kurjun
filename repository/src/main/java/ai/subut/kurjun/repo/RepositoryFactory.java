@@ -1,6 +1,9 @@
 package ai.subut.kurjun.repo;
 
 
+import java.net.URL;
+
+import com.google.inject.assistedinject.Assisted;
 import com.google.inject.name.Named;
 
 import ai.subut.kurjun.common.service.KurjunContext;
@@ -10,8 +13,6 @@ import ai.subut.kurjun.model.repository.NonLocalRepository;
 import ai.subut.kurjun.model.repository.PackageType;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
 import ai.subut.kurjun.model.security.Identity;
-import com.google.inject.assistedinject.Assisted;
-import java.net.URL;
 
 
 /**
@@ -80,7 +81,7 @@ public interface RepositoryFactory
      * @return non-local template repository
      */
     @Named( PackageType.SUBUTAI )
-    NonLocalRepository createNonLocalTemplate( @Assisted("url") String url, @Nullable Identity identity, @Assisted("token") String token );
+    NonLocalRepository createNonLocalTemplate( @Assisted("url") String url, @Nullable Identity identity, @Assisted("token") @Nullable String token );
     
     /**
      * Creates non-local virtual apt repository at specified URL.
