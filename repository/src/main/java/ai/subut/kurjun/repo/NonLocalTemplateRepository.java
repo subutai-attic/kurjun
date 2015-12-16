@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ws.rs.client.ClientException;
 import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
@@ -211,7 +210,7 @@ public class NonLocalTemplateRepository extends RepositoryBase implements NonLoc
             httpConduit.getClient().setConnectionTimeout( CONN_TIMEOUT );
             return webClient.get();
         }
-        catch ( ClientException e )
+        catch ( Exception e )
         {
             LOGGER.warn( "Failed to do GET.", e );
             return null;
