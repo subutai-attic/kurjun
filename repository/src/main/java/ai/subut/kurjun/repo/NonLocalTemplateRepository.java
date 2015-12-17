@@ -6,9 +6,6 @@ import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,17 +35,18 @@ import ai.subut.kurjun.model.annotation.Nullable;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
-import ai.subut.kurjun.model.repository.NonLocalRepository;
 import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.repo.cache.PackageCache;
 import ai.subut.kurjun.repo.util.SecureRequestFactory;
 
 
 /**
+ * Non-local templates repository implementation.
+ * <p>
  * TODO: Refactor common methods of all non local repos into base one.
  *
  */
-public class NonLocalTemplateRepository extends RepositoryBase implements NonLocalRepository
+class NonLocalTemplateRepository extends NonLocalRepositoryBase
 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger( NonLocalTemplateRepository.class );
@@ -70,7 +68,10 @@ public class NonLocalTemplateRepository extends RepositoryBase implements NonLoc
 
 
     @Inject
-    public NonLocalTemplateRepository( PackageCache cache, @Assisted("url") String url, @Assisted @Nullable Identity identity, @Assisted("token") @Nullable String token )
+    public NonLocalTemplateRepository( PackageCache cache,
+                                       @Assisted( "url" ) String url,
+                                       @Assisted @Nullable Identity identity,
+                                       @Assisted( "token" ) @Nullable String token )
     {
         this.cache = cache;
         this.identity = identity;
@@ -203,6 +204,13 @@ public class NonLocalTemplateRepository extends RepositoryBase implements NonLoc
     }
 
 
+    @Override
+    protected Logger getLogger()
+    {
+        return LOGGER;
+    }
+
+
     private Response doGet( WebClient webClient )
     {
         try
@@ -234,51 +242,6 @@ public class NonLocalTemplateRepository extends RepositoryBase implements NonLoc
         return params;
     }
 
- 
-    private InputStream checkCache( Metadata metadata )
-    {
-        if ( metadata.getMd5Sum() != null )
-        {
-            if ( cache.contains( metadata.getMd5Sum() ) )
-            {
-                return cache.get( metadata.getMd5Sum() );
-            }
-        }
-        else
-        {
-            SerializableMetadata m = getPackageInfo( metadata );
-            if ( m != null && cache.contains( m.getMd5Sum() ) )
-            {
-                return cache.get( m.getMd5Sum() );
-            }
-        }
-        return null;
-    }
-
-
-    private byte[] cacheStream( InputStream is )
-    {
-        Path target = null;
-        try
-        {
-            target = Files.createTempFile( null, null );
-            Files.copy( is, target, StandardCopyOption.REPLACE_EXISTING );
-            return cache.put( target.toFile() );
-        }
-        catch ( IOException ex )
-        {
-            LOGGER.error( "Failed to cache package", ex );
-        }
-        finally
-        {
-            if ( target != null )
-            {
-                target.toFile().delete();
-            }
-        }
-        return null;
-    }
-
 
     private List<SerializableMetadata> parseItems( String items )
     {
@@ -289,3 +252,4 @@ public class NonLocalTemplateRepository extends RepositoryBase implements NonLoc
     }
 
 }
+
