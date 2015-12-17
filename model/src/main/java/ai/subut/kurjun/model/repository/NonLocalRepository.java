@@ -1,6 +1,7 @@
 package ai.subut.kurjun.model.repository;
 
 
+import ai.subut.kurjun.model.metadata.MetadataCache;
 import ai.subut.kurjun.model.security.Identity;
 
 
@@ -18,5 +19,14 @@ public interface NonLocalRepository extends Repository
      * @return identity to be used for requests to the remote repository
      */
     Identity getIdentity();
+
+
+    /**
+     * Gets metadata cache for the remote repository.
+     *
+     * @return
+     */
+    MetadataCache getMetadataCache();
+
 }
 
