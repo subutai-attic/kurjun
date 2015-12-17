@@ -15,7 +15,7 @@ import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.MetadataCache;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.NonLocalRepository;
-import ai.subut.kurjun.repo.cache.MetadataCacheImpl;
+import ai.subut.kurjun.repo.cache.MetadataCacheFactory;
 import ai.subut.kurjun.repo.cache.PackageCache;
 
 
@@ -29,13 +29,14 @@ abstract class NonLocalRepositoryBase extends RepositoryBase implements NonLocal
     @Inject
     private PackageCache packageCache;
 
-    private final MetadataCache metadataCache = new MetadataCacheImpl( this );
+    @Inject
+    private MetadataCacheFactory metadataCacheFactory;
 
 
     @Override
     public MetadataCache getMetadataCache()
     {
-        return metadataCache;
+        return metadataCacheFactory.get( this );
     }
 
 

@@ -4,8 +4,10 @@ package ai.subut.kurjun.http.apt;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -96,6 +98,34 @@ public class AptUniServlet extends HttpServletBase
         if ( pathItems.get( 0 ).equals( "pool" ) )
         {
             handlePoolRequest( req, resp );
+            return;
+        }
+
+        // to test metadata caching
+        if ( pathItems.get( 0 ).equals( "list" ) )
+        {
+            List<SerializableMetadata> all = new LinkedList<>();
+            for ( Repository repo : uni.getRepositories() )
+            {
+                if ( repo instanceof NonLocalRepository )
+                {
+                    NonLocalRepository remote = ( NonLocalRepository ) repo;
+                    List<SerializableMetadata> ls = remote.getMetadataCache().getMetadataList();
+                    all.addAll( ls );
+                }
+                else
+                {
+                    all.addAll( repo.listPackages() );
+                }
+            }
+            resp.setContentType( "application/json" );
+            try ( Writer w = resp.getWriter() )
+            {
+                for ( SerializableMetadata item : all )
+                {
+                    w.append( item.serialize() ).append( System.lineSeparator() );
+                }
+            }
             return;
         }
 
