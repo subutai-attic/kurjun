@@ -36,7 +36,7 @@ public class MetadataCacheImpl implements MetadataCache
      *
      * @param repository repository whose packages metadata will be cached
      */
-    public MetadataCacheImpl( Repository repository )
+    MetadataCacheImpl( Repository repository )
     {
         this.repository = repository;
     }

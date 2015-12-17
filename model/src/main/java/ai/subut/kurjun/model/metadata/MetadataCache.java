@@ -19,7 +19,7 @@ public interface MetadataCache
 
 
     /**
-     * Gets meta data for supplied md5 checksum.
+     * Gets meta data from cache for supplied md5 checksum.
      *
      * @param md5 MD5 checksum to retrieve metadata for
      * @return metadata if found in the cache; {@code null} otherwise
@@ -28,7 +28,7 @@ public interface MetadataCache
 
 
     /**
-     * Gets meta data for supplied name and version.
+     * Gets meta data from cache for supplied name and version.
      *
      * @param name name for which to get meta data; must be non-null value
      * @param version version of the meta data; may be {@code null}
