@@ -125,6 +125,10 @@ public class AptUniServlet extends HttpServletBase
                 internalServerError( resp, "Release not found: " + urlParser.getRelease() );
             }
         }
+        else
+        {
+            notFound( resp, "Specified path does not exists or not supported." );
+        }
     }
 
 
