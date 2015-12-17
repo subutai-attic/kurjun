@@ -4,9 +4,6 @@ package ai.subut.kurjun.repo;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -52,7 +49,7 @@ import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
  * for {@link NonLocalRepository} implementation.
  *
  */
-class NonLocalAptRepository extends RepositoryBase implements NonLocalRepository
+class NonLocalAptRepository extends NonLocalRepositoryBase
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( NonLocalAptRepository.class );
 
@@ -209,48 +206,10 @@ class NonLocalAptRepository extends RepositoryBase implements NonLocalRepository
     }
 
 
-    private InputStream checkCache( Metadata metadata )
+    @Override
+    protected Logger getLogger()
     {
-        if ( metadata.getMd5Sum() != null )
-        {
-            if ( cache.contains( metadata.getMd5Sum() ) )
-            {
-                return cache.get( metadata.getMd5Sum() );
-            }
-        }
-        else
-        {
-            SerializableMetadata m = getPackageInfo( metadata );
-            if ( m != null && cache.contains( m.getMd5Sum() ) )
-            {
-                return cache.get( m.getMd5Sum() );
-            }
-        }
-        return null;
-    }
-
-
-    private byte[] cacheStream( InputStream is )
-    {
-        Path target = null;
-        try
-        {
-            target = Files.createTempFile( null, null );
-            Files.copy( is, target, StandardCopyOption.REPLACE_EXISTING );
-            return cache.put( target.toFile() );
-        }
-        catch ( IOException ex )
-        {
-            LOGGER.error( "Failed to cache package", ex );
-        }
-        finally
-        {
-            if ( target != null )
-            {
-                target.toFile().delete();
-            }
-        }
-        return null;
+        return LOGGER;
     }
 
 
