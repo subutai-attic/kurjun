@@ -7,8 +7,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -27,7 +25,6 @@ public class MetadataCacheImpl implements MetadataCache
     private volatile boolean inited;
     private final List<SerializableMetadata> metadata = new ArrayList<>();
 
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Lock lock = new ReentrantLock();
 
 
@@ -36,7 +33,7 @@ public class MetadataCacheImpl implements MetadataCache
      *
      * @param repository repository whose packages metadata will be cached
      */
-    public MetadataCacheImpl( Repository repository )
+    MetadataCacheImpl( Repository repository )
     {
         this.repository = repository;
     }
@@ -124,16 +121,5 @@ public class MetadataCacheImpl implements MetadataCache
     }
 
 
-    public void refreshTrigger()
-    {
-        executor.submit( new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                refresh();
-            }
-        } );
-    }
 }
 
