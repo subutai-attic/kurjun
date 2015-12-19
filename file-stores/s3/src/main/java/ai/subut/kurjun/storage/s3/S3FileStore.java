@@ -255,6 +255,33 @@ class S3FileStore implements FileStore
     }
 
 
+    @Override
+    public long size() throws IOException
+    {
+        // Amazon S3 api does not provide methods to directly get size of the bucket.
+        // Here we retrieve object summaries of the bucket and add up size of each object.
+
+        long total = 0;
+        ObjectListing listing = s3client.listObjects( bucketName );
+
+        for ( S3ObjectSummary obj : listing.getObjectSummaries() )
+        {
+            total += obj.getSize();
+        }
+
+        while ( listing.isTruncated() )
+        {
+            listing = s3client.listNextBatchOfObjects( listing );
+            for ( S3ObjectSummary obj : listing.getObjectSummaries() )
+            {
+                total += obj.getSize();
+            }
+        }
+
+        return total;
+    }
+
+
     private String makeKey( String s )
     {
         return s.substring( 0, 2 ) + "/" + s;
