@@ -88,8 +88,8 @@
     <subutai.version>4.0.0-RC5</subutai.version>
     <org.osgi.core.version>6.0.0</org.osgi.core.version>
     <org.osgi.compendium.version>5.0.0</org.osgi.compendium.version>
-    <!-- CXF JAX-RS version is old, using that version to be compatible with Subutai utility classes -->
-    <cxf-rt-frontend-jaxrs.version>2.7.16</cxf-rt-frontend-jaxrs.version>
+    <!-- CXF JAX-RS version is kept to be the same with Subutai Common utility classes -->
+    <cxf-rt-frontend-jaxrs.version>3.1.0</cxf-rt-frontend-jaxrs.version>
     <aws-java-sdk-s3.version>1.10.19</aws-java-sdk-s3.version>
     <mapdb.version>1.0.8</mapdb.version>
     <hikariCp.version>2.4.1</hikariCp.version>
