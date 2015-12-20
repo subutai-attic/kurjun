@@ -40,6 +40,7 @@ import ai.subut.kurjun.model.storage.FileStore;
 class FileSystemFileStore implements FileStore
 {
 
+    private static final String FILEDB_NAME = "checksum.db";
     private static final String MAP_NAME = "checksum-to-filepath";
 
     private Path rootLocation;
@@ -197,7 +198,11 @@ class FileSystemFileStore implements FileStore
             @Override
             public FileVisitResult visitFile( Path file, BasicFileAttributes attrs ) throws IOException
             {
-                total.addAndGet( attrs.size() );
+                // sum sizes of only package files, ignore db files
+                if ( !file.getFileName().toString().startsWith( FILEDB_NAME ) )
+                {
+                    total.addAndGet( attrs.size() );
+                }
                 return FileVisitResult.CONTINUE;
             }
 
@@ -247,7 +252,7 @@ class FileSystemFileStore implements FileStore
 
     private String makeDbFilePath()
     {
-        return rootLocation.resolve( "checksum.db" ).toString();
+        return rootLocation.resolve( FILEDB_NAME ).toString();
     }
 
 }

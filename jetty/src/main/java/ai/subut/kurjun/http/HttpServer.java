@@ -31,6 +31,7 @@ import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreModule;
 import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.model.security.Permission;
+import ai.subut.kurjun.quota.QuotaManagementModule;
 import ai.subut.kurjun.repo.RepositoryModule;
 import ai.subut.kurjun.riparser.ReleaseIndexParserModule;
 import ai.subut.kurjun.security.DefaultRole;
@@ -110,6 +111,7 @@ public class HttpServer
 
         bootstrap.addModule( new RepositoryModule() );
         bootstrap.addModule( new SecurityModule() );
+        bootstrap.addModule( new QuotaManagementModule() );
 
         //bootstrap.addModule( new LocalAptRepoServletModule().setServletPath( "/apt" ) );
         bootstrap.addModule( new AptRepoServletModule().setServletPath( "/vapt" ) );
@@ -155,7 +157,7 @@ public class HttpServer
             identity = identityManager.addIdentity( "1EB4A4CCADF438434450BF1F364CD558014A08B4", true );
             if ( identity != null )
             {
-                identityManager.addResourcePermission(Permission.GET_PACKAGE, identity, CONTEXT.getName() );
+                identityManager.addResourcePermission( Permission.GET_PACKAGE, identity, CONTEXT.getName() );
             }
         }
         catch ( IOException ex )
