@@ -23,6 +23,7 @@
     <module>meta-stores</module>
     <module>security</module>
     <module>repository</module>
+    <module>quota</module>
     <module>http</module>
     <module>jetty</module>
     <module>karaf</module>
