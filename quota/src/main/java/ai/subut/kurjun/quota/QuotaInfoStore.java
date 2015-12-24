@@ -14,6 +14,7 @@ import com.google.inject.Provider;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.quota.disk.DiskQuota;
+import ai.subut.kurjun.quota.transfer.TransferQuota;
 
 
 /**
@@ -28,6 +29,7 @@ public class QuotaInfoStore
     private static final Logger LOGGER = LoggerFactory.getLogger( QuotaInfoStore.class );
 
     private static final String DISK_QUOTA_MAP = "disk-quota";
+    private static final String TRANSFER_QUOTA_MAP = "transfer-quota";
 
     private Provider<FileDb> fileDbProvider;
 
@@ -56,6 +58,22 @@ public class QuotaInfoStore
 
 
     /**
+     * Gets transfer quota info for the supplied context.
+     *
+     * @param context context for which to retrieve transfer quota info
+     * @return transfer quota info if found; {@code null} otherwise
+     * @throws IOException
+     */
+    public TransferQuota getTransferQuota( KurjunContext context ) throws IOException
+    {
+        try ( FileDb fileDb = fileDbProvider.get() )
+        {
+            return fileDb.get( TRANSFER_QUOTA_MAP, makeKey( context ), TransferQuota.class );
+        }
+    }
+
+
+    /**
      * Saves the supplied disk quota info for the given context. If context had already had a value then it is
      * overwritten.
      *
@@ -68,6 +86,23 @@ public class QuotaInfoStore
         try ( FileDb fileDb = fileDbProvider.get() )
         {
             fileDb.put( DISK_QUOTA_MAP, makeKey( context ), diskQuota );
+        }
+    }
+
+
+    /**
+     * Saves the supplied transfer quota info for the given context. If context had already had a value then it is
+     * overwritten.
+     *
+     * @param transferQuota transfer quota info to save
+     * @param context context for which to save transfer quota
+     * @throws IOException
+     */
+    public void saveTransferQuota( TransferQuota transferQuota, KurjunContext context ) throws IOException
+    {
+        try ( FileDb fileDb = fileDbProvider.get() )
+        {
+            fileDb.put( TRANSFER_QUOTA_MAP, makeKey( context ), transferQuota );
         }
     }
 
@@ -87,6 +122,29 @@ public class QuotaInfoStore
     }
 
 
+    /**
+     * Removes transfer quota info for the supplied context.
+     *
+     * @param context context for which to remove transfer quota info
+     * @throws IOException
+     */
+    public void removeTransferQuota( KurjunContext context ) throws IOException
+    {
+        try ( FileDb fileDb = fileDbProvider.get() )
+        {
+            fileDb.remove( TRANSFER_QUOTA_MAP, makeKey( context ) );
+        }
+    }
+
+
+    /**
+     * Makes up a key for maps where quotas are saved. Separate method is added for this so that there is one place
+     * where keys are made. If there will be new parameters in future to make up a key, then only this method will need
+     * an update.
+     *
+     * @param context
+     * @return
+     */
     private String makeKey( KurjunContext context )
     {
         return context.getName();

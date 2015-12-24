@@ -13,6 +13,7 @@ import ai.subut.kurjun.common.service.KurjunConstants;
 import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.quota.disk.DiskQuotaController;
+import ai.subut.kurjun.quota.transfer.TransferQuotaController;
 
 
 public class QuotaManagementModule extends AbstractModule
@@ -23,6 +24,7 @@ public class QuotaManagementModule extends AbstractModule
     {
         Module module = new FactoryModuleBuilder()
                 .implement( DiskQuotaController.class, DiskQuotaController.class )
+                .implement( TransferQuotaController.class, TransferQuotaController.class )
                 .build( QuotaControllerFactory.class );
 
         install( module );
