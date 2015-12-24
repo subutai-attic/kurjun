@@ -12,8 +12,8 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import ai.subut.kurjun.common.service.KurjunConstants;
 import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.db.file.FileDb;
-import ai.subut.kurjun.quota.disk.DiskQuotaController;
-import ai.subut.kurjun.quota.transfer.TransferQuotaController;
+import ai.subut.kurjun.quota.disk.DiskQuotaManager;
+import ai.subut.kurjun.quota.transfer.TransferQuotaManager;
 
 
 public class QuotaManagementModule extends AbstractModule
@@ -23,9 +23,9 @@ public class QuotaManagementModule extends AbstractModule
     protected void configure()
     {
         Module module = new FactoryModuleBuilder()
-                .implement( DiskQuotaController.class, DiskQuotaController.class )
-                .implement( TransferQuotaController.class, TransferQuotaController.class )
-                .build( QuotaControllerFactory.class );
+                .implement( DiskQuotaManager.class, DiskQuotaManager.class )
+                .implement( TransferQuotaManager.class, TransferQuotaManager.class )
+                .build( QuotaManagerFactory.class );
 
         install( module );
     }

@@ -6,8 +6,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Counter of the transferred data. This is a simple counter class that does not do quota checks. Instead it is used by
- * quota controller classes where it provides transferred amount of data and further decision is done based on that
- * value.
+ * quota manager classes where it provides transferred amount of data and further decision is done based on that value.
  *
  */
 public class TransferredDataCounter

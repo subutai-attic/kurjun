@@ -22,16 +22,13 @@ import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 
 /**
- * Disk quota controller.
+ * Disk quota manager.
  *
  */
-public class DiskQuotaController
+public class DiskQuotaManager
 {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( DiskQuotaController.class );
-
-    @Inject
-    private QuotaInfoStore quotaInfoStore;
+    private static final Logger LOGGER = LoggerFactory.getLogger( DiskQuotaManager.class );
 
     @Inject
     private FileStoreFactory fileStoreFactory;
@@ -41,7 +38,7 @@ public class DiskQuotaController
 
 
     @Inject
-    public DiskQuotaController( @Assisted KurjunContext context )
+    public DiskQuotaManager( QuotaInfoStore quotaInfoStore, @Assisted KurjunContext context )
     {
         this.context = context;
         try
@@ -57,7 +54,7 @@ public class DiskQuotaController
             throw new ProvisionException( "Failed to get disk quota to be applied.", ex );
         }
 
-        LOGGER.info( "Disk quota controller inited for context '{}'", context );
+        LOGGER.info( "Disk quota manager inited for context '{}'", context );
     }
 
 

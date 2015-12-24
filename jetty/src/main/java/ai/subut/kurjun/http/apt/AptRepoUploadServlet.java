@@ -24,11 +24,11 @@ import ai.subut.kurjun.http.ServletUtils;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.security.Permission;
 import ai.subut.kurjun.quota.DataUnit;
-import ai.subut.kurjun.quota.QuotaControllerFactory;
 import ai.subut.kurjun.quota.QuotaException;
 import ai.subut.kurjun.quota.QuotaInfoStore;
+import ai.subut.kurjun.quota.QuotaManagerFactory;
 import ai.subut.kurjun.quota.disk.DiskQuota;
-import ai.subut.kurjun.quota.disk.DiskQuotaController;
+import ai.subut.kurjun.quota.disk.DiskQuotaManager;
 import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.security.service.AuthManager;
 
@@ -45,7 +45,7 @@ class AptRepoUploadServlet extends HttpServletBase
     private RepositoryFactory repositoryFactory;
 
     @Inject
-    private QuotaControllerFactory quotaControllerFactory;
+    private QuotaManagerFactory quotaManagerFactory;
 
     @Inject
     private QuotaInfoStore quotaInfoStore;
@@ -98,12 +98,12 @@ class AptRepoUploadServlet extends HttpServletBase
 
 
         LocalRepository repository = repositoryFactory.createLocalApt( context );
-        DiskQuotaController diskQuotaCtrl = quotaControllerFactory.createDiskQuotaController( context );
+        DiskQuotaManager diskQuotaManager = quotaManagerFactory.createDiskQuotaManager( context );
 
         Path dump = null;
         try ( InputStream is = part.getInputStream() )
         {
-            dump = diskQuotaCtrl.copyStream( is );
+            dump = diskQuotaManager.copyStream( is );
             try ( InputStream fis = new FileInputStream( dump.toFile() ) )
             {
                 repository.put( fis );
