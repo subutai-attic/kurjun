@@ -18,6 +18,15 @@ public class TransferredDataCounter
 
 
     /**
+     * Constructor is package private so that instances of this class are created exclusively by a factory class
+     * {@link TransferredDataCounterFactory}.
+     */
+    TransferredDataCounter()
+    {
+    }
+
+
+    /**
      * Gets transferred data amount beginning from the last reset time.
      *
      * @return transferred data amount in bytes

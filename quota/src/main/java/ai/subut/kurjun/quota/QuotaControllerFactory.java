@@ -2,11 +2,8 @@ package ai.subut.kurjun.quota;
 
 
 import ai.subut.kurjun.common.service.KurjunContext;
-import ai.subut.kurjun.quota.disk.DiskQuota;
 import ai.subut.kurjun.quota.disk.DiskQuotaController;
-import ai.subut.kurjun.quota.transfer.TransferQuota;
 import ai.subut.kurjun.quota.transfer.TransferQuotaController;
-import ai.subut.kurjun.quota.transfer.TransferredDataCounter;
 
 
 /**
@@ -19,20 +16,18 @@ public interface QuotaControllerFactory
     /**
      * Creates disk quota controller.
      *
-     * @param diskQuota disk quota info to apply
-     * @param context context to which quota is applied
+     * @param context context for which quota controlling is done
      * @return
      */
-    DiskQuotaController createDiskQuotaController( DiskQuota diskQuota, KurjunContext context );
+    DiskQuotaController createDiskQuotaController( KurjunContext context );
 
 
     /**
      * Creates transfer quota controller.
      *
-     * @param quota transfer quota info to apply
-     * @param dataCounter data counter that provides transferred data amounts
+     * @param context context for which quota controlling is done
      * @return
      */
-    TransferQuotaController createTransferQuotaController( TransferQuota quota, TransferredDataCounter dataCounter );
+    TransferQuotaController createTransferQuotaController( KurjunContext context );
 }
 

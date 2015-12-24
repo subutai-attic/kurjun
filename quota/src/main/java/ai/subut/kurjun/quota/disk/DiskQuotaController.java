@@ -11,11 +11,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
+import com.google.inject.ProvisionException;
 import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.quota.QuotaException;
+import ai.subut.kurjun.quota.QuotaInfoStore;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 
@@ -29,6 +31,9 @@ public class DiskQuotaController
     private static final Logger LOGGER = LoggerFactory.getLogger( DiskQuotaController.class );
 
     @Inject
+    private QuotaInfoStore quotaInfoStore;
+
+    @Inject
     private FileStoreFactory fileStoreFactory;
 
     private KurjunContext context;
@@ -36,10 +41,21 @@ public class DiskQuotaController
 
 
     @Inject
-    public DiskQuotaController( @Assisted DiskQuota quota, @Assisted KurjunContext context )
+    public DiskQuotaController( @Assisted KurjunContext context )
     {
-        this.quota = quota;
         this.context = context;
+        try
+        {
+            quota = quotaInfoStore.getDiskQuota( context );
+            if ( quota == null )
+            {
+                quota = DiskQuota.UNLIMITED;
+            }
+        }
+        catch ( IOException ex )
+        {
+            throw new ProvisionException( "Failed to get disk quota to be applied.", ex );
+        }
 
         LOGGER.info( "Disk quota controller inited for context '{}'", context );
     }

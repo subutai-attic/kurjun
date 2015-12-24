@@ -98,9 +98,7 @@ class AptRepoUploadServlet extends HttpServletBase
 
 
         LocalRepository repository = repositoryFactory.createLocalApt( context );
-
-        DiskQuota diskQuota = getDiskQuota();
-        DiskQuotaController diskQuotaCtrl = quotaControllerFactory.createDiskQuotaController( diskQuota, context );
+        DiskQuotaController diskQuotaCtrl = quotaControllerFactory.createDiskQuotaController( context );
 
         Path dump = null;
         try ( InputStream is = part.getInputStream() )
@@ -138,12 +136,6 @@ class AptRepoUploadServlet extends HttpServletBase
         return authManager;
     }
 
-
-    private DiskQuota getDiskQuota() throws IOException
-    {
-        DiskQuota diskQuota = quotaInfoStore.getDiskQuota( context );
-        return diskQuota != null ? diskQuota : DiskQuota.UNLIMITED;
-    }
 
 }
 

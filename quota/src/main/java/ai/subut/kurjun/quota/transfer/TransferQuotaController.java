@@ -1,8 +1,14 @@
 package ai.subut.kurjun.quota.transfer;
 
 
+import java.io.IOException;
+
 import com.google.inject.Inject;
+import com.google.inject.ProvisionException;
 import com.google.inject.assistedinject.Assisted;
+
+import ai.subut.kurjun.common.service.KurjunContext;
+import ai.subut.kurjun.quota.QuotaInfoStore;
 
 
 /**
@@ -11,15 +17,32 @@ import com.google.inject.assistedinject.Assisted;
  */
 public class TransferQuotaController
 {
+    @Inject
+    private QuotaInfoStore quotaInfoStore;
+
+    @Inject
+    private TransferredDataCounterFactory dataCounterFactory;
+
+    private KurjunContext context;
     private TransferQuota quota;
-    private TransferredDataCounter dataCounter;
 
 
     @Inject
-    public TransferQuotaController( @Assisted TransferQuota quota, @Assisted TransferredDataCounter dataCounter )
+    public TransferQuotaController( @Assisted KurjunContext context )
     {
-        this.quota = quota;
-        this.dataCounter = dataCounter;
+        this.context = context;
+        try
+        {
+            quota = quotaInfoStore.getTransferQuota( context );
+            if ( quota == null )
+            {
+                quota = TransferQuota.UNLIMITED;
+            }
+        }
+        catch ( IOException ex )
+        {
+            throw new ProvisionException( "Failed to get transfer quota to be applied.", ex );
+        }
     }
 
 
@@ -32,17 +55,18 @@ public class TransferQuotaController
      */
     public boolean isAllowedToTransfer( long size )
     {
-        checkTimeFrame();
+        TransferredDataCounter dataCounter = dataCounterFactory.get( context );
+        checkTimeFrame( dataCounter );
         return dataCounter.get() + size < getThresholdInBytes( quota );
     }
 
 
-    private void checkTimeFrame()
+    private void checkTimeFrame( TransferredDataCounter counter )
     {
         long timeFrameMillis = quota.getTimeUnit().toMillis( quota.getTime() );
-        if ( dataCounter.getUpdatedTimestamp() + timeFrameMillis < System.currentTimeMillis() )
+        if ( counter.getUpdatedTimestamp() + timeFrameMillis < System.currentTimeMillis() )
         {
-            dataCounter.reset();
+            counter.reset();
         }
     }
 
