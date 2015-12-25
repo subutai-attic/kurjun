@@ -218,6 +218,21 @@ class FileSystemFileStore implements FileStore
     }
 
 
+    @Override
+    public long sizeOf( byte[] md5 ) throws IOException
+    {
+        try ( FileDb fileDb = new FileDb( makeDbFilePath() ) )
+        {
+            String path = fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), String.class );
+            if ( path != null )
+            {
+                return Files.size( Paths.get( path ) );
+            }
+        }
+        return 0;
+    }
+
+
     /**
      * Copies the stream to the file system location specified by path argument.
      *
