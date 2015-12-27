@@ -4,7 +4,10 @@ package ai.subut.kurjun.repo;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.Socket;
+import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -63,14 +66,16 @@ class NonLocalTemplateRepository extends NonLocalRepositoryBase
 
     private String token = null;
 
-    private static final long CONN_TIMEOUT = 3000;
+    private static final int CONN_TIMEOUT = 3000;
+    private static final int READ_TIMEOUT = 3000;
+    private static final int CONN_TIMEOUT_FOR_URL_CHECK = 200;
 
 
     @Inject
     public NonLocalTemplateRepository( PackageCache cache,
-                                       @Assisted( "url" ) String url,
-                                       @Assisted @Nullable Identity identity,
-                                       @Assisted( "token" ) @Nullable String token )
+            @Assisted( "url" ) String url,
+            @Assisted @Nullable Identity identity,
+            @Assisted( "token" ) @Nullable String token )
     {
         this.cache = cache;
         this.identity = identity;
@@ -214,15 +219,54 @@ class NonLocalTemplateRepository extends NonLocalRepositoryBase
     {
         try
         {
-            HTTPConduit httpConduit = ( HTTPConduit ) WebClient.getConfig( webClient ).getConduit();
-            httpConduit.getClient().setConnectionTimeout( CONN_TIMEOUT );
-            return webClient.get();
+            URI remote = webClient.getCurrentURI();
+            
+            if ( isHostReachable( remote.getHost(), remote.getPort() ) )
+            {
+                HTTPConduit httpConduit = ( HTTPConduit ) WebClient.getConfig( webClient ).getConduit();
+                httpConduit.getClient().setConnectionTimeout( CONN_TIMEOUT );
+                httpConduit.getClient().setReceiveTimeout( READ_TIMEOUT );
+                return webClient.get();
+            }
+            else
+            {
+                LOGGER.warn( "Remote host is not reachable {}:{}", remote.getHost(), remote.getPort() );
+            }
         }
         catch ( Exception e )
         {
             LOGGER.warn( "Failed to do GET.", e );
-            return null;
         }
+        return null;
+    }
+
+    private boolean isHostReachable( String host, int port )
+    {
+        Socket socket = null;
+        boolean reachable = false;
+        try
+        {
+            socket = new Socket();
+            socket.connect( new InetSocketAddress( host, port ), CONN_TIMEOUT_FOR_URL_CHECK );
+            reachable = true;
+        }
+        catch ( IOException ioe )
+        {
+        }
+        finally
+        {
+            if ( socket != null )
+            {
+                try
+                {
+                    socket.close();
+                }
+                catch ( IOException e )
+                {
+                }
+            }
+        }
+        return reachable;
     }
 
 
@@ -251,4 +295,3 @@ class NonLocalTemplateRepository extends NonLocalRepositoryBase
     }
 
 }
-
