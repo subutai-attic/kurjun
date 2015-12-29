@@ -31,6 +31,15 @@ public class QuotaManagementModule extends AbstractModule
     }
 
 
+    /**
+     * File db provider for quota info store. {@link FileDb} instances annotated with {@link Quota} are produced by this
+     * method.
+     *
+     * @param kurjunProperties Kurjun properties that is used to get file db path for the quota info store
+     * @return
+     *
+     * @see KurjunConstants#QUOTA_FILEDB_PATH
+     */
     @Provides
     @Quota
     public FileDb getFileDb( KurjunProperties kurjunProperties )

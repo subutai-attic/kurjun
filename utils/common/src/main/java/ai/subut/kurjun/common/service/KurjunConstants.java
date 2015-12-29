@@ -55,5 +55,13 @@ public final class KurjunConstants
      * Path to file where quota related data is stored.
      */
     public static final String QUOTA_FILEDB_PATH = "quota.filedb.path";
+
+    /**
+     * Boolean value that indicates if quota info should be stored in memory. Defaults to 'false' in which case file
+     * based db is used to store quotas info.
+     */
+    public static final String QUOTA_IN_MEMORY = "quota.storage.inmemory";
+
+
 }
 

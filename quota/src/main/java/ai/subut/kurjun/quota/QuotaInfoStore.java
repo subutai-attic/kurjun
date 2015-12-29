@@ -2,6 +2,8 @@ package ai.subut.kurjun.quota;
 
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,18 +13,24 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.Provider;
 
+import ai.subut.kurjun.common.service.KurjunConstants;
 import ai.subut.kurjun.common.service.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.quota.disk.DiskQuota;
 import ai.subut.kurjun.quota.transfer.TransferQuota;
 
 
 /**
- * Store for quota related information. This store is backed by a file based db.
+ * Store for quota related information. By default, store is backed by a file based db. Optionally store can be
+ * initialized to be an in-memory store by setting {@link KurjunConstants#QUOTA_IN_MEMORY} property in Kurjun properties
+ * file.
  * <p>
  * Quota information is saved by contexts. It is highly recommended to use different context names for different
  * repository types within an application scope.
  *
+ * @see KurjunConstants#QUOTA_IN_MEMORY
+ * @see QuotaManagementModule#getFileDb(ai.subut.kurjun.common.service.KurjunProperties)
  */
 public class QuotaInfoStore
 {
@@ -33,11 +41,22 @@ public class QuotaInfoStore
 
     private Provider<FileDb> fileDbProvider;
 
+    private Boolean inMemory = Boolean.FALSE;
+    private Map<String, DiskQuota> diskQuotas;
+    private Map<String, TransferQuota> transferQuotas;
+
 
     @Inject
-    public QuotaInfoStore( Injector injector )
+    public QuotaInfoStore( Injector injector, KurjunProperties kurjunProperties )
     {
         this.fileDbProvider = injector.getProvider( Key.get( FileDb.class, Quota.class ) );
+
+        this.inMemory = kurjunProperties.getBooleanWithDefault( KurjunConstants.QUOTA_IN_MEMORY, false );
+        if ( inMemory )
+        {
+            diskQuotas = new HashMap<>();
+            transferQuotas = new HashMap<>();
+        }
     }
 
 
@@ -50,6 +69,10 @@ public class QuotaInfoStore
      */
     public DiskQuota getDiskQuota( KurjunContext context ) throws IOException
     {
+        if ( inMemory )
+        {
+            return diskQuotas.get( makeKey( context ) );
+        }
         try ( FileDb fileDb = fileDbProvider.get() )
         {
             return fileDb.get( DISK_QUOTA_MAP, makeKey( context ), DiskQuota.class );
@@ -66,6 +89,10 @@ public class QuotaInfoStore
      */
     public TransferQuota getTransferQuota( KurjunContext context ) throws IOException
     {
+        if ( inMemory )
+        {
+            return transferQuotas.get( makeKey( context ) );
+        }
         try ( FileDb fileDb = fileDbProvider.get() )
         {
             return fileDb.get( TRANSFER_QUOTA_MAP, makeKey( context ), TransferQuota.class );
@@ -83,6 +110,11 @@ public class QuotaInfoStore
      */
     public void saveDiskQuota( DiskQuota diskQuota, KurjunContext context ) throws IOException
     {
+        if ( inMemory )
+        {
+            diskQuotas.put( makeKey( context ), diskQuota );
+            return;
+        }
         try ( FileDb fileDb = fileDbProvider.get() )
         {
             fileDb.put( DISK_QUOTA_MAP, makeKey( context ), diskQuota );
@@ -100,6 +132,11 @@ public class QuotaInfoStore
      */
     public void saveTransferQuota( TransferQuota transferQuota, KurjunContext context ) throws IOException
     {
+        if ( inMemory )
+        {
+            transferQuotas.put( makeKey( context ), transferQuota );
+            return;
+        }
         try ( FileDb fileDb = fileDbProvider.get() )
         {
             fileDb.put( TRANSFER_QUOTA_MAP, makeKey( context ), transferQuota );
@@ -115,6 +152,11 @@ public class QuotaInfoStore
      */
     public void removeDiskQuota( KurjunContext context ) throws IOException
     {
+        if ( inMemory )
+        {
+            diskQuotas.remove( makeKey( context ) );
+            return;
+        }
         try ( FileDb fileDb = fileDbProvider.get() )
         {
             fileDb.remove( DISK_QUOTA_MAP, makeKey( context ) );
@@ -130,6 +172,11 @@ public class QuotaInfoStore
      */
     public void removeTransferQuota( KurjunContext context ) throws IOException
     {
+        if ( inMemory )
+        {
+            transferQuotas.remove( makeKey( context ) );
+            return;
+        }
         try ( FileDb fileDb = fileDbProvider.get() )
         {
             fileDb.remove( TRANSFER_QUOTA_MAP, makeKey( context ) );
