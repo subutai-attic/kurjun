@@ -84,4 +84,14 @@ public interface FileStore
      * @throws IOException if there are problems accessing the store
      */
     boolean remove( byte[] md5 ) throws IOException;
+
+
+    /**
+     * Returns total size (in bytes) of the files stored in this store.
+     *
+     * @return total size of the store (in bytes)
+     * @throws IOException
+     */
+    long size() throws IOException;
+
 }

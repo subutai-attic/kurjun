@@ -50,5 +50,10 @@ public final class KurjunConstants
      * HTTP parameter name for fingerprints.
      */
     public static final String HTTP_PARAM_FINGERPRINT = "fingerprint";
+
+    /**
+     * Path to file where quota related data is stored.
+     */
+    public static final String QUOTA_FILEDB_PATH = "quota.filedb.path";
 }
 

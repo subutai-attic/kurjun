@@ -23,6 +23,7 @@
     <module>meta-stores</module>
     <module>security</module>
     <module>repository</module>
+    <module>quota</module>
     <module>http</module>
     <module>jetty</module>
     <module>karaf</module>
@@ -90,7 +91,7 @@
     <org.osgi.compendium.version>5.0.0</org.osgi.compendium.version>
     <!-- CXF JAX-RS version is kept to be the same with Subutai Common utility classes -->
     <cxf-rt-frontend-jaxrs.version>3.1.0</cxf-rt-frontend-jaxrs.version>
-    <aws-java-sdk-s3.version>1.10.19</aws-java-sdk-s3.version>
+    <aws-java-sdk-s3.version>1.10.42</aws-java-sdk-s3.version>
     <mapdb.version>1.0.8</mapdb.version>
     <hikariCp.version>2.4.1</hikariCp.version>
     <mybatis.version>3.3.0</mybatis.version>
