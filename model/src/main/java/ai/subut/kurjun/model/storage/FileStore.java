@@ -26,8 +26,7 @@ public interface FileStore
      * Gets the contents of a file from the store as a stream.
      *
      * @param md5 the md5 sum of the file
-     * @return null if the file does not exist, otherwise returns a
-     * stream containing the contents of the file
+     * @return null if the file does not exist, otherwise returns a stream containing the contents of the file
      * @throws IOException if there are problems access the store
      */
     InputStream get( byte[] md5 ) throws IOException;
@@ -39,8 +38,7 @@ public interface FileStore
      * @param md5 the md5 sum of the file to retrieve
      * @param target the file into which the contents should be dumped
      * @return true if the contents were successfully dumped, false otherwise
-     * @throws IOException if there are problems accessing the store or writing to
-     * the target file
+     * @throws IOException if there are problems accessing the store or writing to the target file
      */
     boolean get( byte[] md5, File target ) throws IOException;
 
@@ -94,4 +92,15 @@ public interface FileStore
      */
     long size() throws IOException;
 
+
+    /**
+     * Returns size (in bytes) of the package file that corresponds to the supplied digest value.
+     *
+     * @param md5 md5 digest to look file for
+     * @return size of the package file in bytes if found; otherwise - 0L
+     * @throws IOException
+     */
+    long sizeOf( byte[] md5 ) throws IOException;
+
 }
+
