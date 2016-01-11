@@ -11,6 +11,11 @@ import ai.subut.kurjun.model.metadata.MetadataCache;
 import ai.subut.kurjun.model.repository.Repository;
 
 
+/**
+ * Factory class for meta data cache instances. As meta data caching is done per repository, this factory returns the
+ * same instance for a certain repository. Repositories are identified by their URLs.
+ *
+ */
 @Singleton
 public class MetadataCacheFactory
 {

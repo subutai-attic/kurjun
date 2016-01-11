@@ -7,13 +7,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.DirectoryStream;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.security.DigestInputStream;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -36,6 +40,7 @@ import ai.subut.kurjun.model.storage.FileStore;
 class FileSystemFileStore implements FileStore
 {
 
+    private static final String FILEDB_NAME = "checksum.db";
     private static final String MAP_NAME = "checksum-to-filepath";
 
     private Path rootLocation;
@@ -183,6 +188,51 @@ class FileSystemFileStore implements FileStore
     }
 
 
+    @Override
+    public long size() throws IOException
+    {
+        AtomicLong total = new AtomicLong();
+
+        Files.walkFileTree( rootLocation, new SimpleFileVisitor<Path>()
+        {
+            @Override
+            public FileVisitResult visitFile( Path file, BasicFileAttributes attrs ) throws IOException
+            {
+                // sum sizes of only package files, ignore db files
+                if ( !file.getFileName().toString().startsWith( FILEDB_NAME ) )
+                {
+                    total.addAndGet( attrs.size() );
+                }
+                return FileVisitResult.CONTINUE;
+            }
+
+
+            @Override
+            public FileVisitResult visitFileFailed( Path file, IOException exc ) throws IOException
+            {
+                return FileVisitResult.CONTINUE;
+            }
+        } );
+
+        return total.get();
+    }
+
+
+    @Override
+    public long sizeOf( byte[] md5 ) throws IOException
+    {
+        try ( FileDb fileDb = new FileDb( makeDbFilePath() ) )
+        {
+            String path = fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), String.class );
+            if ( path != null )
+            {
+                return Files.size( Paths.get( path ) );
+            }
+        }
+        return 0;
+    }
+
+
     /**
      * Copies the stream to the file system location specified by path argument.
      *
@@ -217,7 +267,7 @@ class FileSystemFileStore implements FileStore
 
     private String makeDbFilePath()
     {
-        return rootLocation.resolve( "checksum.db" ).toString();
+        return rootLocation.resolve( FILEDB_NAME ).toString();
     }
 
 }

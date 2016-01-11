@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -252,6 +253,50 @@ class S3FileStore implements FileStore
         {
             return false;
         }
+    }
+
+
+    @Override
+    public long size() throws IOException
+    {
+        // Amazon S3 api does not provide methods to directly get size of the bucket.
+        // Here we retrieve object summaries of the bucket and add up size of each object.
+
+        long total = 0;
+        ObjectListing listing = s3client.listObjects( bucketName );
+
+        for ( S3ObjectSummary obj : listing.getObjectSummaries() )
+        {
+            total += obj.getSize();
+        }
+
+        while ( listing.isTruncated() )
+        {
+            listing = s3client.listNextBatchOfObjects( listing );
+            for ( S3ObjectSummary obj : listing.getObjectSummaries() )
+            {
+                total += obj.getSize();
+            }
+        }
+
+        return total;
+    }
+
+
+    @Override
+    public long sizeOf( byte[] md5 ) throws IOException
+    {
+        String hex = Hex.encodeHexString( md5 );
+
+        ListObjectsRequest lor = new ListObjectsRequest();
+        lor.setBucketName( bucketName );
+        lor.setPrefix( makeKey( hex ) );
+
+        // here we list items by supplied md5 digest value which is a uniquely identifying parameter
+        // so there is no checks if listing is truncated or not. The listing can have one value or any.
+        ObjectListing listing = s3client.listObjects( lor );
+        List<S3ObjectSummary> items = listing.getObjectSummaries();
+        return items.isEmpty() ? 0 : items.get( 0 ).getSize();
     }
 
 

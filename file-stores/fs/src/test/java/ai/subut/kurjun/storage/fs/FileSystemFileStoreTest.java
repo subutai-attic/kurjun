@@ -148,6 +148,16 @@ public class FileSystemFileStoreTest
     }
 
 
+    @Test
+    public void testSizeOf() throws Exception
+    {
+        int expected = sampleData.getBytes().length;
+        long sizeof = fs.sizeOf( sampleMd5 );
+        Assert.assertEquals( expected, sizeof );
+        Assert.assertEquals( 0, fs.sizeOf( DigestUtils.md5( "non-existing" ) ) );
+    }
+
+
     private String readAsString( InputStream is ) throws IOException
     {
         try ( ByteArrayOutputStream os = new ByteArrayOutputStream() )
