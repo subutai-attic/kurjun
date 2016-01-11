@@ -1,6 +1,7 @@
 package ai.subut.kurjun.repo;
 
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -19,6 +20,8 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
 
 import com.google.gson.Gson;
@@ -41,6 +44,7 @@ import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.repo.cache.PackageCache;
 import ai.subut.kurjun.repo.http.PathBuilder;
 import ai.subut.kurjun.repo.util.SecureRequestFactory;
+import ai.subut.kurjun.repo.util.MiscUtils;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
 
 
@@ -175,13 +179,33 @@ class NonLocalAptRepository extends NonLocalRepositoryBase
         {
             if ( resp.getEntity() instanceof InputStream )
             {
-                byte[] md5 = cacheStream( ( InputStream ) resp.getEntity() );
-                return cache.get( md5 );
+                byte[] bytes = null;
+                try
+                {
+                    bytes = IOUtils.toByteArray( ( InputStream ) resp.getEntity() );
+                }
+                catch ( IOException e )
+                {
+                    throw new RuntimeException( "Failed to convert package input stream to byte array", e );
+                }
+
+                byte[] md5Calculated = MiscUtils.calculateMd5( new ByteArrayInputStream( bytes ) );
+
+                // compare the requested and received md5 checksums
+                if ( Arrays.equals( pm.getMd5Sum(), md5Calculated ) )
+                {
+                    byte[] md5 = cacheStream( new ByteArrayInputStream( bytes ) );
+                    return cache.get( md5 );
+                }
+                else
+                {
+                    LOGGER.error( "Md5 checksum mismatch after getting the package {} from remote host", pm.getFilename() );
+                }
             }
         }
         return null;
     }
-
+    
 
     @Override
     public List<SerializableMetadata> listPackages()

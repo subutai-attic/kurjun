@@ -1,6 +1,7 @@
 package ai.subut.kurjun.repo;
 
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
@@ -9,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.Set;
 
 import javax.ws.rs.core.Response;
 
+import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +42,7 @@ import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.repo.cache.PackageCache;
+import ai.subut.kurjun.repo.util.MiscUtils;
 import ai.subut.kurjun.repo.util.SecureRequestFactory;
 
 
@@ -170,8 +174,28 @@ class NonLocalTemplateRepository extends NonLocalRepositoryBase
         {
             if ( resp.getEntity() instanceof InputStream )
             {
-                byte[] md5 = cacheStream( ( InputStream ) resp.getEntity() );
-                return cache.get( md5 );
+                byte[] bytes = null;
+                try
+                {
+                    bytes = IOUtils.toByteArray( ( InputStream ) resp.getEntity() );
+                }
+                catch ( IOException e )
+                {
+                    throw new RuntimeException( "Failed to convert package input stream to byte array", e );
+                }
+
+                byte[] md5Calculated = MiscUtils.calculateMd5( new ByteArrayInputStream( bytes ) );
+
+                // compare the requested and received md5 checksums
+                if ( Arrays.equals( metadata.getMd5Sum(), md5Calculated ) )
+                {
+                    byte[] md5 = cacheStream( new ByteArrayInputStream( bytes ) );
+                    return cache.get( md5 );
+                }
+                else
+                {
+                    LOGGER.error( "Md5 checksum mismatch after getting the package from remote host. Requested with md5 {}", Hex.encode( metadata.getMd5Sum() ) );
+                }
             }
         }
         return null;
