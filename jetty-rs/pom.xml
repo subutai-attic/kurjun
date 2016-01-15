@@ -16,7 +16,7 @@
   <properties>
     <mainClass>ai.subut.kurjun.http.HttpServer</mainClass>
     <project.build.sourceencoding>UTF-8</project.build.sourceencoding>
-    <org.apache.cxf.version>2.7.18</org.apache.cxf.version>
+    <org.apache.cxf.version>3.1.0</org.apache.cxf.version>
     <org.eclipse.jetty.version>9.3.6.v20151106</org.eclipse.jetty.version>
   </properties>
 

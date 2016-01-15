@@ -1,58 +1,57 @@
 package ai.subut.kurjun.rest.template;
 
 
-import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
-import ai.subut.kurjun.model.metadata.Architecture;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 
-import io.subutai.core.kurjun.api.TemplateManager;
-import io.subutai.common.protocol.TemplateKurjun;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
+import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.rest.RestManagerBase;
+import io.subutai.common.protocol.TemplateKurjun;
+import io.subutai.core.kurjun.api.TemplateManager;
 import io.subutai.core.kurjun.impl.TemplateManagerImpl;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
-import java.util.stream.Collectors;
-import org.apache.commons.codec.binary.Hex;
 
 
 public class RestTemplateManagerImpl extends RestManagerBase implements RestTemplateManager
 {
-
+    
     private static final Logger LOGGER = LoggerFactory.getLogger( RestTemplateManagerImpl.class );
 
     private static final Gson GSON = new GsonBuilder().create();
-
+    
     private final boolean iskurjun = true;
-    
-    private TemplateManager templateManager = null;
+
+    private final TemplateManager templateManager;
 
 
-    
-    public RestTemplateManagerImpl() throws MalformedURLException
+    public RestTemplateManagerImpl()
     {
         TemplateManagerImpl impl = new TemplateManagerImpl( null, null, null, null );
         impl.init();
         this.templateManager = impl;
     }
-    
-    
+
+
     @Override
-    public Response getTemplate( String repository, String md5, String name, String version, String type )
+    public Response getTemplate( String repository, String md5, String name, String version, 
+            String type, boolean isKurjunClient )
     {
         try
         {
@@ -60,13 +59,16 @@ public class RestTemplateManagerImpl extends RestManagerBase implements RestTemp
             if ( md5bytes != null )
             {
                 TemplateKurjun template = templateManager.getTemplate( repository, md5bytes, iskurjun );
-                InputStream is = templateManager.getTemplateData( repository, md5bytes, iskurjun );
-                if ( template != null && is != null )
+                if ( template != null )
                 {
-                    return Response.ok( is )
-                            .header( "Content-Disposition", "attachment; filename=" + makeFilename( template ) )
-                            .header( "Content-Type", "application/octet-stream" )
-                            .build();
+                    InputStream is = templateManager.getTemplateData( repository, md5bytes, iskurjun );
+                    if ( is != null )
+                    {
+                        return Response.ok( is )
+                                .header( "Content-Disposition", "attachment; filename=" + makeFilename( template ) )
+                                .header( "Content-Type", "application/octet-stream" )
+                                .build();
+                    }
                 }
             }
             else
@@ -90,7 +92,7 @@ public class RestTemplateManagerImpl extends RestManagerBase implements RestTemp
 
 
     @Override
-    public Response getTemplateInfo( String repository, String md5, String name, String version )
+    public Response getTemplateInfo( String repository, String md5, String name, String version, boolean isKurjunClient )
     {
         try
         {
@@ -122,7 +124,7 @@ public class RestTemplateManagerImpl extends RestManagerBase implements RestTemp
 
 
     @Override
-    public Response getTemplateList( String repository )
+    public Response getTemplateList( String repository, boolean isKurjunClient )
     {
         try
         {
@@ -155,7 +157,14 @@ public class RestTemplateManagerImpl extends RestManagerBase implements RestTemp
             try ( InputStream is = new FileInputStream( temp ) )
             {
                 byte[] md5 = templateManager.upload( repository, is );
-                return Response.ok( Hex.encodeHexString( md5 ) ).build();
+                if ( md5 != null )
+                {
+                    return Response.ok( Hex.encodeHexString( md5 ) ).build();
+                }
+                else
+                {
+                    return Response.serverError().entity( "Failed to put template" ).build();
+                }
             }
         }
         catch ( IOException ex )
@@ -199,13 +208,24 @@ public class RestTemplateManagerImpl extends RestManagerBase implements RestTemp
 
     private DefaultTemplate convertToDefaultTemplate( TemplateKurjun template )
     {
+        return convertToDefaultTemplate( template, true );
+    }
+
+
+    private DefaultTemplate convertToDefaultTemplate( TemplateKurjun template, boolean includeFileContents )
+    {
         DefaultTemplate defaultTemplate = new DefaultTemplate();
         defaultTemplate.setName( template.getName() );
         defaultTemplate.setVersion( template.getVersion() );
+        defaultTemplate.setMd5Sum( decodeMd5( template.getMd5Sum() ) );
         defaultTemplate.setArchitecture( Architecture.getByValue( template.getArchitecture() ) );
         defaultTemplate.setParent( template.getParent() );
         defaultTemplate.setPackage( template.getPackageName() );
-        defaultTemplate.setMd5Sum( decodeMd5( template.getMd5Sum() ) );
+        if ( includeFileContents )
+        {
+            defaultTemplate.setConfigContents( template.getConfigContents() );
+            defaultTemplate.setPackagesContents( template.getPackagesContents() );
+        }
         return defaultTemplate;
     }
 

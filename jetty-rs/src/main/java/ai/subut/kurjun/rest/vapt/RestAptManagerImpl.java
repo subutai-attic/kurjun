@@ -35,7 +35,7 @@ public class RestAptManagerImpl extends RestManagerBase implements RestAptManage
 
     public RestAptManagerImpl()
     {
-        AptManagerImpl impl = new AptManagerImpl();
+        AptManagerImpl impl = new AptManagerImpl( null );
         impl.init();
         this.aptManager = impl;
     }
