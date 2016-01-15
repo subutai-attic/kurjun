@@ -44,5 +44,24 @@ public enum DataUnit
     }
 
 
+    /**
+     * Gets enum instance that corresponds to supplied string. String comparison is case-insensitive.
+     *
+     * @param s
+     * @return enum that corresponds to supplied string, if there is one; {@code null} otherwise
+     */
+    public static DataUnit getByName( String s )
+    {
+        for ( DataUnit u : values() )
+        {
+            if ( u.toString().equalsIgnoreCase( s ) )
+            {
+                return u;
+            }
+        }
+        return null;
+    }
+
+
 }
 
