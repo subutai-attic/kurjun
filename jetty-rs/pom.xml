@@ -96,12 +96,23 @@
       <groupId>io.subutai</groupId>
       <artifactId>kurjun-api</artifactId>
       <version>${subutai.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
         
     <dependency>
       <groupId>io.subutai</groupId>
       <artifactId>kurjun-impl</artifactId>
       <version>${subutai.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
     </dependency>
     
     <dependency>
@@ -121,6 +132,6 @@
       <artifactId>jetty-servlet</artifactId>
       <version>${org.eclipse.jetty.version}</version>
     </dependency>
-
+    
   </dependencies>
 </project>
