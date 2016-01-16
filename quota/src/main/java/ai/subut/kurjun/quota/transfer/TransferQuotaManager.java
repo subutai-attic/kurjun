@@ -80,6 +80,40 @@ public class TransferQuotaManager
 
 
     /**
+     * Creates a managed stream whose read operations perform quota checks. Returned steam wraps the supplied stream.
+     * When reading next data exceeds the quota threshold an exception is thrown.
+     *
+     * @param stream stream that is to be managed by quota management
+     * @return wrapper stream that is checked for quota threshold
+     */
+    public InputStream createManagedStream( InputStream stream )
+    {
+        TransferredDataCounter counter = dataCounterFactory.get( context );
+        checkTimeFrame( counter );
+
+        long max = getThresholdInBytes( quota ) - counter.get();
+        return new TransferQuotaManagedStream( stream, counter, max );
+    }
+
+
+    /**
+     * Gets size of data allowed to transfer at the time of calling this method. Allowed size to transfer is the data
+     * left to reach threshold value.
+     * <p>
+     * Returned value is expected to be used immediately as the transfer quota is bound to time and is subject to be
+     * reset at its time frame.
+     *
+     * @return allowed size that can be transferred at this time
+     */
+    public long allowedSizeToTransfer()
+    {
+        TransferredDataCounter counter = dataCounterFactory.get( context );
+        checkTimeFrame( counter );
+        return getThresholdInBytes( quota ) - counter.get();
+    }
+
+
+    /**
      * Checks if the supplied data size can be transferred without exceeding quota threshold.
      *
      * @param size data size in bytes

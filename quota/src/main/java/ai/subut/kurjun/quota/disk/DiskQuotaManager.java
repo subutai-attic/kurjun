@@ -119,6 +119,7 @@ public class DiskQuotaManager
         }
         catch ( IOException ex )
         {
+            target.toFile().delete();
             if ( ex.getCause() instanceof QuotaException )
             {
                 throw ( QuotaException ) ex.getCause();
