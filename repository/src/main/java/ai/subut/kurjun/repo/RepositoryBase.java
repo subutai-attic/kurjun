@@ -1,8 +1,12 @@
 package ai.subut.kurjun.repo;
 
 
+import java.util.UUID;
+
 import ai.subut.kurjun.model.repository.Protocol;
 import ai.subut.kurjun.model.repository.Repository;
+
+import static java.util.UUID.randomUUID;
 
 
 /**
@@ -11,6 +15,16 @@ import ai.subut.kurjun.model.repository.Repository;
  */
 abstract class RepositoryBase implements Repository
 {
+
+    private final UUID identifier = randomUUID();
+
+
+    @Override
+    public UUID getIdentifier()
+    {
+        return identifier;
+    }
+
 
     @Override
     public String getPath()
@@ -69,6 +83,4 @@ abstract class RepositoryBase implements Repository
         }
     }
 
-
 }
-
