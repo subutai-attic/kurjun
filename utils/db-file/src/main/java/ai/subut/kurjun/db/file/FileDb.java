@@ -27,7 +27,6 @@ public class FileDb implements Closeable
     protected final TxMaker txMaker;
 
 
-
     /**
      * Constructs file based db backed by supplied file.
      *
@@ -58,7 +57,7 @@ public class FileDb implements Closeable
         {
             dbMaker.readOnly();
         }
-        
+
         // TODO: Check on standalone env of temporary CL swapping
         // In newer version there is a setter for CL. See: https://github.com/jankotek/mapdb/issues/555
         // By using this setter CL swapping can be avoided.
@@ -98,8 +97,7 @@ public class FileDb implements Closeable
      *
      * @param mapName name of the map to check
      * @param key key to check association for
-     * @return {@code true} if map contains association for the key;
-     * {@code false} otherwise
+     * @return {@code true} if map contains association for the key; {@code false} otherwise
      */
     public boolean contains( String mapName, Object key )
     {
@@ -111,11 +109,10 @@ public class FileDb implements Closeable
             DB db = txMaker.makeTx();
             try
             {
-                return db.getHashMap( mapName ).containsKey( key );
+                return checkNameExists( mapName, db ) && db.getHashMap( mapName ).containsKey( key );
             }
             finally
             {
-                db.commit();
                 db.close();
             }
         }
@@ -133,7 +130,7 @@ public class FileDb implements Closeable
      * @param mapName name of the map to get value from
      * @param key the key to look for
      * @param clazz type of the returned value
-     * @return
+     * @return value mapped to supplied key; {@code null} if no value is mapped
      */
     public <T> T get( String mapName, Object key, Class<T> clazz )
     {
@@ -145,11 +142,13 @@ public class FileDb implements Closeable
             DB db = txMaker.makeTx();
             try
             {
-                return ( T ) db.getHashMap( mapName ).get( key );
+                if ( checkNameExists( mapName, db ) )
+                {
+                    return ( T ) db.getHashMap( mapName ).get( key );
+                }
             }
             finally
             {
-                db.commit();
                 db.close();
             }
         }
@@ -157,6 +156,7 @@ public class FileDb implements Closeable
         {
             Thread.currentThread().setContextClassLoader( tccl );
         }
+        return null;
     }
 
 
@@ -170,10 +170,6 @@ public class FileDb implements Closeable
      */
     public <K, V> Map<K, V> get( String mapName )
     {
-        // this call is to avoid "IllegalAccessError: Can not create snapshot with uncommited data"
-        // it occurs when there was no map with given name and tried to get a snapshot
-        contains( mapName, "dummy-key" );
-
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         try
         {
@@ -183,12 +179,14 @@ public class FileDb implements Closeable
             DB db = txMaker.makeTx();
             try
             {
-                Map<K, V> snapshot = ( Map<K, V> ) db.getHashMap( mapName ).snapshot();
-                result.putAll( snapshot );
+                if ( checkNameExists( mapName, db ) )
+                {
+                    Map<K, V> snapshot = ( Map<K, V> ) db.getHashMap( mapName ).snapshot();
+                    result.putAll( snapshot );
+                }
             }
             finally
             {
-                db.commit();
                 db.close();
             }
             return Collections.unmodifiableMap( result );
@@ -207,8 +205,7 @@ public class FileDb implements Closeable
      * @param mapName name of the map to put mapping to
      * @param key key value
      * @param value value to be associated with the key
-     * @return the previous value associated with key, or null if there was no
-     * mapping for key
+     * @return the previous value associated with key, or null if there was no mapping for key
      */
     public <T> T put( String mapName, Object key, T value )
     {
@@ -242,8 +239,7 @@ public class FileDb implements Closeable
      * @param <T> type of the value
      * @param mapName map name
      * @param key key value to remove mapping for
-     * @return the previous value associated with key, or null if there was no
-     * mapping for key
+     * @return the previous value associated with key, or null if there was no mapping for key
      */
     public <T> T remove( String mapName, Object key )
     {
@@ -279,4 +275,33 @@ public class FileDb implements Closeable
         }
     }
 
+
+    /**
+     * Checks if a collection with supplied name exists in the store.
+     * <p>
+     * This method is particularly useful for methods that do not introduce changes, e.g. get and contains methods. In
+     * methods like these we can check if collection exists and do further actions. This avoids empty commits in cases
+     * where collection did not exist in store and getHashMap method created one.
+     * <p>
+     * Empty commits may be the reason for issues mentioned in https://github.com/jankotek/mapdb/issues/509
+     *
+     *
+     * @param name name of the collection
+     * @param db store to check
+     * @return {@code true} if the name is already used to create a collection; {@code false} otherwise
+     */
+    private boolean checkNameExists( String name, DB db )
+    {
+        try
+        {
+            // this method is preferred to others like 'exists()' because it does use locks
+            db.checkNameNotExists( name );
+            return false;
+        }
+        catch ( IllegalArgumentException ex )
+        {
+            return true;
+        }
+    }
 }
+
