@@ -294,7 +294,7 @@ public class FileDb implements Closeable
     {
         try
         {
-            // this method is preferred to others like 'exists()' because it does use locks
+            // this method is preferred to others like 'exists()' because it does not use locks
             db.checkNameNotExists( name );
             return false;
         }
