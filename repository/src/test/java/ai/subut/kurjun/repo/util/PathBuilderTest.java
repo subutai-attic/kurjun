@@ -1,4 +1,4 @@
-package ai.subut.kurjun.repo.http;
+package ai.subut.kurjun.repo.util;
 
 
 import org.junit.Assert;

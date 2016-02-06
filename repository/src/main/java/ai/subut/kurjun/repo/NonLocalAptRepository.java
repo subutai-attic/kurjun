@@ -41,7 +41,7 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.NonLocalRepository;
 import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.repo.cache.PackageCache;
-import ai.subut.kurjun.repo.http.PathBuilder;
+import ai.subut.kurjun.repo.util.PathBuilder;
 import ai.subut.kurjun.repo.util.MiscUtils;
 import ai.subut.kurjun.repo.util.http.WebClientFactory;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;

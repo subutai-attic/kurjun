@@ -1,4 +1,4 @@
-package ai.subut.kurjun.repo.http;
+package ai.subut.kurjun.repo.util;
 
 
 import ai.subut.kurjun.model.index.ChecksummedResource;

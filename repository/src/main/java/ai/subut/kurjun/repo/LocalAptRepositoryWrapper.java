@@ -29,7 +29,7 @@ import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
-import ai.subut.kurjun.repo.http.PathBuilder;
+import ai.subut.kurjun.repo.util.PathBuilder;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
 
 
