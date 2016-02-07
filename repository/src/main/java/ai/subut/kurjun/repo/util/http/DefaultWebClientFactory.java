@@ -2,8 +2,8 @@ package ai.subut.kurjun.repo.util.http;
 
 
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -21,72 +21,30 @@ import ai.subut.kurjun.model.repository.NonLocalRepository;
 class DefaultWebClientFactory implements WebClientFactory
 {
 
+    static final long CONNECTION_TIMEOUT = TimeUnit.SECONDS.toMillis( 5 );
+
 
     @Override
     public WebClient make( NonLocalRepository remoteRepository, String path, Map<String, String> queryParams )
     {
-        // merge repository path and supplied path
-        StringBuilder pathBuilder = new StringBuilder();
-        pathBuilder.append( remoteRepository.getPath() );
-        if ( path != null )
-        {
-            if ( !path.startsWith( "/" ) )
-            {
-                pathBuilder.append( "/" );
-            }
-            pathBuilder.append( path );
-        }
-
-        // prepare query part of URL
-        StringBuilder queryBuilder = new StringBuilder();
-        if ( queryParams != null )
-        {
-            for ( Map.Entry< String, String> e : queryParams.entrySet() )
-            {
-                if ( queryBuilder.length() > 0 )
-                {
-                    queryBuilder.append( "&" );
-                }
-                queryBuilder.append( e.getKey() ).append( "=" ).append( e.getValue() );
-            }
-        }
-
         try
         {
-            URI uri = new URI( remoteRepository.getProtocol().toString(), null,
-                               remoteRepository.getHostname(),
-                               remoteRepository.getPort(),
-                               pathBuilder.toString(),
-                               queryBuilder.toString(),
-                               null );
+            URL url = WebClientFactory.buildUrl( remoteRepository, path, queryParams );
 
-            return makeClient( uri );
+            WebClient webClient = WebClient.create( url.toString() );
+            HTTPConduit httpConduit = ( HTTPConduit ) WebClient.getConfig( webClient ).getConduit();
+
+            HTTPClientPolicy httpClientPolicy = new HTTPClientPolicy();
+            httpClientPolicy.setConnectionTimeout( CONNECTION_TIMEOUT );
+
+            httpConduit.setClient( httpClientPolicy );
+
+            return webClient;
         }
         catch ( URISyntaxException | MalformedURLException ex )
         {
             throw new IllegalArgumentException( "Failed to build URL", ex );
         }
-    }
-
-
-    @Override
-    public long getConnectionTimeout()
-    {
-        return TimeUnit.SECONDS.toMillis( 5 );
-    }
-
-
-    private WebClient makeClient( URI uri ) throws MalformedURLException
-    {
-        WebClient webClient = WebClient.create( uri.toURL().toString() );
-        HTTPConduit httpConduit = ( HTTPConduit ) WebClient.getConfig( webClient ).getConduit();
-
-        HTTPClientPolicy httpClientPolicy = new HTTPClientPolicy();
-        httpClientPolicy.setConnectionTimeout( getConnectionTimeout() );
-
-        httpConduit.setClient( httpClientPolicy );
-
-        return webClient;
     }
 
 }

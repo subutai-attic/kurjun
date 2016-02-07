@@ -1,6 +1,10 @@
 package ai.subut.kurjun.repo.util.http;
 
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Map;
 
 import org.apache.cxf.jaxrs.client.WebClient;
@@ -39,11 +43,53 @@ public interface WebClientFactory
 
 
     /**
-     * Gets connection timeout in milliseconds.
+     * Builds a URL to the supplied remote repository with supplied path and query parameters.
      *
+     * @param remoteRepository remote repository to build URL for
+     * @param path additional path of the URL
+     * @param queryParams map of query parameters
      * @return
+     * @throws URISyntaxException
+     * @throws MalformedURLException
      */
-    long getConnectionTimeout();
+    static URL buildUrl( NonLocalRepository remoteRepository, String path, Map<String, String> queryParams )
+            throws URISyntaxException, MalformedURLException
+    {
+        // merge repository path and supplied path
+        StringBuilder pathBuilder = new StringBuilder();
+        pathBuilder.append( remoteRepository.getPath() );
+        if ( path != null )
+        {
+            if ( !path.startsWith( "/" ) )
+            {
+                pathBuilder.append( "/" );
+            }
+            pathBuilder.append( path );
+        }
+
+        // prepare query part of URL
+        StringBuilder queryBuilder = new StringBuilder();
+        if ( queryParams != null )
+        {
+            for ( Map.Entry< String, String> e : queryParams.entrySet() )
+            {
+                if ( queryBuilder.length() > 0 )
+                {
+                    queryBuilder.append( "&" );
+                }
+                queryBuilder.append( e.getKey() ).append( "=" ).append( e.getValue() );
+            }
+        }
+
+        URI uri = new URI( remoteRepository.getProtocol().toString(), null,
+                           remoteRepository.getHostname(),
+                           remoteRepository.getPort(),
+                           pathBuilder.toString(),
+                           queryBuilder.toString(),
+                           null );
+
+        return uri.toURL();
+    }
 
 }
 
