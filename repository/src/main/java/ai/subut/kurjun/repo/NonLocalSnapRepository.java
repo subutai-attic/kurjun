@@ -36,7 +36,7 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.repo.cache.PackageCache;
 import ai.subut.kurjun.repo.util.MiscUtils;
-import ai.subut.kurjun.repo.util.SecureRequestFactory;
+import ai.subut.kurjun.repo.util.http.WebClientFactory;
 
 
 /**
@@ -51,6 +51,9 @@ class NonLocalSnapRepository extends NonLocalRepositoryBase
     static final String INFO_PATH = "info";
     static final String GET_PATH = "get";
     static final String LIST_PATH = "list";
+
+    @Inject
+    private WebClientFactory webClientFactory;
 
     @Inject
     private Gson gson;
@@ -107,8 +110,7 @@ class NonLocalSnapRepository extends NonLocalRepositoryBase
     @Override
     public SerializableMetadata getPackageInfo( Metadata metadata )
     {
-        SecureRequestFactory secreq = new SecureRequestFactory( this );
-        WebClient webClient = secreq.makeClient( INFO_PATH, MetadataUtils.makeParamsMap( metadata ) );
+        WebClient webClient = webClientFactory.make( this, INFO_PATH, MetadataUtils.makeParamsMap( metadata ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -143,8 +145,7 @@ class NonLocalSnapRepository extends NonLocalRepositoryBase
             return cachedStream;
         }
 
-        SecureRequestFactory secreq = new SecureRequestFactory( this );
-        WebClient webClient = secreq.makeClient( GET_PATH, MetadataUtils.makeParamsMap( metadata ) );
+        WebClient webClient = webClientFactory.make( this, GET_PATH, MetadataUtils.makeParamsMap( metadata ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -186,8 +187,7 @@ class NonLocalSnapRepository extends NonLocalRepositoryBase
     @Override
     public List<SerializableMetadata> listPackages()
     {
-        SecureRequestFactory secreq = new SecureRequestFactory( this );
-        WebClient webClient = secreq.makeClient( INFO_PATH, null );
+        WebClient webClient = webClientFactory.make( this, INFO_PATH, null );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );

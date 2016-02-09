@@ -21,7 +21,6 @@ import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.http.HttpServer;
 import ai.subut.kurjun.http.HttpServletBase;
@@ -29,7 +28,6 @@ import ai.subut.kurjun.http.ServletUtils;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
 import ai.subut.kurjun.model.index.ReleaseFile;
-import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.repository.NonLocalRepository;
@@ -137,8 +135,9 @@ public class AptUniServlet extends HttpServletBase
             PackagesIndexBuilder packagesIndexBuilder = indexBuilderFactory.createPackagesIndexBuilder( context );
             try ( OutputStream os = resp.getOutputStream() )
             {
-                packagesIndexBuilder.buildIndex( packagesProviderFactory.create( uni, "main", Architecture.AMD64 ), os,
-                                                 CompressionType.NONE );
+                PackagesIndexBuilder.PackagesProvider packages
+                        = packagesProviderFactory.create( uni, "main", urlParser.getArchitecture() );
+                packagesIndexBuilder.buildIndex( packages, os, urlParser.getCompressionType() );
             }
         }
         else if ( urlParser.isReleaseIndexFile() )

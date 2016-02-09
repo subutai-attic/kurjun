@@ -11,6 +11,7 @@ import ai.subut.kurjun.model.repository.NonLocalRepository;
 import ai.subut.kurjun.model.repository.PackageType;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
 import ai.subut.kurjun.repo.util.AptIndiceBuilderModule;
+import ai.subut.kurjun.repo.util.http.WebClientModule;
 
 
 /**
@@ -39,6 +40,7 @@ public class RepositoryModule extends AbstractModule
 
         install( module );
         install( new AptIndiceBuilderModule() );
+        install( new WebClientModule() );
     }
 
 }
