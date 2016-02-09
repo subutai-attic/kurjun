@@ -20,7 +20,6 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
 
@@ -42,9 +41,9 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.NonLocalRepository;
 import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.repo.cache.PackageCache;
-import ai.subut.kurjun.repo.http.PathBuilder;
-import ai.subut.kurjun.repo.util.SecureRequestFactory;
+import ai.subut.kurjun.repo.util.PathBuilder;
 import ai.subut.kurjun.repo.util.MiscUtils;
+import ai.subut.kurjun.repo.util.http.WebClientFactory;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
 
 
@@ -70,6 +69,9 @@ class NonLocalAptRepository extends NonLocalRepositoryBase
 
     @Inject
     PackageCache cache;
+
+    @Inject
+    WebClientFactory webClientFactory;
 
     // TODO: Kairat parameterize release path params
     static final String RELEASE_PATH = "dists/trusty/Release";
@@ -113,8 +115,7 @@ class NonLocalAptRepository extends NonLocalRepositoryBase
     public Set<ReleaseFile> getDistributions()
     {
 
-        SecureRequestFactory secreq = new SecureRequestFactory( this );
-        WebClient webClient = secreq.makeClient( RELEASE_PATH, null );
+        WebClient webClient = webClientFactory.make( this, RELEASE_PATH, null );
 
         Response resp = webClient.get();
         if ( resp.getStatus() == Response.Status.OK.getStatusCode() )
@@ -171,8 +172,7 @@ class NonLocalAptRepository extends NonLocalRepositoryBase
 
         DefaultPackageMetadata pm = gson.fromJson( m.serialize(), DefaultPackageMetadata.class );
 
-        SecureRequestFactory secreq = new SecureRequestFactory( this );
-        WebClient webClient = secreq.makeClient( pm.getFilename(), null );
+        WebClient webClient = webClientFactory.make( this, pm.getFilename(), null );
 
         Response resp = webClient.get();
         if ( resp.getStatus() == Response.Status.OK.getStatusCode() )
@@ -306,8 +306,7 @@ class NonLocalAptRepository extends NonLocalRepositoryBase
 
     private List<SerializableMetadata> fetchPackagesMetadata( String path, String component )
     {
-        SecureRequestFactory secreq = new SecureRequestFactory( this );
-        WebClient webClient = secreq.makeClient( path, null );
+        WebClient webClient = webClientFactory.make( this, path, null );
 
         Response resp = webClient.get();
         if ( resp.getStatus() == Response.Status.OK.getStatusCode() && resp.getEntity() instanceof InputStream )
