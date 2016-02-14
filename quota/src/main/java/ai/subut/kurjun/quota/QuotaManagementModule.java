@@ -16,6 +16,10 @@ import ai.subut.kurjun.quota.disk.DiskQuotaManager;
 import ai.subut.kurjun.quota.transfer.TransferQuotaManager;
 
 
+/**
+ * Guice module to initialize quota management bindings for Kurjun repositories.
+ *
+ */
 public class QuotaManagementModule extends AbstractModule
 {
 
