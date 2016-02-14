@@ -20,6 +20,25 @@ public class DefaultMetadata implements SerializableMetadata
     private String serialized;
 
 
+    public DefaultMetadata()
+    {
+    }
+
+
+    public DefaultMetadata( byte[] md5sum )
+    {
+        this.md5sum = md5sum;
+    }
+
+
+    public DefaultMetadata( byte[] md5sum, String name, String version )
+    {
+        this.md5sum = md5sum;
+        this.name = name;
+        this.version = version;
+    }
+
+
     @Override
     public byte[] getMd5Sum()
     {

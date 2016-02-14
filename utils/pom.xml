@@ -17,6 +17,7 @@
     <module>archive</module>
     <module>db-file</module>
     <module>common</module>
+    <module>guice</module>
   </modules>
 
   <description>
