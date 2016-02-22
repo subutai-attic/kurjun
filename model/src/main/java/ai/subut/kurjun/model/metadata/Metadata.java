@@ -1,5 +1,6 @@
 package ai.subut.kurjun.model.metadata;
 
+// TODO: Refactor the type of id from object to custom class
 
 /**
  * This interface represents basic meta data of packages that can be identified by package's MD5 checksum.
@@ -7,6 +8,14 @@ package ai.subut.kurjun.model.metadata;
  */
 public interface Metadata
 {
+    
+    /**
+     * Gets package identifier. Mostly it will be a md5 sum but other may implement
+     * differently.
+     *
+     * @return identifier
+     */
+    Object getId();
 
     /**
      * Gets the md5 checksum of the corresponding package.

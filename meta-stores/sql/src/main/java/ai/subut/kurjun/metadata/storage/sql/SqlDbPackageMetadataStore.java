@@ -68,14 +68,14 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
 
 
     @Override
-    public boolean contains( byte[] md5 ) throws IOException
+    public boolean contains( Object id ) throws IOException
     {
-        Objects.requireNonNull( md5, "Checksum for contains method" );
+        Objects.requireNonNull( id, "Id for contains method" );
         try ( Connection conn = ConnectionFactory.getInstance().getConnection() )
         {
             PreparedStatement ps = conn.prepareStatement( SqlStatements.SELECT_COUNT );
             ps.setString( 1, context.getName() );
-            ps.setString( 2, Hex.encodeHexString( md5 ) );
+            ps.setString( 2, String.valueOf( id ) );
             ResultSet rs = ps.executeQuery();
             return rs.next() && rs.getInt( 1 ) > 0;
         }
@@ -87,14 +87,14 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
 
 
     @Override
-    public SerializableMetadata get( byte[] md5 ) throws IOException
+    public SerializableMetadata get( Object id ) throws IOException
     {
-        Objects.requireNonNull( md5, "Checksum for get method" );
+        Objects.requireNonNull( id, "Id for get method" );
         try ( Connection conn = ConnectionFactory.getInstance().getConnection() )
         {
             PreparedStatement ps = conn.prepareStatement( SqlStatements.SELECT_DATA );
             ps.setString( 1, context.getName() );
-            ps.setString( 2, Hex.encodeHexString( md5 ) );
+            ps.setString( 2, String.valueOf( id ) );
             ResultSet rs = ps.executeQuery();
             if ( rs.next() )
             {
@@ -135,15 +135,15 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
         }
         return result;
     }
-
-
+    
+    
     @Override
     public boolean put( SerializableMetadata meta ) throws IOException
     {
         Objects.requireNonNull( meta, "Package metadata" );
-        Objects.requireNonNull( meta.getMd5Sum(), "Checksum of metadata" );
+        Objects.requireNonNull( meta.getId(), "Id of metadata" );
 
-        if ( contains( meta.getMd5Sum() ) )
+        if ( contains( meta.getId() ) )
         {
             return false;
         }
@@ -151,7 +151,7 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
         {
             PreparedStatement ps = conn.prepareStatement( SqlStatements.INSERT );
             ps.setString( 1, context.getName() );
-            ps.setString( 2, Hex.encodeHexString( meta.getMd5Sum() ) );
+            ps.setString( 2, String.valueOf( meta.getId() ) );
             ps.setString( 3, meta.getName() );
             ps.setString( 4, meta.getVersion() );
             ps.setString( 5, meta.serialize() );
@@ -165,14 +165,14 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
 
 
     @Override
-    public boolean remove( byte[] md5 ) throws IOException
+    public boolean remove( Object id ) throws IOException
     {
-        Objects.requireNonNull( md5, "Checksum for remove method" );
+        Objects.requireNonNull( id, "Id for remove method" );
         try ( Connection conn = ConnectionFactory.getInstance().getConnection() )
         {
             PreparedStatement ps = conn.prepareStatement( SqlStatements.DELETE );
             ps.setString( 1, context.getName() );
-            ps.setString( 2, Hex.encodeHexString( md5 ) );
+            ps.setString( 2, String.valueOf( id ) );
             return ps.executeUpdate() > 0;
         }
         catch ( SQLException ex )

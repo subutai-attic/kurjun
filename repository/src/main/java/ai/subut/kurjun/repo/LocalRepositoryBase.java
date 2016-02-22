@@ -31,9 +31,9 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
         PackageMetadataStore metadataStore = getMetadataStore();
         try
         {
-            if ( metadata.getMd5Sum() != null )
+            if ( metadata.getId() != null )
             {
-                return metadataStore.get( metadata.getMd5Sum() );
+                return metadataStore.get( metadata.getId() );
             }
             if ( metadata.getName() != null )
             {
@@ -110,13 +110,20 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
     @Override
     public boolean delete( byte[] md5 ) throws IOException
     {
+        return delete( md5, md5 );
+    }
+    
+    
+    @Override
+    public boolean delete( Object id, byte[] md5 ) throws IOException
+    {
         PackageMetadataStore metadataStore = getMetadataStore();
         FileStore fileStore = getFileStore();
 
-        if ( metadataStore.contains( md5 ) )
+        if ( metadataStore.contains( id ) )
         {
             fileStore.remove( md5 );
-            metadataStore.remove( md5 );
+            metadataStore.remove( id );
             return true;
         }
         return false;

@@ -1,7 +1,6 @@
 package ai.subut.kurjun.security.service;
 
 
-import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.security.Permission;
 
 

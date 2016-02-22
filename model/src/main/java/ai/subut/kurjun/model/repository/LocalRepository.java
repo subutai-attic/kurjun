@@ -50,5 +50,9 @@ public interface LocalRepository extends Repository
      * @throws IOException
      */
     boolean delete( byte[] md5 ) throws IOException;
+    
+    
+    boolean delete( Object id, byte[] md5 ) throws IOException;
+
 }
 

@@ -1,9 +1,12 @@
 package ai.subut.kurjun.common.utils;
 
 
+import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
+import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -54,6 +57,44 @@ public class InetUtils
             }
         }
         return result;
+    }
+    
+
+    /**
+     * Checks whether the given host and port is reachable or not. Tries to open a
+     * socket with the given connection timeout.
+     * @param host
+     * @param port
+     * @param connTimeout
+     * @return 
+     */
+    public static boolean isHostReachable( String host, int port, int connTimeout )
+    {
+        Socket socket = null;
+        boolean reachable = false;
+        try
+        {
+            socket = new Socket();
+            socket.connect( new InetSocketAddress( host, port ), connTimeout );
+            reachable = true;
+        }
+        catch ( IOException ioe )
+        {
+        }
+        finally
+        {
+            if ( socket != null )
+            {
+                try
+                {
+                    socket.close();
+                }
+                catch ( IOException e )
+                {
+                }
+            }
+        }
+        return reachable;
     }
 
 

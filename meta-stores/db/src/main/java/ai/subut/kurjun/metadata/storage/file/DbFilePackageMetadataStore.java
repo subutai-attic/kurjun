@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import org.apache.commons.codec.binary.Hex;
-
 import com.google.inject.Inject;
 import com.google.inject.ProvisionException;
 import com.google.inject.assistedinject.Assisted;
@@ -60,23 +58,23 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
         this.fileDbPath = Paths.get( fileDbDirectory, context.getName(), "metadata" );
     }
 
-
+    
     @Override
-    public boolean contains( byte[] md5 ) throws IOException
+    public boolean contains( Object id ) throws IOException
     {
         try ( FileDb fileDb = new FileDb( fileDbPath.toString() ) )
         {
-            return fileDb.contains( MAP_NAME, Hex.encodeHexString( md5 ) );
+            return fileDb.contains( MAP_NAME, id );
         }
     }
 
 
     @Override
-    public SerializableMetadata get( byte[] md5 ) throws IOException
+    public SerializableMetadata get( Object id ) throws IOException
     {
         try ( FileDb fileDb = new FileDb( fileDbPath.toString() ) )
         {
-            return fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), SerializableMetadata.class );
+            return fileDb.get( MAP_NAME, id, SerializableMetadata.class );
         }
     }
 
@@ -111,11 +109,11 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
     @Override
     public boolean put( SerializableMetadata meta ) throws IOException
     {
-        if ( !contains( meta.getMd5Sum() ) )
+        if ( !contains( meta.getId() ) )
         {
             try ( FileDb fileDb = new FileDb( fileDbPath.toString() ) )
             {
-                fileDb.put( MAP_NAME, Hex.encodeHexString( meta.getMd5Sum() ), meta );
+                fileDb.put( MAP_NAME, meta.getId(), meta );
             }
             return true;
         }
@@ -124,11 +122,11 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
 
     @Override
-    public boolean remove( byte[] md5 ) throws IOException
+    public boolean remove( Object id ) throws IOException
     {
         try ( FileDb fileDb = new FileDb( fileDbPath.toString() ) )
         {
-            return fileDb.remove( MAP_NAME, Hex.encodeHexString( md5 ) ) != null;
+            return fileDb.remove( MAP_NAME, id ) != null;
         }
     }
 

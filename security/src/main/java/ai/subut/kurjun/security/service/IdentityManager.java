@@ -36,8 +36,8 @@ public interface IdentityManager
      * @throws IOException
      */
     Identity addIdentity( String fingerprint, boolean checkKeyExistence ) throws IOException;
-
-
+    
+    
     /**
      * Adds identity to the store. To ensure the identity this method expects fingerprint and signed form of that
      * identity so that we can be sure that identity is provided by its real owner.

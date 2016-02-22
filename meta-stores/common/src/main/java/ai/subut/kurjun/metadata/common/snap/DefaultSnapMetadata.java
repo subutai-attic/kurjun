@@ -4,6 +4,8 @@ package ai.subut.kurjun.metadata.common.snap;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.codec.binary.Hex;
+
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.metadata.snap.Framework;
@@ -23,6 +25,13 @@ public class DefaultSnapMetadata implements SnapMetadata, SerializableMetadata
     private String vendor;
     private String source;
     private List<Framework> frameworks;
+
+
+    @Override
+    public Object getId()
+    {
+        return md5Sum != null ? Hex.encodeHexString( md5Sum ) : null;
+    }
 
 
     @Override

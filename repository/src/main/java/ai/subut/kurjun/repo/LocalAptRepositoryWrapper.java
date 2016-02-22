@@ -165,6 +165,13 @@ class LocalAptRepositoryWrapper extends RepositoryBase implements LocalRepositor
     {
         throw new UnsupportedOperationException( "Not supported in non-virtual local apt repository." );
     }
+    
+    
+    @Override
+    public boolean delete( Object id, byte[] md5 ) throws IOException
+    {
+        throw new UnsupportedOperationException( "Not supported in non-virtual local apt repository." );
+    }
 
 
     /**

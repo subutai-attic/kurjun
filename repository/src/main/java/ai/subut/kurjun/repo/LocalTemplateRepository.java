@@ -18,6 +18,7 @@ import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
+import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.index.ReleaseFile;
@@ -102,6 +103,39 @@ public class LocalTemplateRepository extends LocalRepositoryBase
                 throw new IOException( "Package integrity failure" );
             }
             return meta;
+        }
+        finally
+        {
+            temp.delete();
+        }
+    }
+    
+    
+    public Metadata put( InputStream is, CompressionType compressionType, String owner ) throws IOException
+    {
+        PackageMetadataStore metadataStore = getMetadataStore();
+        FileStore fileStore = getFileStore();
+
+        String ext = CompressionType.makeFileExtenstion( compressionType );
+        File temp = Files.createTempFile( "template", ext ).toFile();
+        try
+        {
+            Files.copy( is, temp.toPath(), StandardCopyOption.REPLACE_EXISTING );
+            SubutaiTemplateMetadata meta = templateParser.parseTemplate( temp );
+            
+            byte[] md5 = fileStore.put( temp );
+            if ( Arrays.equals( md5, meta.getMd5Sum() ) )
+            {
+                DefaultTemplate dt = MetadataUtils.serializableTemplateMetadata( meta );
+                dt.setOwnerFprint( owner );
+                metadataStore.put( dt );
+                return dt;
+            }
+            else
+            {
+                fileStore.remove( md5 );
+                throw new IOException( "Package integrity failure" );
+            }
         }
         finally
         {

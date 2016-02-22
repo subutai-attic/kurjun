@@ -68,17 +68,17 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
 
 
     @Override
-    public boolean contains( byte[] md5 ) throws IOException
+    public boolean contains( Object id ) throws IOException
     {
-        return get( md5 ) != null;
+        return get( id ) != null;
     }
 
 
     @Override
-    public SerializableMetadata get( byte[] md5 ) throws IOException
+    public SerializableMetadata get( Object id ) throws IOException
     {
         Statement st = QueryBuilder.select().from( SchemaInfo.KEYSPACE, schemaInfo.getTableName() )
-                .where( QueryBuilder.eq( SchemaInfo.CHECKSUM_COLUMN, Hex.encodeHexString( md5 ) ) );
+                .where( QueryBuilder.eq( SchemaInfo.CHECKSUM_COLUMN, String.valueOf( id ) ) );
         ResultSet rs = session.execute( st );
         Row row = rs.one();
         if ( row != null )
@@ -114,10 +114,10 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
     @Override
     public boolean put( SerializableMetadata meta ) throws IOException
     {
-        if ( !contains( meta.getMd5Sum() ) )
+        if ( !contains( meta.getId() ) )
         {
             Statement st = QueryBuilder.insertInto( SchemaInfo.KEYSPACE, schemaInfo.getTableName() )
-                    .value( SchemaInfo.CHECKSUM_COLUMN, Hex.encodeHexString( meta.getMd5Sum() ) )
+                    .value( SchemaInfo.CHECKSUM_COLUMN, String.valueOf( meta.getId() ) )
                     .value( SchemaInfo.NAME_COLUMN, meta.getName() )
                     .value( SchemaInfo.VERSION_COLUMN, meta.getVersion() )
                     .value( SchemaInfo.DATA_COLUMN, meta.serialize() );
@@ -129,12 +129,12 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
 
 
     @Override
-    public boolean remove( byte[] md5 ) throws IOException
+    public boolean remove( Object id ) throws IOException
     {
-        if ( contains( md5 ) )
+        if ( contains( id ) )
         {
             Statement st = QueryBuilder.delete().from( SchemaInfo.KEYSPACE, schemaInfo.getTableName() )
-                    .where( QueryBuilder.eq( SchemaInfo.CHECKSUM_COLUMN, Hex.encodeHexString( md5 ) ) );
+                    .where( QueryBuilder.eq( SchemaInfo.CHECKSUM_COLUMN, String.valueOf( id ) ) );
             session.execute( st );
             return true;
         }

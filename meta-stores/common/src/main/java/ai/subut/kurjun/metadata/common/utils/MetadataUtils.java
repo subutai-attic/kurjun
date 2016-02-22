@@ -161,6 +161,7 @@ public class MetadataUtils
         m.setParent( metadata.getParent() );
         m.setPackage( metadata.getPackage() );
         m.setArchitecture( metadata.getArchitecture() );
+        m.setOwnerFprint( metadata.getOwnerFprint() );
         m.setConfigContents( metadata.getConfigContents() );
         m.setPackagesContents( metadata.getPackagesContents() );
         m.setExtra( metadata.getExtra() );

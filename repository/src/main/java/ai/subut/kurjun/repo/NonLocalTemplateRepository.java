@@ -5,9 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
-import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
-import java.net.Socket;
 import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
@@ -33,6 +31,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.common.service.KurjunConstants;
+import ai.subut.kurjun.common.utils.InetUtils;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
@@ -77,15 +76,19 @@ class NonLocalTemplateRepository extends NonLocalRepositoryBase
     private static final int READ_TIMEOUT = 3000;
     private static final int CONN_TIMEOUT_FOR_URL_CHECK = 200;
 
+    private String context;
+
 
     @Inject
     public NonLocalTemplateRepository( PackageCache cache,
             @Assisted( "url" ) String url,
             @Assisted @Nullable Identity identity,
+            @Assisted( "context" ) String kurjunContext,
             @Assisted( "token" ) @Nullable String token )
     {
         this.cache = cache;
         this.identity = identity;
+        this.context = kurjunContext;
         this.token = token;
         try
         {
@@ -129,7 +132,7 @@ class NonLocalTemplateRepository extends NonLocalRepositoryBase
     @Override
     public SerializableMetadata getPackageInfo( Metadata metadata )
     {
-        WebClient webClient = webClientFactory.make( this, INFO_PATH, makeParamsMap( metadata ) );
+        WebClient webClient = webClientFactory.make( this, context + "/" + INFO_PATH, makeParamsMap( metadata ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -164,7 +167,7 @@ class NonLocalTemplateRepository extends NonLocalRepositoryBase
             return cachedStream;
         }
 
-        WebClient webClient = webClientFactory.make( this, GET_PATH, makeParamsMap( metadata ) );
+        WebClient webClient = webClientFactory.make( this, context + "/" + GET_PATH, makeParamsMap( metadata ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -206,7 +209,7 @@ class NonLocalTemplateRepository extends NonLocalRepositoryBase
     @Override
     public List<SerializableMetadata> listPackages()
     {
-        WebClient webClient = webClientFactory.make( this, LIST_PATH, makeParamsMap( new DefaultMetadata() ) );
+        WebClient webClient = webClientFactory.make( this, context + "/" + LIST_PATH, makeParamsMap( new DefaultMetadata() ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -244,8 +247,8 @@ class NonLocalTemplateRepository extends NonLocalRepositoryBase
         try
         {
             URI remote = webClient.getCurrentURI();
-            
-            if ( isHostReachable( remote.getHost(), remote.getPort() ) )
+
+            if ( InetUtils.isHostReachable( remote.getHost(), remote.getPort(), CONN_TIMEOUT_FOR_URL_CHECK ) )
             {
                 HTTPConduit httpConduit = ( HTTPConduit ) WebClient.getConfig( webClient ).getConduit();
                 httpConduit.getClient().setConnectionTimeout( CONN_TIMEOUT );
@@ -262,35 +265,6 @@ class NonLocalTemplateRepository extends NonLocalRepositoryBase
             LOGGER.warn( "Failed to do GET.", e );
         }
         return null;
-    }
-
-    private boolean isHostReachable( String host, int port )
-    {
-        Socket socket = null;
-        boolean reachable = false;
-        try
-        {
-            socket = new Socket();
-            socket.connect( new InetSocketAddress( host, port ), CONN_TIMEOUT_FOR_URL_CHECK );
-            reachable = true;
-        }
-        catch ( IOException ioe )
-        {
-        }
-        finally
-        {
-            if ( socket != null )
-            {
-                try
-                {
-                    socket.close();
-                }
-                catch ( IOException e )
-                {
-                }
-            }
-        }
-        return reachable;
     }
 
 
