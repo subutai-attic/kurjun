@@ -57,38 +57,41 @@ public class DefaultTar implements Tar
         decompressed = new File( file.getParent(), file.getName().substring( 0, file.getName().lastIndexOf( '.' ) ) );
         CompressionType compressionType = CompressionType.getCompressionType( file );
         InputStream in;
-        OutputStream out = new FileOutputStream( decompressed );
 
-        switch ( compressionType )
+        try ( OutputStream out = new FileOutputStream( decompressed );
+              InputStream inputStream = new FileInputStream( file )
+        )
         {
-            case XZ:
-                in = new XZCompressorInputStream( new FileInputStream( file ) );
-                break;
-            case GZIP:
-                in = new GZIPInputStream( new FileInputStream( file ) );
-                break;
-            case BZIP2:
-                in = new BZip2CompressorInputStream( new FileInputStream( file ) );
-                break;
-            case LZMA:
-                in = new LZMACompressorInputStream( new FileInputStream( file ) );
-                break;
-            case NONE:
-                in = null;
-                break;
-            default:
-                in = null;
-                break;
-        }
 
-        if ( in != null )
-        {
-            IOUtils.copy( in, out );
-            in.close();
-        }
+            switch ( compressionType )
+            {
+                case XZ:
+                    in = new XZCompressorInputStream( inputStream );
+                    break;
+                case GZIP:
+                    in = new GZIPInputStream( inputStream );
+                    break;
+                case BZIP2:
+                    in = new BZip2CompressorInputStream( inputStream );
+                    break;
+                case LZMA:
+                    in = new LZMACompressorInputStream( inputStream );
+                    break;
+                case NONE:
+                    in = null;
+                    break;
+                default:
+                    in = null;
+                    break;
+            }
 
-        out.flush();
-        out.close();
+            if ( in != null )
+            {
+                IOUtils.copy( in, out );
+            }
+
+            out.flush();
+        }
     }
 
 
@@ -135,7 +138,7 @@ public class DefaultTar implements Tar
                     {
                         checkState( outFile.getParentFile().mkdirs() );
                     }
-                    
+
                     int readBytes;
                     byte[] buffer = new byte[1024];
 

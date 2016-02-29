@@ -69,7 +69,6 @@ class DependencyTypeAdapter extends TypeAdapter<Dependency>
     }
 
 
-    @SuppressWarnings( "ConvertToStringSwitch" )
     private Dependency readDependency( JsonReader in ) throws IOException
     {
         DefaultDependency dep = new DefaultDependency();
@@ -78,30 +77,28 @@ class DependencyTypeAdapter extends TypeAdapter<Dependency>
         while ( in.hasNext() )
         {
             String name = in.nextName();
-            if ( name.equals( PACKAGE_PROPERTY ) )
+            switch ( name )
             {
-                dep.setPackage( in.nextString() );
-            }
-            else if ( name.equals( VERSION_PROPERTY ) )
-            {
-                dep.setVersion( in.nextString() );
-            }
-            else if ( name.equals( DEPENDNCY_OP_PROPERTY ) )
-            {
-                dep.setDependencyOperator( RelationOperator.valueOf( in.nextString() ) );
-            }
-            else if ( name.equals( ALTERNATIVES_PROPERTY ) )
-            {
-                in.beginArray();
-                while ( in.hasNext() )
-                {
-                    dep.getAlternatives().add( readDependency( in ) );
-                }
-                in.endArray();
-            }
-            else
-            {
-                in.skipValue();
+                case PACKAGE_PROPERTY:
+                    dep.setPackage( in.nextString() );
+                    break;
+                case VERSION_PROPERTY:
+                    dep.setVersion( in.nextString() );
+                    break;
+                case DEPENDNCY_OP_PROPERTY:
+                    dep.setDependencyOperator( RelationOperator.valueOf( in.nextString() ) );
+                    break;
+                case ALTERNATIVES_PROPERTY:
+                    in.beginArray();
+                    while ( in.hasNext() )
+                    {
+                        dep.getAlternatives().add( readDependency( in ) );
+                    }
+                    in.endArray();
+                    break;
+                default:
+                    in.skipValue();
+                    break;
             }
         }
         in.endObject();
