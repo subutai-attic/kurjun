@@ -15,18 +15,17 @@ import ai.subut.kurjun.model.metadata.apt.RelationOperator;
 
 
 /**
- * Gson type adapter for {@link Dependency}. This type adapter is introduced to correctly convert objects with
- * {@link Dependency} fields to and from JSON. Without such type adapter de-serialization of classes like
- * {@link PackageMetadata} that have fields of interface type {@link Dependency} result in either parse errors or
- * unexpected results.
- *
+ * Gson type adapter for {@link Dependency}. This type adapter is introduced to correctly convert objects with {@link
+ * Dependency} fields to and from JSON. Without such type adapter de-serialization of classes like {@link
+ * PackageMetadata} that have fields of interface type {@link Dependency} result in either parse errors or unexpected
+ * results.
  */
 class DependencyTypeAdapter extends TypeAdapter<Dependency>
 {
-    final String PACKAGE_PROPERTY = "packageName";
-    final String VERSION_PROPERTY = "version";
-    final String DEPENDNCY_OP_PROPERTY = "dependencyOperator";
-    final String ALTERNATIVES_PROPERTY = "alternatives";
+    static final String PACKAGE_PROPERTY = "packageName";
+    static final String VERSION_PROPERTY = "version";
+    static final String DEPENDNCY_OP_PROPERTY = "dependencyOperator";
+    static final String ALTERNATIVES_PROPERTY = "alternatives";
 
 
     @Override

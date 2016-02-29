@@ -29,10 +29,10 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
 
 
 /**
- * SQL DB implementation of PackageMetadataStore. Refer to {@link ConnectionFactory} for connection details and
- * {@link SqlStatements} for table structure.
- *
+ * SQL DB implementation of PackageMetadataStore. Refer to {@link ConnectionFactory} for connection details and {@link
+ * SqlStatements} for table structure.
  */
+
 class SqlDbPackageMetadataStore implements PackageMetadataStore
 {
 
@@ -58,8 +58,6 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
 
     /**
      * Constructs a metadata store backed by a SQL DB whose properties are provided by an {@link Properties} instance
-     *
-     * @param properties
      */
     public SqlDbPackageMetadataStore( Properties properties )
     {
@@ -71,12 +69,15 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
     public boolean contains( Object id ) throws IOException
     {
         Objects.requireNonNull( id, "Id for contains method" );
-        try ( Connection conn = ConnectionFactory.getInstance().getConnection() )
+        try (
+                Connection conn = ConnectionFactory.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement( SqlStatements.SELECT_COUNT ) )
         {
-            PreparedStatement ps = conn.prepareStatement( SqlStatements.SELECT_COUNT );
+
             ps.setString( 1, context.getName() );
             ps.setString( 2, String.valueOf( id ) );
             ResultSet rs = ps.executeQuery();
+
             return rs.next() && rs.getInt( 1 ) > 0;
         }
         catch ( SQLException ex )
@@ -90,9 +91,9 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
     public SerializableMetadata get( Object id ) throws IOException
     {
         Objects.requireNonNull( id, "Id for get method" );
-        try ( Connection conn = ConnectionFactory.getInstance().getConnection() )
+        try ( Connection conn = ConnectionFactory.getInstance().getConnection();
+              PreparedStatement ps = conn.prepareStatement( SqlStatements.SELECT_DATA ) )
         {
-            PreparedStatement ps = conn.prepareStatement( SqlStatements.SELECT_DATA );
             ps.setString( 1, context.getName() );
             ps.setString( 2, String.valueOf( id ) );
             ResultSet rs = ps.executeQuery();
@@ -101,6 +102,7 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
                 return makeMetadata( rs );
             }
         }
+
         catch ( SQLException | DecoderException ex )
         {
             throw makeIOException( ex );
@@ -118,25 +120,29 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
         }
 
         List<SerializableMetadata> result = new LinkedList<>();
-        try ( Connection conn = ConnectionFactory.getInstance().getConnection() )
+        try ( Connection conn = ConnectionFactory.getInstance().getConnection();
+              PreparedStatement ps = conn.prepareStatement( SqlStatements.SELECT_BY_NAME ) )
         {
-            PreparedStatement ps = conn.prepareStatement( SqlStatements.SELECT_BY_NAME );
+
             ps.setString( 1, context.getName() );
             ps.setString( 2, name );
+
             ResultSet rs = ps.executeQuery();
+
             while ( rs.next() )
             {
                 result.add( makeMetadata( rs ) );
             }
         }
+
         catch ( SQLException | DecoderException ex )
         {
             throw makeIOException( ex );
         }
         return result;
     }
-    
-    
+
+
     @Override
     public boolean put( SerializableMetadata meta ) throws IOException
     {
@@ -147,14 +153,16 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
         {
             return false;
         }
-        try ( Connection conn = ConnectionFactory.getInstance().getConnection() )
+        try ( Connection conn = ConnectionFactory.getInstance().getConnection();
+              PreparedStatement ps = conn.prepareStatement( SqlStatements.INSERT ) )
         {
-            PreparedStatement ps = conn.prepareStatement( SqlStatements.INSERT );
+
             ps.setString( 1, context.getName() );
             ps.setString( 2, String.valueOf( meta.getId() ) );
             ps.setString( 3, meta.getName() );
             ps.setString( 4, meta.getVersion() );
             ps.setString( 5, meta.serialize() );
+
             return ps.executeUpdate() > 0;
         }
         catch ( SQLException ex )
@@ -168,9 +176,10 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
     public boolean remove( Object id ) throws IOException
     {
         Objects.requireNonNull( id, "Id for remove method" );
-        try ( Connection conn = ConnectionFactory.getInstance().getConnection() )
+
+        try ( Connection conn = ConnectionFactory.getInstance().getConnection();
+              PreparedStatement ps = conn.prepareStatement( SqlStatements.DELETE ) )
         {
-            PreparedStatement ps = conn.prepareStatement( SqlStatements.DELETE );
             ps.setString( 1, context.getName() );
             ps.setString( 2, String.valueOf( id ) );
             return ps.executeUpdate() > 0;
@@ -200,23 +209,35 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
     }
 
 
+    private PreparedStatement getPreparedStatement( String marker, Connection conn ) throws SQLException
+    {
+        if ( marker != null && !marker.isEmpty() )
+        {
+            try ( PreparedStatement ps = conn.prepareStatement( SqlStatements.SELECT_NEXT_ORDERED ) )
+            {
+                ps.setString( 1, context.getName() );
+                ps.setString( 2, marker );
+                return ps;
+            }
+        }
+        else
+        {
+            try ( PreparedStatement ps = conn.prepareStatement( SqlStatements.SELECT_ORDERED ) )
+            {
+                ps.setString( 1, context.getName() );
+                return ps;
+            }
+        }
+    }
+
+
     private MetadataListing listPackageMetadata( String marker ) throws IOException
     {
         MetadataListingImpl pml = new MetadataListingImpl();
+
         try ( Connection conn = ConnectionFactory.getInstance().getConnection() )
         {
-            PreparedStatement ps;
-            if ( marker != null && !marker.isEmpty() )
-            {
-                ps = conn.prepareStatement( SqlStatements.SELECT_NEXT_ORDERED );
-                ps.setString( 1, context.getName() );
-                ps.setString( 2, marker );
-            }
-            else
-            {
-                ps = conn.prepareStatement( SqlStatements.SELECT_ORDERED );
-                ps.setString( 1, context.getName() );
-            }
+            PreparedStatement ps = getPreparedStatement( marker, conn );
 
             ps.setFetchSize( batchSize + 1 );
             ResultSet rs = ps.executeQuery();
@@ -226,7 +247,6 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
                 {
                     String md5hex = rs.getString( SqlStatements.CHECKSUM_COLUMN );
                     DefaultMetadata meta = makeMetadata( rs );
-
                     pml.getPackageMetadata().add( meta );
                     pml.setMarker( md5hex );
                 }
@@ -263,6 +283,5 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
     {
         return new IOException( "Failed to query db", ex );
     }
-
 }
 

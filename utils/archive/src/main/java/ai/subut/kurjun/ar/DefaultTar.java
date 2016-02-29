@@ -59,12 +59,11 @@ public class DefaultTar implements Tar
         InputStream in;
 
         try ( OutputStream out = new FileOutputStream( decompressed );
-              InputStream inputStream = new FileInputStream( file )
-        )
+              InputStream inputStream = new FileInputStream( file ) )
         {
-
             switch ( compressionType )
             {
+
                 case XZ:
                     in = new XZCompressorInputStream( inputStream );
                     break;
@@ -89,7 +88,6 @@ public class DefaultTar implements Tar
             {
                 IOUtils.copy( in, out );
             }
-
             out.flush();
         }
     }
