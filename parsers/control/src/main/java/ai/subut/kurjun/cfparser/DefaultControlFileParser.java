@@ -25,13 +25,13 @@ public class DefaultControlFileParser implements ControlFileParser
 
 
     @Override
-    public PackageMetadata parse( Map<String, Object> params, File controlFile )
+    public PackageMetadata parse( Map<String, Object> params, File controlFile ) throws IOException
     {
         return parseBinary( params, controlFile );
     }
 
 
-    public PackageMetadata parseBinary( Map<String, Object> params, File controlFile )
+    public PackageMetadata parseBinary( Map<String, Object> params, File controlFile )  throws IOException
     {
         BinaryPackageControlFile control = null;
 
@@ -42,6 +42,7 @@ public class DefaultControlFileParser implements ControlFileParser
         catch ( IOException | ParseException e )
         {
             LOG.error( "Failed to parse control file: {}", controlFile.getAbsolutePath(), e );
+            throw new IOException("Failed to parse control file. " + e.getMessage(), e );
         }
 
         BinaryPackageMetadata metadata = new BinaryPackageMetadata( ( byte[] ) params.get( "md5sum" ),
