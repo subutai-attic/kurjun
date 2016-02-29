@@ -3,8 +3,6 @@ package ai.subut.kurjun.model.index;
 
 import java.util.List;
 
-import ai.subut.kurjun.model.index.ChecksummedResource;
-
 
 /**
  * A component of a distribution release: i.e. main, restricted, universe, etc.
@@ -27,7 +25,7 @@ public interface Component
 
 
     /**
-     * Gets the checksummd index resources by the relative path from the disstribution directory.
+     * Gets the checksummed index resources by the relative path from the distribution directory.
      *
      * @param relativePath the relative path from the distribution directory
      * @return the index resource

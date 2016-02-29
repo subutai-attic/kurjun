@@ -33,25 +33,24 @@ public abstract class AbstractPackageMetadata implements PackageMetadata
 
     AbstractPackageMetadata( byte[] md5, String filename, ControlFile controlFile )
     {
-        checkNotNull( "The md5 sum for the Debian package must not be null", md5 );
-        checkNotNull( "The filename for the Debian package must not be null", filename );
-        checkNotNull( "The control file argument cannot be null.", controlFile );
+        checkNotNull( md5, "The md5 sum for the Debian package must not be null" );
+        checkNotNull( filename, "The filename for the Debian package must not be null" );
+        checkNotNull( controlFile, "The control file argument cannot be null." );
 
         // copy it so no one can fuck with the value later
         this.md5 = Arrays.copyOf( md5, md5.length );
         this.filename = filename;
         this.controlFile = controlFile;
-
     }
 
 
     /**
-     * Accesses the dependencies cache to look for an already parsed list of
-     * dependencies for a relationship based field value, and if found returns
-     * it, if not it invokes the parser to generate the dependencies in a list
-     * for the field and adds the entry into the cache.
+     * Accesses the dependencies cache to look for an already parsed list of dependencies for a relationship based field
+     * value, and if found returns it, if not it invokes the parser to generate the dependencies in a list for the field
+     * and adds the entry into the cache.
      *
      * @param key the relationship field key used to lookup the dependency list
+     *
      * @return the cached dependency list or a parsed form of the raw value provided
      */
     protected List<Dependency> getCached( String key )
