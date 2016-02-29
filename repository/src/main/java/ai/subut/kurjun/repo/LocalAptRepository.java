@@ -87,8 +87,8 @@ class LocalAptRepository extends LocalRepositoryBase
         DefaultRelease r = new DefaultRelease();
         r.setCodename( "trusty" );
         r.setArchitectures( Arrays.asList( Architecture.ALL, Architecture.AMD64, Architecture.i386 ) );
-        r.setComponents( Arrays.asList( "main" ) );
-        r.setDescription( "Short description of the repo" );
+        r.setComponents( Arrays.asList( "main", "contrib", "non-free" ) );
+        r.setDescription( "Kurjun virtual apt repository" );
         r.setVersion( "12.04" );
         releases.add( r );
 
@@ -163,9 +163,9 @@ class LocalAptRepository extends LocalRepositoryBase
             fileStore.put( target.toFile() );
             return meta;
         }
-        catch ( ParseException ex )
+        catch ( Exception ex )
         {
-            throw new IOException( "Failed to parse control file", ex );
+            throw new IOException( ex.getMessage(), ex );
         }
         finally
         {

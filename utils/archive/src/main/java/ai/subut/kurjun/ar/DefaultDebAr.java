@@ -61,7 +61,7 @@ public class DefaultDebAr implements DebAr
         File debBinFile = new File( tmpDir, DEBIAN_BINARY );
         ar.extract( debBinFile, debBinEntry );
         String contents = FileUtils.readFileToString( debBinFile ).trim();
-        checkState( DEBIAN_VERSION.equals( contents ) );
+        checkState( DEBIAN_VERSION.equals( contents ), "Invalid Debian version " + DEBIAN_VERSION );
 
         // check proper archive: (3) check that second entry is control tarball
         ArArchiveEntry debCtrlEntry = entries.get( 1 );
@@ -76,9 +76,9 @@ public class DefaultDebAr implements DebAr
         DefaultTar tar = new DefaultTar( debCtrlTarball );
         tar.extract( debCtrlTarball.getParentFile() );
         controlFile = new File( debCtrlTarball.getParentFile(), "control" );
-        checkState( controlFile.exists() );
+        checkState( controlFile.exists(), "'control' does not exist" );
         md5sumsFile = new File( debCtrlTarball.getParentFile(), "md5sums" );
-        checkState( md5sumsFile.exists() );
+        checkState( md5sumsFile.exists(), "'md5sums' does not exist" );
     }
 
 

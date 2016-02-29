@@ -18,7 +18,7 @@
     <project.build.sourceencoding>UTF-8</project.build.sourceencoding>
     <org.apache.cxf.version>3.1.0</org.apache.cxf.version>
     <org.eclipse.jetty.version>9.3.6.v20151106</org.eclipse.jetty.version>
-    <subutai.kurjun.version>4.0.0-RC6</subutai.kurjun.version>
+    <subutai.kurjun.version>4.0.0-RC7-SNAPSHOT</subutai.kurjun.version>
     <ai.subut.kurjun.version>1.0</ai.subut.kurjun.version>
   </properties>
 
