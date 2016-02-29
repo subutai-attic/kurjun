@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vafer.jdeb.debian.ControlFile;
 
+import org.apache.commons.codec.binary.Hex;
+
 import ai.subut.kurjun.model.metadata.apt.Dependency;
 import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 
@@ -84,6 +86,14 @@ public abstract class AbstractPackageMetadata implements PackageMetadata
     {
         // again give back a copy so no one can fuck with it
         return Arrays.copyOf( md5, md5.length );
+    }
+
+
+    @Override
+    public Object getId()
+    {
+        // For package metadatas the unique identifier is its md5sum
+        return Hex.encodeHexString( getMd5Sum() );
     }
 
 

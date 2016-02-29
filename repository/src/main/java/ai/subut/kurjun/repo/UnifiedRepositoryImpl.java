@@ -63,7 +63,11 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
             Set<ReleaseFile> releases = new HashSet<>();
             for ( Repository r : repositories )
             {
-                releases.addAll( r.getDistributions() );
+                Set<ReleaseFile> set = r.getDistributions();
+                if ( set != null )
+                {
+                    releases.addAll( set );
+                }
             }
             return releases;
         }

@@ -4,6 +4,7 @@ package ai.subut.kurjun.repo;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,12 +23,14 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.transport.http.HTTPConduit;
 
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.ar.CompressionType;
+import ai.subut.kurjun.common.utils.InetUtils;
 import ai.subut.kurjun.index.service.PackagesIndexParser;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
@@ -75,7 +78,10 @@ class NonLocalAptRepository extends NonLocalRepositoryBase
 
     // TODO: Kairat parameterize release path params
     static final String RELEASE_PATH = "dists/trusty/Release";
-
+    
+    private static final int CONN_TIMEOUT = 3000;
+    private static final int READ_TIMEOUT = 3000;
+    private static final int CONN_TIMEOUT_FOR_URL_CHECK = 200;
 
     /**
      * Constructs nonlocal repository located by the specified URL.
@@ -117,8 +123,8 @@ class NonLocalAptRepository extends NonLocalRepositoryBase
 
         WebClient webClient = webClientFactory.make( this, RELEASE_PATH, null );
 
-        Response resp = webClient.get();
-        if ( resp.getStatus() == Response.Status.OK.getStatusCode() )
+        Response resp = doGet( webClient );
+        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
         {
             if ( resp.getEntity() instanceof InputStream )
             {
@@ -174,8 +180,8 @@ class NonLocalAptRepository extends NonLocalRepositoryBase
 
         WebClient webClient = webClientFactory.make( this, pm.getFilename(), null );
 
-        Response resp = webClient.get();
-        if ( resp.getStatus() == Response.Status.OK.getStatusCode() )
+        Response resp = doGet( webClient );
+        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
         {
             if ( resp.getEntity() instanceof InputStream )
             {
@@ -213,16 +219,19 @@ class NonLocalAptRepository extends NonLocalRepositoryBase
         List<SerializableMetadata> result = new LinkedList<>();
         Set<ReleaseFile> distributions = getDistributions();
 
-        for ( ReleaseFile distr : distributions )
+        if ( distributions != null )
         {
-            PathBuilder pb = PathBuilder.instance().setRelease( distr );
-            for ( String component : distr.getComponents() )
+            for ( ReleaseFile distr : distributions )
             {
-                for ( Architecture arch : distr.getArchitectures() )
+                PathBuilder pb = PathBuilder.instance().setRelease( distr );
+                for ( String component : distr.getComponents() )
                 {
-                    String path = pb.setResource( makePackagesIndexResource( component, arch ) ).build();
-                    List<SerializableMetadata> items = fetchPackagesMetadata( path, component );
-                    result.addAll( items );
+                    for ( Architecture arch : distr.getArchitectures() )
+                    {
+                        String path = pb.setResource( makePackagesIndexResource( component, arch ) ).build();
+                        List<SerializableMetadata> items = fetchPackagesMetadata( path, component );
+                        result.addAll( items );
+                    }
                 }
             }
         }
@@ -234,6 +243,32 @@ class NonLocalAptRepository extends NonLocalRepositoryBase
     protected Logger getLogger()
     {
         return LOGGER;
+    }
+    
+    
+    private Response doGet( WebClient webClient )
+    {
+        try
+        {
+            URI remote = webClient.getCurrentURI();
+
+            if ( InetUtils.isHostReachable( remote.getHost(), remote.getPort(), CONN_TIMEOUT_FOR_URL_CHECK ) )
+            {
+                HTTPConduit httpConduit = ( HTTPConduit ) WebClient.getConfig( webClient ).getConduit();
+                httpConduit.getClient().setConnectionTimeout( CONN_TIMEOUT );
+                httpConduit.getClient().setReceiveTimeout( READ_TIMEOUT );
+                return webClient.get();
+            }
+            else
+            {
+                LOGGER.warn( "Remote host is not reachable {}:{}", remote.getHost(), remote.getPort() );
+            }
+        }
+        catch ( Exception e )
+        {
+            LOGGER.warn( "Failed to do GET.", e );
+        }
+        return null;
     }
 
 
@@ -308,8 +343,8 @@ class NonLocalAptRepository extends NonLocalRepositoryBase
     {
         WebClient webClient = webClientFactory.make( this, path, null );
 
-        Response resp = webClient.get();
-        if ( resp.getStatus() == Response.Status.OK.getStatusCode() && resp.getEntity() instanceof InputStream )
+        Response resp = doGet( webClient );
+        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() && resp.getEntity() instanceof InputStream )
         {
             try ( InputStream is = ( InputStream ) resp.getEntity() )
             {

@@ -16,8 +16,10 @@
   <properties>
     <mainClass>ai.subut.kurjun.http.HttpServer</mainClass>
     <project.build.sourceencoding>UTF-8</project.build.sourceencoding>
-    <org.apache.cxf.version>2.7.18</org.apache.cxf.version>
+    <org.apache.cxf.version>3.1.0</org.apache.cxf.version>
     <org.eclipse.jetty.version>9.3.6.v20151106</org.eclipse.jetty.version>
+    <subutai.kurjun.version>4.0.0-RC6</subutai.kurjun.version>
+    <ai.subut.kurjun.version>1.0</ai.subut.kurjun.version>
   </properties>
 
   <build>
@@ -95,13 +97,67 @@
     <dependency>
       <groupId>io.subutai</groupId>
       <artifactId>kurjun-api</artifactId>
-      <version>${subutai.version}</version>
+      <version>${subutai.kurjun.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
-        
+    
     <dependency>
       <groupId>io.subutai</groupId>
       <artifactId>kurjun-impl</artifactId>
-      <version>${subutai.version}</version>
+      <version>${subutai.kurjun.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>io.subutai</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    
+    <dependency>
+      <groupId>ai.subut.kurjun</groupId>
+      <artifactId>model</artifactId>
+      <version>${ai.subut.kurjun.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>ai.subut.kurjun</groupId>
+      <artifactId>repository</artifactId>
+      <version>${ai.subut.kurjun.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>ai.subut.kurjun</groupId>
+      <artifactId>file-store-factory</artifactId>
+      <version>${ai.subut.kurjun.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>ai.subut.kurjun</groupId>
+      <artifactId>metadata-store-factory</artifactId>
+      <version>${ai.subut.kurjun.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>ai.subut.kurjun</groupId>
+      <artifactId>snap-parser</artifactId>
+      <version>${ai.subut.kurjun.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>ai.subut.kurjun</groupId>
+      <artifactId>kurjun-template-parser</artifactId>
+      <version>${ai.subut.kurjun.version}</version>
+    </dependency>
+    
+    
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
     </dependency>
     
     <dependency>
@@ -121,6 +177,12 @@
       <artifactId>jetty-servlet</artifactId>
       <version>${org.eclipse.jetty.version}</version>
     </dependency>
-
+    
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.10</version>
+    </dependency>
+    
   </dependencies>
 </project>

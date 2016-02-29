@@ -55,10 +55,16 @@ public interface SubutaiTemplateMetadata extends Metadata
 
 
     /**
+     * Gets template's owner fingerprint
+     * @return owner
+     */
+    String getOwnerFprint();
+
+
+    /**
      * Gets additional properties map of the Subutai template.
      *
      * @return map of property values
      */
     Map< String, String> getExtra();
 }
-

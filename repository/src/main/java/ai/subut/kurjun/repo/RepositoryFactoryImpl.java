@@ -63,7 +63,7 @@ public class RepositoryFactoryImpl implements RepositoryFactory
     public LocalRepository createLocalApt( KurjunContext context )
     {
         return new LocalAptRepository( controlFileParser, templateParser, fileStoreFactory, metadataStoreFactory,
-                                       context );
+                context );
     }
 
 
@@ -89,9 +89,9 @@ public class RepositoryFactoryImpl implements RepositoryFactory
 
 
     @Override
-    public NonLocalRepository createNonLocalTemplate( String url, Identity identity, String token )
+    public NonLocalRepository createNonLocalTemplate( String url, Identity identity, String kurjunContext, String token )
     {
-        return new NonLocalTemplateRepository( cache, url, identity, token );
+        return new NonLocalTemplateRepository( cache, url, identity, kurjunContext, token );
     }
 
 
@@ -113,4 +113,3 @@ public class RepositoryFactoryImpl implements RepositoryFactory
     }
 
 }
-

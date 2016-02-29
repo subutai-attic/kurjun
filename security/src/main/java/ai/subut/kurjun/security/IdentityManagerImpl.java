@@ -34,14 +34,14 @@ class IdentityManagerImpl implements IdentityManager
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( IdentityManagerImpl.class );
 
-    private static final String MAP_NAME = "identities";
-    private static final String GROUPS_MAP_NAME = "identity-groups";
-    private static final String PERMISSIONS_MAP_NAME = "identity-permissions";
+    private static final String MAP_IDENTITIES = "identities";
+    private static final String MAP_GROUPS = "identity-groups";
+    private static final String MAP_PERMISSIONS = "identity-permissions";
 
-    private FileDbProvider fileDbProvider;
-    private PgpKeyFetcher keyFetcher;
-    private GroupManager groupManager;
-    private RoleManager roleManager;
+    private final FileDbProvider fileDbProvider;
+    private final PgpKeyFetcher keyFetcher;
+    private final GroupManager groupManager;
+    private final RoleManager roleManager;
 
 
     @Inject
@@ -62,7 +62,7 @@ class IdentityManagerImpl implements IdentityManager
     {
         try ( FileDb fileDb = fileDbProvider.get() )
         {
-            return fileDb.get( MAP_NAME, fingerprint.toLowerCase(), DefaultIdentity.class );
+            return fileDb.get( MAP_IDENTITIES, fingerprint.toLowerCase(), DefaultIdentity.class );
         }
     }
 
@@ -89,7 +89,7 @@ class IdentityManagerImpl implements IdentityManager
 
         try ( FileDb fileDb = fileDbProvider.get() )
         {
-            fileDb.put( MAP_NAME, id.getKeyFingerprint().toLowerCase(), id );
+            fileDb.put( MAP_IDENTITIES, id.getKeyFingerprint().toLowerCase(), id );
         }
         return id;
     }
@@ -113,7 +113,7 @@ class IdentityManagerImpl implements IdentityManager
             Identity id = new DefaultIdentity( key );
             try ( FileDb fileDb = fileDbProvider.get() )
             {
-                fileDb.put( MAP_NAME, id.getKeyFingerprint(), id );
+                fileDb.put( MAP_IDENTITIES, id.getKeyFingerprint(), id );
             }
             return id;
         }
@@ -131,7 +131,7 @@ class IdentityManagerImpl implements IdentityManager
         try ( FileDb fileDb = fileDbProvider.get() )
         {
             // get group names the identity belongs to
-            Set items = fileDb.get( GROUPS_MAP_NAME, identity.getKeyFingerprint(), Set.class );
+            Set items = fileDb.get( MAP_GROUPS, identity.getKeyFingerprint(), Set.class );
             if ( items == null )
             {
                 return Collections.emptySet();
@@ -156,7 +156,7 @@ class IdentityManagerImpl implements IdentityManager
     {
         try ( FileDb fileDb = fileDbProvider.get() )
         {
-            Set<ResourceControl> controls = fileDb.get( PERMISSIONS_MAP_NAME, identity.getKeyFingerprint(), Set.class );
+            Set<ResourceControl> controls = fileDb.get( MAP_PERMISSIONS, identity.getKeyFingerprint(), Set.class );
             if ( controls == null )
             {
                 return Collections.emptySet();
@@ -178,7 +178,7 @@ class IdentityManagerImpl implements IdentityManager
     {
         try ( FileDb fileDb = fileDbProvider.get() )
         {
-            Set<ResourceControl> controls = fileDb.get( PERMISSIONS_MAP_NAME, identity.getKeyFingerprint(), Set.class );
+            Set<ResourceControl> controls = fileDb.get( MAP_PERMISSIONS, identity.getKeyFingerprint(), Set.class );
             if ( controls == null )
             {
                 controls = new HashSet();
@@ -191,7 +191,7 @@ class IdentityManagerImpl implements IdentityManager
                 controls.add( control );
             }
             control.permissions.add( permission );
-            fileDb.put( PERMISSIONS_MAP_NAME, identity.getKeyFingerprint(), controls );
+            fileDb.put( MAP_PERMISSIONS, identity.getKeyFingerprint(), controls );
         }
     }
 
@@ -201,13 +201,13 @@ class IdentityManagerImpl implements IdentityManager
     {
         try ( FileDb fileDb = fileDbProvider.get() )
         {
-            Set<ResourceControl> controls = fileDb.get( PERMISSIONS_MAP_NAME, identity.getKeyFingerprint(), Set.class );
+            Set<ResourceControl> controls = fileDb.get( MAP_PERMISSIONS, identity.getKeyFingerprint(), Set.class );
             if ( controls != null )
             {
                 ResourceControl control = findResourceControl( resource, controls );
                 if ( control != null && control.permissions.remove( permission ) )
                 {
-                    fileDb.put( PERMISSIONS_MAP_NAME, identity.getKeyFingerprint(), controls );
+                    fileDb.put( MAP_PERMISSIONS, identity.getKeyFingerprint(), controls );
                 }
             }
         }

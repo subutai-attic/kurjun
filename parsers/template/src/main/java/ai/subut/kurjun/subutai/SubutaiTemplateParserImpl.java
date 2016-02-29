@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -107,6 +108,13 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
         {
 
             @Override
+            public String getId()
+            {
+                return Hex.encodeHexString( getMd5Sum() );
+            }
+
+
+            @Override
             public Architecture getArchitecture()
             {
                 String a = prop.getProperty( TemplateProperties.ARCH );
@@ -162,6 +170,13 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
                 return prop.getProperty( PACKAGES_FILE_CONTENTS_KEY );
             }
 
+
+            @Override
+            public String getOwnerFprint()
+            {
+                // there is no owner field in config file
+                return null;
+            }
 
             @Override
             public Map<String, String> getExtra()

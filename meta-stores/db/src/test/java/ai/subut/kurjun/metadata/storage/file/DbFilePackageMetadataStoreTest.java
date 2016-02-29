@@ -37,7 +37,7 @@ public class DbFilePackageMetadataStoreTest
 
     private SerializableMetadata meta;
     private List<SerializableMetadata> extraItems;
-    private byte[] otherMd5;
+    private byte[] otherId;
 
 
     @Before
@@ -48,7 +48,7 @@ public class DbFilePackageMetadataStoreTest
         store.put( meta );
 
         extraItems = new ArrayList<>();
-        otherMd5 = DigestUtils.md5( "other content" );
+        otherId = DigestUtils.md5( "other content" );
     }
 
 
@@ -61,17 +61,17 @@ public class DbFilePackageMetadataStoreTest
     @Test
     public void testContains() throws Exception
     {
-        Assert.assertTrue( store.contains( meta.getMd5Sum() ) );
-        Assert.assertFalse( store.contains( otherMd5 ) );
+        Assert.assertTrue( store.contains( meta.getId() ) );
+        Assert.assertFalse( store.contains( otherId ) );
     }
 
 
     @Test
     public void testGet() throws Exception
     {
-        Metadata res = store.get( meta.getMd5Sum() );
+        Metadata res = store.get( meta.getId() );
         Assert.assertEquals( meta, res );
-        Assert.assertNull( store.get( otherMd5 ) );
+        Assert.assertNull( store.get( otherId ) );
 
         // test get by name
         List<SerializableMetadata> ls = store.get( meta.getName() );
@@ -94,11 +94,11 @@ public class DbFilePackageMetadataStoreTest
     public void testRemove() throws Exception
     {
         // does not exist
-        Assert.assertFalse( store.remove( otherMd5 ) );
+        Assert.assertFalse( store.remove( otherId ) );
 
         // removed first then does not exist anymore
-        Assert.assertTrue( store.remove( meta.getMd5Sum() ) );
-        Assert.assertFalse( store.remove( meta.getMd5Sum() ) );
+        Assert.assertTrue( store.remove( meta.getId() ) );
+        Assert.assertFalse( store.remove( meta.getId() ) );
     }
 
 

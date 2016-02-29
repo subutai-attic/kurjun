@@ -77,6 +77,13 @@ public class IndexPackageMetadataImpl implements IndexPackageMetaData
 
 
     @Override
+    public String getId()
+    {
+        return Hex.encodeHexString( getMd5Sum() );
+    }
+
+
+    @Override
     public byte[] getMd5Sum()
     {
         String md5 = controlFile.get( IndexPackageMetaData.MD5SUM_FIELD );
