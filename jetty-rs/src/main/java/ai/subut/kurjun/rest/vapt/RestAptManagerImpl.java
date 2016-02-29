@@ -44,9 +44,17 @@ public class RestAptManagerImpl extends RestManagerBase implements RestAptManage
     @Override
     public Response getRelease( String release )
     {
-        String releaseIndex = aptManager.getRelease( release, null, null );
-        return ( releaseIndex != null ) ? Response.ok( releaseIndex ).build()
-                : notFoundResponse( "Release not found." );
+        try
+        {
+            String releaseIndex = aptManager.getRelease( release, null, null );
+            return ( releaseIndex != null ) ? Response.ok( releaseIndex ).build()
+                    : notFoundResponse( "Release not found." );
+        }
+        catch ( Exception e )
+        {
+            LOGGER.error( "Failed to get release package", e );
+        }
+        return Response.serverError().entity( "Failed to get release package." ).build();
     }
 
 
@@ -127,6 +135,7 @@ public class RestAptManagerImpl extends RestManagerBase implements RestAptManage
         catch ( IOException | IllegalArgumentException ex )
         {
             LOGGER.error( "Failed to upload", ex );
+            return badRequest( ex.getMessage() );
         }
         finally
         {
@@ -177,6 +186,39 @@ public class RestAptManagerImpl extends RestManagerBase implements RestAptManage
             }
         }
         return packageNotFoundResponse();
+    }
+
+
+    @Override
+    public Response listPackages()
+    {
+        return Response.ok( MetadataUtils.JSON.toJson( aptManager.list() ) ).build();
+    }
+
+
+    @Override
+    public Response deletePackage( String md5 )
+    {
+        byte[] md5bytes = decodeMd5( md5 );
+        if ( md5bytes != null )
+        {
+            String err = "Failed to delete apt package";
+            try
+            {
+                boolean deleted = aptManager.delete( md5bytes );
+                if ( deleted )
+                {
+                    return Response.ok( "Apt package deleted" ).build();
+                }
+                return Response.serverError().entity( err ).build();
+            }
+            catch ( IOException ex )
+            {
+                LOGGER.error( err, ex );
+                return Response.serverError().entity( err ).build();
+            }
+        }
+        return badRequest( "Invalid md5 checksum" );
     }
 
 

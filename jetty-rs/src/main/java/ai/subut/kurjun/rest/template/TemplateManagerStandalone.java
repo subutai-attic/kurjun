@@ -357,7 +357,6 @@ public class TemplateManagerStandalone
     {
         try
         {
-
             List<InetAddress> ips = InetUtils.getLocalIPAddresses();
             return ips.get( 0 ).getHostAddress();
         }
