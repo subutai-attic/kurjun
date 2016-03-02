@@ -174,7 +174,7 @@ public class MetadataUtils
         Map<String, String> params = new HashMap<>();
         if ( metadata.getMd5Sum() != null )
         {
-            params.put( "md5", Hex.encodeHexString( metadata.getMd5Sum() ) );
+            params.put( "id", String.valueOf( metadata.getId() ) );
         }
         if ( metadata.getName() != null )
         {
