@@ -25,7 +25,7 @@
     <module>repository</module>
     <module>quota</module>
     <module>http</module>
-    <module>jetty</module>
+    <module>jetty-rs</module>
     <module>karaf</module>
     <module>kurjun-web</module>
   </modules>

@@ -7,7 +7,7 @@ import ai.subut.kurjun.cfparser.service.ControlFileParser;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.repository.LocalRepository;
-import ai.subut.kurjun.model.repository.NonLocalRepository;
+import ai.subut.kurjun.model.repository.RemoteRepository;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
 import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.repo.cache.PackageCache;
@@ -82,23 +82,23 @@ public class RepositoryFactoryImpl implements RepositoryFactory
 
 
     @Override
-    public NonLocalRepository createNonLocalSnap( String url, Identity identity )
+    public RemoteRepository createNonLocalSnap( String url, Identity identity )
     {
-        return new NonLocalSnapRepository( cache, url, identity );
+        return new RemoteSnapRepository( cache, url, identity );
     }
 
 
     @Override
-    public NonLocalRepository createNonLocalTemplate( String url, Identity identity, String kurjunContext, String token )
+    public RemoteRepository createNonLocalTemplate( String url, Identity identity, String kurjunContext, String token )
     {
-        return new NonLocalTemplateRepository( cache, url, identity, kurjunContext, token );
+        return new RemoteTemplateRepository( cache, url, identity, kurjunContext, token );
     }
 
 
     @Override
-    public NonLocalRepository createNonLocalApt( URL url )
+    public RemoteRepository createNonLocalApt( URL url )
     {
-        NonLocalAptRepository repo = new NonLocalAptRepository( url );
+        RemoteAptRepository repo = new RemoteAptRepository( url );
         repo.releaseIndexParser = releaseIndexParser;
         repo.packagesIndexParser = null; // TODO: 
         repo.cache = cache;

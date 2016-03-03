@@ -26,9 +26,6 @@ import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.security.service.AuthManager;
 
-import static ai.subut.kurjun.http.HttpServletBase.NAME_PARAM;
-import static ai.subut.kurjun.http.HttpServletBase.VERSION_PARAM;
-
 
 /**
  * This servlet is used to test and demonstrate unified repository features.

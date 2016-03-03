@@ -15,9 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -25,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.commons.codec.binary.Hex;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.inject.Injector;
 
@@ -43,7 +41,7 @@ import ai.subut.kurjun.metadata.factory.PackageMetadataStoreModule;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
-import ai.subut.kurjun.model.repository.NonLocalRepository;
+import ai.subut.kurjun.model.repository.RemoteRepository;
 import ai.subut.kurjun.model.repository.Repository;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
 import ai.subut.kurjun.repo.LocalTemplateRepository;
@@ -72,7 +70,6 @@ public class TemplateManagerStandalone
 
     private Set<UserRepoContext> GLOBAL_CONTEXTS;
 
-    // url list read from kurjun.cfg file on bundle start up
     private final List<String> globalKurjunUrlList = new ArrayList<>();
 
     private Injector injector;
@@ -84,12 +81,15 @@ public class TemplateManagerStandalone
 
     private final UserRepoContextStore userRepoContextStore = new UserRepoContextStore( null );
 
-    private ScheduledExecutorService metadataCacheUpdater;
+
+    public TemplateManagerStandalone( String globalKurjunUrl )
+    {
+        parseGlobalKurjunUrls( globalKurjunUrl );
+    }
 
 
     public TemplateManagerStandalone()
     {
-        // parseGlobalKurjunUrls( globalKurjunUrl );
     }
 
 
@@ -104,24 +104,12 @@ public class TemplateManagerStandalone
         initUserRepoContexts( properties );
 
         logAllUrlsInUse();
-
-        // schedule metadata cache updater
-//        metadataCacheUpdater = Executors.newSingleThreadScheduledExecutor();
-//        metadataCacheUpdater.scheduleWithFixedDelay( ()
-//                -> 
-//                {
-//                    for ( KurjunContext context : GLOBAL_CONTEXTS )
-//                    {
-//                        LOGGER.warn( "" + context.getName());
-//                        refreshMetadataCache( context.getName() );
-//                    }
-//        }, 5, 30, TimeUnit.SECONDS );
     }
 
 
     public void dispose()
     {
-        metadataCacheUpdater.shutdown();
+
     }
 
 
@@ -176,7 +164,8 @@ public class TemplateManagerStandalone
     }
 
 
-    public InputStream getTemplateData( String repository, byte[] md5, String templateOwner, boolean isKurjunClient ) throws IOException
+    public InputStream getTemplateData( String repository, byte[] md5, String templateOwner, boolean isKurjunClient )
+            throws IOException
     {
         UserRepoContext context = getUserRepoContext( repository );
         UnifiedRepository repo = getRepository( context, isKurjunClient );
@@ -232,8 +221,8 @@ public class TemplateManagerStandalone
 
         try
         {
-            SubutaiTemplateMetadata m = ( SubutaiTemplateMetadata ) repo.put( inputStream, CompressionType.GZIP, 
-                    context.getName() );
+            SubutaiTemplateMetadata m =
+                    ( SubutaiTemplateMetadata ) repo.put( inputStream, CompressionType.GZIP, context.getName() );
             TemplateId tid = new TemplateId( m.getOwnerFprint(), Hex.encodeHexString( m.getMd5Sum() ) );
             return tid.get();
         }
@@ -250,7 +239,7 @@ public class TemplateManagerStandalone
     {
         UserRepoContext context = getUserRepoContext( repository );
         LocalRepository repo = getLocalRepository( context );
-        
+
         try
         {
             TemplateId tid = new TemplateId( templateOwner, Hex.encodeHexString( md5 ) );
@@ -303,7 +292,9 @@ public class TemplateManagerStandalone
             if ( url != null && !url.getHost().equals( getExternalIp() ) )
             {
                 repoUrlStore.addRemoteTemplateUrl( new RepoUrl( url, token ) );
+
                 remoteRepoUrls = repoUrlStore.getRemoteTemplateUrls();
+
                 LOGGER.info( "Remote template host url is added: {}", url );
             }
             else
@@ -397,15 +388,15 @@ public class TemplateManagerStandalone
             // Load remote repo urls from store
             remoteRepoUrls = repoUrlStore.getRemoteTemplateUrls();
 
-//            // Refresh global urls
-//            repoUrlStore.removeAllGlobalTemplateUrl();
-//            for ( String url : SystemSettings.getGlobalKurjunUrls() )
-//            {
-//                repoUrlStore.addGlobalTemplateUrl( new RepoUrl( new URL( url ), null ) );
-//            }
-//
-//            // Load global repo urls from store
-//            globalRepoUrls = repoUrlStore.getGlobalTemplateUrls();
+            //            // Refresh global urls
+            //            repoUrlStore.removeAllGlobalTemplateUrl();
+            //            for ( String url : SystemSettings.getGlobalKurjunUrls() )
+            //            {
+            //                repoUrlStore.addGlobalTemplateUrl( new RepoUrl( new URL( url ), null ) );
+            //            }
+            //
+            //            // Load global repo urls from store
+            //            globalRepoUrls = repoUrlStore.getGlobalTemplateUrls();
         }
         catch ( IOException e )
         {
@@ -448,6 +439,7 @@ public class TemplateManagerStandalone
         try
         {
             RepositoryFactory repositoryFactory = injector.getInstance( RepositoryFactory.class );
+
             return ( LocalTemplateRepository ) repositoryFactory.createLocalTemplate( context );
         }
         catch ( IllegalArgumentException ex )
@@ -468,7 +460,8 @@ public class TemplateManagerStandalone
             for ( RepoUrl repoUrl : remoteRepoUrls )
             {
                 unifiedRepo.getRepositories().add( repositoryFactory
-                        .createNonLocalTemplate( repoUrl.getUrl().toString(), null, context.getName(), repoUrl.getToken() ) );
+                        .createNonLocalTemplate( repoUrl.getUrl().toString(), null, context.getName(),
+                                repoUrl.getToken() ) );
             }
 
             // shuffle the global repo list to randomize and normalize usage of them
@@ -477,8 +470,9 @@ public class TemplateManagerStandalone
 
             for ( RepoUrl repoUrl : list )
             {
-                unifiedRepo.getSecondaryRepositories().add( repositoryFactory.createNonLocalTemplate(
-                        repoUrl.getUrl().toString(), null, context.getName(), repoUrl.getToken() ) );
+                unifiedRepo.getSecondaryRepositories().add( repositoryFactory
+                        .createNonLocalTemplate( repoUrl.getUrl().toString(), null, context.getName(),
+                                repoUrl.getToken() ) );
             }
         }
         return unifiedRepo;
@@ -488,19 +482,19 @@ public class TemplateManagerStandalone
     private List<RepoUrl> getGlobalKurjunUrls()
     {
         return Collections.emptyList();
-//        try
-//        {
-//            List<RepoUrl> list = new ArrayList<>();
-//            for ( String url : SystemSettings.getGlobalKurjunUrls() )
-//            {
-//                list.add( new RepoUrl( new URL( url ), null ) );
-//            }
-//            return list;
-//        }
-//        catch ( MalformedURLException e )
-//        {
-//            throw new IllegalArgumentException( "Invalid global kurjun url", e );
-//        }
+        //        try
+        //        {
+        //            List<RepoUrl> list = new ArrayList<>();
+        //            for ( String url : SystemSettings.getGlobalKurjunUrls() )
+        //            {
+        //                list.add( new RepoUrl( new URL( url ), null ) );
+        //            }
+        //            return list;
+        //        }
+        //        catch ( MalformedURLException e )
+        //        {
+        //            throw new IllegalArgumentException( "Invalid global kurjun url", e );
+        //        }
     }
 
 
@@ -508,6 +502,7 @@ public class TemplateManagerStandalone
      * Gets user repository context for templates repository.
      *
      * @return user repository context instance
+     *
      * @throws IllegalArgumentException if invalid/unknown repository value is supplied
      */
     private UserRepoContext getUserRepoContext( String repository )
@@ -525,19 +520,21 @@ public class TemplateManagerStandalone
     }
 
 
-//    private void parseGlobalKurjunUrls( String globalKurjunUrl )
-//    {
-//        if ( !Strings.isNullOrEmpty( globalKurjunUrl ) )
-//        {
-//            String urls[] = globalKurjunUrl.split( "," );
-//
-//            for ( int x = 0; x < urls.length; x++ )
-//            {
-//                urls[x] = urls[x].trim();
-//                globalKurjunUrlList.add( urls[x] );
-//            }
-//        }
-//    }
+    private void parseGlobalKurjunUrls( String globalKurjunUrl )
+    {
+        if ( !Strings.isNullOrEmpty( globalKurjunUrl ) )
+        {
+            String urls[] = globalKurjunUrl.split( "," );
+
+            for ( int x = 0; x < urls.length; x++ )
+            {
+                urls[x] = urls[x].trim();
+                globalKurjunUrlList.add( urls[x] );
+            }
+        }
+    }
+
+
     private void logAllUrlsInUse()
     {
         LOGGER.info( "Remote template urls:" );
@@ -566,9 +563,9 @@ public class TemplateManagerStandalone
 
         for ( Repository repo : repos )
         {
-            if ( repo instanceof NonLocalRepository )
+            if ( repo instanceof RemoteRepository )
             {
-                NonLocalRepository remote = ( NonLocalRepository ) repo;
+                RemoteRepository remote = ( RemoteRepository ) repo;
                 List<SerializableMetadata> ls = remote.getMetadataCache().getMetadataList();
                 result.addAll( ls );
             }
@@ -587,19 +584,21 @@ public class TemplateManagerStandalone
      */
     private void refreshMetadataCache( String repository )
     {
-        Set<NonLocalRepository> remotes = new HashSet<>();
+        Set<RemoteRepository> remotes = new HashSet<>();
         RepositoryFactory repoFactory = injector.getInstance( RepositoryFactory.class );
 
         for ( RepoUrl url : remoteRepoUrls )
         {
-            remotes.add( repoFactory.createNonLocalTemplate( url.getUrl().toString(), null, repository, url.getToken() ) );
+            remotes.add(
+                    repoFactory.createNonLocalTemplate( url.getUrl().toString(), null, repository, url.getToken() ) );
         }
         for ( RepoUrl url : getGlobalKurjunUrls() )
         {
-            remotes.add( repoFactory.createNonLocalTemplate( url.getUrl().toString(), null, repository, url.getToken() ) );
+            remotes.add(
+                    repoFactory.createNonLocalTemplate( url.getUrl().toString(), null, repository, url.getToken() ) );
         }
 
-        for ( NonLocalRepository remote : remotes )
+        for ( RemoteRepository remote : remotes )
         {
             remote.getMetadataCache().refresh();
         }
@@ -608,14 +607,12 @@ public class TemplateManagerStandalone
 
     private TemplateKurjun convertToSubutaiTemplate( SubutaiTemplateMetadata meta )
     {
-        TemplateKurjun template = new TemplateKurjun( String.valueOf( meta.getId() ),
-                Hex.encodeHexString( meta.getMd5Sum() ), meta.getName(),
-                meta.getVersion(), meta.getArchitecture().name(),
-                meta.getParent(), meta.getPackage(), meta.getOwnerFprint() );
+        TemplateKurjun template =
+                new TemplateKurjun( String.valueOf( meta.getId() ), Hex.encodeHexString( meta.getMd5Sum() ),
+                        meta.getName(), meta.getVersion(), meta.getArchitecture().name(), meta.getParent(),
+                        meta.getPackage(), meta.getOwnerFprint() );
         template.setConfigContents( meta.getConfigContents() );
         template.setPackagesContents( meta.getPackagesContents() );
         return template;
     }
-
-
 }

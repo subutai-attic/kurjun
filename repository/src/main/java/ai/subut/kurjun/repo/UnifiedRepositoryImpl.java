@@ -132,7 +132,6 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
         return result;
     }
 
-
     private Comparator<Repository> makeLocalsFirstComparator()
     {
         return (Repository r1, Repository r2) ->

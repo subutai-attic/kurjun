@@ -11,7 +11,7 @@ import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 
-import ai.subut.kurjun.model.repository.NonLocalRepository;
+import ai.subut.kurjun.model.repository.RemoteRepository;
 
 
 /**
@@ -25,7 +25,7 @@ class DefaultWebClientFactory implements WebClientFactory
 
 
     @Override
-    public WebClient make( NonLocalRepository remoteRepository, String path, Map<String, String> queryParams )
+    public WebClient make( RemoteRepository remoteRepository, String path, Map<String, String> queryParams )
     {
         try
         {

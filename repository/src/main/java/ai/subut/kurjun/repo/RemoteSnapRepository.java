@@ -43,10 +43,10 @@ import ai.subut.kurjun.repo.util.http.WebClientFactory;
  * Non-local snap repository implementation.
  *
  */
-class NonLocalSnapRepository extends NonLocalRepositoryBase
+class RemoteSnapRepository extends RemoteRepositoryBase
 {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( NonLocalSnapRepository.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( RemoteSnapRepository.class );
 
     static final String INFO_PATH = "info";
     static final String GET_PATH = "get";
@@ -64,7 +64,7 @@ class NonLocalSnapRepository extends NonLocalRepositoryBase
 
 
     @Inject
-    public NonLocalSnapRepository( PackageCache cache, @Assisted String url, @Assisted @Nullable Identity identity )
+    public RemoteSnapRepository( PackageCache cache, @Assisted String url, @Assisted @Nullable Identity identity )
     {
         this.cache = cache;
         this.identity = identity;

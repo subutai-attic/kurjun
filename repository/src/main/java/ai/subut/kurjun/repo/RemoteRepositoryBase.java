@@ -14,7 +14,7 @@ import com.google.inject.Inject;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.MetadataCache;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
-import ai.subut.kurjun.model.repository.NonLocalRepository;
+import ai.subut.kurjun.model.repository.RemoteRepository;
 import ai.subut.kurjun.repo.cache.MetadataCacheFactory;
 import ai.subut.kurjun.repo.cache.PackageCache;
 
@@ -23,7 +23,7 @@ import ai.subut.kurjun.repo.cache.PackageCache;
  * Base abstract class for non-local repositories. Common operations to non-local repositories should go here.
  *
  */
-abstract class NonLocalRepositoryBase extends RepositoryBase implements NonLocalRepository
+abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepository
 {
 
     @Inject
@@ -73,11 +73,11 @@ abstract class NonLocalRepositoryBase extends RepositoryBase implements NonLocal
     /**
      * Caches the supplied input stream of a package file. MD5 checksum of the package is returned in response so that
      * stream can be retrieved from the cache by
-     * {@link NonLocalRepositoryBase#checkCache(ai.subut.kurjun.model.metadata.Metadata)} method.
+     * {@link RemoteRepositoryBase#checkCache(ai.subut.kurjun.model.metadata.Metadata)} method.
      *
      * @param is input stream of package file to cache
      * @return md5 checksum of the cached package file
-     * @see NonLocalRepositoryBase#checkCache(ai.subut.kurjun.model.metadata.Metadata)
+     * @see RemoteRepositoryBase#checkCache(ai.subut.kurjun.model.metadata.Metadata)
      */
     protected byte[] cacheStream( InputStream is )
     {

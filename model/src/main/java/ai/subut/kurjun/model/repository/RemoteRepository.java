@@ -8,7 +8,7 @@ import ai.subut.kurjun.model.security.Identity;
 /**
  * Repository interface for those repositories that are not local and refer to other repositories for their content.
  */
-public interface NonLocalRepository extends Repository
+public interface RemoteRepository extends Repository
 {
 
     /**

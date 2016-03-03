@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.apache.cxf.jaxrs.client.WebClient;
 
-import ai.subut.kurjun.model.repository.NonLocalRepository;
+import ai.subut.kurjun.model.repository.RemoteRepository;
 
 
 /**
@@ -39,7 +39,7 @@ public interface WebClientFactory
      * @param queryParams query parameters to be added; may be {@code null}
      * @return
      */
-    WebClient make( NonLocalRepository remoteRepository, String path, Map<String, String> queryParams );
+    WebClient make( RemoteRepository remoteRepository, String path, Map<String, String> queryParams );
 
 
     /**
@@ -52,7 +52,7 @@ public interface WebClientFactory
      * @throws URISyntaxException
      * @throws MalformedURLException
      */
-    static URL buildUrl( NonLocalRepository remoteRepository, String path, Map<String, String> queryParams )
+    static URL buildUrl( RemoteRepository remoteRepository, String path, Map<String, String> queryParams )
             throws URISyntaxException, MalformedURLException
     {
         // merge repository path and supplied path

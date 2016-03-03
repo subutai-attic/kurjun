@@ -14,7 +14,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -129,7 +128,6 @@ class LocalAptRepository extends LocalRepositoryBase
     {
         return releases;
     }
-
 
     @Override
     public PackageMetadata put( InputStream is, CompressionType compressionType ) throws IOException

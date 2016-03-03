@@ -41,23 +41,23 @@ import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
-import ai.subut.kurjun.model.repository.NonLocalRepository;
+import ai.subut.kurjun.model.repository.RemoteRepository;
 import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.repo.cache.PackageCache;
-import ai.subut.kurjun.repo.util.PathBuilder;
 import ai.subut.kurjun.repo.util.MiscUtils;
+import ai.subut.kurjun.repo.util.PathBuilder;
 import ai.subut.kurjun.repo.util.http.WebClientFactory;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
 
 
 /**
  * Nonlocal repository implementation. Remote repositories can be either non-virtual or virtual, this does not matter
- * for {@link NonLocalRepository} implementation.
- *
+ * for {@link RemoteRepository} implementation.
  */
-class NonLocalAptRepository extends NonLocalRepositoryBase
+class RemoteAptRepository extends RemoteRepositoryBase
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger( NonLocalAptRepository.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( RemoteAptRepository.class );
+
 
     private final URL url;
 
@@ -78,10 +78,11 @@ class NonLocalAptRepository extends NonLocalRepositoryBase
 
     // TODO: Kairat parameterize release path params
     static final String RELEASE_PATH = "dists/trusty/Release";
-    
+
     private static final int CONN_TIMEOUT = 3000;
     private static final int READ_TIMEOUT = 3000;
     private static final int CONN_TIMEOUT_FOR_URL_CHECK = 200;
+
 
     /**
      * Constructs nonlocal repository located by the specified URL.
@@ -89,7 +90,7 @@ class NonLocalAptRepository extends NonLocalRepositoryBase
      * @param url URL of the remote repository
      */
     @Inject
-    public NonLocalAptRepository( @Assisted URL url )
+    public RemoteAptRepository( @Assisted URL url )
     {
         this.url = url;
     }
@@ -205,13 +206,14 @@ class NonLocalAptRepository extends NonLocalRepositoryBase
                 }
                 else
                 {
-                    LOGGER.error( "Md5 checksum mismatch after getting the package {} from remote host", pm.getFilename() );
+                    LOGGER.error( "Md5 checksum mismatch after getting the package {} from remote host",
+                            pm.getFilename() );
                 }
             }
         }
         return null;
     }
-    
+
 
     @Override
     public List<SerializableMetadata> listPackages()
@@ -238,14 +240,13 @@ class NonLocalAptRepository extends NonLocalRepositoryBase
         return result;
     }
 
-
     @Override
     protected Logger getLogger()
     {
         return LOGGER;
     }
-    
-    
+
+
     private Response doGet( WebClient webClient )
     {
         try
@@ -344,7 +345,8 @@ class NonLocalAptRepository extends NonLocalRepositoryBase
         WebClient webClient = webClientFactory.make( this, path, null );
 
         Response resp = doGet( webClient );
-        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() && resp.getEntity() instanceof InputStream )
+        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() && resp
+                .getEntity() instanceof InputStream )
         {
             try ( InputStream is = ( InputStream ) resp.getEntity() )
             {
@@ -356,7 +358,6 @@ class NonLocalAptRepository extends NonLocalRepositoryBase
                     result.add( MetadataUtils.serializableIndexPackageMetadata( item ) );
                 }
                 return result;
-
             }
             catch ( IOException ex )
             {
@@ -365,6 +366,5 @@ class NonLocalAptRepository extends NonLocalRepositoryBase
         }
         return Collections.emptyList();
     }
-
 }
 

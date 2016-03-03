@@ -16,7 +16,7 @@
   <properties>
     <mainClass>ai.subut.kurjun.http.HttpServer</mainClass>
     <project.build.sourceencoding>UTF-8</project.build.sourceencoding>
-    <subutai.kurjun.version>4.0.0-RC6</subutai.kurjun.version>
+    <subutai.kurjun.version>4.0.0-RC7-SNAPSHOT</subutai.kurjun.version>
     <ai.subut.kurjun.version>1.0</ai.subut.kurjun.version>
 
     <!-- ================================ -->

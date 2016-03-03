@@ -46,15 +46,13 @@ import ai.subut.kurjun.repo.util.http.WebClientFactory;
 
 
 /**
- * Non-local templates repository implementation.
- * <p>
- * TODO: Refactor common methods of all non local repos into base one.
- *
+ * Non-local templates repository implementation. <p> TODO: Refactor common methods of all non local repos into base
+ * one.
  */
-class NonLocalTemplateRepository extends NonLocalRepositoryBase
+class RemoteTemplateRepository extends RemoteRepositoryBase
 {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( NonLocalTemplateRepository.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( RemoteTemplateRepository.class );
 
     static final String INFO_PATH = "info";
     static final String LIST_PATH = "list";
@@ -72,6 +70,9 @@ class NonLocalTemplateRepository extends NonLocalRepositoryBase
 
     private String token = null;
 
+    private String md5Sum;
+    private List<SerializableMetadata> remoteIndexChache;
+
     private static final int CONN_TIMEOUT = 3000;
     private static final int READ_TIMEOUT = 3000;
     private static final int CONN_TIMEOUT_FOR_URL_CHECK = 200;
@@ -80,11 +81,9 @@ class NonLocalTemplateRepository extends NonLocalRepositoryBase
 
 
     @Inject
-    public NonLocalTemplateRepository( PackageCache cache,
-            @Assisted( "url" ) String url,
-            @Assisted @Nullable Identity identity,
-            @Assisted( "context" ) String kurjunContext,
-            @Assisted( "token" ) @Nullable String token )
+    public RemoteTemplateRepository( PackageCache cache, @Assisted( "url" ) String url,
+                                     @Assisted @Nullable Identity identity, @Assisted( "context" ) String kurjunContext,
+                                     @Assisted( "token" ) @Nullable String token )
     {
         this.cache = cache;
         this.identity = identity;
@@ -198,7 +197,9 @@ class NonLocalTemplateRepository extends NonLocalRepositoryBase
                 }
                 else
                 {
-                    LOGGER.error( "Md5 checksum mismatch after getting the package from remote host. Requested with md5 {}", Hex.encode( metadata.getMd5Sum() ) );
+                    LOGGER.error(
+                            "Md5 checksum mismatch after getting the package from remote host. Requested with md5 {}",
+                            Hex.encode( metadata.getMd5Sum() ) );
                 }
             }
         }
@@ -209,7 +210,8 @@ class NonLocalTemplateRepository extends NonLocalRepositoryBase
     @Override
     public List<SerializableMetadata> listPackages()
     {
-        WebClient webClient = webClientFactory.make( this, context + "/" + LIST_PATH, makeParamsMap( new DefaultMetadata() ) );
+        WebClient webClient =
+                webClientFactory.make( this, context + "/" + LIST_PATH, makeParamsMap( new DefaultMetadata() ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -291,5 +293,4 @@ class NonLocalTemplateRepository extends NonLocalRepositoryBase
         }.getType();
         return gson.fromJson( items, collectionType );
     }
-
 }

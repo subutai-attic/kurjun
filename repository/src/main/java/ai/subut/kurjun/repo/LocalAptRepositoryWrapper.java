@@ -159,7 +159,6 @@ class LocalAptRepositoryWrapper extends RepositoryBase implements LocalRepositor
         throw new UnsupportedOperationException( "TODO: get packages index and parse." );
     }
 
-
     @Override
     public boolean delete( byte[] md5 ) throws IOException
     {

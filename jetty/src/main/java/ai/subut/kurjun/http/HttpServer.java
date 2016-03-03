@@ -61,7 +61,7 @@ public class HttpServer
         Injector injector = bootstrapDI();
         KurjunProperties properties = injector.getInstance( KurjunProperties.class );
         setContexts( properties );
-        setPermissions( injector.getInstance( IdentityManager.class ) );
+       // setPermissions( injector.getInstance( IdentityManager.class ) );
 
         FilterHolder f = new FilterHolder( injector.getInstance( GuiceFilter.class ) );
 
