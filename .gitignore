@@ -3,6 +3,6 @@
 target
 *.iml
 .idea
-
+.DS_Store
 nbactions.xml
 
