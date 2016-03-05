@@ -35,7 +35,7 @@ import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
  * Local repository for Subutai templates.
  *
  */
-class LocalTemplateRepository extends LocalRepositoryBase
+public class LocalTemplateRepository extends LocalRepositoryBase
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( LocalTemplateRepository.class );
 
