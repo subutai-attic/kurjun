@@ -94,15 +94,7 @@ class FileSystemFileStore implements FileStore
         try ( FileDb fileDb = new FileDb( makeDbFilePath() ) )
         {
             String path = fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), String.class );
-
-            if ( path != null )
-            {
-                return new FileInputStream(path);
-            }
-            else
-            {
-                return null;
-            }
+            return path != null ? new FileInputStream( path ) : null;
         }
     }
 
