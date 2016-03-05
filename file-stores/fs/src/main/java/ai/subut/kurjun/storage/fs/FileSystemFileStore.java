@@ -97,10 +97,6 @@ class FileSystemFileStore implements FileStore
 
             if ( path != null )
             {
-//                try ( InputStream inputStream = new FileInputStream( path ) )
-//                {
-//                    return inputStream;
-//                }
                 return new FileInputStream(path);
             }
             else

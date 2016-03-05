@@ -24,7 +24,6 @@ import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
-import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
@@ -164,32 +163,6 @@ public class LocalTemplateRepository extends LocalRepositoryBase
 
     {
         return fileStoreFactory.create( context );
-    }
-    @Override
-    public InputStream getPackageStream( Metadata metadata )
-    {
-        SerializableMetadata m = getPackageInfo( metadata );
-        if ( m == null )
-        {
-            return null;
-        }
-        try
-        {
-            FileStore fileStore = getFileStore();
-            if ( fileStore.contains( m.getMd5Sum() ) )
-            {
-                return fileStore.get( m.getMd5Sum() );
-            }
-            else
-            {
-                throw new IllegalStateException( "File not found for metadata" );
-            }
-        }
-        catch ( IOException ex )
-        {
-            getLogger().error( "Failed to get package", ex );
-        }
-        return null;
     }
 }
 
