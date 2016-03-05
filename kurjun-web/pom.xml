@@ -128,29 +128,29 @@
 
 
     <!-- ************* KURJUN COMMON************** -->
-    <dependency>
-      <groupId>io.subutai</groupId>
-      <artifactId>kurjun-api</artifactId>
-      <version>${subutai.kurjun.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-simple</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>io.subutai</groupId>-->
+      <!--<artifactId>kurjun-api</artifactId>-->
+      <!--<version>${subutai.kurjun.version}</version>-->
+      <!--<exclusions>-->
+        <!--<exclusion>-->
+          <!--<groupId>org.slf4j</groupId>-->
+          <!--<artifactId>slf4j-simple</artifactId>-->
+        <!--</exclusion>-->
+      <!--</exclusions>-->
+    <!--</dependency>-->
 
-    <dependency>
-      <groupId>io.subutai</groupId>
-      <artifactId>kurjun-impl</artifactId>
-      <version>${subutai.kurjun.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>io.subutai</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>io.subutai</groupId>-->
+      <!--<artifactId>kurjun-impl</artifactId>-->
+      <!--<version>${subutai.kurjun.version}</version>-->
+      <!--<exclusions>-->
+        <!--<exclusion>-->
+          <!--<groupId>io.subutai</groupId>-->
+          <!--<artifactId>*</artifactId>-->
+        <!--</exclusion>-->
+      <!--</exclusions>-->
+    <!--</dependency>-->
 
     <dependency>
       <groupId>ai.subut.kurjun</groupId>

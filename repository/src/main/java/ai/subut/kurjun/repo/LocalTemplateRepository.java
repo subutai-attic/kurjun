@@ -160,9 +160,9 @@ public class LocalTemplateRepository extends LocalRepositoryBase
 
     @Override
     protected FileStore getFileStore()
+
     {
         return fileStoreFactory.create( context );
     }
-
 }
 

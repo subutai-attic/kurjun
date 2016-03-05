@@ -54,6 +54,7 @@ import ai.subut.kurjun.storage.factory.FileStoreFactory;
 import ai.subut.kurjun.storage.factory.FileStoreModule;
 import ai.subut.kurjun.subutai.SubutaiTemplateParserModule;
 import io.subutai.common.protocol.TemplateKurjun;
+
 import io.subutai.core.kurjun.api.template.TemplateRepository;
 import io.subutai.core.kurjun.impl.TemplateManagerImpl;
 import io.subutai.core.kurjun.impl.TrustedWebClientFactoryModule;
@@ -185,7 +186,9 @@ public class TemplateManagerStandalone
     public List<TemplateKurjun> list( String repository, boolean isKurjunClient ) throws IOException
     {
         UserRepoContext context = getUserRepoContext( repository );
+
         UnifiedRepository repo = getRepository( context, isKurjunClient );
+
         Set<SerializableMetadata> metadatas = listPackagesFromCache( repo );
 
         List<TemplateKurjun> result = new LinkedList<>();
