@@ -16,11 +16,15 @@ import ninja.uploads.FileProvider;
 
 public class RestTemplateController
 {
+
+
     @FileProvider( DiskFileItemProvider.class )
     public Result uploadFinish( Context context, @Param( "upfile" ) FileItem upfile ) throws Exception
     {
 
-//        FileItem fileItem = upfile.getInputStream();
+        upfile.getInputStream();
+
+
         return null;
     }
 }
