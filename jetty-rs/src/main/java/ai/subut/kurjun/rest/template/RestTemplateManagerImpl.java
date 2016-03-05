@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Set;
@@ -55,8 +57,8 @@ public class RestTemplateManagerImpl extends RestManagerBase implements RestTemp
 
 
     @Override
-    public Response getTemplate( String repository, String id, String name, String version,
-            String type, boolean isKurjunClient )
+    public Response getTemplate( String repository, String id, String name, String version, String type,
+                                 boolean isKurjunClient )
     {
         try
         {
@@ -66,16 +68,17 @@ public class RestTemplateManagerImpl extends RestManagerBase implements RestTemp
                 byte[] md5bytes = decodeMd5( tid.getMd5() );
                 if ( md5bytes != null )
                 {
-                    TemplateKurjun template = templateManager.getTemplate( repository, md5bytes, tid.getOwnerFprint(), isKurjunClient );
+                    TemplateKurjun template =
+                            templateManager.getTemplate( repository, md5bytes, tid.getOwnerFprint(), isKurjunClient );
                     if ( template != null )
                     {
-                        InputStream is = templateManager.getTemplateData( repository, md5bytes, tid.getOwnerFprint(), isKurjunClient );
+                        InputStream is = templateManager
+                                .getTemplateData( repository, md5bytes, tid.getOwnerFprint(), isKurjunClient );
                         if ( is != null )
                         {
-                            return Response.ok( is )
-                                    .header( "Content-Disposition", "attachment; filename=" + makeFilename( template ) )
-                                    .header( "Content-Type", "application/octet-stream" )
-                                    .build();
+                            return Response.ok( is ).header( "Content-Disposition",
+                                    "attachment; filename=" + makeFilename( template ) )
+                                           .header( "Content-Type", "application/octet-stream" ).build();
                         }
                     }
                 }
@@ -116,7 +119,8 @@ public class RestTemplateManagerImpl extends RestManagerBase implements RestTemp
                 byte[] md5bytes = decodeMd5( tid.getMd5() );
                 if ( md5bytes != null )
                 {
-                    TemplateKurjun template = templateManager.getTemplate( repository, md5bytes, tid.getOwnerFprint(), isKurjunClient );
+                    TemplateKurjun template =
+                            templateManager.getTemplate( repository, md5bytes, tid.getOwnerFprint(), isKurjunClient );
                     if ( template != null )
                     {
                         return Response.ok( GSON.toJson( convertToDefaultTemplate( template ) ) ).build();
@@ -152,9 +156,11 @@ public class RestTemplateManagerImpl extends RestManagerBase implements RestTemp
         try
         {
             List<TemplateKurjun> list = templateManager.list( repository, isKurjunClient );
+
             if ( list != null )
             {
-                List<DefaultTemplate> deflist = list.stream().map( t -> convertToDefaultTemplate( t ) ).collect( Collectors.toList() );
+                List<DefaultTemplate> deflist =
+                        list.stream().map( t -> convertToDefaultTemplate( t ) ).collect( Collectors.toList() );
                 return Response.ok( GSON.toJson( deflist ) ).build();
             }
         }
@@ -238,6 +244,22 @@ public class RestTemplateManagerImpl extends RestManagerBase implements RestTemp
     }
 
 
+    @Override
+    public Response addRemoteRepo( final String token, final String address )
+    {
+        try
+        {
+            templateManager.addRemoteRepository( new URL( address ),token );
+        }
+        catch ( MalformedURLException e )
+        {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
     private DefaultTemplate convertToDefaultTemplate( TemplateKurjun template )
     {
         return convertToDefaultTemplate( template, true );
@@ -274,5 +296,4 @@ public class RestTemplateManagerImpl extends RestManagerBase implements RestTemp
     {
         return LOGGER;
     }
-
 }

@@ -84,4 +84,11 @@ public interface RestTemplateManager
     Response deleteTemplate( @PathParam( "repository" ) String repository,
                               @QueryParam( ID_PARAM ) String id
     );
+
+    @POST
+    @Path( "add" )
+    @Produces( MediaType.TEXT_PLAIN )
+    @Consumes( MediaType.MULTIPART_FORM_DATA )
+    Response addRemoteRepo( @QueryParam( "token" ) String tokeny,
+                             @QueryParam( "address" ) String address) ;
 }

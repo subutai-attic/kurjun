@@ -185,7 +185,9 @@ public class TemplateManagerStandalone
     public List<TemplateKurjun> list( String repository, boolean isKurjunClient ) throws IOException
     {
         UserRepoContext context = getUserRepoContext( repository );
+
         UnifiedRepository repo = getRepository( context, isKurjunClient );
+
         Set<SerializableMetadata> metadatas = listPackagesFromCache( repo );
 
         List<TemplateKurjun> result = new LinkedList<>();
