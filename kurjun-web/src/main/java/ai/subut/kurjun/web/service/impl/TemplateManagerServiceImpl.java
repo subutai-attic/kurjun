@@ -21,6 +21,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     @Inject
     RepositoryFactory repositoryFactory;
 
+
     @Override
     public DefaultTemplate getTemplate( final String repository, final byte[] md5, final String templateOwner ) throws IOException
     {
