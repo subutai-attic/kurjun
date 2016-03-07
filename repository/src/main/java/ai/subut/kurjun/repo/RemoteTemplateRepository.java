@@ -179,10 +179,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         {
             if ( resp.getEntity() instanceof InputStream )
             {
-                byte[] md5Calculated = new byte[0];
-
-                byte[] bytes = null;
-
+                byte[] md5Calculated ;
                 byte[] buffer = new byte[8192];
 
                 try
