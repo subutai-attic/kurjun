@@ -208,6 +208,7 @@ public class RestTemplateManagerImpl extends RestManagerBase implements RestTemp
             try ( InputStream is = new FileInputStream( temp ) )
             {
                 String tid = templateManager.upload( repository, is );
+
                 if ( tid != null )
                 {
                     return Response.ok( tid ).build();
