@@ -1,13 +1,16 @@
 package ai.subut.kurjun.repo;
 
 
-import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -41,7 +44,6 @@ import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.repo.cache.PackageCache;
-import ai.subut.kurjun.repo.util.MiscUtils;
 import ai.subut.kurjun.repo.util.http.WebClientFactory;
 
 
@@ -177,30 +179,52 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         {
             if ( resp.getEntity() instanceof InputStream )
             {
+                byte[] md5Calculated = new byte[0];
+
                 byte[] bytes = null;
+
+                byte[] buffer = new byte[8192];
+
                 try
                 {
-                    bytes = IOUtils.toByteArray( ( InputStream ) resp.getEntity() );
+                    int bytesRead;
+
+                    InputStream inputStream = ( InputStream ) resp.getEntity();
+
+                    File tmpFile = getTempFile();
+                    FileOutputStream fileOutputStream = new FileOutputStream( tmpFile);
+
+                    MessageDigest messageDigest = MessageDigest.getInstance( "MD5" );
+
+                    while ( ( bytesRead = inputStream.read( buffer ) ) > 0 )
+                    {
+                        messageDigest.update( buffer );
+                        fileOutputStream.write( bytesRead );
+                    }
+
+                    md5Calculated = messageDigest.digest();
+
+                    if ( Arrays.equals( metadata.getMd5Sum(), md5Calculated ) )
+                    {
+                        put( tmpFile );
+                        return cache.get(md5Calculated);
+                    }
+                    else
+                    {
+                        LOGGER.error(
+                                "Md5 checksum mismatch after getting the package from remote host. Requested with md5"
+                                        + " {}", Hex.encode( metadata.getMd5Sum() ) );
+                    }
                 }
                 catch ( IOException e )
                 {
                     throw new RuntimeException( "Failed to convert package input stream to byte array", e );
                 }
-
-                byte[] md5Calculated = MiscUtils.calculateMd5( new ByteArrayInputStream( bytes ) );
-
-                // compare the requested and received md5 checksums
-                if ( Arrays.equals( metadata.getMd5Sum(), md5Calculated ) )
+                catch ( NoSuchAlgorithmException e )
                 {
-                    byte[] md5 = cacheStream( new ByteArrayInputStream( bytes ) );
-                    return cache.get( md5 );
+                    e.printStackTrace();
                 }
-                else
-                {
-                    LOGGER.error(
-                            "Md5 checksum mismatch after getting the package from remote host. Requested with md5 {}",
-                            Hex.encode( metadata.getMd5Sum() ) );
-                }
+
             }
         }
         return null;
