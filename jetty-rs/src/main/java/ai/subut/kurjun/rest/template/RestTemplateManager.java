@@ -42,7 +42,7 @@ public interface RestTemplateManager
     
     @GET
     @Path( "{repository}/get" )
-    @Produces( MediaType.TEXT_PLAIN )
+    @Produces( MediaType.APPLICATION_OCTET_STREAM )
     Response getTemplate( @PathParam( "repository" ) String repository,
                           @QueryParam( ID_PARAM ) String id,
                           @QueryParam( NAME_PARAM ) String name,
