@@ -1,6 +1,11 @@
 package ai.subut.kurjun.web.controllers.rest.template;
 
 
+import java.io.InputStream;
+
+import com.google.inject.Inject;
+
+import ai.subut.kurjun.web.service.TemplateManagerService;
 import ninja.Context;
 import ninja.Result;
 import ninja.params.Param;
@@ -17,13 +22,18 @@ import ninja.uploads.FileProvider;
 public class RestTemplateController
 {
 
+    @Inject
+    TemplateManagerService templateManagerService;
+
 
     @FileProvider( DiskFileItemProvider.class )
-    public Result uploadFinish( Context context, @Param( "upfile" ) FileItem upfile ) throws Exception
+    public Result upload( Context context, @Param( "upfile" ) FileItem upfile ) throws Exception
     {
+        byte[] buffer = new byte[8192];
 
-        upfile.getInputStream();
+        InputStream inputStream = upfile.getInputStream();
 
+        byte bytesRead;
 
         return null;
     }

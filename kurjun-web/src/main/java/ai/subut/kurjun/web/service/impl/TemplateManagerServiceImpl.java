@@ -3,15 +3,23 @@ package ai.subut.kurjun.web.service.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.google.inject.Inject;
 
+import ai.subut.kurjun.ar.CompressionType;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
+import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
+import ai.subut.kurjun.model.repository.LocalRepository;
+import ai.subut.kurjun.repo.LocalTemplateRepository;
 import ai.subut.kurjun.repo.RepositoryFactory;
+import ai.subut.kurjun.security.UserContextImpl;
 import ai.subut.kurjun.web.service.TemplateManagerService;
 
 
@@ -21,25 +29,14 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     @Inject
     RepositoryFactory repositoryFactory;
 
-
-    @Override
-    public DefaultTemplate getTemplate( final String repository, final byte[] md5, final String templateOwner ) throws IOException
-    {
-
-        return null;
-    }
+    @Inject
+    LocalTemplateRepository localTemplateRepository;
 
 
     @Override
-    public DefaultTemplate getTemplate( final String repository, final String name, final String version) throws IOException
+    public DefaultTemplate getTemplate( final byte[] md5 ) throws IOException
     {
-        return null;
-    }
 
-
-    @Override
-    public DefaultTemplate getTemplate( final String name )
-    {
         return null;
     }
 
@@ -98,12 +95,24 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     @Override
     public String upload( final String repository, final InputStream inputStream ) throws IOException
     {
-        return null;
+
+        SubutaiTemplateMetadata metadata = ( SubutaiTemplateMetadata ) localTemplateRepository
+                .put( inputStream, CompressionType.GZIP, repository );
+
+        if ( metadata != null )
+        {
+            if ( metadata.getMd5Sum() != null )
+            {
+                localTemplateRepository.index( metadata, new UserContextImpl( repository ) );
+            }
+        }
+
+        return toId( metadata != null ? metadata.getMd5Sum() : new byte[0], repository );
     }
 
 
     @Override
-    public boolean delete( final String repository, final String templateOwner, final byte[] md5 ) throws IOException
+    public boolean delete( final byte[] md5 ) throws IOException
     {
         return false;
     }
@@ -131,9 +140,9 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public void createUserRepository( final String userName )
+    public LocalRepository createUserRepository( final KurjunContext userName )
     {
-
+        return repositoryFactory.createLocalTemplate( userName );
     }
 
 
@@ -148,5 +157,13 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     public void unshareTemplate( final String templateId, final String targetUserName )
     {
 
+    }
+
+
+    private String toId( final byte[] md5, String repo )
+    {
+        String hash = new BigInteger( 1, Arrays.copyOf( md5, md5.length ) ).toString( 16 );
+
+        return repo + "." + hash;
     }
 }

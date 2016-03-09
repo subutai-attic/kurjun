@@ -93,6 +93,7 @@ public class LocalTemplateRepository extends LocalRepositoryBase
             SubutaiTemplateMetadata meta = templateParser.parseTemplate( temp );
 
             byte[] md5 = fileStore.put( temp );
+
             if ( Arrays.equals( md5, meta.getMd5Sum() ) )
             {
                 metadataStore.put( MetadataUtils.serializableTemplateMetadata( meta ) );
@@ -110,7 +111,7 @@ public class LocalTemplateRepository extends LocalRepositoryBase
         }
     }
     
-    
+
     public Metadata put( InputStream is, CompressionType compressionType, String owner ) throws IOException
     {
         PackageMetadataStore metadataStore = getMetadataStore();
@@ -118,6 +119,7 @@ public class LocalTemplateRepository extends LocalRepositoryBase
 
         String ext = CompressionType.makeFileExtenstion( compressionType );
         File temp = Files.createTempFile( "template", ext ).toFile();
+
         try
         {
             Files.copy( is, temp.toPath(), StandardCopyOption.REPLACE_EXISTING );

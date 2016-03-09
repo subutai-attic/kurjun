@@ -6,9 +6,12 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.UUID;
 
+import ai.subut.kurjun.common.context.GlobalArtifactContext;
+import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.Protocol;
 import ai.subut.kurjun.model.repository.Repository;
+import ai.subut.kurjun.model.user.UserContext;
 
 import static java.util.UUID.randomUUID;
 
@@ -92,6 +95,18 @@ abstract class RepositoryBase implements Repository
         }
 
         return new byte[0];
+    }
+
+
+    public void index( Metadata metadata, UserContext userContext )
+    {
+        GlobalArtifactContext.getInstance().store( metadata.getMd5Sum(), userContext );
+    }
+
+
+    public void unindex( byte[] md5 )
+    {
+        GlobalArtifactContext.getInstance().remove( md5 );
     }
 
 

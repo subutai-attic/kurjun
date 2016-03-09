@@ -63,7 +63,6 @@ public class RestTemplateManagerImpl extends RestManagerBase implements RestTemp
     public Response getTemplate( String repository, String id, String name, String version, String type,
                                  boolean isKurjunClient )
     {
-
         byte[] buffer = new byte[8192];
 
         try
@@ -82,8 +81,6 @@ public class RestTemplateManagerImpl extends RestManagerBase implements RestTemp
                                 .getTemplateData( repository, md5bytes, tid.getOwnerFprint(), isKurjunClient );
                         if ( is != null )
                         {
-
-
                             StreamingOutput stream = output -> {
 
                                 OutputStream outputStream = new BufferedOutputStream( output );

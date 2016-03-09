@@ -5,9 +5,11 @@ import com.google.inject.AbstractModule;
 
 import ai.subut.kurjun.cfparser.ControlFileParserModule;
 import ai.subut.kurjun.common.KurjunPropertiesImpl;
+import ai.subut.kurjun.common.context.GlobalArtifactContext;
 import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.index.PackagesIndexParserModule;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreModule;
+import ai.subut.kurjun.model.context.ArtifactContext;
 import ai.subut.kurjun.repo.RepositoryModule;
 import ai.subut.kurjun.riparser.ReleaseIndexParserModule;
 import ai.subut.kurjun.snap.SnapMetadataParserModule;
@@ -34,6 +36,8 @@ public class Module extends AbstractModule
         install( new SnapMetadataParserModule() );
 
         install( new RepositoryModule() );
+
+        bind( ArtifactContext.class).to( GlobalArtifactContext.getInstance().getClass() );
 
         bind( KurjunProperties.class).to( KurjunPropertiesImpl.class );
 

@@ -9,8 +9,6 @@ import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -162,9 +160,11 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     @Override
     public InputStream getPackageStream( Metadata metadata )
     {
+        LOGGER.debug( "Checking if template exists with md5:{}", Hex.encode( metadata.getMd5Sum() ) );
         InputStream cachedStream = checkCache( metadata );
         if ( cachedStream != null )
         {
+            LOGGER.debug( "Template is cached." );
             return cachedStream;
         }
 
@@ -179,7 +179,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         {
             if ( resp.getEntity() instanceof InputStream )
             {
-                byte[] md5Calculated ;
+                byte[] md5Calculated;
                 byte[] buffer = new byte[8192];
 
                 try
@@ -189,39 +189,37 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
                     InputStream inputStream = ( InputStream ) resp.getEntity();
 
                     File tmpFile = getTempFile();
-                    FileOutputStream fileOutputStream = new FileOutputStream( tmpFile);
+                    FileOutputStream fileOutputStream = new FileOutputStream( tmpFile );
 
-                    MessageDigest messageDigest = MessageDigest.getInstance( "MD5" );
-
+                    //MessageDigest messageDigest = MessageDigest.getInstance( "MD5" );
+                    LOGGER.debug( "Saving remote file to temp file" );
                     while ( ( bytesRead = inputStream.read( buffer ) ) > 0 )
                     {
-                        messageDigest.update( buffer );
+                        //messageDigest.update( Arrays.copyOf( buffer, buffer.length ) );
                         fileOutputStream.write( bytesRead );
                     }
 
-                    md5Calculated = messageDigest.digest();
+                    //md5Calculated = messageDigest.digest();
+                    md5Calculated = put( tmpFile );
 
                     if ( Arrays.equals( metadata.getMd5Sum(), md5Calculated ) )
                     {
-                        put( tmpFile );
-                        return cache.get(md5Calculated);
+                        LOGGER.debug( "Calculated md5:{} provided md5:{}", Hex.encode( md5Calculated ),
+                                Hex.encode( metadata.getMd5Sum() ) );
+                        return cache.get( md5Calculated );
                     }
                     else
                     {
                         LOGGER.error(
-                                "Md5 checksum mismatch after getting the package from remote host. Requested with md5"
-                                        + " {}", Hex.encode( metadata.getMd5Sum() ) );
+                                "Md5 checksum mismatch after getting the package from remote host. Requested with md5 "
+                                        + "Provided: {} vs Calculated: {}", Hex.encode( metadata.getMd5Sum() ),
+                                Hex.encode( md5Calculated ) );
                     }
                 }
                 catch ( IOException e )
                 {
                     throw new RuntimeException( "Failed to convert package input stream to byte array", e );
                 }
-                catch ( NoSuchAlgorithmException e )
-                {
-                    e.printStackTrace();
-                }
-
             }
         }
         return null;

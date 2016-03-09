@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
+import ai.subut.kurjun.model.repository.LocalRepository;
 
 
 public interface TemplateManagerService
@@ -16,38 +18,12 @@ public interface TemplateManagerService
     /**
      * Gets template info.
      *
-     * @param repository repository
      * @param md5 md5 checksum of the package to retrieve info
-     * @param templateOwner template owner
      *
      * @return JSON encoded meta data
      */
-    DefaultTemplate getTemplate( String repository, byte[] md5, String templateOwner )
+    DefaultTemplate getTemplate(byte[] md5)
             throws IOException;
-
-
-    /**
-     * Gets template info by name and version.
-     *
-     * @param repository repository
-     * @param name name of the package
-     * @param version version of the package, may be {@code null}
-     *
-     * @return JSON encoded meta data
-     */
-    DefaultTemplate getTemplate( String repository, String name, String version )
-            throws IOException;
-
-
-    /**
-     * Gets template info by name, The version is ignored, the repository is public and treated as not Kurjun client
-     *
-     * @param name name of the package
-     *
-     * @return JSON encoded meta data
-     */
-    DefaultTemplate getTemplate( String name );
-
 
     /**
      * Gets the list of remote repo urls
@@ -115,14 +91,11 @@ public interface TemplateManagerService
 
     /**
      * Deletes package from the repository defined by supplied repository.
-     *
-     * @param repository repository
-     * @param templateOwner template owner
      * @param md5 md5 checksum of the package to delete
      *
      * @return {@code true} if package successfully deleted; {@code false} otherwise
      */
-    boolean delete( String repository, String templateOwner, byte[] md5 ) throws IOException;
+    boolean delete(byte[] md5 ) throws IOException;
 
 
     /**
@@ -152,7 +125,7 @@ public interface TemplateManagerService
     /**
      * Create repository for the user with the given user name
      */
-    void createUserRepository( String userName );
+    LocalRepository createUserRepository( KurjunContext userName );
 
 
     /**
