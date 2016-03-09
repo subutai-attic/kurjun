@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 
+import org.apache.commons.codec.binary.Hex;
+
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.MetadataListing;
@@ -110,7 +112,7 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
     @Override
     public boolean delete( byte[] md5 ) throws IOException
     {
-        return delete( md5, md5 );
+        return delete( Hex.encodeHexString( md5 ), md5 );
     }
     
     
@@ -122,13 +124,13 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
 
         if ( metadataStore.contains( id ) )
         {
-            fileStore.remove( md5 );
+            fileStore.remove( md5 );  // TODO
             metadataStore.remove( id );
             return true;
         }
         return false;
     }
-
+    
 
     /**
      * Gets logger instance associated classes that extend this abstract class.
