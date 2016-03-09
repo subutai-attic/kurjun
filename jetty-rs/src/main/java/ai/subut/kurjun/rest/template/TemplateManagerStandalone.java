@@ -54,7 +54,6 @@ import ai.subut.kurjun.storage.factory.FileStoreFactory;
 import ai.subut.kurjun.storage.factory.FileStoreModule;
 import ai.subut.kurjun.subutai.SubutaiTemplateParserModule;
 import io.subutai.common.protocol.TemplateKurjun;
-
 import io.subutai.core.kurjun.api.template.TemplateRepository;
 import io.subutai.core.kurjun.impl.TemplateManagerImpl;
 import io.subutai.core.kurjun.impl.TrustedWebClientFactoryModule;

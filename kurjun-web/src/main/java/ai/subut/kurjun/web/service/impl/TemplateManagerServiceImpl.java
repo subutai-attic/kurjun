@@ -3,6 +3,7 @@ package ai.subut.kurjun.web.service.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.Arrays;
@@ -10,17 +11,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
+
+import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
+import ai.subut.kurjun.metadata.common.subutai.TemplateId;
+import ai.subut.kurjun.model.context.ArtifactContext;
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
+import ai.subut.kurjun.model.user.UserContext;
 import ai.subut.kurjun.repo.LocalTemplateRepository;
 import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.security.UserContextImpl;
 import ai.subut.kurjun.web.service.TemplateManagerService;
+import ninja.Renderable;
+import ninja.utils.ResponseStreams;
 
 
 public class TemplateManagerServiceImpl implements TemplateManagerService
@@ -31,6 +42,9 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
     @Inject
     LocalTemplateRepository localTemplateRepository;
+
+    @Inject
+    ArtifactContext artifactContext;
 
 
     @Override
@@ -49,10 +63,13 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public InputStream getTemplateData( final String repository, final byte[] md5, final String templateOwner,
-                                        final boolean isKurjunClient ) throws IOException
+    public InputStream getTemplateData( final String repository, final byte[] md5, final boolean isKurjunClient )
+            throws IOException
     {
-        return null;
+        DefaultTemplate defaultTemplate = new DefaultTemplate();
+        defaultTemplate.setId( repository, md5 );
+
+        return localTemplateRepository.getPackageStream( defaultTemplate );
     }
 
 
@@ -79,9 +96,9 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public List<DefaultTemplate> list()
+    public List<SerializableMetadata> list()
     {
-        return null;
+        return localTemplateRepository.listPackages();
     }
 
 
@@ -112,9 +129,12 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public boolean delete( final byte[] md5 ) throws IOException
+    public boolean delete( String md5 ) throws IOException
     {
-        return false;
+        UserContext user = artifactContext.getRepository( md5 );
+        TemplateId templateId = new TemplateId( user.getFingerprint(), md5 );
+
+        return localTemplateRepository.delete( templateId, decodeMd5( md5 ) );
     }
 
 
@@ -160,10 +180,52 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     }
 
 
+    @Override
+    public Renderable renderableTemplate( final String repository, String md5, final boolean isKurjunClient )
+            throws IOException
+    {
+
+        InputStream inputStream = getTemplateData( repository, decodeMd5( md5 ), false );
+
+        Renderable renderable = ( context1, result ) -> {
+
+            ResponseStreams responseStreams = context1.finalizeHeaders( result );
+
+            try ( OutputStream outputStream = responseStreams.getOutputStream() )
+            {
+                ByteStreams.copy( inputStream, outputStream );
+            }
+            catch ( IOException e )
+            {
+                e.printStackTrace();
+            }
+        };
+
+        return renderable;
+    }
+
+
     private String toId( final byte[] md5, String repo )
     {
         String hash = new BigInteger( 1, Arrays.copyOf( md5, md5.length ) ).toString( 16 );
 
         return repo + "." + hash;
+    }
+
+
+    protected byte[] decodeMd5( String md5 )
+    {
+        if ( md5 != null )
+        {
+            try
+            {
+                return Hex.decodeHex( md5.toCharArray() );
+            }
+            catch ( DecoderException ex )
+            {
+                ex.printStackTrace();
+            }
+        }
+        return null;
     }
 }

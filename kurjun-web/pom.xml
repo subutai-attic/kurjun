@@ -167,7 +167,6 @@
       <artifactId>repository</artifactId>
       <version>${ai.subut.kurjun.version}</version>
     </dependency>
-
     <dependency>
       <groupId>ai.subut.kurjun</groupId>
       <artifactId>file-store-factory</artifactId>

@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
@@ -32,7 +31,6 @@ import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
 
 /**
  * Local repository for Subutai templates.
- *
  */
 public class LocalTemplateRepository extends LocalRepositoryBase
 {
@@ -41,15 +39,12 @@ public class LocalTemplateRepository extends LocalRepositoryBase
     private PackageMetadataStoreFactory metadataStoreFactory;
     private FileStoreFactory fileStoreFactory;
     private SubutaiTemplateParser templateParser;
-
     private KurjunContext context;
 
-
     @Inject
-    public LocalTemplateRepository( PackageMetadataStoreFactory metadataStoreFactory,
-                                    FileStoreFactory fileStoreFactory,
+    public LocalTemplateRepository( PackageMetadataStoreFactory metadataStoreFactory, FileStoreFactory fileStoreFactory,
                                     SubutaiTemplateParser templateParser,
-                                    @Assisted KurjunContext context )
+                                    KurjunContext context )
     {
         this.metadataStoreFactory = metadataStoreFactory;
         this.fileStoreFactory = fileStoreFactory;
@@ -93,7 +88,6 @@ public class LocalTemplateRepository extends LocalRepositoryBase
             SubutaiTemplateMetadata meta = templateParser.parseTemplate( temp );
 
             byte[] md5 = fileStore.put( temp );
-
             if ( Arrays.equals( md5, meta.getMd5Sum() ) )
             {
                 metadataStore.put( MetadataUtils.serializableTemplateMetadata( meta ) );
@@ -110,7 +104,7 @@ public class LocalTemplateRepository extends LocalRepositoryBase
             temp.delete();
         }
     }
-    
+
 
     public Metadata put( InputStream is, CompressionType compressionType, String owner ) throws IOException
     {
@@ -124,7 +118,7 @@ public class LocalTemplateRepository extends LocalRepositoryBase
         {
             Files.copy( is, temp.toPath(), StandardCopyOption.REPLACE_EXISTING );
             SubutaiTemplateMetadata meta = templateParser.parseTemplate( temp );
-            
+
             byte[] md5 = fileStore.put( temp );
             if ( Arrays.equals( md5, meta.getMd5Sum() ) )
             {

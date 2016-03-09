@@ -1,4 +1,4 @@
-package ai.subut.kurjun.web.controllers.rest.vapt;
+package ai.subut.kurjun.web.controllers;
 
 
 /**

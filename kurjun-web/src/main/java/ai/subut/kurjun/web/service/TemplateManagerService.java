@@ -10,7 +10,9 @@ import java.util.Set;
 
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
+import ninja.Renderable;
 
 
 public interface TemplateManagerService
@@ -43,7 +45,7 @@ public interface TemplateManagerService
      *
      * @return input stream to read package data
      */
-    InputStream getTemplateData( String repository, byte[] md5, String templateOwner, boolean isKurjunClient )
+    InputStream getTemplateData( String repository, byte[] md5, boolean isKurjunClient )
             throws IOException;
 
 
@@ -69,7 +71,7 @@ public interface TemplateManagerService
      *
      * @return list of JSON encoded meta data
      */
-    List<DefaultTemplate> list();
+    List<SerializableMetadata> list();
 
 
     /**
@@ -91,11 +93,11 @@ public interface TemplateManagerService
 
     /**
      * Deletes package from the repository defined by supplied repository.
-     * @param md5 md5 checksum of the package to delete
+     * @param md5 checksum of the package to delete
      *
      * @return {@code true} if package successfully deleted; {@code false} otherwise
      */
-    boolean delete(byte[] md5 ) throws IOException;
+    boolean delete(String md5 ) throws IOException;
 
 
     /**
@@ -144,4 +146,9 @@ public interface TemplateManagerService
      * @param targetUserName target username
      */
     void unshareTemplate( String templateId, String targetUserName );
+
+    /*
+    *
+    * */
+    Renderable renderableTemplate(String repository, String md5, boolean isKurjunClient) throws IOException;
 }
