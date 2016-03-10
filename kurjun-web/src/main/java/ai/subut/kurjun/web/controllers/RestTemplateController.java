@@ -3,10 +3,12 @@ package ai.subut.kurjun.web.controllers;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.web.service.TemplateManagerService;
 import ninja.Context;
 import ninja.Renderable;
@@ -29,6 +31,7 @@ public class RestTemplateController
 
     @Inject
     TemplateManagerService templateManagerService;
+
 
     @FileProvider( DiskFileItemProvider.class )
     public Result upload( Context context, @Param( "fingerprint" ) String fingerprint,
@@ -85,8 +88,17 @@ public class RestTemplateController
     }
 
 
-    public Result list( Context context )
+    public Result list( Context context, @Param( "fingerprint" ) String fingerprint )
     {
-        return Results.ok().render( templateManagerService.list() );
+        try
+        {
+            List<DefaultTemplate> defaultTemplateList = templateManagerService.list( fingerprint, false );
+            return Results.ok().render( defaultTemplateList ).json();
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace();
+            throw new InternalServerErrorException( "Error while getting list of artifacts" );
+        }
     }
 }

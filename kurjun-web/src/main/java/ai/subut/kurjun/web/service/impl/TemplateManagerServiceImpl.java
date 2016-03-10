@@ -16,9 +16,11 @@ import org.apache.commons.codec.binary.Hex;
 
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.subutai.TemplateId;
 import ai.subut.kurjun.model.context.ArtifactContext;
@@ -33,7 +35,7 @@ import ai.subut.kurjun.web.service.TemplateManagerService;
 import ninja.Renderable;
 import ninja.utils.ResponseStreams;
 
-
+@Singleton
 public class TemplateManagerServiceImpl implements TemplateManagerService
 {
 
@@ -45,6 +47,9 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
     @Inject
     ArtifactContext artifactContext;
+
+    @Inject
+    KurjunProperties kurjunProperties;
 
 
     @Override
@@ -76,6 +81,9 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     @Override
     public List<DefaultTemplate> list( final String repository, final boolean isKurjunClient ) throws IOException
     {
+        UserContextImpl userContext = new UserContextImpl( repository );
+
+        localTemplateRepository.listPackages();
         return null;
     }
 

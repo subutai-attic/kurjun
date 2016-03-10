@@ -15,7 +15,9 @@ import ai.subut.kurjun.snap.SnapMetadataParserModule;
 import ai.subut.kurjun.storage.factory.FileStoreModule;
 import ai.subut.kurjun.subutai.SubutaiTemplateParserModule;
 import ai.subut.kurjun.web.service.TemplateManagerService;
+import ai.subut.kurjun.web.service.UserRepoContextStore;
 import ai.subut.kurjun.web.service.impl.TemplateManagerServiceImpl;
+import ai.subut.kurjun.web.service.impl.UserRepoContextStoreImpl;
 
 
 public class Module extends AbstractModule
@@ -37,7 +39,7 @@ public class Module extends AbstractModule
 
         bind( ArtifactContext.class ).to( GlobalArtifactContext.class );
 
-//        bind( KurjunProperties.class ).to( KurjunPropertiesImpl.class );
+        bind( UserRepoContextStore.class ).to( UserRepoContextStoreImpl.class );
 
         bind( TemplateManagerService.class ).to( TemplateManagerServiceImpl.class );
     }

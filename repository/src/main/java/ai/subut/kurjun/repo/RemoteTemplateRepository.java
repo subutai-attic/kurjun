@@ -214,6 +214,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
                                 "Md5 checksum mismatch after getting the package from remote host. Requested with md5 "
                                         + "Provided: {} vs Calculated: {}", Hex.encode( metadata.getMd5Sum() ),
                                 Hex.encode( md5Calculated ) );
+
                     }
                 }
                 catch ( IOException e )

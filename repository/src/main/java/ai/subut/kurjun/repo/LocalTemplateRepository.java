@@ -105,7 +105,7 @@ public class LocalTemplateRepository extends LocalRepositoryBase
         }
     }
 
-
+    //TODO files is copied to temp file and gets copied again in put(File)
     public Metadata put( InputStream is, CompressionType compressionType, String owner ) throws IOException
     {
         PackageMetadataStore metadataStore = getMetadataStore();
