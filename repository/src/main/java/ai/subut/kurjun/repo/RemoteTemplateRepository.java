@@ -182,7 +182,6 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
             {
                 byte[] md5Calculated;
                 byte[] buffer = new byte[8192];
-
                 try
                 {
                     int bytesRead;

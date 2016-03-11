@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 
 import ai.subut.kurjun.common.service.KurjunContext;
-import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ninja.Renderable;
@@ -24,7 +23,7 @@ public interface TemplateManagerService
      *
      * @return JSON encoded meta data
      */
-    DefaultTemplate getTemplate(byte[] md5)
+    SerializableMetadata getTemplate( byte[] md5 )
             throws IOException;
 
     /**

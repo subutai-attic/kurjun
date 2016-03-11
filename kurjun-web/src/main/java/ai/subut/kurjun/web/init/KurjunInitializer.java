@@ -18,6 +18,7 @@ import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.web.context.ArtifactContext;
 import ai.subut.kurjun.web.model.UserContext;
+import ai.subut.kurjun.web.model.UserContextImpl;
 import ai.subut.kurjun.web.service.UserRepoContextStore;
 
 
@@ -36,7 +37,8 @@ public class KurjunInitializer
 
 
     @Inject
-    public KurjunInitializer( UserRepoContextStore userRepoContextStore, RepositoryFactory repositoryFactory,
+    public KurjunInitializer( UserRepoContextStore userRepoContextStore,
+                              RepositoryFactory repositoryFactory,
                               ArtifactContext artifactContext )
     {
         this.userRepoContextStore = userRepoContextStore;
@@ -82,9 +84,10 @@ public class KurjunInitializer
             LOGGER.debug( "Adding {} ", userContext.getName() );
 
             localRepositories.add( repositoryFactory.createLocalTemplate( userContext ) );
-
-            localRepositories.add( repositoryFactory.createLocalApt( userContext ) );
         } );
+
+        //add vapt repo
+        localRepositories.add( repositoryFactory.createLocalApt( new UserContextImpl( "vapt" ) ) );
 
         LOGGER.debug( "Complete loading local template repositories. Found repositories: {}",
                 localRepositories.size() );

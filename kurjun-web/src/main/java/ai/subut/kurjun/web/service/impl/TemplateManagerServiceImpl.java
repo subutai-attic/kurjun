@@ -52,10 +52,13 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public DefaultTemplate getTemplate( final byte[] md5 ) throws IOException
+    public SerializableMetadata getTemplate( final byte[] md5 ) throws IOException
     {
+        KurjunContext context = artifactContext.getRepository( new BigInteger( 1, md5 ).toString( 16 ) );
+        DefaultTemplate defaultTemplate = new DefaultTemplate();
+        defaultTemplate.setId( context.getName(), md5 );
 
-        return null;
+        return repositoryFactory.createLocalTemplate( context ).getPackageInfo( defaultTemplate );
     }
 
 
@@ -73,6 +76,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         DefaultTemplate defaultTemplate = new DefaultTemplate();
         defaultTemplate.setId( repository, md5 );
         LocalRepository localRepository = repositoryFactory.createLocalTemplate( new UserContextImpl( repository ) );
+
         return localRepository.getPackageStream( defaultTemplate );
     }
 
@@ -119,8 +123,8 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     public String upload( final String repository, final InputStream inputStream ) throws IOException
     {
 
-        SubutaiTemplateMetadata metadata = ( SubutaiTemplateMetadata ) getRepo( repository ) .put( inputStream, CompressionType.GZIP,
-                repository );
+        SubutaiTemplateMetadata metadata =
+                ( SubutaiTemplateMetadata ) getRepo( repository ).put( inputStream, CompressionType.GZIP, repository );
 
         if ( metadata != null )
         {
@@ -140,7 +144,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         KurjunContext user = artifactContext.getRepository( md5 );
         TemplateId templateId = new TemplateId( user.getName(), md5 );
 
-        return getRepo(md5).delete( templateId, decodeMd5( md5 ) );
+        return getRepo( md5 ).delete( templateId, decodeMd5( md5 ) );
     }
 
 
@@ -193,21 +197,22 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
         InputStream inputStream = getTemplateData( repository, decodeMd5( md5 ), false );
 
-        Renderable renderable = ( context1, result ) -> {
+        if ( inputStream != null )
+        {
+            return ( context, result ) -> {
 
-            ResponseStreams responseStreams = context1.finalizeHeaders( result );
-
-            try ( OutputStream outputStream = responseStreams.getOutputStream() )
-            {
-                ByteStreams.copy( inputStream, outputStream );
-            }
-            catch ( IOException e )
-            {
-                e.printStackTrace();
-            }
-        };
-
-        return renderable;
+                ResponseStreams responseStreams = context.finalizeHeaders( result );
+                try ( OutputStream outputStream = responseStreams.getOutputStream() )
+                {
+                    ByteStreams.copy( inputStream, outputStream );
+                }
+                catch ( IOException e )
+                {
+                    e.printStackTrace();
+                }
+            };
+        }
+        return null;
     }
 
 

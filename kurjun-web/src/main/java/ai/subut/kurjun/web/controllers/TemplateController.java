@@ -26,7 +26,7 @@ import ninja.uploads.FileProvider;
  */
 
 @Singleton
-public class RestTemplateController
+public class TemplateController
 {
 
     @Inject
