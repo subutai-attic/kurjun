@@ -57,7 +57,7 @@ public interface TemplateManagerService
      *
      * @return list of JSON encoded meta data
      */
-    List<DefaultTemplate> list( String repository, boolean isKurjunClient ) throws IOException;
+    List<SerializableMetadata> list( String repository, boolean isKurjunClient ) throws IOException;
 
 
     List<Map<String, Object>> getSharedTemplateInfos( byte[] md5, String templateOwner ) throws IOException;

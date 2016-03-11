@@ -13,12 +13,6 @@ public class KurjunContext
 {
     private String name;
 
-
-    public KurjunContext()
-    {
-    }
-
-
     public KurjunContext( String name )
     {
         this.name = name;

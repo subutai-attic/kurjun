@@ -111,6 +111,14 @@ class LocalSnapRepository extends LocalRepositoryBase
 
 
     @Override
+    public Metadata put( final InputStream is, final CompressionType compressionType, final String owner )
+            throws IOException
+    {
+        return null;
+    }
+
+
+    @Override
     protected Logger getLogger()
     {
         return LOGGER;
@@ -130,5 +138,11 @@ class LocalSnapRepository extends LocalRepositoryBase
         return fileStoreFactory.create( context );
     }
 
+
+    @Override
+    public KurjunContext getContext()
+    {
+        return context;
+    }
 }
 

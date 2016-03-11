@@ -9,6 +9,7 @@ import ninja.application.ApplicationRoutes;
 /**
  *
  */
+
 public class Routes implements ApplicationRoutes
 {
 
@@ -16,6 +17,7 @@ public class Routes implements ApplicationRoutes
     public void init( final Router router )
     {
         //REST Template Controller
+
         router.GET().route( "/rest/kurjun/v1/all" ).with( RestTemplateController.class, "list" );
         router.GET().route( "/rest/kurjun/v1/" ).with( RestTemplateController.class, "download" );
         router.POST().route( "/rest/kurjun/v1/" ).with( RestTemplateController.class, "upload" );

@@ -30,6 +30,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.ar.CompressionType;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.utils.InetUtils;
 import ai.subut.kurjun.index.service.PackagesIndexParser;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
@@ -365,6 +366,13 @@ class RemoteAptRepository extends RemoteRepositoryBase
             }
         }
         return Collections.emptyList();
+    }
+
+
+    @Override
+    public KurjunContext getContext()
+    {
+        return null;
     }
 }
 

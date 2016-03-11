@@ -45,6 +45,7 @@ import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
+import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
@@ -174,6 +175,14 @@ class LocalAptRepository extends LocalRepositoryBase
 
 
     @Override
+    public Metadata put( final InputStream is, final CompressionType compressionType, final String owner )
+            throws IOException
+    {
+        return null;
+    }
+
+
+    @Override
     protected Logger getLogger()
     {
         return LOGGER;
@@ -249,5 +258,10 @@ class LocalAptRepository extends LocalRepositoryBase
     }
 
 
+    @Override
+    public KurjunContext getContext()
+    {
+        return context;
+    }
 }
 

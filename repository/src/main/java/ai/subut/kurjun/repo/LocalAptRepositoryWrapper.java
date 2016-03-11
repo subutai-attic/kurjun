@@ -25,6 +25,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.ar.CompressionType;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
@@ -140,6 +141,14 @@ class LocalAptRepositoryWrapper extends RepositoryBase implements LocalRepositor
 
 
     @Override
+    public Metadata put( final InputStream is, final CompressionType compressionType, final String owner )
+            throws IOException
+    {
+        return null;
+    }
+
+
+    @Override
     public SerializableMetadata getPackageInfo( Metadata metadata )
     {
         throw new UnsupportedOperationException( "Not supported yet." );
@@ -212,5 +221,10 @@ class LocalAptRepositoryWrapper extends RepositoryBase implements LocalRepositor
     }
 
 
+    @Override
+    public KurjunContext getContext()
+    {
+        return null;
+    }
 }
 

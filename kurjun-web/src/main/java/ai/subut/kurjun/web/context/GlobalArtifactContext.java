@@ -1,4 +1,4 @@
-package ai.subut.kurjun.common.context;
+package ai.subut.kurjun.web.context;
 
 
 import java.math.BigInteger;
@@ -8,15 +8,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.inject.Singleton;
 
-import ai.subut.kurjun.model.context.ArtifactContext;
-import ai.subut.kurjun.model.user.UserContext;
+import ai.subut.kurjun.common.service.KurjunContext;
 
 
 @Singleton
 public class GlobalArtifactContext implements ArtifactContext
 {
 
-    private Map<String, UserContext> map;
+    private Map<String, KurjunContext> map;
 
 
     public GlobalArtifactContext()
@@ -26,14 +25,14 @@ public class GlobalArtifactContext implements ArtifactContext
 
 
     @Override
-    public UserContext getRepository( final String md5 )
+    public KurjunContext getRepository( final String md5 )
     {
         return map.get( md5 );
     }
 
 
     @Override
-    public void store( final byte[] md5, final UserContext repository )
+    public void store( final byte[] md5, final KurjunContext repository )
     {
         String hash = new BigInteger( 1, Arrays.copyOf( md5, md5.length ) ).toString( 16 );
         map.put( hash, repository );

@@ -1,7 +1,7 @@
-package ai.subut.kurjun.model.context;
+package ai.subut.kurjun.web.context;
 
 
-import ai.subut.kurjun.model.user.UserContext;
+import ai.subut.kurjun.common.service.KurjunContext;
 
 
 public interface ArtifactContext
@@ -11,7 +11,7 @@ public interface ArtifactContext
     * @param md5 checksum
     * @return repository name
     * */
-    UserContext getRepository( String md5 );
+    KurjunContext getRepository( String md5 );
 
     /*
     * Store artifact md5 checksum mapped to User repository
@@ -19,7 +19,7 @@ public interface ArtifactContext
     * @param user context
     * @return true if success false otherwise
     * */
-    void store( byte[] md5, UserContext userContext );
+    void store( byte[] md5, KurjunContext userContext );
 
     /*
     * Remove entry from the Context

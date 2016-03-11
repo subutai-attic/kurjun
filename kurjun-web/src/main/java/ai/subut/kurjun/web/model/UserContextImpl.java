@@ -1,14 +1,11 @@
-package ai.subut.kurjun.security;
+package ai.subut.kurjun.web.model;
 
 
-import ai.subut.kurjun.common.service.KurjunContext;
-import ai.subut.kurjun.model.user.UserContext;
-
-
-public class UserContextImpl extends KurjunContext implements UserContext
+public class UserContextImpl extends UserContext
 {
     private String fingerprint;
     private String repositoryName;
+
 
     public UserContextImpl( final String name )
     {
@@ -37,5 +34,12 @@ public class UserContextImpl extends KurjunContext implements UserContext
     public String getRepositoryName()
     {
         return repositoryName;
+    }
+
+
+    @Override
+    public String getName()
+    {
+        return fingerprint;
     }
 }

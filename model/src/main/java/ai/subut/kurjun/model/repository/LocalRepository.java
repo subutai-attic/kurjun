@@ -39,6 +39,7 @@ public interface LocalRepository extends Repository
      */
     Metadata put( InputStream is, CompressionType compressionType ) throws IOException;
 
+    Metadata put( InputStream is, CompressionType compressionType, String owner ) throws IOException;
 
     /**
      * Deletes package from the repository. Package should be specified by its md5 checksum.
@@ -53,6 +54,8 @@ public interface LocalRepository extends Repository
     
     
     boolean delete( Object id, byte[] md5 ) throws IOException;
+
+    Object getContext();
 
 }
 

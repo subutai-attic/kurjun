@@ -8,7 +8,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.web.service.TemplateManagerService;
 import ninja.Context;
 import ninja.Renderable;
@@ -92,8 +92,13 @@ public class RestTemplateController
     {
         try
         {
-            List<DefaultTemplate> defaultTemplateList = templateManagerService.list( fingerprint, false );
-            return Results.ok().render( defaultTemplateList ).json();
+            if ( fingerprint == null )
+            {
+                fingerprint = "public";
+            }
+            List<SerializableMetadata> defaultTemplateList = templateManagerService.list( fingerprint, false );
+
+            return Results.ok().json().render( defaultTemplateList );
         }
         catch ( IOException e )
         {

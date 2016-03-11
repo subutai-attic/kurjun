@@ -6,12 +6,13 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
+import com.google.inject.Singleton;
 
 import ai.subut.kurjun.db.file.FileDb;
-import ai.subut.kurjun.model.user.UserContext;
+import ai.subut.kurjun.web.model.UserContext;
 import ai.subut.kurjun.web.service.UserRepoContextStore;
 
-
+@Singleton
 public class UserRepoContextStoreImpl implements UserRepoContextStore
 {
 

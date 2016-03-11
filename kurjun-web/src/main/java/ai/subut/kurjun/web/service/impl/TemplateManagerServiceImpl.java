@@ -20,36 +20,35 @@ import com.google.inject.Singleton;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
-import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.subutai.TemplateId;
-import ai.subut.kurjun.model.context.ArtifactContext;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
-import ai.subut.kurjun.model.user.UserContext;
-import ai.subut.kurjun.repo.LocalTemplateRepository;
 import ai.subut.kurjun.repo.RepositoryFactory;
-import ai.subut.kurjun.security.UserContextImpl;
+import ai.subut.kurjun.web.context.ArtifactContext;
+import ai.subut.kurjun.web.model.UserContextImpl;
 import ai.subut.kurjun.web.service.TemplateManagerService;
 import ninja.Renderable;
 import ninja.utils.ResponseStreams;
+
 
 @Singleton
 public class TemplateManagerServiceImpl implements TemplateManagerService
 {
 
-    @Inject
-    RepositoryFactory repositoryFactory;
+
+    private RepositoryFactory repositoryFactory;
+    private ArtifactContext artifactContext;
+
 
     @Inject
-    LocalTemplateRepository localTemplateRepository;
-
-    @Inject
-    ArtifactContext artifactContext;
-
-    @Inject
-    KurjunProperties kurjunProperties;
+    public TemplateManagerServiceImpl( final RepositoryFactory repositoryFactory,
+                                       final ArtifactContext artifactContext )
+    {
+        this.repositoryFactory = repositoryFactory;
+        this.artifactContext = artifactContext;
+    }
 
 
     @Override
@@ -73,18 +72,17 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     {
         DefaultTemplate defaultTemplate = new DefaultTemplate();
         defaultTemplate.setId( repository, md5 );
-
-        return localTemplateRepository.getPackageStream( defaultTemplate );
+        LocalRepository localRepository = repositoryFactory.createLocalTemplate( new UserContextImpl( repository ) );
+        return localRepository.getPackageStream( defaultTemplate );
     }
 
 
     @Override
-    public List<DefaultTemplate> list( final String repository, final boolean isKurjunClient ) throws IOException
+    public List<SerializableMetadata> list( final String repository, final boolean isKurjunClient ) throws IOException
     {
         UserContextImpl userContext = new UserContextImpl( repository );
 
-        localTemplateRepository.listPackages();
-        return null;
+        return repositoryFactory.createLocalTemplate( userContext ).listPackages();
     }
 
 
@@ -106,7 +104,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     @Override
     public List<SerializableMetadata> list()
     {
-        return localTemplateRepository.listPackages();
+        return null;
     }
 
 
@@ -121,14 +119,14 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     public String upload( final String repository, final InputStream inputStream ) throws IOException
     {
 
-        SubutaiTemplateMetadata metadata = ( SubutaiTemplateMetadata ) localTemplateRepository
-                .put( inputStream, CompressionType.GZIP, repository );
+        SubutaiTemplateMetadata metadata = ( SubutaiTemplateMetadata ) getRepo( repository ) .put( inputStream, CompressionType.GZIP,
+                repository );
 
         if ( metadata != null )
         {
             if ( metadata.getMd5Sum() != null )
             {
-                localTemplateRepository.index( metadata, new UserContextImpl( repository ) );
+                artifactContext.store( metadata.getMd5Sum(), new UserContextImpl( repository ) );
             }
         }
 
@@ -139,10 +137,10 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     @Override
     public boolean delete( String md5 ) throws IOException
     {
-        UserContext user = artifactContext.getRepository( md5 );
-        TemplateId templateId = new TemplateId( user.getFingerprint(), md5 );
+        KurjunContext user = artifactContext.getRepository( md5 );
+        TemplateId templateId = new TemplateId( user.getName(), md5 );
 
-        return localTemplateRepository.delete( templateId, decodeMd5( md5 ) );
+        return getRepo(md5).delete( templateId, decodeMd5( md5 ) );
     }
 
 
@@ -235,5 +233,11 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
             }
         }
         return null;
+    }
+
+
+    private LocalRepository getRepo( String repo )
+    {
+        return repositoryFactory.createLocalTemplate( new UserContextImpl( repo ) );
     }
 }

@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
@@ -44,7 +45,7 @@ public class LocalTemplateRepository extends LocalRepositoryBase
     @Inject
     public LocalTemplateRepository( PackageMetadataStoreFactory metadataStoreFactory, FileStoreFactory fileStoreFactory,
                                     SubutaiTemplateParser templateParser,
-                                    KurjunContext context )
+                                    @Assisted KurjunContext context )
     {
         this.metadataStoreFactory = metadataStoreFactory;
         this.fileStoreFactory = fileStoreFactory;
@@ -137,6 +138,12 @@ public class LocalTemplateRepository extends LocalRepositoryBase
         {
             temp.delete();
         }
+    }
+
+
+    public KurjunContext getContext()
+    {
+        return context;
     }
 
 

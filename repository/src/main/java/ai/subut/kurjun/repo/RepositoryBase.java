@@ -6,14 +6,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.UUID;
 
-import com.google.inject.Inject;
-
-import ai.subut.kurjun.model.context.ArtifactContext;
-import ai.subut.kurjun.model.metadata.Metadata;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.Protocol;
 import ai.subut.kurjun.model.repository.Repository;
-import ai.subut.kurjun.model.user.UserContext;
 
 import static java.util.UUID.randomUUID;
 
@@ -25,10 +21,6 @@ abstract class RepositoryBase implements Repository
 {
 
     private final UUID identifier = randomUUID();
-
-    @Inject
-    ArtifactContext artifactContext;
-
 
     @Override
     public UUID getIdentifier()
@@ -64,6 +56,7 @@ abstract class RepositoryBase implements Repository
         return getProtocol().isSecure();
     }
 
+    public abstract KurjunContext getContext();
 
     @Override
     public Protocol getProtocol()
@@ -101,19 +94,6 @@ abstract class RepositoryBase implements Repository
 
         return new byte[0];
     }
-
-
-    public void index( Metadata metadata, UserContext userContext )
-    {
-        artifactContext.store( metadata.getMd5Sum(), userContext );
-    }
-
-
-    public void unindex( byte[] md5 )
-    {
-        artifactContext.remove( md5 );
-    }
-
 
     @Override
     public String toString()
