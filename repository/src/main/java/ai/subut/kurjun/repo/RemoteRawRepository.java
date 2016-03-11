@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.core.Response;
@@ -32,8 +31,7 @@ import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.common.service.KurjunConstants;
 import ai.subut.kurjun.common.utils.InetUtils;
-import ai.subut.kurjun.metadata.common.DefaultMetadata;
-import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
+import ai.subut.kurjun.metadata.common.raw.RawMetadata;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.annotation.Nullable;
 import ai.subut.kurjun.model.index.ReleaseFile;
@@ -45,18 +43,14 @@ import ai.subut.kurjun.repo.util.MiscUtils;
 import ai.subut.kurjun.repo.util.http.WebClientFactory;
 
 
-/**
- * Non-local templates repository implementation. <p> TODO: Refactor common methods of all non local repos into base
- * one.
- */
-class RemoteTemplateRepository extends RemoteRepositoryBase
+public class RemoteRawRepository extends RemoteRepositoryBase
 {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( RemoteTemplateRepository.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( RemoteRawRepository.class );
 
     static final String INFO_PATH = "info";
-    static final String LIST_PATH = "list";
     static final String GET_PATH = "get";
+    static final String LIST_PATH = "list";
 
     @Inject
     private WebClientFactory webClientFactory;
@@ -68,27 +62,17 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     private final URL url;
     private final Identity identity;
 
-    private String token = null;
-
-    private String md5Sum;
-    private List<SerializableMetadata> remoteIndexChache;
-
     private static final int CONN_TIMEOUT = 3000;
     private static final int READ_TIMEOUT = 3000;
     private static final int CONN_TIMEOUT_FOR_URL_CHECK = 200;
 
-    private String context;
-
 
     @Inject
-    public RemoteTemplateRepository( PackageCache cache, @Assisted( "url" ) String url,
-                                     @Assisted @Nullable Identity identity, @Assisted( "context" ) String kurjunContext,
-                                     @Assisted( "token" ) @Nullable String token )
+    public RemoteRawRepository( PackageCache cache, @Assisted( "url" ) String url,
+            @Assisted @Nullable Identity identity )
     {
         this.cache = cache;
         this.identity = identity;
-        this.context = kurjunContext;
-        this.token = token;
         try
         {
             this.url = new URL( url );
@@ -101,37 +85,9 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
 
 
     @Override
-    public Identity getIdentity()
-    {
-        return identity;
-    }
-
-
-    @Override
-    public URL getUrl()
-    {
-        return url;
-    }
-
-
-    @Override
-    public boolean isKurjun()
-    {
-        return true;
-    }
-
-
-    @Override
-    public Set<ReleaseFile> getDistributions()
-    {
-        throw new UnsupportedOperationException( "Not supported in template repositories." );
-    }
-
-
-    @Override
     public SerializableMetadata getPackageInfo( Metadata metadata )
     {
-        WebClient webClient = webClientFactory.make( this, context + "/" + INFO_PATH, makeParamsMap( metadata ) );
+        WebClient webClient = webClientFactory.make( this, INFO_PATH, MetadataUtils.makeParamsMap( metadata ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -145,7 +101,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
                 try
                 {
                     String json = IOUtils.toString( ( InputStream ) resp.getEntity() );
-                    return gson.fromJson( json, DefaultTemplate.class );
+                    return gson.fromJson( json, RawMetadata.class );
                 }
                 catch ( IOException ex )
                 {
@@ -166,7 +122,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
             return cachedStream;
         }
 
-        WebClient webClient = webClientFactory.make( this, context + "/" + GET_PATH, makeParamsMap( metadata ) );
+        WebClient webClient = webClientFactory.make( this, GET_PATH, MetadataUtils.makeParamsMap( metadata ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -199,8 +155,8 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
                 {
                     LOGGER.error(
                             "Md5 checksum mismatch after getting the package from remote host. "
-                                    + "Requested with md5={}, name={}, version={}",
-                            Hex.toHexString( metadata.getMd5Sum() ), metadata.getName(), metadata.getVersion() );
+                            + "Requested with md5={}, name={}",
+                            Hex.toHexString( metadata.getMd5Sum() ), metadata.getName() );
                 }
             }
         }
@@ -211,8 +167,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     @Override
     public List<SerializableMetadata> listPackages()
     {
-        WebClient webClient =
-                webClientFactory.make( this, context + "/" + LIST_PATH, makeParamsMap( new DefaultMetadata() ) );
+        WebClient webClient = webClientFactory.make( this, LIST_PATH, null );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -245,6 +200,43 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     }
 
 
+    @Override
+    public Identity getIdentity()
+    {
+        return identity;
+    }
+
+
+    @Override
+    public URL getUrl()
+    {
+        return url;
+    }
+
+
+    @Override
+    public boolean isKurjun()
+    {
+        return true;
+    }
+
+
+    @Override
+    public Set<ReleaseFile> getDistributions()
+    {
+        throw new UnsupportedOperationException( "Not supported in raw repositories." );
+    }
+
+
+    private List<SerializableMetadata> parseItems( String items )
+    {
+        Type collectionType = new TypeToken<LinkedList<RawMetadata>>()
+        {
+        }.getType();
+        return gson.fromJson( items, collectionType );
+    }
+
+
     private Response doGet( WebClient webClient )
     {
         try
@@ -270,28 +262,4 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         return null;
     }
 
-
-    private Map<String, String> makeParamsMap( Metadata metadata )
-    {
-        Map<String, String> params = MetadataUtils.makeParamsMap( metadata );
-
-        if ( token != null )
-        {
-            params.put( "sptoken", token );
-        }
-
-        // Set parameter kc=kurjun_client to indicate this request is going from Kurjun
-        params.put( "kc", Boolean.TRUE.toString() );
-
-        return params;
-    }
-
-
-    private List<SerializableMetadata> parseItems( String items )
-    {
-        Type collectionType = new TypeToken<LinkedList<DefaultTemplate>>()
-        {
-        }.getType();
-        return gson.fromJson( items, collectionType );
-    }
 }

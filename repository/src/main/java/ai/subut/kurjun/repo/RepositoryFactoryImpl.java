@@ -72,6 +72,13 @@ public class RepositoryFactoryImpl implements RepositoryFactory
     {
         return new LocalSnapRepository( metadataStoreFactory, fileStoreFactory, snapParser, context );
     }
+    
+    
+    @Override
+    public LocalRawRepository createLocalRaw( KurjunContext context )
+    {
+        return new LocalRawRepository( metadataStoreFactory, fileStoreFactory, context );
+    }
 
 
     @Override
@@ -85,6 +92,13 @@ public class RepositoryFactoryImpl implements RepositoryFactory
     public RemoteRepository createNonLocalSnap( String url, Identity identity )
     {
         return new RemoteSnapRepository( cache, url, identity );
+    }
+    
+    
+    @Override
+    public RemoteRawRepository createNonLocalRaw( String url, Identity identity )
+    {
+        return new RemoteRawRepository( cache, url, identity );
     }
 
 
