@@ -65,7 +65,7 @@ public class TemplateController
 
             throw new InternalServerErrorException( "Internal server error." );
         }
-        return new Result( 200 ).render( renderable );
+        return new Result( 200 ).render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
     }
 
 
