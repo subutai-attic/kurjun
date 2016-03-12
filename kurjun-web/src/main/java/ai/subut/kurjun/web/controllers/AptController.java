@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.List;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -12,6 +13,7 @@ import org.apache.commons.codec.binary.Hex;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.web.service.impl.AptManagerServiceImpl;
 import ninja.Renderable;
 import ninja.Result;
@@ -99,6 +101,7 @@ public class AptController
         checkNotNull( version,"Version not found" );
 
         String metadata = managerService.getPackageInfo(toByteArray( md5 ),name,version);
+
         if ( metadata != null )
         {
             return Results.ok().render( metadata );
@@ -113,17 +116,33 @@ public class AptController
 
         Renderable renderable = managerService.getPackage( toByteArray( md5 ) );
 
-        return Results.ok();
+        if( renderable != null )
+        {
+                return Results.ok().render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
+        }
+        return Results.ok().render( "Not found with MD5: " + md5 );
     }
 
     public Result list()
     {
-        return Results.ok();
+        List<SerializableMetadata> list = managerService.list();
+
+        if ( list != null ){
+
+            return Results.ok().render( list );
+        }
+
+        return Results.ok().render( "" );
     }
 
     public Result delete(@Param("md5") String md5)
     {
-        return Results.ok();
+        boolean success = managerService.delete( toByteArray( md5 ) );
+
+        if (success){
+            return Results.ok();
+        }
+        return Results.noContent();
     }
     //@formatter:on
 
