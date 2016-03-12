@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet;
 
+import ai.subut.kurjun.rest.raw.RestRawManagerImpl;
 import ai.subut.kurjun.rest.template.RestTemplateManagerImpl;
 import ai.subut.kurjun.rest.vapt.RestAptManagerImpl;
 
@@ -33,6 +34,7 @@ public class HttpServer
 
             servletHolder.setInitParameter( "jaxrs.serviceClasses",
                     RestAptManagerImpl.class.getName() + ","
+                    + RestRawManagerImpl.class.getName() + ","
                     + RestTemplateManagerImpl.class.getName() );
 
             server.setHandler( context );

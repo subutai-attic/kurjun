@@ -172,9 +172,13 @@ public class MetadataUtils
     public static Map< String, String> makeParamsMap( Metadata metadata )
     {
         Map<String, String> params = new HashMap<>();
-        if ( metadata.getMd5Sum() != null )
+        if ( metadata.getId() != null )
         {
             params.put( "id", String.valueOf( metadata.getId() ) );
+        }
+        if ( metadata.getMd5Sum() != null )
+        {
+            params.put( "md5", Hex.encodeHexString( metadata.getMd5Sum() ) );
         }
         if ( metadata.getName() != null )
         {
