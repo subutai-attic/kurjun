@@ -137,6 +137,8 @@ public class AptController
 
     public Result delete(@Param("md5") String md5)
     {
+        checkNotNull( md5,"MD5 cannot be null" );
+
         boolean success = managerService.delete( toByteArray( md5 ) );
 
         if (success){
