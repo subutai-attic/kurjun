@@ -28,6 +28,8 @@
     <module>jetty-rs</module>
     <module>karaf</module>
     <module>kurjun-web</module>
+    <module>security-manager</module>
+    <module>identity-manager</module>
   </modules>
 
   <description>
