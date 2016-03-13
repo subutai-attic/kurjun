@@ -33,49 +33,46 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Singleton
 public class AptController
 {
-    //@formatter:off
+
     @Inject
     private AptManagerServiceImpl managerService;
 
 
     @FileProvider( DiskFileItemProvider.class )
-    public Result upload(@Param("upfile") FileItem file) throws IOException
+    public Result upload( @Param( "file" ) FileItem file ) throws IOException
     {
-        try(InputStream inputStream = new FileInputStream( file.getFile() )){
-            URI uri = managerService.upload(inputStream);
+        try ( InputStream inputStream = new FileInputStream( file.getFile() ) )
+        {
+            URI uri = managerService.upload( inputStream );
             return Results.ok().render( uri );
         }
-
     }
 
 
     public Result release( @PathParam( "release" ) String release )
     {
-        checkNotNull(release, "Release cannot be null");
+        checkNotNull( release, "Release cannot be null" );
 
-        String rel = managerService.getRelease( release ,null ,null );
+        String rel = managerService.getRelease( release, null, null );
 
         if ( rel != null )
         {
             return Results.ok().render( rel );
         }
 
-        return Results.notFound().render( String.format("Not found:%s",release));
-
+        return Results.notFound().render( String.format( "Not found:%s", release ) );
     }
 
 
-    public Result packageIndexes( @PathParam( "release" )   String release,
-                                  @PathParam( "component" ) String component,
-                                  @PathParam( "arch" )      String arch,
-                                  @PathParam( "packages" ) String packagesIndex )
+    public Result packageIndexes( @PathParam( "release" ) String release, @PathParam( "component" ) String component,
+                                  @PathParam( "arch" ) String arch, @PathParam( "packages" ) String packagesIndex )
     {
-        checkNotNull(release, "Release cannot be null");
-        checkNotNull(component,"Component cannot be null");
-        checkNotNull(arch,"Arch cannot be null");
-        checkNotNull(packagesIndex,"Package Index cannot be null");
+        checkNotNull( release, "Release cannot be null" );
+        checkNotNull( component, "Component cannot be null" );
+        checkNotNull( arch, "Arch cannot be null" );
+        checkNotNull( packagesIndex, "Package Index cannot be null" );
 
-        Renderable renderable = managerService.getPackagesIndex( release,component,arch,packagesIndex );
+        Renderable renderable = managerService.getPackagesIndex( release, component, arch, packagesIndex );
 
         return Results.ok().render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
     }
@@ -83,7 +80,7 @@ public class AptController
 
     public Result getPackageByFileName( @PathParam( "filename" ) String filename )
     {
-        checkNotNull( filename,"File name cannot be null" );
+        checkNotNull( filename, "File name cannot be null" );
 
         Renderable renderable = managerService.getPackageByFilename( filename );
 
@@ -91,63 +88,63 @@ public class AptController
     }
 
 
-    public Result info( @Param( "md5" )     String md5,
-                        @Param( "name" )    String name,
-                        @Param( "version" ) String version )
+    public Result info( @Param( "md5" ) String md5, @Param( "name" ) String name, @Param( "version" ) String version )
 
     {
-        checkNotNull(md5,"MD5 cannot be null");
-        checkNotNull(name,"Name cannot be null");
-        checkNotNull( version,"Version not found" );
+        checkNotNull( md5, "MD5 cannot be null" );
+        checkNotNull( name, "Name cannot be null" );
+        checkNotNull( version, "Version not found" );
 
-        String metadata = managerService.getPackageInfo(toByteArray( md5 ),name,version);
+        String metadata = managerService.getPackageInfo( toByteArray( md5 ), name, version );
 
         if ( metadata != null )
         {
-            return Results.ok().render( metadata );
+            return Results.ok().render( metadata ).text();
         }
         return Results.ok().render( "Not found with details provided" );
     }
 
 
-    public Result get( @Param( "md5" ) String md5 )
+    public Result download( @Param( "md5" ) String md5 )
     {
-        checkNotNull( md5,"MD5 cannot be null" );
+        checkNotNull( md5, "MD5 cannot be null" );
 
         Renderable renderable = managerService.getPackage( toByteArray( md5 ) );
 
-        if( renderable != null )
+        if ( renderable != null )
         {
-                return Results.ok().render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
+            return Results.ok().render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
         }
-        return Results.ok().render( "Not found with MD5: " + md5 );
+        return Results.text().render( "Not found with MD5: " + md5 );
     }
+
 
     public Result list()
     {
-        List<SerializableMetadata> list = managerService.list();
+        List<SerializableMetadata> serializableMetadataList = managerService.list();
 
-        if ( list != null ){
+        if ( serializableMetadataList != null )
+        {
 
-            return Results.ok().render( list );
+            return Results.ok().render( serializableMetadataList ).text();
         }
 
-        return Results.ok().render( "" );
+        return Results.text();
     }
 
-    public Result delete(@Param("md5") String md5)
+
+    public Result delete( @Param( "md5" ) String md5 )
     {
-        checkNotNull( md5,"MD5 cannot be null" );
+        checkNotNull( md5, "MD5 cannot be null" );
 
         boolean success = managerService.delete( toByteArray( md5 ) );
 
-        if (success){
-            return Results.ok();
+        if ( success )
+        {
+            return Results.ok().text();
         }
-        return Results.noContent();
+        return Results.noContent().text();
     }
-    //@formatter:on
-
 
     private byte[] toByteArray( String md5 )
     {

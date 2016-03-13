@@ -1,6 +1,7 @@
 package ai.subut.kurjun.web.service.impl;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -63,13 +64,6 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public List<Map<String, Object>> getRemoteRepoUrls()
-    {
-        return null;
-    }
-
-
-    @Override
     public InputStream getTemplateData( final String repository, final byte[] md5, final boolean isKurjunClient )
             throws IOException
     {
@@ -91,40 +85,29 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public List<Map<String, Object>> getSharedTemplateInfos( final byte[] md5, final String templateOwner )
-            throws IOException
-    {
-        return null;
-    }
-
-
-    @Override
-    public List<Map<String, Object>> listAsSimple( final String repository ) throws IOException
-    {
-        return null;
-    }
-
-
-    @Override
-    public List<SerializableMetadata> list()
-    {
-        return null;
-    }
-
-
-    @Override
-    public boolean isUploadAllowed( final String repository )
-    {
-        return false;
-    }
-
-
-    @Override
     public String upload( final String repository, final InputStream inputStream ) throws IOException
     {
 
         SubutaiTemplateMetadata metadata =
                 ( SubutaiTemplateMetadata ) getRepo( repository ).put( inputStream, CompressionType.GZIP, repository );
+
+        if ( metadata != null )
+        {
+            if ( metadata.getMd5Sum() != null )
+            {
+                artifactContext.store( metadata.getMd5Sum(), new UserContextImpl( repository ) );
+            }
+        }
+
+        return toId( metadata != null ? metadata.getMd5Sum() : new byte[0], repository );
+    }
+
+
+    @Override
+    public String upload( final String repository, final File file ) throws IOException
+    {
+        SubutaiTemplateMetadata metadata =
+                ( SubutaiTemplateMetadata ) getRepo( repository ).put( file, CompressionType.GZIP, repository );
 
         if ( metadata != null )
         {
@@ -149,44 +132,9 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public void addRemoteRepository( final URL url, final String token )
-    {
-
-    }
-
-
-    @Override
-    public void removeRemoteRepository( final URL url )
-    {
-
-    }
-
-
-    @Override
-    public Set<String> getRepositories()
-    {
-        return null;
-    }
-
-
-    @Override
     public LocalRepository createUserRepository( final KurjunContext userName )
     {
         return repositoryFactory.createLocalTemplate( userName );
-    }
-
-
-    @Override
-    public void shareTemplate( final String templateId, final String targetUserName )
-    {
-
-    }
-
-
-    @Override
-    public void unshareTemplate( final String templateId, final String targetUserName )
-    {
-
     }
 
 
@@ -212,6 +160,85 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
                 }
             };
         }
+        return null;
+    }
+
+
+    @Override
+    public void shareTemplate( final String templateId, final String targetUserName )
+    {
+
+    }
+
+
+    @Override
+    public boolean isUploadAllowed( final String repository )
+    {
+        return false;
+    }
+
+
+    @Override
+    public List<Map<String, Object>> getSharedTemplateInfos( final byte[] md5, final String templateOwner )
+            throws IOException
+    {
+        return null;
+    }
+
+
+    @Override
+    public List<Map<String, Object>> listAsSimple( final String repository ) throws IOException
+    {
+
+        return null;
+    }
+
+
+    @Override
+    public List<SerializableMetadata> list()
+    {
+        return null;
+    }
+
+
+    @Override
+    public List<Map<String, Object>> getRemoteRepoUrls()
+    {
+        return null;
+    }
+
+
+    @Override
+    public String repositoryMd5()
+    {
+        return null;
+    }
+
+
+    @Override
+    public void addRemoteRepository( final URL url, final String token )
+    {
+
+    }
+
+
+    @Override
+    public void removeRemoteRepository( final URL url )
+    {
+
+    }
+
+
+    @Override
+    public void unshareTemplate( final String templateId, final String targetUserName )
+    {
+
+    }
+
+
+    @Override
+    public Set<String> getRepositories()
+    {
         return null;
     }
 

@@ -191,19 +191,17 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
                     File tmpFile = getTempFile();
                     FileOutputStream fileOutputStream = new FileOutputStream( tmpFile );
 
-                    //MessageDigest messageDigest = MessageDigest.getInstance( "MD5" );
                     LOGGER.debug( "Saving remote file to temp file" );
                     while ( ( bytesRead = inputStream.read( buffer ) ) > 0 )
                     {
-                        //messageDigest.update( Arrays.copyOf( buffer, buffer.length ) );
                         fileOutputStream.write( bytesRead );
                     }
 
-                    //md5Calculated = messageDigest.digest();
                     md5Calculated = put( tmpFile );
 
                     if ( Arrays.equals( metadata.getMd5Sum(), md5Calculated ) )
                     {
+
                         LOGGER.debug( "Calculated md5:{} provided md5:{}", Hex.encode( md5Calculated ),
                                 Hex.encode( metadata.getMd5Sum() ) );
                         return cache.get( md5Calculated );

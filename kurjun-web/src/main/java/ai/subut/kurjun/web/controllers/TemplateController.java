@@ -2,13 +2,17 @@ package ai.subut.kurjun.web.controllers;
 
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.web.handler.SubutaiTemplateFileHandler;
+import ai.subut.kurjun.web.model.KurjunFileItem;
 import ai.subut.kurjun.web.service.TemplateManagerService;
 import ninja.Context;
 import ninja.Renderable;
@@ -16,7 +20,6 @@ import ninja.Result;
 import ninja.Results;
 import ninja.exceptions.InternalServerErrorException;
 import ninja.params.Param;
-import ninja.uploads.DiskFileItemProvider;
 import ninja.uploads.FileItem;
 import ninja.uploads.FileProvider;
 
@@ -29,25 +32,41 @@ import ninja.uploads.FileProvider;
 public class TemplateController
 {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger( TemplateController.class );
+
     @Inject
     TemplateManagerService templateManagerService;
 
 
-    @FileProvider( DiskFileItemProvider.class )
-    public Result upload( Context context, @Param( "fingerprint" ) String fingerprint,
-                          @Param( "upfile" ) FileItem upfile, @Param( "md5" ) String md5 ) throws Exception
+    @FileProvider( SubutaiTemplateFileHandler.class )
+    public Result upload( Context context, @Param( "fingerprint" ) String fingerprint, @Param( "file" ) FileItem file,
+                          @Param( "md5" ) String md5 ) throws Exception
     {
-
-        InputStream inputStream = upfile.getInputStream();
-
-        String id = templateManagerService.upload( fingerprint, inputStream );
-
-        if ( id.split( "." )[1].equalsIgnoreCase( md5 ) )
+        if ( fingerprint == null )
         {
+            fingerprint = "public";
+        }
+
+        KurjunFileItem fileItem = ( KurjunFileItem ) file;
+
+        if ( fileItem.md5().equals( md5 ) )
+        {
+            fileItem.cleanup();
             return Results.badRequest().render( "MD5 checksum miss match" );
         }
 
-        return Results.ok().render( id );
+        String id = templateManagerService.upload( fingerprint, fileItem.getInputStream() );
+
+        String[] temp = id.split( "\\." );
+        //temp contains [fprint].[md5]
+        if ( temp.length == 2 )
+        {
+            if ( !temp[1].equalsIgnoreCase( md5 ) )
+            {
+                return Results.badRequest().render( "MD5 checksum miss match" );
+            }
+        }
+        return Results.ok().render( id ).text();
     }
 
 

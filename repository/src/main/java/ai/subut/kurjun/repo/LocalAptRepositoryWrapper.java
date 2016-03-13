@@ -2,6 +2,7 @@ package ai.subut.kurjun.repo;
 
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -143,6 +144,13 @@ class LocalAptRepositoryWrapper extends RepositoryBase implements LocalRepositor
     @Override
     public Metadata put( final InputStream is, final CompressionType compressionType, final String owner )
             throws IOException
+    {
+        return null;
+    }
+
+
+    @Override
+    public Metadata put( final File file, final CompressionType compressionType, final String owner ) throws IOException
     {
         return null;
     }

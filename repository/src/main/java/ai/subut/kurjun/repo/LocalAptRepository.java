@@ -183,6 +183,13 @@ class LocalAptRepository extends LocalRepositoryBase
 
 
     @Override
+    public Metadata put( final File file, final CompressionType compressionType, final String owner ) throws IOException
+    {
+        return null;
+    }
+
+
+    @Override
     protected Logger getLogger()
     {
         return LOGGER;

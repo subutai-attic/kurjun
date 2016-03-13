@@ -42,10 +42,10 @@ public class LocalTemplateRepository extends LocalRepositoryBase
     private SubutaiTemplateParser templateParser;
     private KurjunContext context;
 
+
     @Inject
     public LocalTemplateRepository( PackageMetadataStoreFactory metadataStoreFactory, FileStoreFactory fileStoreFactory,
-                                    SubutaiTemplateParser templateParser,
-                                    @Assisted KurjunContext context )
+                                    SubutaiTemplateParser templateParser, @Assisted KurjunContext context )
     {
         this.metadataStoreFactory = metadataStoreFactory;
         this.fileStoreFactory = fileStoreFactory;
@@ -106,6 +106,7 @@ public class LocalTemplateRepository extends LocalRepositoryBase
         }
     }
 
+
     //TODO files is copied to temp file and gets copied again in put(File)
     public Metadata put( InputStream is, CompressionType compressionType, String owner ) throws IOException
     {
@@ -137,6 +138,36 @@ public class LocalTemplateRepository extends LocalRepositoryBase
         finally
         {
             temp.delete();
+        }
+    }
+
+
+    @Override
+    public Metadata put( final File file, final CompressionType compressionType, final String owner ) throws IOException
+    {
+        PackageMetadataStore metadataStore = getMetadataStore();
+        FileStore fileStore = getFileStore();
+        SubutaiTemplateMetadata meta = templateParser.parseTemplate( file );
+
+        try
+        {
+            byte[] md5 = fileStore.put( file );
+
+            if ( Arrays.equals( md5, meta.getMd5Sum() ) )
+            {
+                DefaultTemplate dt = MetadataUtils.serializableTemplateMetadata( meta );
+                dt.setOwnerFprint( owner );
+                metadataStore.put( dt );
+                return dt;
+            }
+            else
+            {
+                fileStore.remove( md5 );
+                throw new IOException( "Package integrity failure" );
+            }
+        }finally
+        {
+            file.delete();
         }
     }
 

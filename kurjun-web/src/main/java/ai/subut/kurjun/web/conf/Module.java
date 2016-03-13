@@ -14,11 +14,13 @@ import ai.subut.kurjun.storage.factory.FileStoreModule;
 import ai.subut.kurjun.subutai.SubutaiTemplateParserModule;
 import ai.subut.kurjun.web.context.ArtifactContext;
 import ai.subut.kurjun.web.context.GlobalArtifactContext;
+import ai.subut.kurjun.web.handler.SubutaiTemplateFileHandler;
 import ai.subut.kurjun.web.init.KurjunInitializer;
 import ai.subut.kurjun.web.service.TemplateManagerService;
 import ai.subut.kurjun.web.service.UserRepoContextStore;
 import ai.subut.kurjun.web.service.impl.TemplateManagerServiceImpl;
 import ai.subut.kurjun.web.service.impl.UserRepoContextStoreImpl;
+import ninja.uploads.FileItemProvider;
 
 
 public class Module extends AbstractModule
@@ -44,6 +46,8 @@ public class Module extends AbstractModule
 
         bind( TemplateManagerService.class ).to( TemplateManagerServiceImpl.class );
 
-        bind( KurjunInitializer.class);
+        bind( FileItemProvider.class ).to( SubutaiTemplateFileHandler.class );
+
+        bind( KurjunInitializer.class );
     }
 }

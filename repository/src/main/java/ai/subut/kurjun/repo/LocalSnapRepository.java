@@ -1,6 +1,7 @@
 package ai.subut.kurjun.repo;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -113,6 +114,13 @@ class LocalSnapRepository extends LocalRepositoryBase
     @Override
     public Metadata put( final InputStream is, final CompressionType compressionType, final String owner )
             throws IOException
+    {
+        return null;
+    }
+
+
+    @Override
+    public Metadata put( final File file, final CompressionType compressionType, final String owner ) throws IOException
     {
         return null;
     }

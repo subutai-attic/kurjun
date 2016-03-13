@@ -1,6 +1,7 @@
 package ai.subut.kurjun.web.service;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -23,8 +24,7 @@ public interface TemplateManagerService
      *
      * @return JSON encoded meta data
      */
-    SerializableMetadata getTemplate( byte[] md5 )
-            throws IOException;
+    SerializableMetadata getTemplate( byte[] md5 ) throws IOException;
 
     /**
      * Gets the list of remote repo urls
@@ -44,8 +44,7 @@ public interface TemplateManagerService
      *
      * @return input stream to read package data
      */
-    InputStream getTemplateData( String repository, byte[] md5, boolean isKurjunClient )
-            throws IOException;
+    InputStream getTemplateData( String repository, byte[] md5, boolean isKurjunClient ) throws IOException;
 
 
     /**
@@ -89,14 +88,24 @@ public interface TemplateManagerService
      */
     String upload( String repository, InputStream inputStream ) throws IOException;
 
+    /**
+     * Uploads package data from supplied input stream to the repository defined by supplied repository.
+     *
+     * @param repository repository
+     * @param file input stream to read package data
+     *
+     * @return template id of uploaded package upload succeeds; {@code null} otherwise
+     */
+    String upload( String repository, File file ) throws IOException;
 
     /**
      * Deletes package from the repository defined by supplied repository.
+     *
      * @param md5 checksum of the package to delete
      *
      * @return {@code true} if package successfully deleted; {@code false} otherwise
      */
-    boolean delete(String md5 ) throws IOException;
+    boolean delete( String md5 ) throws IOException;
 
 
     /**
@@ -149,5 +158,7 @@ public interface TemplateManagerService
     /*
     *
     * */
-    Renderable renderableTemplate(String repository, String md5, boolean isKurjunClient) throws IOException;
+    Renderable renderableTemplate( String repository, String md5, boolean isKurjunClient ) throws IOException;
+
+    String repositoryMd5();
 }
