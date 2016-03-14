@@ -1,10 +1,14 @@
 package ai.subut.kurjun.security.manager.utils;
 
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
+
+import org.apache.commons.codec.digest.DigestUtils;
 
 
 /**
@@ -78,8 +82,25 @@ public class SecurityUtil
         return salt.toString();
     }
 
-    /* *************************************************
+
+    /**
+     * Calculates the md5 checksum of the given input stream
+     *
+     * @param is
+     * @return md5 checksum, or <code>null</code> if exception occurred
      */
+    public static byte[] calculateMd5( InputStream is )
+    {
+        byte[] md5 = null;
+        try
+        {
+            md5 = DigestUtils.md5( is );
+        }
+        catch ( IOException e )
+        {
+        }
+        return md5;
+    }
 
 
 }

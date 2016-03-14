@@ -1,4 +1,4 @@
-package ai.subuta.kurjun.identity.service;
+package ai.subut.kurjun.identity.service;
 
 
 /**
