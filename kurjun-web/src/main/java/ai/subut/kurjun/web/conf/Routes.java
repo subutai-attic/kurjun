@@ -1,6 +1,7 @@
 package ai.subut.kurjun.web.conf;
 
 
+import ai.subut.kurjun.web.controllers.AliquaController;
 import ai.subut.kurjun.web.controllers.AptController;
 import ai.subut.kurjun.web.controllers.TemplateController;
 import ninja.Router;
@@ -14,8 +15,12 @@ import ninja.application.ApplicationRoutes;
 public class Routes implements ApplicationRoutes
 {
     private static final String baseUrl = "/rest/kurjun/v1/";
+
     private static final String baseTemplateUrl = baseUrl + "template";
+
     private static final String baseDebUrl = baseUrl + "deb/";
+
+    private static final String baseRawUrl = baseUrl + "files/";
 
 
     @Override
@@ -39,6 +44,12 @@ public class Routes implements ApplicationRoutes
         router.GET().route( baseDebUrl + "list" ).with( AptController.class, "list" );
         router.POST().route( baseDebUrl + "upload" ).with( AptController.class, "upload" );
         router.DELETE().route( baseDebUrl + "delete" ).with( AptController.class, "delete" );
+
+        //REST Raw file Controller
+        router.GET().route( baseRawUrl + "get" ).with( AliquaController.class, "getFile" );
+        router.GET().route( baseRawUrl + "list" ).with( AliquaController.class, "getList" );
+        router.POST().route( baseRawUrl + "upload" ).with( AliquaController.class, "upload" );
+        router.DELETE().route( baseRawUrl + "delete" ).with( AliquaController.class, "delete" );
 
     }
 }

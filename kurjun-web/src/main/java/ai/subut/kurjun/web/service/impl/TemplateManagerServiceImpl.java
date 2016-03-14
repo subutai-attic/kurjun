@@ -85,6 +85,13 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
+    public boolean isUploadAllowed( final String repository )
+    {
+        return false;
+    }
+
+
+    @Override
     public String upload( final String repository, final InputStream inputStream ) throws IOException
     {
 
@@ -127,7 +134,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         KurjunContext user = artifactContext.getRepository( md5 );
         TemplateId templateId = new TemplateId( user.getName(), md5 );
 
-        return getRepo( md5 ).delete( templateId, decodeMd5( md5 ) );
+        return getRepo( md5 ).delete( templateId, toByteArray( md5 ) );
     }
 
 
@@ -139,15 +146,34 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
+    public void shareTemplate( final String templateId, final String targetUserName )
+    {
+
+    }
+
+
+    @Override
     public Renderable renderableTemplate( final String repository, String md5, final boolean isKurjunClient )
             throws IOException
     {
+        LocalRepository publicRepository = getRepo( repository );
 
-        InputStream inputStream = getTemplateData( repository, decodeMd5( md5 ), false );
+        DefaultTemplate defaultTemplate = new DefaultTemplate();
+
+        defaultTemplate.setId( repository, toByteArray( md5 ) );
+
+        SerializableMetadata metadata = publicRepository.getPackageInfo( defaultTemplate );
+
+        InputStream inputStream = getTemplateData( repository, toByteArray( md5 ), false );
 
         if ( inputStream != null )
         {
             return ( context, result ) -> {
+
+                result.addHeader( "Content-Disposition",
+                        "attachment;filename=" + metadata.getName() + metadata.getVersion() + CompressionType.GZIP
+                                .toString().toLowerCase() );
+                result.addHeader( "Contenty-Type", "application/octet-stream" );
 
                 ResponseStreams responseStreams = context.finalizeHeaders( result );
                 try ( OutputStream outputStream = responseStreams.getOutputStream() )
@@ -161,20 +187,6 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
             };
         }
         return null;
-    }
-
-
-    @Override
-    public void shareTemplate( final String templateId, final String targetUserName )
-    {
-
-    }
-
-
-    @Override
-    public boolean isUploadAllowed( final String repository )
-    {
-        return false;
     }
 
 
@@ -211,6 +223,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     @Override
     public String repositoryMd5()
     {
+
         return null;
     }
 
@@ -251,7 +264,19 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     }
 
 
-    protected byte[] decodeMd5( String md5 )
+    private LocalRepository getRepo( String repo )
+    {
+        return repositoryFactory.createLocalTemplate( new UserContextImpl( repo ) );
+    }
+
+
+    private LocalRepository getPublicRepository()
+    {
+        return repositoryFactory.createLocalTemplate( new UserContextImpl( "public" ) );
+    }
+
+
+    private byte[] toByteArray( String md5 )
     {
         if ( md5 != null )
         {
@@ -265,11 +290,5 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
             }
         }
         return null;
-    }
-
-
-    private LocalRepository getRepo( String repo )
-    {
-        return repositoryFactory.createLocalTemplate( new UserContextImpl( repo ) );
     }
 }

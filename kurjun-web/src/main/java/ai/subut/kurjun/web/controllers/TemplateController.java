@@ -39,7 +39,7 @@ public class TemplateController
 
 
     @FileProvider( SubutaiFileHandler.class )
-    public Result upload( Context context, @Param( "fingerprint" ) String fingerprint, @Param( "file" ) FileItem file,
+    public Result upload( Context context, @Param( "id" ) String fingerprint, @Param( "file" ) FileItem file,
                           @Param( "md5" ) String md5 ) throws Exception
     {
         if ( fingerprint == null )
@@ -70,7 +70,7 @@ public class TemplateController
     }
 
 
-    public Result download( Context context, @Param( "fingerprint" ) String fingerprint, @Param( "md5" ) String md5 )
+    public Result download( Context context, @Param( "id" ) String fingerprint, @Param( "md5" ) String md5 )
             throws InternalServerErrorException
     {
         Renderable renderable = null;
@@ -107,7 +107,7 @@ public class TemplateController
     }
 
 
-    public Result list( Context context, @Param( "fingerprint" ) String fingerprint )
+    public Result list( Context context, @Param( "id" ) String fingerprint )
     {
         try
         {
