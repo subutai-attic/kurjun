@@ -164,7 +164,9 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     public InputStream getPackageStream( Metadata metadata )
     {
         LOGGER.debug( "Checking if template exists with md5:{}", Hex.encode( metadata.getMd5Sum() ) );
+
         InputStream cachedStream = checkCache( metadata );
+
         if ( cachedStream != null )
         {
             LOGGER.debug( "Template is cached." );
@@ -191,6 +193,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
                     InputStream inputStream = ( InputStream ) resp.getEntity();
 
                     File tmpFile = getTempFile();
+
                     FileOutputStream fileOutputStream = new FileOutputStream( tmpFile );
 
                     LOGGER.debug( "Saving remote file to temp file" );

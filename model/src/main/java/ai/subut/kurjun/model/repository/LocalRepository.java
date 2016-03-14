@@ -59,5 +59,7 @@ public interface LocalRepository extends Repository
     boolean delete( Object id, byte[] md5 ) throws IOException;
 
     Object getContext();
+
+    byte[] md5();
 }
 
