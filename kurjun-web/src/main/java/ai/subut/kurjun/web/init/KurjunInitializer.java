@@ -4,6 +4,7 @@ package ai.subut.kurjun.web.init;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -128,7 +129,9 @@ public class KurjunInitializer
 
                 for ( String s : servers )
                 {
-                    // remoteRepositories.add(repositoryFactory.createNonLocalTemplate( s ));
+                    remoteRepositories.add( repositoryFactory.createNonLocalTemplate( s, null, "public", null ) );
+                    remoteRepositories.add( repositoryFactory.createNonLocalRaw( s, null ) );
+                    remoteRepositories.add( repositoryFactory.createNonLocalApt( new URL( s ) ) );
                 }
             }
             catch ( IOException e )
@@ -146,8 +149,7 @@ public class KurjunInitializer
         for ( RemoteRepository repo : remoteRepository )
         {
             Thread thread = new Thread( () -> {
-
-
+                artifactContext.store( repo.getHostname(), repo.getMd5() );
             } );
 
             thread.start();

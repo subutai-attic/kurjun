@@ -59,9 +59,9 @@ public class GlobalArtifactContext implements ArtifactContext
 
 
     @Override
-    public void store( final String repository, final byte[] md5 )
+    public void store( final String repository, final String md5 )
     {
-        cacheMap.put( repository, Utils.MD5.toString( md5 ) );
+        cacheMap.put( repository, md5 );
     }
 
 

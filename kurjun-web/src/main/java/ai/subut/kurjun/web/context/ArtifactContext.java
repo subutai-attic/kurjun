@@ -40,5 +40,5 @@ public interface ArtifactContext
     String getMd5( String repository );
 
     /***/
-    void store( String repository, byte[] md5 );
+    void store( String repository, String md5 );
 }
