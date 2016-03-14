@@ -12,6 +12,9 @@ import ninja.Renderable;
 
 public interface AptManagerService
 {
+
+    String md5();
+
     String getRelease( String release, String component, String arch );
 
     String getPackageInfo( byte[] md5, String name, String version );

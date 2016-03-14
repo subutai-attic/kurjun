@@ -52,7 +52,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     static final String INFO_PATH = "info";
     static final String GET_PATH = "get";
     static final String LIST_PATH = "list";
-
+    private final String MD5_PATH = "md5";
     @Inject
     private WebClientFactory webClientFactory;
 
@@ -70,7 +70,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
 
     @Inject
     public RemoteRawRepository( PackageCache cache, @Assisted( "url" ) String url,
-            @Assisted @Nullable Identity identity )
+                                @Assisted @Nullable Identity identity )
     {
         this.cache = cache;
         this.identity = identity;
@@ -154,10 +154,9 @@ public class RemoteRawRepository extends RemoteRepositoryBase
                 }
                 else
                 {
-                    LOGGER.error(
-                            "Md5 checksum mismatch after getting the package from remote host. "
-                            + "Requested with md5={}, name={}",
-                            Hex.toHexString( metadata.getMd5Sum() ), metadata.getName() );
+                    LOGGER.error( "Md5 checksum mismatch after getting the package from remote host. "
+                                    + "Requested with md5={}, name={}", Hex.toHexString( metadata.getMd5Sum() ),
+                            metadata.getName() );
                 }
             }
         }
@@ -198,6 +197,25 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     protected Logger getLogger()
     {
         return LOGGER;
+    }
+
+
+    @Override
+    public String getMd5()
+    {
+        WebClient webClient = webClientFactory.make( this, MD5_PATH, null );
+
+        Response resp = doGet( webClient );
+
+        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
+        {
+            String md5 = resp.getEntity().toString();
+            if ( md5 != null )
+            {
+                return md5;
+            }
+        }
+        return "";
     }
 
 

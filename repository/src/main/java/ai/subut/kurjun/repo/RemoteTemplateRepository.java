@@ -58,9 +58,11 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     static final String INFO_PATH = "info";
     static final String LIST_PATH = "list";
     static final String GET_PATH = "get";
+    static final String MD5_PATH = "md5";
 
     @Inject
     private WebClientFactory webClientFactory;
+
 
     @Inject
     private Gson gson;
@@ -212,7 +214,6 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
                                 "Md5 checksum mismatch after getting the package from remote host. Requested with md5 "
                                         + "Provided: {} vs Calculated: {}", Hex.encode( metadata.getMd5Sum() ),
                                 Hex.encode( md5Calculated ) );
-
                     }
                 }
                 catch ( IOException e )
@@ -261,6 +262,24 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         return LOGGER;
     }
 
+
+    @Override
+    public String getMd5()
+    {
+        WebClient webClient = webClientFactory.make( this, context + "/" + MD5_PATH, null );
+
+        Response response = doGet( webClient );
+
+        if ( response != null && response.getStatus() == Response.Status.OK.getStatusCode() )
+        {
+            String md5 = response.getEntity().toString();
+            if ( md5 != null )
+            {
+                return md5;
+            }
+        }
+        return "";
+    }
 
     private Response doGet( WebClient webClient )
     {

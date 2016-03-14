@@ -3,9 +3,6 @@ package ai.subut.kurjun.web.controllers;
 
 import java.math.BigInteger;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
-
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -13,6 +10,7 @@ import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
 import ai.subut.kurjun.web.model.KurjunFileItem;
 import ai.subut.kurjun.web.service.RawManagerService;
+import ai.subut.kurjun.web.utils.Utils;
 import ninja.Context;
 import ninja.Renderable;
 import ninja.Result;
@@ -59,7 +57,7 @@ public class AliquaController
     {
         checkNotNull( md5, "MD5 cannot be null" );
 
-        Renderable renderable = rawManagerService.getFile( toByteArray( md5 ) );
+        Renderable renderable = rawManagerService.getFile( Utils.MD5.toByteArray( md5 ) );
 
         if ( renderable != null )
         {
@@ -73,7 +71,7 @@ public class AliquaController
     {
         checkNotNull( md5, "MD5 cannot be null" );
 
-        boolean success = rawManagerService.delete( toByteArray( md5 ) );
+        boolean success = rawManagerService.delete( Utils.MD5.toByteArray( md5 ) );
 
         if ( success )
         {
@@ -83,25 +81,14 @@ public class AliquaController
     }
 
 
-    public Result getList()
+    public Result md5()
     {
-        return Results.ok().render( rawManagerService.list() ).json();
+        return Results.ok().render( rawManagerService.md5() ).text();
     }
 
 
-    private byte[] toByteArray( String md5 )
+    public Result getList()
     {
-        if ( md5 != null )
-        {
-            try
-            {
-                return Hex.decodeHex( md5.toCharArray() );
-            }
-            catch ( DecoderException ex )
-            {
-                ex.printStackTrace();
-            }
-        }
-        return null;
+        return Results.ok().render( rawManagerService.list() ).json();
     }
 }

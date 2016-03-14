@@ -125,4 +125,9 @@ public class TemplateController
             throw new InternalServerErrorException( "Error while getting list of artifacts" );
         }
     }
+
+    public Result md5()
+    {
+        return Results.ok().render( templateManagerService.md5() ).text();
+    }
 }

@@ -224,6 +224,13 @@ class RemoteSnapRepository extends RemoteRepositoryBase
     }
 
 
+    @Override
+    public String getMd5()
+    {
+        return null;
+    }
+
+
     private List<SerializableMetadata> parseItems( List<String> items )
     {
         List<SerializableMetadata> ls = new LinkedList<>();

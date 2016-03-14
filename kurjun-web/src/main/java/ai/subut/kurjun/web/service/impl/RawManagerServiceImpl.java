@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.raw.RawMetadata;
 import ai.subut.kurjun.model.metadata.Metadata;
@@ -21,6 +22,7 @@ import ai.subut.kurjun.model.repository.UnifiedRepository;
 import ai.subut.kurjun.repo.LocalRawRepository;
 import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.web.service.RawManagerService;
+import ai.subut.kurjun.web.utils.Utils;
 import ninja.Renderable;
 import ninja.utils.ResponseStreams;
 
@@ -30,24 +32,34 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class RawManagerServiceImpl implements RawManagerService
 {
     private RepositoryFactory repositoryFactory;
-    private LocalRawRepository localRawRepository;
+
+    private LocalRawRepository localPublicRawRepository;
     private UnifiedRepository unifiedRepository;
+    private KurjunProperties kurjunProperties;
 
 
     @Inject
-    public RawManagerServiceImpl( final RepositoryFactory repositoryFactory )
+    public RawManagerServiceImpl( final RepositoryFactory repositoryFactory, final KurjunProperties kurjunProperties )
     {
         this.repositoryFactory = repositoryFactory;
+        this.kurjunProperties = kurjunProperties;
+
         _local();
     }
 
 
     private void _local()
     {
-        this.localRawRepository = this.repositoryFactory.createLocalRaw( new KurjunContext( "raw" ) );
+        this.localPublicRawRepository = this.repositoryFactory.createLocalRaw( new KurjunContext( "raw" ) );
         this.unifiedRepository = this.repositoryFactory.createUnifiedRepo();
-        unifiedRepository.getRepositories().add( this.localRawRepository );
+        unifiedRepository.getRepositories().add( this.localPublicRawRepository );
     }
+
+
+//    private void _remote()
+//    {
+//        this.localPublicRawRepository;
+//    }
 
 
     private LocalRawRepository getUserRawRepository( KurjunContext kurjunContext )
@@ -101,6 +113,13 @@ public class RawManagerServiceImpl implements RawManagerService
 
 
     @Override
+    public String md5()
+    {
+        return Utils.MD5.toString( localPublicRawRepository.md5() );
+    }
+
+
+    @Override
     public Renderable getFile( final byte[] md5 )
     {
         checkNotNull( md5, "MD5 cannot be null" );
@@ -150,7 +169,7 @@ public class RawManagerServiceImpl implements RawManagerService
     {
         try
         {
-            return localRawRepository.delete( md5 );
+            return localPublicRawRepository.delete( md5 );
         }
         catch ( IOException e )
         {
@@ -166,7 +185,7 @@ public class RawManagerServiceImpl implements RawManagerService
         DefaultMetadata metadata = new DefaultMetadata();
         metadata.setMd5sum( md5 );
 
-        return localRawRepository.getPackageInfo( metadata );
+        return localPublicRawRepository.getPackageInfo( metadata );
     }
 
 
@@ -176,7 +195,7 @@ public class RawManagerServiceImpl implements RawManagerService
         Metadata metadata = null;
         try
         {
-            metadata = localRawRepository.put( new FileInputStream( file ), file.getName() );
+            metadata = localPublicRawRepository.put( new FileInputStream( file ), file.getName() );
         }
         catch ( IOException e )
         {
@@ -192,7 +211,7 @@ public class RawManagerServiceImpl implements RawManagerService
         Metadata metadata = null;
         try
         {
-            metadata = localRawRepository.put( new FileInputStream( file ), CompressionType.NONE, repository );
+            metadata = localPublicRawRepository.put( new FileInputStream( file ), CompressionType.NONE, repository );
         }
         catch ( IOException e )
         {

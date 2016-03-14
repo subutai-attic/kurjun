@@ -30,6 +30,7 @@ public class Routes implements ApplicationRoutes
 
         router.GET().route( baseTemplateUrl + "/all" ).with( TemplateController.class, "list" );
         router.GET().route( baseTemplateUrl ).with( TemplateController.class, "download" );
+        router.GET().route( baseTemplateUrl + "/md5" ).with( TemplateController.class, "md5" );
         router.POST().route( baseTemplateUrl ).with( TemplateController.class, "upload" );
         router.DELETE().route( baseTemplateUrl ).with( TemplateController.class, "delete" );
 
@@ -40,6 +41,7 @@ public class Routes implements ApplicationRoutes
               .with( AptController.class, "packageIndexes" );
         router.GET().route( baseDebUrl + "pool/{filename: .+}" ).with( AptController.class, "getPackageByFileName" );
         router.GET().route( baseDebUrl + "info" ).with( AptController.class, "info" );
+        router.GET().route( baseDebUrl + "md5" ).with( AptController.class, "md5" );
         router.GET().route( baseDebUrl + "get" ).with( AptController.class, "download" );
         router.GET().route( baseDebUrl + "list" ).with( AptController.class, "list" );
         router.POST().route( baseDebUrl + "upload" ).with( AptController.class, "upload" );
@@ -47,9 +49,9 @@ public class Routes implements ApplicationRoutes
 
         //REST Raw file Controller
         router.GET().route( baseRawUrl + "get" ).with( AliquaController.class, "getFile" );
+        router.GET().route( baseRawUrl + "md5" ).with( AliquaController.class, "md5" );
         router.GET().route( baseRawUrl + "list" ).with( AliquaController.class, "getList" );
         router.POST().route( baseRawUrl + "upload" ).with( AliquaController.class, "upload" );
         router.DELETE().route( baseRawUrl + "delete" ).with( AliquaController.class, "delete" );
-
     }
 }

@@ -125,6 +125,7 @@ public class LocalTemplateRepository extends LocalRepositoryBase
             if ( Arrays.equals( md5, meta.getMd5Sum() ) )
             {
                 DefaultTemplate dt = MetadataUtils.serializableTemplateMetadata( meta );
+                dt.setLength( temp.length() );
                 dt.setOwnerFprint( owner );
                 metadataStore.put( dt );
                 return dt;
@@ -156,6 +157,7 @@ public class LocalTemplateRepository extends LocalRepositoryBase
             if ( Arrays.equals( md5, meta.getMd5Sum() ) )
             {
                 DefaultTemplate dt = MetadataUtils.serializableTemplateMetadata( meta );
+                dt.setLength( file.length() );
                 dt.setOwnerFprint( owner );
                 metadataStore.put( dt );
                 return dt;
@@ -165,7 +167,8 @@ public class LocalTemplateRepository extends LocalRepositoryBase
                 fileStore.remove( md5 );
                 throw new IOException( "Package integrity failure" );
             }
-        }finally
+        }
+        finally
         {
             file.delete();
         }

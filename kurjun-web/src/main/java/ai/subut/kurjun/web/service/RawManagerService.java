@@ -11,6 +11,8 @@ import ninja.Renderable;
 
 public interface RawManagerService
 {
+    String md5();
+
     Renderable getFile( byte[] md5 );
 
     Renderable getFile( byte[] md5, boolean isKurjun );

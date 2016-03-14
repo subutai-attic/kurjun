@@ -126,5 +126,14 @@ abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepo
     {
         return packageCache.put( file );
     }
+
+
+    public abstract String getMd5();
+
+
+    public boolean isUpdated( String md5 )
+    {
+        return !md5.equalsIgnoreCase( getMd5() );
+    }
 }
 

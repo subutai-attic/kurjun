@@ -34,6 +34,7 @@ import ai.subut.kurjun.repo.util.PackagesProviderFactory;
 import ai.subut.kurjun.repo.util.ReleaseIndexBuilder;
 import ai.subut.kurjun.web.context.ArtifactContext;
 import ai.subut.kurjun.web.service.AptManagerService;
+import ai.subut.kurjun.web.utils.Utils;
 import ninja.Renderable;
 import ninja.utils.ResponseStreams;
 
@@ -84,6 +85,13 @@ public class AptManagerServiceImpl implements AptManagerService
     private void _remote()
     {
 
+    }
+
+
+    @Override
+    public String md5()
+    {
+        return Utils.MD5.toString( localRepository.md5() );
     }
 
 

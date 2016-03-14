@@ -202,6 +202,13 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
                 }
                 return map;
             }
+
+
+            @Override
+            public long getSize()
+            {
+                return 0;
+            }
         };
     }
 

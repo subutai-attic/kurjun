@@ -12,12 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
-
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
@@ -30,11 +26,11 @@ import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.web.context.ArtifactContext;
 import ai.subut.kurjun.web.model.UserContextImpl;
 import ai.subut.kurjun.web.service.TemplateManagerService;
+import ai.subut.kurjun.web.utils.Utils;
 import ninja.Renderable;
 import ninja.utils.ResponseStreams;
 
 
-@Singleton
 public class TemplateManagerServiceImpl implements TemplateManagerService
 {
 
@@ -49,6 +45,21 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     {
         this.repositoryFactory = repositoryFactory;
         this.artifactContext = artifactContext;
+
+        _local();
+        _remote();
+    }
+
+
+    private void _local()
+    {
+
+    }
+
+
+    private void _remote()
+    {
+
     }
 
 
@@ -134,7 +145,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         KurjunContext user = artifactContext.getRepository( md5 );
         TemplateId templateId = new TemplateId( user.getName(), md5 );
 
-        return getRepo( md5 ).delete( templateId, toByteArray( md5 ) );
+        return getRepo( md5 ).delete( templateId, Utils.MD5.toByteArray( md5 ) );
     }
 
 
@@ -160,21 +171,19 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
         DefaultTemplate defaultTemplate = new DefaultTemplate();
 
-        defaultTemplate.setId( repository, toByteArray( md5 ) );
+        defaultTemplate.setId( repository, Utils.MD5.toByteArray( md5 ) );
 
-        SerializableMetadata metadata = publicRepository.getPackageInfo( defaultTemplate );
+        DefaultTemplate metadata = ( DefaultTemplate ) publicRepository.getPackageInfo( defaultTemplate );
 
-        InputStream inputStream = getTemplateData( repository, toByteArray( md5 ), false );
+        InputStream inputStream = getTemplateData( repository, Utils.MD5.toByteArray( md5 ), false );
 
         if ( inputStream != null )
         {
             return ( context, result ) -> {
 
-                result.addHeader( "Content-Disposition",
-                        "attachment;filename=" + metadata.getName() + metadata.getVersion() + CompressionType.GZIP
-                                .toString().toLowerCase() );
+                result.addHeader( "Content-Disposition", "attachment;filename=" + makeTemplateName( metadata ) );
                 result.addHeader( "Contenty-Type", "application/octet-stream" );
-
+                result.addHeader( "Content-Length", String.valueOf( defaultTemplate.getSize() ) );
                 ResponseStreams responseStreams = context.finalizeHeaders( result );
                 try ( OutputStream outputStream = responseStreams.getOutputStream() )
                 {
@@ -187,6 +196,13 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
             };
         }
         return null;
+    }
+
+
+    @Override
+    public String md5()
+    {
+        return Utils.MD5.toString( getPublicRepository().md5() );
     }
 
 
@@ -216,14 +232,6 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     @Override
     public List<Map<String, Object>> getRemoteRepoUrls()
     {
-        return null;
-    }
-
-
-    @Override
-    public String repositoryMd5()
-    {
-
         return null;
     }
 
@@ -276,19 +284,8 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     }
 
 
-    private byte[] toByteArray( String md5 )
+    private String makeTemplateName( SerializableMetadata metadata )
     {
-        if ( md5 != null )
-        {
-            try
-            {
-                return Hex.decodeHex( md5.toCharArray() );
-            }
-            catch ( DecoderException ex )
-            {
-                ex.printStackTrace();
-            }
-        }
-        return null;
+        return metadata.getName() + "_" + metadata.getVersion() + ".tar.gz";
     }
 }

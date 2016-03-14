@@ -1,9 +1,12 @@
 package ai.subut.kurjun.web.init;
 
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -12,9 +15,12 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import ai.subut.kurjun.common.service.KurjunConstants;
 import ai.subut.kurjun.common.service.KurjunContext;
+import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
+import ai.subut.kurjun.model.repository.RemoteRepository;
 import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.web.context.ArtifactContext;
 import ai.subut.kurjun.web.model.UserContext;
@@ -29,24 +35,27 @@ public class KurjunInitializer
 
 
     private ArtifactContext artifactContext;
+
     private RepositoryFactory repositoryFactory;
     private UserRepoContextStore userRepoContextStore;
-
+    private KurjunProperties kurjunProperties;
     private Set<LocalRepository> localRepositories;
+    private Set<RemoteRepository> remoteRepositories;
     private Set<UserContext> userContextSet;
 
 
     @Inject
-    public KurjunInitializer( UserRepoContextStore userRepoContextStore,
-                              RepositoryFactory repositoryFactory,
-                              ArtifactContext artifactContext )
+    public KurjunInitializer( UserRepoContextStore userRepoContextStore, RepositoryFactory repositoryFactory,
+                              ArtifactContext artifactContext, final KurjunProperties kurjunProperties )
     {
         this.userRepoContextStore = userRepoContextStore;
         this.repositoryFactory = repositoryFactory;
         this.artifactContext = artifactContext;
+        this.kurjunProperties = kurjunProperties;
 
         this.localRepositories = new HashSet<>();
         this.userContextSet = new HashSet<>();
+        this.remoteRepositories = new HashSet<>();
 
         init();
     }
@@ -98,6 +107,51 @@ public class KurjunInitializer
             indexArtifacts();
         }
         return false;
+    }
+
+
+    private boolean remoteRepositories()
+    {
+        String sourceList = kurjunProperties.get( KurjunConstants.KURJUN_SOURCE_LIST );
+
+        Properties properties = new Properties();
+
+        String[] servers;
+        if ( sourceList != null )
+        {
+            try
+            {
+                InputStream inputStream = new FileInputStream( sourceList );
+                properties.load( inputStream );
+                servers = properties.getProperty( KurjunConstants.KURJUN_SERVER_LIST ).split( "," );
+                HashSet<RemoteRepository> remoteRepositories = new HashSet<>();
+
+                for ( String s : servers )
+                {
+                    // remoteRepositories.add(repositoryFactory.createNonLocalTemplate( s ));
+                }
+            }
+            catch ( IOException e )
+            {
+                e.printStackTrace();
+            }
+        }
+
+        return false;
+    }
+
+
+    private void fetch( Set<RemoteRepository> remoteRepository )
+    {
+        for ( RemoteRepository repo : remoteRepository )
+        {
+            Thread thread = new Thread( () -> {
+
+
+            } );
+
+            thread.start();
+        }
     }
 
 

@@ -122,10 +122,5 @@ public interface Repository
      */
     List<SerializableMetadata> listPackages();
 
-    /*
-    * Calculate MD5 checksum of the packages
-    * @return byte array containing md5 sum of the packages
-    * */
-    byte[] md5();
 }
 

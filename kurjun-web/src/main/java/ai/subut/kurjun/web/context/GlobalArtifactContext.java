@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.common.service.KurjunContext;
+import ai.subut.kurjun.web.utils.Utils;
 
 
 @Singleton
@@ -16,10 +17,12 @@ public class GlobalArtifactContext implements ArtifactContext
 {
 
     private Map<String, KurjunContext> map;
+    private Map<String, String> cacheMap;
 
 
     public GlobalArtifactContext()
     {
+        this.cacheMap = new ConcurrentHashMap<>();
         this.map = new ConcurrentHashMap<>();
     }
 
@@ -45,6 +48,20 @@ public class GlobalArtifactContext implements ArtifactContext
 
         String hash = new BigInteger( 1, Arrays.copyOf( md5, md5.length ) ).toString( 16 );
         map.remove( hash );
+    }
+
+
+    @Override
+    public String getMd5( final String repository )
+    {
+        return cacheMap.get( repository );
+    }
+
+
+    @Override
+    public void store( final String repository, final byte[] md5 )
+    {
+        cacheMap.put( repository, Utils.MD5.toString( md5 ) );
     }
 
 

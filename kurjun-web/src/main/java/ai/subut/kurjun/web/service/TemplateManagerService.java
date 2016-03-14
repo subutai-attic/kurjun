@@ -160,5 +160,5 @@ public interface TemplateManagerService
     * */
     Renderable renderableTemplate( String repository, String md5, boolean isKurjunClient ) throws IOException;
 
-    String repositoryMd5();
+    String md5();
 }

@@ -7,14 +7,12 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
-
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.web.service.impl.AptManagerServiceImpl;
+import ai.subut.kurjun.web.utils.Utils;
 import ninja.Renderable;
 import ninja.Result;
 import ninja.Results;
@@ -95,7 +93,7 @@ public class AptController
         checkNotNull( name, "Name cannot be null" );
         checkNotNull( version, "Version not found" );
 
-        String metadata = managerService.getPackageInfo( toByteArray( md5 ), name, version );
+        String metadata = managerService.getPackageInfo( Utils.toByteArray( md5 ), name, version );
 
         if ( metadata != null )
         {
@@ -109,7 +107,7 @@ public class AptController
     {
         checkNotNull( md5, "MD5 cannot be null" );
 
-        Renderable renderable = managerService.getPackage( toByteArray( md5 ) );
+        Renderable renderable = managerService.getPackage( Utils.toByteArray( md5 ) );
 
         if ( renderable != null )
         {
@@ -137,7 +135,7 @@ public class AptController
     {
         checkNotNull( md5, "MD5 cannot be null" );
 
-        boolean success = managerService.delete( toByteArray( md5 ) );
+        boolean success = managerService.delete( Utils.toByteArray( md5 ) );
 
         if ( success )
         {
@@ -146,19 +144,8 @@ public class AptController
         return Results.noContent().text();
     }
 
-    private byte[] toByteArray( String md5 )
+    public Result md5()
     {
-        if ( md5 != null )
-        {
-            try
-            {
-                return Hex.decodeHex( md5.toCharArray() );
-            }
-            catch ( DecoderException ex )
-            {
-                ex.printStackTrace();
-            }
-        }
-        return null;
+        return Results.ok().render( managerService.md5() ).text();
     }
 }
