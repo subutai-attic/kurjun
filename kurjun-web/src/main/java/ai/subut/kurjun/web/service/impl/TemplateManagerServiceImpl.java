@@ -186,6 +186,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
                 result.addHeader( "Content-Length", String.valueOf( defaultTemplate.getSize() ) );
 
                 ResponseStreams responseStreams = context.finalizeHeaders( result );
+
                 try ( OutputStream outputStream = responseStreams.getOutputStream() )
                 {
                     ByteStreams.copy( inputStream, outputStream );

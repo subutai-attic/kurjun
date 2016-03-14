@@ -93,7 +93,7 @@ public class AptController
         checkNotNull( name, "Name cannot be null" );
         checkNotNull( version, "Version not found" );
 
-        String metadata = managerService.getPackageInfo( Utils.toByteArray( md5 ), name, version );
+        String metadata = managerService.getPackageInfo( Utils.MD5.toByteArray( md5 ), name, version );
 
         if ( metadata != null )
         {
@@ -107,7 +107,7 @@ public class AptController
     {
         checkNotNull( md5, "MD5 cannot be null" );
 
-        Renderable renderable = managerService.getPackage( Utils.toByteArray( md5 ) );
+        Renderable renderable = managerService.getPackage( Utils.MD5.toByteArray( md5 ) );
 
         if ( renderable != null )
         {
@@ -135,7 +135,7 @@ public class AptController
     {
         checkNotNull( md5, "MD5 cannot be null" );
 
-        boolean success = managerService.delete( Utils.toByteArray( md5 ) );
+        boolean success = managerService.delete( Utils.MD5.toByteArray( md5 ) );
 
         if ( success )
         {

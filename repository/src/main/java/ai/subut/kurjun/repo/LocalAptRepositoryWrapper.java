@@ -235,5 +235,12 @@ class LocalAptRepositoryWrapper extends RepositoryBase implements LocalRepositor
     {
         return null;
     }
+
+
+    @Override
+    public byte[] md5()
+    {
+        return new byte[0];
+    }
 }
 
