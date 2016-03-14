@@ -14,7 +14,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 /**
  * Security Utils for Hashing and etc
  */
-public class SecurityUtil
+public class SecurityUtils
 {
 
     private static String ByteArrayToString(byte[] bytes)

@@ -14,4 +14,11 @@ public class IdentityManagerImpl implements IdentityManager
     @Inject
     SecurityManager securityManager;
 
+
+    public IdentityManagerImpl()
+    {
+
+    }
+
+
 }
