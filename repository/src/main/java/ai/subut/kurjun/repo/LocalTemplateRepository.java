@@ -32,7 +32,6 @@ import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
 
 /**
  * Local repository for Subutai templates.
- *
  */
 public class LocalTemplateRepository extends LocalRepositoryBase
 {
@@ -41,15 +40,12 @@ public class LocalTemplateRepository extends LocalRepositoryBase
     private PackageMetadataStoreFactory metadataStoreFactory;
     private FileStoreFactory fileStoreFactory;
     private SubutaiTemplateParser templateParser;
-
     private KurjunContext context;
 
 
     @Inject
-    public LocalTemplateRepository( PackageMetadataStoreFactory metadataStoreFactory,
-                                    FileStoreFactory fileStoreFactory,
-                                    SubutaiTemplateParser templateParser,
-                                    @Assisted KurjunContext context )
+    public LocalTemplateRepository( PackageMetadataStoreFactory metadataStoreFactory, FileStoreFactory fileStoreFactory,
+                                    SubutaiTemplateParser templateParser, @Assisted KurjunContext context )
     {
         this.metadataStoreFactory = metadataStoreFactory;
         this.fileStoreFactory = fileStoreFactory;
@@ -109,8 +105,9 @@ public class LocalTemplateRepository extends LocalRepositoryBase
             temp.delete();
         }
     }
-    
-    
+
+
+    //TODO files is copied to temp file and gets copied again in put(File)
     public Metadata put( InputStream is, CompressionType compressionType, String owner ) throws IOException
     {
         PackageMetadataStore metadataStore = getMetadataStore();
@@ -118,11 +115,12 @@ public class LocalTemplateRepository extends LocalRepositoryBase
 
         String ext = CompressionType.makeFileExtenstion( compressionType );
         File temp = Files.createTempFile( "template", ext ).toFile();
+
         try
         {
             Files.copy( is, temp.toPath(), StandardCopyOption.REPLACE_EXISTING );
             SubutaiTemplateMetadata meta = templateParser.parseTemplate( temp );
-            
+
             byte[] md5 = fileStore.put( temp );
             if ( Arrays.equals( md5, meta.getMd5Sum() ) )
             {
@@ -141,6 +139,42 @@ public class LocalTemplateRepository extends LocalRepositoryBase
         {
             temp.delete();
         }
+    }
+
+
+    @Override
+    public Metadata put( final File file, final CompressionType compressionType, final String owner ) throws IOException
+    {
+        PackageMetadataStore metadataStore = getMetadataStore();
+        FileStore fileStore = getFileStore();
+        SubutaiTemplateMetadata meta = templateParser.parseTemplate( file );
+
+        try
+        {
+            byte[] md5 = fileStore.put( file );
+
+            if ( Arrays.equals( md5, meta.getMd5Sum() ) )
+            {
+                DefaultTemplate dt = MetadataUtils.serializableTemplateMetadata( meta );
+                dt.setOwnerFprint( owner );
+                metadataStore.put( dt );
+                return dt;
+            }
+            else
+            {
+                fileStore.remove( md5 );
+                throw new IOException( "Package integrity failure" );
+            }
+        }finally
+        {
+            file.delete();
+        }
+    }
+
+
+    public KurjunContext getContext()
+    {
+        return context;
     }
 
 

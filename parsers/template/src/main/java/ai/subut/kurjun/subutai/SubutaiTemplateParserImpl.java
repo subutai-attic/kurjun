@@ -42,6 +42,7 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
         byte[] md5;
         try ( InputStream is = new FileInputStream( file ) )
         {
+            //buffered digest
             md5 = DigestUtils.md5( is );
         }
 

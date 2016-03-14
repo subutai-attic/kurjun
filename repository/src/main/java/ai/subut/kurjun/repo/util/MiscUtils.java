@@ -12,7 +12,6 @@ public class MiscUtils
     /**
      * Calculates the md5 checksum of the given input stream
      *
-     * @param is
      * @return md5 checksum, or <code>null</code> if exception occurred
      */
     public static byte[] calculateMd5( InputStream is )
@@ -27,5 +26,6 @@ public class MiscUtils
         }
         return md5;
     }
+
 
 }
