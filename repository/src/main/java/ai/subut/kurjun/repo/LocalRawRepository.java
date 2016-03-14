@@ -43,7 +43,7 @@ public class LocalRawRepository extends LocalRepositoryBase
 
     @Inject
     public LocalRawRepository( PackageMetadataStoreFactory metadataStoreFactory, FileStoreFactory fileStoreFactory,
-            @Assisted KurjunContext context )
+                               @Assisted KurjunContext context )
     {
         this.metadataStoreFactory = metadataStoreFactory;
         this.fileStoreFactory = fileStoreFactory;
@@ -78,6 +78,8 @@ public class LocalRawRepository extends LocalRepositoryBase
             Files.copy( is, temp.toPath(), StandardCopyOption.REPLACE_EXISTING );
             byte[] md5 = getFileStore().put( temp );
             RawMetadata meta = new RawMetadata( md5, fileName );
+            meta.setSize( temp.length() );
+
             getMetadataStore().put( meta );
             return meta;
         }
@@ -128,5 +130,4 @@ public class LocalRawRepository extends LocalRepositoryBase
     {
         throw new UnsupportedOperationException( "Not supported for raw repositories" );
     }
-
 }

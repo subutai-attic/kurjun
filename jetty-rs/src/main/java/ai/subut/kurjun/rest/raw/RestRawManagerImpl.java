@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
@@ -62,11 +63,12 @@ public class RestRawManagerImpl extends RestManagerBase implements RestRawManage
             if ( raw != null )
             {
                 InputStream is = rawManager.getFileData( decodeMd5( raw.getMd5Sum() ), isKurjunClient );
+
                 if ( is != null )
                 {
-                    return Response.ok( is ).header( "Content-Disposition",
-                            "attachment; filename=" + raw.getName() )
-                            .header( "Content-Type", "application/octet-stream" ).build();
+                    return Response.ok( is ).header( "Content-Disposition", "attachment; filename=" + raw.getName() )
+                                   .header( "Content-Type", "application/octet-stream" )
+                                   .header( HttpHeaders.CONTENT_LENGTH, raw.getSize() ).build();
                 }
             }
         }
@@ -130,8 +132,8 @@ public class RestRawManagerImpl extends RestManagerBase implements RestRawManage
 
             if ( list != null )
             {
-                List<RawMetadata> deflist
-                        = list.stream().map( t -> convertToRawMetadata( t ) ).collect( Collectors.toList() );
+                List<RawMetadata> deflist =
+                        list.stream().map( t -> convertToRawMetadata( t ) ).collect( Collectors.toList() );
                 return Response.ok( GSON.toJson( deflist ) ).build();
             }
         }
@@ -242,5 +244,4 @@ public class RestRawManagerImpl extends RestManagerBase implements RestRawManage
         RawMetadata defaultTemplate = new RawMetadata( decodeMd5( raw.getMd5Sum() ), raw.getName() );
         return defaultTemplate;
     }
-
 }
