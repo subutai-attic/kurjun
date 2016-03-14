@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.vafer.jdeb.debian.ControlFile;
 
 import org.apache.commons.codec.binary.Hex;
@@ -23,12 +21,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public abstract class AbstractPackageMetadata implements PackageMetadata
 {
-    private static final Logger LOG = LoggerFactory.getLogger( BinaryPackageMetadata.class );
     protected ControlFile controlFile;
-    private DependencyParser parser = new DependencyParser();
-    private Map<String, List<Dependency>> depCache = new HashMap<>();
-    private byte[] md5;
-    private String filename;
+    private final DependencyParser parser = new DependencyParser();
+    private final Map<String, List<Dependency>> depCache = new HashMap<>();
+    private final byte[] md5;
+    private final String filename;
 
 
     AbstractPackageMetadata( byte[] md5, String filename, ControlFile controlFile )

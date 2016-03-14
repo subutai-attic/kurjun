@@ -50,6 +50,10 @@ public interface RepositoryFactory
      */
     @Named( PackageType.SNAP )
     LocalRepository createLocalSnap( KurjunContext context );
+    
+    
+    @Named( PackageType.RAW )
+    LocalRawRepository createLocalRaw( KurjunContext context );
 
 
     /**
@@ -71,6 +75,11 @@ public interface RepositoryFactory
      */
     @Named( PackageType.SNAP )
     RemoteRepository createNonLocalSnap( String url, @Nullable Identity identity );
+    
+    
+    
+    @Named( PackageType.RAW )
+    RemoteRawRepository createNonLocalRaw( @Assisted( "url" ) String url, @Nullable Identity identity );
 
 
     /**

@@ -24,14 +24,14 @@ import ninja.utils.NinjaProperties;
 
 
 @Singleton
-public class SubutaiTemplateFileHandler implements FileItemProvider
+public class SubutaiFileHandler implements FileItemProvider
 {
 
     private File tmpFolder;
 
 
     @Inject
-    public SubutaiTemplateFileHandler( NinjaProperties ninjaProperties )
+    public SubutaiFileHandler( NinjaProperties ninjaProperties )
     {
         String tempName = ninjaProperties.get( NinjaConstant.UPLOADS_TEMP_FOLDER );
         if ( tempName == null )

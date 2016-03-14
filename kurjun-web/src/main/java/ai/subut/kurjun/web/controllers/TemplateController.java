@@ -11,7 +11,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
-import ai.subut.kurjun.web.handler.SubutaiTemplateFileHandler;
+import ai.subut.kurjun.web.handler.SubutaiFileHandler;
 import ai.subut.kurjun.web.model.KurjunFileItem;
 import ai.subut.kurjun.web.service.TemplateManagerService;
 import ninja.Context;
@@ -38,7 +38,7 @@ public class TemplateController
     TemplateManagerService templateManagerService;
 
 
-    @FileProvider( SubutaiTemplateFileHandler.class )
+    @FileProvider( SubutaiFileHandler.class )
     public Result upload( Context context, @Param( "fingerprint" ) String fingerprint, @Param( "file" ) FileItem file,
                           @Param( "md5" ) String md5 ) throws Exception
     {

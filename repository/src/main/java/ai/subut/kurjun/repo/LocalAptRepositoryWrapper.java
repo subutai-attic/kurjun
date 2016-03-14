@@ -37,7 +37,6 @@ import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
 
 /**
  * Local non-virtual apt repository.
- *
  */
 class LocalAptRepositoryWrapper extends RepositoryBase implements LocalRepository
 {
@@ -176,13 +175,14 @@ class LocalAptRepositoryWrapper extends RepositoryBase implements LocalRepositor
         throw new UnsupportedOperationException( "TODO: get packages index and parse." );
     }
 
+
     @Override
     public boolean delete( byte[] md5 ) throws IOException
     {
         throw new UnsupportedOperationException( "Not supported in non-virtual local apt repository." );
     }
-    
-    
+
+
     @Override
     public boolean delete( Object id, byte[] md5 ) throws IOException
     {
@@ -193,8 +193,9 @@ class LocalAptRepositoryWrapper extends RepositoryBase implements LocalRepositor
     /**
      * Reads releases from {@code conf/distributions} file of this apt repository.
      *
-     * @throws IOException on any read failures
      * @return list of release names like 'trusty', 'utopic', etc.
+     *
+     * @throws IOException on any read failures
      */
     private void readDistributionsFile() throws IOException
     {
