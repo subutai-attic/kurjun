@@ -7,8 +7,9 @@ package ai.subut.kurjun.model.identity;
 public enum RelationObjectType
 {
     User( 1, "User" ),
-    Repository( 2, "Repository" ),
-    RepositoryContent( 3, "Repository-Content" );
+    RepositoryParent( 2, "Repository-Parent" ),
+    Repository( 3, "Repository" ),
+    RepositoryContent( 4, "Repository-Content" );
 
     private String name;
     private int id;
