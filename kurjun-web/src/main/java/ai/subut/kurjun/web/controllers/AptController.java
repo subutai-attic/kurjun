@@ -13,6 +13,7 @@ import com.google.inject.Singleton;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.web.service.impl.AptManagerServiceImpl;
 import ai.subut.kurjun.web.utils.Utils;
+import ninja.Context;
 import ninja.Renderable;
 import ninja.Result;
 import ninja.Results;
@@ -37,17 +38,17 @@ public class AptController extends BaseController
 
 
     @FileProvider( DiskFileItemProvider.class )
-    public Result upload( @Param( "file" ) FileItem file ) throws IOException
+    public Result upload( Context context, @Param( "file" ) FileItem file ) throws IOException
     {
         try ( InputStream inputStream = new FileInputStream( file.getFile() ) )
         {
             URI uri = managerService.upload( inputStream );
-            return Results.ok().render( uri );
+            return Results.ok().render( uri ).text();
         }
     }
 
 
-    public Result release( @PathParam( "release" ) String release )
+    public Result release( Context context, @PathParam( "release" ) String release )
     {
         checkNotNull( release, "Release cannot be null" );
 
@@ -55,15 +56,16 @@ public class AptController extends BaseController
 
         if ( rel != null )
         {
-            return Results.ok().render( rel );
+            return Results.ok().render( rel ).text();
         }
 
         return Results.notFound().render( String.format( "Not found:%s", release ) );
     }
 
 
-    public Result packageIndexes( @PathParam( "release" ) String release, @PathParam( "component" ) String component,
-                                  @PathParam( "arch" ) String arch, @PathParam( "packages" ) String packagesIndex )
+    public Result packageIndexes( Context context, @PathParam( "release" ) String release,
+                                  @PathParam( "component" ) String component, @PathParam( "arch" ) String arch,
+                                  @PathParam( "packages" ) String packagesIndex )
     {
         checkNotNull( release, "Release cannot be null" );
         checkNotNull( component, "Component cannot be null" );
@@ -76,7 +78,7 @@ public class AptController extends BaseController
     }
 
 
-    public Result getPackageByFileName( @PathParam( "filename" ) String filename )
+    public Result getPackageByFileName( Context context, @PathParam( "filename" ) String filename )
     {
         checkNotNull( filename, "File name cannot be null" );
 
@@ -86,12 +88,13 @@ public class AptController extends BaseController
     }
 
 
-    public Result info( @Param( "md5" ) String md5, @Param( "name" ) String name, @Param( "version" ) String version )
+    public Result info( Context context, @Param( "md5" ) String md5, @Param( "name" ) String name,
+                        @Param( "version" ) String version )
 
     {
-        checkNotNull( md5, "MD5 cannot be null" );
-        checkNotNull( name, "Name cannot be null" );
-        checkNotNull( version, "Version not found" );
+//        checkNotNull( md5, "MD5 cannot be null" );
+//        checkNotNull( name, "Name cannot be null" );
+//        checkNotNull( version, "Version not found" );
 
         String metadata = managerService.getPackageInfo( Utils.MD5.toByteArray( md5 ), name, version );
 
@@ -103,7 +106,7 @@ public class AptController extends BaseController
     }
 
 
-    public Result download( @Param( "md5" ) String md5 )
+    public Result download( Context context, @Param( "md5" ) String md5 )
     {
         checkNotNull( md5, "MD5 cannot be null" );
 
@@ -131,7 +134,7 @@ public class AptController extends BaseController
     }
 
 
-    public Result delete( @Param( "md5" ) String md5 )
+    public Result delete( Context context, @Param( "md5" ) String md5 )
     {
         checkNotNull( md5, "MD5 cannot be null" );
 
@@ -143,6 +146,7 @@ public class AptController extends BaseController
         }
         return Results.noContent().text();
     }
+
 
     public Result md5()
     {

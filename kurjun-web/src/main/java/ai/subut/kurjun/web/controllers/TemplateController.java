@@ -70,6 +70,17 @@ public class TemplateController extends BaseController
     }
 
 
+    //    public Result info( @Param( "id" ) String fingerprint, @Param( "name" ) String name,
+    //                        @Param( "version" ) String version )
+    //    {
+    //        if ( fingerprint == null )
+    //        {
+    //            fingerprint = "public";
+    //        }
+    //
+    //    }
+
+
     public Result download( Context context, @Param( "id" ) String fingerprint, @Param( "md5" ) String md5 )
             throws InternalServerErrorException
     {
@@ -88,13 +99,18 @@ public class TemplateController extends BaseController
     }
 
 
-    public Result delete( Context context, @Param( "md5" ) String md5 )
+    public Result delete( Context context, @Param( "md5" ) String md5, @Param( "id" ) String fingerprint )
     {
         boolean success;
 
+        if ( fingerprint == null )
+        {
+            fingerprint = "public";
+        }
+
         try
         {
-            success = templateManagerService.delete( md5 );
+            success = templateManagerService.delete( md5, fingerprint );
         }
         catch ( IOException e )
         {
@@ -103,7 +119,7 @@ public class TemplateController extends BaseController
             throw new InternalServerErrorException( "Error while deleting artifact" );
         }
 
-        return Results.ok().render( String.format( "Deleted: %b", success ) );
+        return Results.ok().render( String.format( "Deleted: %b", success ) ).text();
     }
 
 
@@ -115,9 +131,10 @@ public class TemplateController extends BaseController
             {
                 fingerprint = "public";
             }
+
             List<SerializableMetadata> defaultTemplateList = templateManagerService.list( fingerprint, false );
 
-            return Results.ok().json().render( defaultTemplateList );
+            return Results.ok().render( defaultTemplateList ).json();
         }
         catch ( IOException e )
         {
@@ -125,6 +142,7 @@ public class TemplateController extends BaseController
             throw new InternalServerErrorException( "Error while getting list of artifacts" );
         }
     }
+
 
     public Result md5()
     {

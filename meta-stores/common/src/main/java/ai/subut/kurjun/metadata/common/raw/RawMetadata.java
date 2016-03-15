@@ -12,7 +12,6 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
 
 /**
  * Metadata for raw resources.
- *
  */
 public class RawMetadata implements Metadata, SerializableMetadata
 {
@@ -77,7 +76,7 @@ public class RawMetadata implements Metadata, SerializableMetadata
     @Override
     public String getVersion()
     {
-        throw new UnsupportedOperationException( "Version is not supported for raw resource" );
+        return "Not Supported";
     }
 
 
@@ -107,5 +106,4 @@ public class RawMetadata implements Metadata, SerializableMetadata
         }
         return false;
     }
-
 }

@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 import org.slf4j.Logger;
 
@@ -136,6 +137,8 @@ abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepo
     {
         return !md5.equalsIgnoreCase( getMd5() );
     }
+
+    public abstract  List<SerializableMetadata> getCachedData();
 
     protected void deleteCache( byte[] md5 )
     {

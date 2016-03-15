@@ -1,7 +1,13 @@
 package ai.subut.kurjun.web.context;
 
 
+import java.util.List;
+import java.util.Set;
+
 import ai.subut.kurjun.common.service.KurjunContext;
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.repository.RemoteRepository;
+import ai.subut.kurjun.web.model.RepositoryCache;
 
 
 public interface ArtifactContext
@@ -40,5 +46,23 @@ public interface ArtifactContext
     String getMd5( String repository );
 
     /***/
-    void store( String repository, String md5 );
+    void store( String repository, RepositoryCache repositoryCache );
+
+    List<SerializableMetadata> getList( String repository );
+
+    RepositoryCache getRepositoryCache( String repository );
+
+    Set<RemoteRepository> getRemoteTemplateRepositories();
+
+    void addRemoteTemplateRepository( RemoteRepository remoteRepository );
+
+
+    Set<RemoteRepository> getRemoteRawRepositories();
+
+    void addRemoteRawRepositories( RemoteRepository remoteRepository );
+
+
+    Set<RemoteRepository> getRemoteAptRepositories();
+
+    void addRemoteAptRepositories(RemoteRepository remoteRepository);
 }

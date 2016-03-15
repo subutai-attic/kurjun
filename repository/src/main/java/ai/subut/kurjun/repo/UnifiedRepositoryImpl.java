@@ -118,9 +118,11 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
     public List<SerializableMetadata> listPackages()
     {
         List<SerializableMetadata> result = new LinkedList<>();
+
         for ( Repository repo : getAllRepositories() )
         {
             List<SerializableMetadata> list = repo.listPackages();
+
             for ( SerializableMetadata meta : list )
             {
                 if ( !result.contains( meta ) )

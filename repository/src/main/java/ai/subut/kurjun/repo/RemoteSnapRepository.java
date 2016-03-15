@@ -1,7 +1,6 @@
 package ai.subut.kurjun.repo;
 
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -36,7 +35,6 @@ import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.repo.cache.PackageCache;
-import ai.subut.kurjun.repo.util.MiscUtils;
 import ai.subut.kurjun.repo.util.http.WebClientFactory;
 
 
@@ -219,6 +217,13 @@ class RemoteSnapRepository extends RemoteRepositoryBase
 
     @Override
     public String getMd5()
+    {
+        return null;
+    }
+
+
+    @Override
+    public List<SerializableMetadata> getCachedData()
     {
         return null;
     }

@@ -3,6 +3,7 @@ package ai.subut.kurjun.web.model;
 
 public class RemoteRepo
 {
+
     private String url;
     private String token;
     private long tokenTtl;

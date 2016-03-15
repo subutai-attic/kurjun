@@ -24,6 +24,7 @@ import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.repository.RemoteRepository;
 import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.web.context.ArtifactContext;
+import ai.subut.kurjun.web.model.RepositoryCache;
 import ai.subut.kurjun.web.model.UserContext;
 import ai.subut.kurjun.web.model.UserContextImpl;
 import ai.subut.kurjun.web.service.UserRepoContextStore;
@@ -41,6 +42,7 @@ public class KurjunInitializer
     private UserRepoContextStore userRepoContextStore;
     private KurjunProperties kurjunProperties;
     private Set<LocalRepository> localRepositories;
+
     private Set<RemoteRepository> remoteRepositories;
     private Set<UserContext> userContextSet;
 
@@ -81,6 +83,8 @@ public class KurjunInitializer
             return loadRepositories();
         }
 
+        remoteRepositories();
+
         return false;
     }
 
@@ -118,6 +122,7 @@ public class KurjunInitializer
         Properties properties = new Properties();
 
         String[] servers;
+
         if ( sourceList != null )
         {
             try
@@ -125,16 +130,20 @@ public class KurjunInitializer
                 InputStream inputStream = new FileInputStream( sourceList );
                 properties.load( inputStream );
                 servers = properties.getProperty( KurjunConstants.KURJUN_SERVER_LIST ).split( "," );
-                HashSet<RemoteRepository> remoteRepositories = new HashSet<>();
 
-                for ( String s : servers )
+                if ( servers.length > 0 )
                 {
-                    remoteRepositories.add( repositoryFactory.createNonLocalTemplate( s, null, "public", null ) );
-                    remoteRepositories.add( repositoryFactory.createNonLocalRaw( s, null ) );
-                    remoteRepositories.add( repositoryFactory.createNonLocalApt( new URL( s ) ) );
+                    for ( String s : servers )
+                    {
+                        artifactContext.addRemoteTemplateRepository(
+                                repositoryFactory.createNonLocalTemplate( s, null, "public", null ) );
+
+                        artifactContext.addRemoteRawRepositories( repositoryFactory.createNonLocalRaw( s, null ) );
+
+                        artifactContext.addRemoteAptRepositories( repositoryFactory.createNonLocalApt( new URL( s ) ) );
+                    }
                 }
 
-                fetch( remoteRepositories );
             }
             catch ( IOException e )
             {
@@ -151,7 +160,7 @@ public class KurjunInitializer
         for ( RemoteRepository repo : remoteRepository )
         {
             Thread thread = new Thread( () -> {
-                artifactContext.store( repo.getHostname(), repo.getMd5() );
+                artifactContext.store( repo.getHostname(), new RepositoryCache( repo.getMd5(), repo.listPackages() ) );
             } );
 
             thread.start();
@@ -179,4 +188,6 @@ public class KurjunInitializer
 
         return false;
     }
+
+
 }

@@ -44,6 +44,8 @@ public class Module extends AbstractModule
 
         bind( ArtifactContext.class ).to( GlobalArtifactContext.class );
 
+        bind( KurjunInitializer.class );
+
         bind( UserRepoContextStore.class ).to( UserRepoContextStoreImpl.class );
 
         bind( TemplateManagerService.class ).to( TemplateManagerServiceImpl.class );
@@ -51,7 +53,5 @@ public class Module extends AbstractModule
         bind( RawManagerService.class ).to( RawManagerServiceImpl.class );
 
         bind( FileItemProvider.class ).to( SubutaiFileHandler.class );
-
-        bind( KurjunInitializer.class );
     }
 }

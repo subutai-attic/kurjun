@@ -52,15 +52,18 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     static final String LIST_PATH = "list";
     private final String MD5_PATH = "md5";
 
-    @Inject
     private WebClientFactory webClientFactory;
 
     @Inject
     private Gson gson;
+
     private PackageCache cache;
 
     private final URL url;
     private final Identity identity;
+
+    private String md5Sum;
+    private List<SerializableMetadata> remoteIndexChache;
 
     private static final int CONN_TIMEOUT = 3000;
     private static final int READ_TIMEOUT = 3000;
@@ -68,9 +71,10 @@ public class RemoteRawRepository extends RemoteRepositoryBase
 
 
     @Inject
-    public RemoteRawRepository( PackageCache cache, @Assisted( "url" ) String url,
+    public RemoteRawRepository( PackageCache cache, WebClientFactory webClientFactory, @Assisted( "url" ) String url,
                                 @Assisted @Nullable Identity identity )
     {
+        this.webClientFactory = webClientFactory;
         this.cache = cache;
         this.identity = identity;
         try
@@ -81,6 +85,9 @@ public class RemoteRawRepository extends RemoteRepositoryBase
         {
             throw new IllegalArgumentException( "Invalid url", ex );
         }
+
+        this.md5Sum = getMd5();
+        this.remoteIndexChache = listPackages();
     }
 
 
@@ -146,10 +153,9 @@ public class RemoteRawRepository extends RemoteRepositoryBase
                 {
                     deleteCache( md5Calculated );
 
-                    LOGGER.error(
-                            "Md5 checksum mismatch after getting the package from remote host. "
-                                    + "Requested with md5={}, name={}",
-                            Hex.toHexString( metadata.getMd5Sum() ), metadata.getName() );
+                    LOGGER.error( "Md5 checksum mismatch after getting the package from remote host. "
+                                    + "Requested with md5={}, name={}", Hex.toHexString( metadata.getMd5Sum() ),
+                            metadata.getName() );
                 }
             }
         }
@@ -160,6 +166,11 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     @Override
     public List<SerializableMetadata> listPackages()
     {
+        if ( this.md5Sum.equalsIgnoreCase( getMd5() ) )
+        {
+            return this.remoteIndexChache;
+        }
+
         WebClient webClient = webClientFactory.make( this, LIST_PATH, null );
         if ( identity != null )
         {
@@ -209,6 +220,13 @@ public class RemoteRawRepository extends RemoteRepositoryBase
             }
         }
         return "";
+    }
+
+
+    @Override
+    public List<SerializableMetadata> getCachedData()
+    {
+        return this.remoteIndexChache;
     }
 
 

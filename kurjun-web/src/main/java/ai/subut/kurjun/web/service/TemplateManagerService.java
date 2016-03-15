@@ -105,7 +105,7 @@ public interface TemplateManagerService
      *
      * @return {@code true} if package successfully deleted; {@code false} otherwise
      */
-    boolean delete( String md5 ) throws IOException;
+    boolean delete( String md5, String repository ) throws IOException;
 
 
     /**

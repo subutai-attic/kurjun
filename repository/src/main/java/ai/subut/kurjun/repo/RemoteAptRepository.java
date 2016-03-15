@@ -81,6 +81,8 @@ class RemoteAptRepository extends RemoteRepositoryBase
     private static final int CONN_TIMEOUT = 3000;
     private static final int READ_TIMEOUT = 3000;
     private static final int CONN_TIMEOUT_FOR_URL_CHECK = 200;
+    private List<SerializableMetadata> remoteIndexChache;
+    private String md5Sum = "";
 
 
     /**
@@ -89,9 +91,20 @@ class RemoteAptRepository extends RemoteRepositoryBase
      * @param url URL of the remote repository
      */
     @Inject
-    public RemoteAptRepository( @Assisted URL url )
+    public RemoteAptRepository( @Assisted URL url, WebClientFactory webClientFactory )
     {
+
         this.url = url;
+        this.webClientFactory = webClientFactory;
+
+        _initCache();
+    }
+
+
+    private void _initCache()
+    {
+        this.md5Sum = getMd5();
+        this.remoteIndexChache = listPackages();
     }
 
 
@@ -210,6 +223,11 @@ class RemoteAptRepository extends RemoteRepositoryBase
     @Override
     public List<SerializableMetadata> listPackages()
     {
+        if ( this.md5Sum.equalsIgnoreCase( getMd5() ) )
+        {
+            return this.remoteIndexChache;
+        }
+
         List<SerializableMetadata> result = new LinkedList<>();
         Set<ReleaseFile> distributions = getDistributions();
 
@@ -258,6 +276,14 @@ class RemoteAptRepository extends RemoteRepositoryBase
         }
         return "";
     }
+
+
+    @Override
+    public List<SerializableMetadata> getCachedData()
+    {
+        return this.remoteIndexChache;
+    }
+
 
     private Response doGet( WebClient webClient )
     {

@@ -10,10 +10,10 @@ import java.util.List;
 
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
-import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.raw.RawMetadata;
 import ai.subut.kurjun.model.metadata.Metadata;
@@ -21,6 +21,7 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
 import ai.subut.kurjun.repo.LocalRawRepository;
 import ai.subut.kurjun.repo.RepositoryFactory;
+import ai.subut.kurjun.web.context.ArtifactContext;
 import ai.subut.kurjun.web.service.RawManagerService;
 import ai.subut.kurjun.web.utils.Utils;
 import ninja.Renderable;
@@ -29,48 +30,37 @@ import ninja.utils.ResponseStreams;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 
+@Singleton
 public class RawManagerServiceImpl implements RawManagerService
 {
     private RepositoryFactory repositoryFactory;
-
     private LocalRawRepository localPublicRawRepository;
     private UnifiedRepository unifiedRepository;
-    private KurjunProperties kurjunProperties;
+    private ArtifactContext artifactContext;
 
 
     @Inject
-    public RawManagerServiceImpl( final RepositoryFactory repositoryFactory, final KurjunProperties kurjunProperties )
+    public RawManagerServiceImpl( final RepositoryFactory repositoryFactory, final ArtifactContext artifactContext )
     {
         this.repositoryFactory = repositoryFactory;
-        this.kurjunProperties = kurjunProperties;
+        this.artifactContext = artifactContext;
 
         _local();
+        _unified();
     }
 
 
     private void _local()
     {
         this.localPublicRawRepository = this.repositoryFactory.createLocalRaw( new KurjunContext( "raw" ) );
+    }
+
+
+    private void _unified()
+    {
         this.unifiedRepository = this.repositoryFactory.createUnifiedRepo();
         unifiedRepository.getRepositories().add( this.localPublicRawRepository );
-    }
-
-
-    //    private void _remote()
-    //    {
-    //        this.localPublicRawRepository;
-    //    }
-
-
-    private LocalRawRepository getUserRawRepository( KurjunContext kurjunContext )
-    {
-        return this.repositoryFactory.createLocalRaw( kurjunContext );
-    }
-
-
-    private LocalRawRepository getUserRawRepository( String repository )
-    {
-        return this.repositoryFactory.createLocalRaw( new KurjunContext( repository ) );
+        unifiedRepository.getRepositories().addAll( artifactContext.getRemoteRawRepositories() );
     }
 
 
@@ -187,7 +177,7 @@ public class RawManagerServiceImpl implements RawManagerService
         DefaultMetadata metadata = new DefaultMetadata();
         metadata.setMd5sum( md5 );
 
-        return localPublicRawRepository.getPackageInfo( metadata );
+        return unifiedRepository.getPackageInfo( metadata );
     }
 
 

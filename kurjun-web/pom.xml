@@ -14,9 +14,7 @@
   <packaging>war</packaging>
 
   <properties>
-    <mainClass>ai.subut.kurjun.http.HttpServer</mainClass>
     <project.build.sourceencoding>UTF-8</project.build.sourceencoding>
-    <subutai.kurjun.version>4.0.0-RC7-SNAPSHOT</subutai.kurjun.version>
     <ai.subut.kurjun.version>1.0</ai.subut.kurjun.version>
 
     <!-- ================================ -->
@@ -26,8 +24,7 @@
   </properties>
 
   <build>
-    <finalName>KurjunWeb</finalName>
-
+    <finalName>kurjun</finalName>
     <plugins>
 
       <!-- Ninja SuperDevMode -->
@@ -73,6 +70,41 @@
           </systemProperties>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+          <createDependencyReducedPom>true</createDependencyReducedPom>
+          <filters>
+            <filter>
+              <artifact>*:*</artifact>
+              <excludes>
+                <exclude>META-INF/*.SF</exclude>
+                <exclude>META-INF/*.DSA</exclude>
+                <exclude>META-INF/*.RSA</exclude>
+              </excludes>
+            </filter>
+          </filters>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>ninja.standalone.NinjaJetty</mainClass>
+                </transformer>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
 
     <!-- Removing this may cause error reading of configuration file -->
@@ -103,54 +135,11 @@
   <!-- ============================================================================================================= -->
 
   <dependencies>
-
-    <!-- ************* HUB *********************** -->
-    <!-- Hub Core - START
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>hub-core-common</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.ninjaframework</groupId>
+      <artifactId>ninja-standalone</artifactId>
+      <version>${ninja.version}</version>
     </dependency>
-
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>hub-core-dao</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>hub-core-service</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    Hub Core - END -->
-    <!-- ***************************************** -->
-
-
-    <!-- ************* KURJUN COMMON************** -->
-    <!--<dependency>-->
-      <!--<groupId>io.subutai</groupId>-->
-      <!--<artifactId>kurjun-api</artifactId>-->
-      <!--<version>${subutai.kurjun.version}</version>-->
-      <!--<exclusions>-->
-        <!--<exclusion>-->
-          <!--<groupId>org.slf4j</groupId>-->
-          <!--<artifactId>slf4j-simple</artifactId>-->
-        <!--</exclusion>-->
-      <!--</exclusions>-->
-    <!--</dependency>-->
-
-    <!--<dependency>-->
-      <!--<groupId>io.subutai</groupId>-->
-      <!--<artifactId>kurjun-impl</artifactId>-->
-      <!--<version>${subutai.kurjun.version}</version>-->
-      <!--<exclusions>-->
-        <!--<exclusion>-->
-          <!--<groupId>io.subutai</groupId>-->
-          <!--<artifactId>*</artifactId>-->
-        <!--</exclusion>-->
-      <!--</exclusions>-->
-    <!--</dependency>-->
 
     <dependency>
       <groupId>ai.subut.kurjun</groupId>
@@ -191,7 +180,6 @@
       <version>${ai.subut.kurjun.version}</version>
     </dependency>
     <!-- ***************************************** -->
-
 
     <!-- ************* Jetty ********************* -->
     <dependency>
@@ -252,5 +240,6 @@
     </dependency>
     <!-- *************************************** -->
   </dependencies>
+
 
 </project>

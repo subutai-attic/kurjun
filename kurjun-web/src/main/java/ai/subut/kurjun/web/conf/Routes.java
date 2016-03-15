@@ -14,13 +14,13 @@ import ninja.application.ApplicationRoutes;
 
 public class Routes implements ApplicationRoutes
 {
-    private static final String baseUrl = "/rest/kurjun/v1/";
+    private static final String baseUrl = "/rest/";
 
-    private static final String baseTemplateUrl = baseUrl + "template";
+    private static final String baseTemplateUrl = baseUrl + "template/";
 
     private static final String baseDebUrl = baseUrl + "deb/";
 
-    private static final String baseRawUrl = baseUrl + "files/";
+    private static final String baseRawUrl = baseUrl + "file/";
 
 
     @Override
@@ -28,11 +28,12 @@ public class Routes implements ApplicationRoutes
     {
         //REST Template Controller
 
-        router.GET().route( baseTemplateUrl + "/all" ).with( TemplateController.class, "list" );
-        router.GET().route( baseTemplateUrl ).with( TemplateController.class, "download" );
-        router.GET().route( baseTemplateUrl + "/md5" ).with( TemplateController.class, "md5" );
-        router.POST().route( baseTemplateUrl ).with( TemplateController.class, "upload" );
-        router.DELETE().route( baseTemplateUrl ).with( TemplateController.class, "delete" );
+        router.GET().route( baseTemplateUrl + "list" ).with( TemplateController.class, "list" );
+        router.GET().route( baseTemplateUrl + "get" ).with( TemplateController.class, "download" );
+        router.GET().route( baseTemplateUrl + "md5" ).with( TemplateController.class, "md5" );
+//        router.GET().route( baseTemplateUrl + "info" ).with( TemplateController.class, "info" );
+        router.POST().route( baseTemplateUrl + "upload" ).with( TemplateController.class, "upload" );
+        router.DELETE().route( baseTemplateUrl + "delete" ).with( TemplateController.class, "delete" );
 
         //REST APT Controller
         router.GET().route( baseDebUrl + "dists/{release}/Release" ).with( AptController.class, "release" );

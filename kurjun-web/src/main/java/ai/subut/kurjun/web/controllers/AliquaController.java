@@ -53,9 +53,9 @@ public class AliquaController extends BaseController
     }
 
 
-    public Result getFile( @Param( "md5" ) String md5 )
+    public Result getFile( Context context, @Param( "md5" ) String md5 )
     {
-        //checkNotNull( md5, "MD5 cannot be null" );
+        checkNotNull( md5, "MD5 cannot be null" );
 
         Renderable renderable = rawManagerService.getFile( Utils.MD5.toByteArray( md5 ) );
 
@@ -67,7 +67,7 @@ public class AliquaController extends BaseController
     }
 
 
-    public Result delete( @Param( "md5" ) String md5 )
+    public Result delete( Context context, @Param( "md5" ) String md5 )
     {
         checkNotNull( md5, "MD5 cannot be null" );
 

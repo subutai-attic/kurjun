@@ -47,10 +47,11 @@ public class AptManagerServiceImpl implements AptManagerService
     private AptIndexBuilderFactory aptIndexBuilderFactory;
     private PackagesProviderFactory packagesProviderFactory;
     private PackageFilenameParser packageFilenameParser;
-    private ArtifactContext artifactContext;
 
+    private ArtifactContext artifactContext;
     private LocalRepository localRepository;
     private UnifiedRepository unifiedRepository;
+
     private KurjunContext kurjunContext;
 
 
@@ -67,24 +68,25 @@ public class AptManagerServiceImpl implements AptManagerService
         this.packageFilenameParser = packageFilenameParser;
 
         _local();
-        _remote();
+
+        _unified();
     }
 
 
     //init local repos
     private void _local()
     {
-        this.unifiedRepository = repositoryFactory.createUnifiedRepo();
         this.kurjunContext = new KurjunContext( "vapt" );
         this.localRepository = repositoryFactory.createLocalApt( kurjunContext );
-        this.unifiedRepository.getRepositories().add( this.localRepository );
     }
 
 
     //init remote repos
-    private void _remote()
+    private void _unified()
     {
-
+        this.unifiedRepository = repositoryFactory.createUnifiedRepo();
+        this.unifiedRepository.getRepositories().add( this.localRepository );
+        artifactContext.getRemoteAptRepositories();
     }
 
 

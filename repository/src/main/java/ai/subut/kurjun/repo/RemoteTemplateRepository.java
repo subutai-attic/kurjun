@@ -24,6 +24,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.http.HTTPConduit;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
@@ -53,17 +56,16 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
 
     private static final Logger LOGGER = LoggerFactory.getLogger( RemoteTemplateRepository.class );
 
+    static final String TEMPLATE_PATH = "template";
     static final String INFO_PATH = "info";
     static final String LIST_PATH = "list";
     static final String GET_PATH = "get";
     static final String MD5_PATH = "md5";
 
-    @Inject
+
     private WebClientFactory webClientFactory;
-
-
-    @Inject
     private Gson gson;
+
     private PackageCache cache;
 
     private final URL url;
@@ -71,7 +73,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
 
     private String token = null;
 
-    private String md5Sum;
+    private String md5Sum = "";
     private List<SerializableMetadata> remoteIndexChache;
 
     private static final int CONN_TIMEOUT = 3000;
@@ -82,10 +84,13 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
 
 
     @Inject
-    public RemoteTemplateRepository( PackageCache cache, @Assisted( "url" ) String url,
-                                     @Assisted @Nullable Identity identity, @Assisted( "context" ) String kurjunContext,
+    public RemoteTemplateRepository( PackageCache cache, WebClientFactory webClientFactory, Gson gson,
+                                     @Assisted( "url" ) String url, @Assisted @Nullable Identity identity,
+                                     @Assisted( "context" ) String kurjunContext,
                                      @Assisted( "token" ) @Nullable String token )
     {
+        this.gson = gson;
+        this.webClientFactory = webClientFactory;
         this.cache = cache;
         this.identity = identity;
         this.context = kurjunContext;
@@ -98,6 +103,14 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         {
             throw new IllegalArgumentException( "Invalid url", ex );
         }
+        _initCache();
+    }
+
+
+    private void _initCache()
+    {
+        this.remoteIndexChache = listPackages();
+        this.md5Sum = getMd5();
     }
 
 
@@ -132,7 +145,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     @Override
     public SerializableMetadata getPackageInfo( Metadata metadata )
     {
-        WebClient webClient = webClientFactory.make( this, context + "/" + INFO_PATH, makeParamsMap( metadata ) );
+        WebClient webClient = webClientFactory.make( this, TEMPLATE_PATH + "/" + INFO_PATH, makeParamsMap( metadata ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -167,7 +180,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
             return cachedStream;
         }
 
-        WebClient webClient = webClientFactory.make( this, context + "/" + GET_PATH, makeParamsMap( metadata ) );
+        WebClient webClient = webClientFactory.make( this, TEMPLATE_PATH + "/" + GET_PATH, makeParamsMap( metadata ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -205,8 +218,14 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     @Override
     public List<SerializableMetadata> listPackages()
     {
+
+        if ( this.md5Sum.equalsIgnoreCase( getMd5() ) )
+        {
+            return this.remoteIndexChache;
+        }
+
         WebClient webClient =
-                webClientFactory.make( this, context + "/" + LIST_PATH, makeParamsMap( new DefaultMetadata() ) );
+                webClientFactory.make( this, TEMPLATE_PATH + "/" + LIST_PATH, makeParamsMap( new DefaultMetadata() ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -220,7 +239,10 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
                 try
                 {
                     List<String> items = IOUtils.readLines( ( InputStream ) resp.getEntity() );
-                    return parseItems( items.get( 0 ) );
+
+                    this.remoteIndexChache = toObject( items.get( 0 ) );
+
+                    return this.remoteIndexChache;
                 }
                 catch ( IOException ex )
                 {
@@ -242,19 +264,35 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     @Override
     public String getMd5()
     {
-        WebClient webClient = webClientFactory.make( this, context + "/" + MD5_PATH, null );
+        WebClient webClient = webClientFactory.make( this, TEMPLATE_PATH + "/" + MD5_PATH, null );
 
-        Response response = doGet( webClient );
-
-        if ( response != null && response.getStatus() == Response.Status.OK.getStatusCode() )
+        Response resp = doGet( webClient );
+        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
         {
-            String md5 = response.getEntity().toString();
-            if ( md5 != null )
+            if ( resp.getEntity() instanceof InputStream )
             {
-                return md5;
+                try
+                {
+                    List<String> items = IOUtils.readLines( ( InputStream ) resp.getEntity() );
+                    if ( items.size() > 0 )
+                    {
+                        return items.get( 0 );
+                    }
+                }
+                catch ( IOException ex )
+                {
+                    LOGGER.error( "Failed to read packages list", ex );
+                }
             }
         }
         return "";
+    }
+
+
+    @Override
+    public List<SerializableMetadata> getCachedData()
+    {
+        return this.remoteIndexChache;
     }
 
 
@@ -306,6 +344,24 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         {
         }.getType();
         return gson.fromJson( items, collectionType );
+    }
+
+
+    private List<SerializableMetadata> toObject( String items )
+    {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false );
+        try
+        {
+            return objectMapper.readValue( items, new TypeReference<List<DefaultTemplate>>()
+            {
+            } );
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 
