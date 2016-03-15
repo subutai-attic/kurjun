@@ -54,6 +54,18 @@ public class PackageCache
         }
     }
 
+    public boolean delete( byte[] md5 )
+    {
+        try
+        {
+            return getFileStore().remove( md5 );
+        }
+        catch ( IOException ex )
+        {
+            LOGGER.info( "Failed to delete from cache", ex );
+            return false;
+        }
+    }
 
     public InputStream get( byte[] md5 )
     {

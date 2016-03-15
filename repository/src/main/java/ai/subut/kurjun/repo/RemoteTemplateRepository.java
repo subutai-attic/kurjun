@@ -1,8 +1,6 @@
 package ai.subut.kurjun.repo;
 
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
@@ -163,13 +161,9 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     @Override
     public InputStream getPackageStream( Metadata metadata )
     {
-        LOGGER.debug( "Checking if template exists with md5:{}", Hex.encode( metadata.getMd5Sum() ) );
-
         InputStream cachedStream = checkCache( metadata );
-
         if ( cachedStream != null )
         {
-            LOGGER.debug( "Template is cached." );
             return cachedStream;
         }
 
@@ -184,44 +178,23 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         {
             if ( resp.getEntity() instanceof InputStream )
             {
-                byte[] md5Calculated;
-                byte[] buffer = new byte[8192];
-                try
+                InputStream inputStream = ( InputStream ) resp.getEntity();
+
+                byte[] md5Calculated = cacheStream( inputStream );
+
+                // compare the requested and received md5 checksums
+                if ( Arrays.equals( metadata.getMd5Sum(), md5Calculated ) )
                 {
-                    int bytesRead;
-
-                    InputStream inputStream = ( InputStream ) resp.getEntity();
-
-                    File tmpFile = getTempFile();
-
-                    FileOutputStream fileOutputStream = new FileOutputStream( tmpFile );
-
-                    LOGGER.debug( "Saving remote file to temp file" );
-                    while ( ( bytesRead = inputStream.read( buffer ) ) > 0 )
-                    {
-                        fileOutputStream.write( bytesRead );
-                    }
-
-                    md5Calculated = put( tmpFile );
-
-                    if ( Arrays.equals( metadata.getMd5Sum(), md5Calculated ) )
-                    {
-
-                        LOGGER.debug( "Calculated md5:{} provided md5:{}", Hex.encode( md5Calculated ),
-                                Hex.encode( metadata.getMd5Sum() ) );
-                        return cache.get( md5Calculated );
-                    }
-                    else
-                    {
-                        LOGGER.error(
-                                "Md5 checksum mismatch after getting the package from remote host. Requested with md5 "
-                                        + "Provided: {} vs Calculated: {}", Hex.encode( metadata.getMd5Sum() ),
-                                Hex.encode( md5Calculated ) );
-                    }
+                    return cache.get( md5Calculated );
                 }
-                catch ( IOException e )
+                else
                 {
-                    throw new RuntimeException( "Failed to convert package input stream to byte array", e );
+                    deleteCache( md5Calculated );
+
+                    LOGGER.error(
+                            "Md5 checksum mismatch after getting the package from remote host. "
+                                    + "Requested with md5={}, name={}, version={}",
+                            Hex.toHexString( metadata.getMd5Sum() ), metadata.getName(), metadata.getVersion() );
                 }
             }
         }

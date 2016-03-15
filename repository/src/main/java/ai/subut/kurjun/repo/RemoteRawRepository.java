@@ -1,7 +1,6 @@
 package ai.subut.kurjun.repo;
 
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
@@ -40,7 +39,6 @@ import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.repo.cache.PackageCache;
-import ai.subut.kurjun.repo.util.MiscUtils;
 import ai.subut.kurjun.repo.util.http.WebClientFactory;
 
 
@@ -53,6 +51,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     static final String GET_PATH = "get";
     static final String LIST_PATH = "list";
     private final String MD5_PATH = "md5";
+
     @Inject
     private WebClientFactory webClientFactory;
 
@@ -134,29 +133,23 @@ public class RemoteRawRepository extends RemoteRepositoryBase
         {
             if ( resp.getEntity() instanceof InputStream )
             {
-                byte[] bytes = null;
-                try
-                {
-                    bytes = IOUtils.toByteArray( ( InputStream ) resp.getEntity() );
-                }
-                catch ( IOException e )
-                {
-                    throw new RuntimeException( "Failed to convert package input stream to byte array", e );
-                }
+                InputStream inputStream = ( InputStream ) resp.getEntity();
 
-                byte[] md5Calculated = MiscUtils.calculateMd5( new ByteArrayInputStream( bytes ) );
+                byte[] md5Calculated = cacheStream( inputStream );
 
                 // compare the requested and received md5 checksums
                 if ( Arrays.equals( metadata.getMd5Sum(), md5Calculated ) )
                 {
-                    byte[] md5 = cacheStream( new ByteArrayInputStream( bytes ) );
-                    return cache.get( md5 );
+                    return cache.get( md5Calculated );
                 }
                 else
                 {
-                    LOGGER.error( "Md5 checksum mismatch after getting the package from remote host. "
-                                    + "Requested with md5={}, name={}", Hex.toHexString( metadata.getMd5Sum() ),
-                            metadata.getName() );
+                    deleteCache( md5Calculated );
+
+                    LOGGER.error(
+                            "Md5 checksum mismatch after getting the package from remote host. "
+                                    + "Requested with md5={}, name={}",
+                            Hex.toHexString( metadata.getMd5Sum() ), metadata.getName() );
                 }
             }
         }

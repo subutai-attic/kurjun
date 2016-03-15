@@ -34,7 +34,7 @@ public class AliquaController
     public Result upload( Context context, @Param( "file" ) FileItem fileItem )
     {
 
-        checkNotNull( fileItem, "MD5 cannot be null" );
+        //checkNotNull( fileItem, "MD5 cannot be null" );
 
         KurjunFileItem kurjunFileItem = ( KurjunFileItem ) fileItem;
 
@@ -55,7 +55,7 @@ public class AliquaController
 
     public Result getFile( @Param( "md5" ) String md5 )
     {
-        checkNotNull( md5, "MD5 cannot be null" );
+        //checkNotNull( md5, "MD5 cannot be null" );
 
         Renderable renderable = rawManagerService.getFile( Utils.MD5.toByteArray( md5 ) );
 
