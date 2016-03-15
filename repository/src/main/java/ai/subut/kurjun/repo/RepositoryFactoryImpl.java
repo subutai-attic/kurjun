@@ -8,10 +8,11 @@ import com.google.gson.Gson;
 import ai.subut.kurjun.cfparser.service.ControlFileParser;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
+import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.repository.RemoteRepository;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
-import ai.subut.kurjun.model.security.Identity;
+
 import ai.subut.kurjun.repo.cache.PackageCache;
 import ai.subut.kurjun.repo.util.http.WebClientFactory;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
@@ -90,21 +91,21 @@ public class RepositoryFactoryImpl implements RepositoryFactory
 
 
     @Override
-    public RemoteRepository createNonLocalSnap( String url, Identity identity )
+    public RemoteRepository createNonLocalSnap( String url, User identity )
     {
         return new RemoteSnapRepository( cache, url, identity );
     }
 
 
     @Override
-    public RemoteRawRepository createNonLocalRaw( String url, Identity identity )
+    public RemoteRawRepository createNonLocalRaw( String url, User identity )
     {
         return new RemoteRawRepository( cache, webClientFactory, url, identity );
     }
 
 
     @Override
-    public RemoteRepository createNonLocalTemplate( String url, Identity identity, String kurjunContext, String token )
+    public RemoteRepository createNonLocalTemplate( String url, User identity, String kurjunContext, String token )
     {
         return new RemoteTemplateRepository( cache, webClientFactory, gson, url, identity, kurjunContext, token );
     }

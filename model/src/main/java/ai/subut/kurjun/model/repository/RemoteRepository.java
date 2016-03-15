@@ -1,8 +1,8 @@
 package ai.subut.kurjun.model.repository;
 
 
+import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.metadata.MetadataCache;
-import ai.subut.kurjun.model.security.Identity;
 
 
 /**
@@ -18,7 +18,7 @@ public interface RemoteRepository extends Repository
      *
      * @return identity to be used for requests to the remote repository
      */
-    Identity getIdentity();
+    User getIdentity();
 
 
     /**

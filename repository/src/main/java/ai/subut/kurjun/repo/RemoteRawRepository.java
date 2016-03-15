@@ -34,10 +34,10 @@ import ai.subut.kurjun.common.utils.InetUtils;
 import ai.subut.kurjun.metadata.common.raw.RawMetadata;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.annotation.Nullable;
+import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
-import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.repo.cache.PackageCache;
 import ai.subut.kurjun.repo.util.http.WebClientFactory;
 
@@ -60,7 +60,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     private PackageCache cache;
 
     private final URL url;
-    private final Identity identity;
+    private final User identity;
 
     private String md5Sum;
     private List<SerializableMetadata> remoteIndexChache;
@@ -71,8 +71,9 @@ public class RemoteRawRepository extends RemoteRepositoryBase
 
 
     @Inject
-    public RemoteRawRepository( PackageCache cache, WebClientFactory webClientFactory, @Assisted( "url" ) String url,
-                                @Assisted @Nullable Identity identity )
+    public RemoteRawRepository( PackageCache cache,WebClientFactory webClientFactory, @Assisted( "url" ) String url,
+                                @Assisted @Nullable User identity )
+
     {
         this.webClientFactory = webClientFactory;
         this.cache = cache;
@@ -231,7 +232,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
 
 
     @Override
-    public Identity getIdentity()
+    public User getIdentity()
     {
         return identity;
     }

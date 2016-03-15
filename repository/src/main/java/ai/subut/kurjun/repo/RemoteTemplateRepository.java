@@ -39,10 +39,11 @@ import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.annotation.Nullable;
+import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
-import ai.subut.kurjun.model.security.Identity;
+
 import ai.subut.kurjun.repo.cache.PackageCache;
 import ai.subut.kurjun.repo.util.http.WebClientFactory;
 
@@ -69,7 +70,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     private PackageCache cache;
 
     private final URL url;
-    private final Identity identity;
+    private final User identity;
 
     private String token = null;
 
@@ -85,7 +86,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
 
     @Inject
     public RemoteTemplateRepository( PackageCache cache, WebClientFactory webClientFactory, Gson gson,
-                                     @Assisted( "url" ) String url, @Assisted @Nullable Identity identity,
+                                     @Assisted( "url" ) String url, @Assisted @Nullable User identity,
                                      @Assisted( "context" ) String kurjunContext,
                                      @Assisted( "token" ) @Nullable String token )
     {
@@ -115,7 +116,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
 
 
     @Override
-    public Identity getIdentity()
+    public User getIdentity()
     {
         return identity;
     }
