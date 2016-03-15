@@ -1,12 +1,9 @@
 package ai.subut.kurjun.repo;
 
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.List;
 import java.util.UUID;
 
-import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.repository.Protocol;
 import ai.subut.kurjun.model.repository.Repository;
 
@@ -20,7 +17,6 @@ abstract class RepositoryBase implements Repository
 {
 
     private final UUID identifier = randomUUID();
-
 
     @Override
     public UUID getIdentifier()
@@ -56,6 +52,7 @@ abstract class RepositoryBase implements Repository
         return getProtocol().isSecure();
     }
 
+    public abstract KurjunContext getContext();
 
     @Override
     public Protocol getProtocol()
@@ -71,28 +68,6 @@ abstract class RepositoryBase implements Repository
         throw new IllegalStateException( "Unsupported protocol: " + protocol );
     }
 
-
-    @Override
-    public byte[] md5()
-    {
-        try
-        {
-            MessageDigest messageDigest = MessageDigest.getInstance( "MD5" );
-            List<SerializableMetadata> list = listPackages();
-
-            if ( list.size() == 0 )
-            {
-                messageDigest.update( list.toString().getBytes() );
-                return messageDigest.digest();
-            }
-        }
-        catch ( NoSuchAlgorithmException e )
-        {
-            e.printStackTrace();
-        }
-
-        return new byte[0];
-    }
 
 
     @Override

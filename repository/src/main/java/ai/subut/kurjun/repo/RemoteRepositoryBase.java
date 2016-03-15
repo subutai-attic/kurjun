@@ -1,6 +1,7 @@
 package ai.subut.kurjun.repo;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -23,7 +24,6 @@ import ai.subut.kurjun.repo.cache.PackageCache;
 
 /**
  * Base abstract class for non-local repositories. Common operations to non-local repositories should go here.
- *
  */
 abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepository
 {
@@ -49,6 +49,7 @@ abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepo
      * Checks if there is a cached package file for the supplied meta data.
      *
      * @param metadata meta data for which package is looked up in cache
+     *
      * @return stream of a package file if found in cache; {@code null} otherwise
      */
     protected InputStream checkCache( Metadata metadata )
@@ -75,10 +76,13 @@ abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepo
     /**
      * Caches the supplied input stream of a package file. MD5 checksum of the package is returned in response so that
      * stream can be retrieved from the cache by
-     * {@link RemoteRepositoryBase#checkCache(ai.subut.kurjun.model.metadata.Metadata)} method.
+     * {@link RemoteRepositoryBase#checkCache(ai.subut.kurjun.model.metadata.Metadata)}
+     * method.
      *
      * @param is input stream of package file to cache
+     *
      * @return md5 checksum of the cached package file
+     *
      * @see RemoteRepositoryBase#checkCache(ai.subut.kurjun.model.metadata.Metadata)
      */
     protected byte[] cacheStream( InputStream is )
@@ -103,8 +107,36 @@ abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepo
         }
         return null;
     }
-    
-    
+
+    protected File getTempFile()
+    {
+        try
+        {
+            Path target = Files.createTempFile( null, null );
+            return target.toFile();
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    protected byte[] put( File file )
+    {
+        return packageCache.put( file );
+    }
+
+
+    public abstract String getMd5();
+
+
+    public boolean isUpdated( String md5 )
+    {
+        return !md5.equalsIgnoreCase( getMd5() );
+    }
+
     protected void deleteCache( byte[] md5 )
     {
         boolean deleted = packageCache.delete( md5 );
@@ -117,7 +149,5 @@ abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepo
             getLogger().debug( "Package with md5 {} cannot be found in the cache", Hex.encodeHexString( md5 ) );
         }
     }
-
-
 }
 

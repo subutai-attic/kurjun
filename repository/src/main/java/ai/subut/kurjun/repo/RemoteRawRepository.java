@@ -1,7 +1,6 @@
 package ai.subut.kurjun.repo;
 
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
@@ -30,6 +29,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.common.service.KurjunConstants;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.utils.InetUtils;
 import ai.subut.kurjun.metadata.common.raw.RawMetadata;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
@@ -39,7 +39,6 @@ import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.repo.cache.PackageCache;
-import ai.subut.kurjun.repo.util.MiscUtils;
 import ai.subut.kurjun.repo.util.http.WebClientFactory;
 
 
@@ -51,6 +50,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     static final String INFO_PATH = "info";
     static final String GET_PATH = "get";
     static final String LIST_PATH = "list";
+    private final String MD5_PATH = "md5";
 
     @Inject
     private WebClientFactory webClientFactory;
@@ -69,7 +69,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
 
     @Inject
     public RemoteRawRepository( PackageCache cache, @Assisted( "url" ) String url,
-            @Assisted @Nullable Identity identity )
+                                @Assisted @Nullable Identity identity )
     {
         this.cache = cache;
         this.identity = identity;
@@ -136,7 +136,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
                 InputStream inputStream = ( InputStream ) resp.getEntity();
 
                 byte[] md5Calculated = cacheStream( inputStream );
-                
+
                 // compare the requested and received md5 checksums
                 if ( Arrays.equals( metadata.getMd5Sum(), md5Calculated ) )
                 {
@@ -145,10 +145,10 @@ public class RemoteRawRepository extends RemoteRepositoryBase
                 else
                 {
                     deleteCache( md5Calculated );
-                    
+
                     LOGGER.error(
                             "Md5 checksum mismatch after getting the package from remote host. "
-                            + "Requested with md5={}, name={}",
+                                    + "Requested with md5={}, name={}",
                             Hex.toHexString( metadata.getMd5Sum() ), metadata.getName() );
                 }
             }
@@ -190,6 +190,25 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     protected Logger getLogger()
     {
         return LOGGER;
+    }
+
+
+    @Override
+    public String getMd5()
+    {
+        WebClient webClient = webClientFactory.make( this, MD5_PATH, null );
+
+        Response resp = doGet( webClient );
+
+        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
+        {
+            String md5 = resp.getEntity().toString();
+            if ( md5 != null )
+            {
+                return md5;
+            }
+        }
+        return "";
     }
 
 
@@ -255,4 +274,10 @@ public class RemoteRawRepository extends RemoteRepositoryBase
         return null;
     }
 
+
+    @Override
+    public KurjunContext getContext()
+    {
+        return null;
+    }
 }

@@ -1,7 +1,6 @@
 package ai.subut.kurjun.repo;
 
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -21,7 +20,6 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.http.HTTPConduit;
 
@@ -30,6 +28,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.ar.CompressionType;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.utils.InetUtils;
 import ai.subut.kurjun.index.service.PackagesIndexParser;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
@@ -44,7 +43,6 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.RemoteRepository;
 import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.repo.cache.PackageCache;
-import ai.subut.kurjun.repo.util.MiscUtils;
 import ai.subut.kurjun.repo.util.PathBuilder;
 import ai.subut.kurjun.repo.util.http.WebClientFactory;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
@@ -79,6 +77,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
     // TODO: Kairat parameterize release path params
     static final String RELEASE_PATH = "dists/trusty/Release";
 
+    private static final String MD5_PATH = "/md5";
     private static final int CONN_TIMEOUT = 3000;
     private static final int READ_TIMEOUT = 3000;
     private static final int CONN_TIMEOUT_FOR_URL_CHECK = 200;
@@ -233,12 +232,32 @@ class RemoteAptRepository extends RemoteRepositoryBase
         return result;
     }
 
+
     @Override
     protected Logger getLogger()
     {
         return LOGGER;
     }
 
+
+    @Override
+    public String getMd5()
+    {
+
+        WebClient webClient = webClientFactory.make( this, MD5_PATH, null );
+
+        Response resp = doGet( webClient );
+
+        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
+        {
+            String md5 = resp.getEntity().toString();
+            if ( md5 != null )
+            {
+                return md5;
+            }
+        }
+        return "";
+    }
 
     private Response doGet( WebClient webClient )
     {
@@ -358,6 +377,13 @@ class RemoteAptRepository extends RemoteRepositoryBase
             }
         }
         return Collections.emptyList();
+    }
+
+
+    @Override
+    public KurjunContext getContext()
+    {
+        return null;
     }
 }
 

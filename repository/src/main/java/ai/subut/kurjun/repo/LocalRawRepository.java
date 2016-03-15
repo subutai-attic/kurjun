@@ -58,6 +58,21 @@ public class LocalRawRepository extends LocalRepositoryBase
     }
 
 
+    @Override
+    public Metadata put( final InputStream is, final CompressionType compressionType, final String owner )
+            throws IOException
+    {
+        return null;
+    }
+
+
+    @Override
+    public Metadata put( final File file, final CompressionType compressionType, final String owner ) throws IOException
+    {
+        return null;
+    }
+
+
     public Metadata put( InputStream is, String fileName ) throws IOException
     {
         Objects.requireNonNull( is, "InputStream cannot be null" );
@@ -71,7 +86,7 @@ public class LocalRawRepository extends LocalRepositoryBase
             SerializableMetadata oldmeta = getPackageInfo( metadata );
             if ( oldmeta != null )
             {
-                // delete old record hafing the same file name
+                // delete old record having the same file name
                 delete( oldmeta.getMd5Sum() );
             }
 
@@ -128,5 +143,12 @@ public class LocalRawRepository extends LocalRepositoryBase
     public Set<ReleaseFile> getDistributions()
     {
         throw new UnsupportedOperationException( "Not supported for raw repositories" );
+    }
+
+
+    @Override
+    public KurjunContext getContext()
+    {
+        return null;
     }
 }

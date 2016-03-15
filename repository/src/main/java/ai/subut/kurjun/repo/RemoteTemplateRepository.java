@@ -1,8 +1,6 @@
 package ai.subut.kurjun.repo;
 
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
@@ -32,6 +30,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.common.service.KurjunConstants;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.utils.InetUtils;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
@@ -57,9 +56,11 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     static final String INFO_PATH = "info";
     static final String LIST_PATH = "list";
     static final String GET_PATH = "get";
+    static final String MD5_PATH = "md5";
 
     @Inject
     private WebClientFactory webClientFactory;
+
 
     @Inject
     private Gson gson;
@@ -192,15 +193,15 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
 
                     LOGGER.error(
                             "Md5 checksum mismatch after getting the package from remote host. "
-                            + "Requested with md5={}, name={}, version={}",
+                                    + "Requested with md5={}, name={}, version={}",
                             Hex.toHexString( metadata.getMd5Sum() ), metadata.getName(), metadata.getVersion() );
                 }
             }
         }
         return null;
     }
-    
-    
+
+
     @Override
     public List<SerializableMetadata> listPackages()
     {
@@ -237,6 +238,24 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         return LOGGER;
     }
 
+
+    @Override
+    public String getMd5()
+    {
+        WebClient webClient = webClientFactory.make( this, context + "/" + MD5_PATH, null );
+
+        Response response = doGet( webClient );
+
+        if ( response != null && response.getStatus() == Response.Status.OK.getStatusCode() )
+        {
+            String md5 = response.getEntity().toString();
+            if ( md5 != null )
+            {
+                return md5;
+            }
+        }
+        return "";
+    }
 
     private Response doGet( WebClient webClient )
     {
@@ -286,5 +305,12 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         {
         }.getType();
         return gson.fromJson( items, collectionType );
+    }
+
+
+    @Override
+    public KurjunContext getContext()
+    {
+        return null;
     }
 }
