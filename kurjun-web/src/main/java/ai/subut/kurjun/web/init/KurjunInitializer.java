@@ -133,6 +133,8 @@ public class KurjunInitializer
                     remoteRepositories.add( repositoryFactory.createNonLocalRaw( s, null ) );
                     remoteRepositories.add( repositoryFactory.createNonLocalApt( new URL( s ) ) );
                 }
+
+                fetch( remoteRepositories );
             }
             catch ( IOException e )
             {
