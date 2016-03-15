@@ -20,13 +20,6 @@ public class RawMetadata implements Metadata, SerializableMetadata
     private String name;
     private long size;
 
-    public RawMetadata( byte[] md5Sum, String name )
-    {
-        this.md5Sum = md5Sum;
-        this.name = name;
-    }
-
-
     public RawMetadata( final byte[] md5Sum, final String name, final long size )
     {
         this.md5Sum = md5Sum;

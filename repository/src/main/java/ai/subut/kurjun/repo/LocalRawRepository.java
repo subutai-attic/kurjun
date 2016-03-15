@@ -77,8 +77,7 @@ public class LocalRawRepository extends LocalRepositoryBase
 
             Files.copy( is, temp.toPath(), StandardCopyOption.REPLACE_EXISTING );
             byte[] md5 = getFileStore().put( temp );
-            RawMetadata meta = new RawMetadata( md5, fileName );
-            meta.setSize( temp.length() );
+            RawMetadata meta = new RawMetadata( md5, fileName, temp.length() );
 
             getMetadataStore().put( meta );
             return meta;
