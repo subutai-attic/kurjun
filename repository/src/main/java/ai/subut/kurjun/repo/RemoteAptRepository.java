@@ -186,26 +186,19 @@ class RemoteAptRepository extends RemoteRepositoryBase
         {
             if ( resp.getEntity() instanceof InputStream )
             {
-                byte[] bytes = null;
-                try
-                {
-                    bytes = IOUtils.toByteArray( ( InputStream ) resp.getEntity() );
-                }
-                catch ( IOException e )
-                {
-                    throw new RuntimeException( "Failed to convert package input stream to byte array", e );
-                }
+                InputStream inputStream = ( InputStream ) resp.getEntity();
 
-                byte[] md5Calculated = MiscUtils.calculateMd5( new ByteArrayInputStream( bytes ) );
+                byte[] md5Calculated = cacheStream( inputStream );
 
                 // compare the requested and received md5 checksums
                 if ( Arrays.equals( pm.getMd5Sum(), md5Calculated ) )
                 {
-                    byte[] md5 = cacheStream( new ByteArrayInputStream( bytes ) );
-                    return cache.get( md5 );
+                    return cache.get( md5Calculated );
                 }
                 else
                 {
+                    deleteCache( md5Calculated );
+
                     LOGGER.error( "Md5 checksum mismatch after getting the package {} from remote host",
                             pm.getFilename() );
                 }
