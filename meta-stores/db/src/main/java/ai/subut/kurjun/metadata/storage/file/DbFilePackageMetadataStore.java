@@ -36,8 +36,8 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
     /**
      * Constructs a package metadata store backed by a file db. A directory should be given where file db will be
-     * created or there should be a binding of {@link String} instance annotated with name
-     * {@link DbFilePackageMetadataStoreModule#DB_FILE_LOCATION_NAME}.
+     * created or there should be a binding of {@link String} instance annotated with name {@link
+     * DbFilePackageMetadataStoreModule#DB_FILE_LOCATION_NAME}.
      *
      * @param location parent directory
      */
@@ -58,7 +58,7 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
         this.fileDbPath = Paths.get( fileDbDirectory, context.getName(), "metadata" );
     }
 
-    
+
     @Override
     public boolean contains( Object id ) throws IOException
     {
@@ -159,8 +159,8 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
         Collection<SerializableMetadata> items = map.values();
 
         // sort items by names
-        Stream<SerializableMetadata> stream = items.stream().sorted(
-                (m1, m2) -> m1.getName().compareTo( m2.getName() ) );
+        Stream<SerializableMetadata> stream =
+                items.stream().sorted( ( m1, m2 ) -> m1.getName().compareTo( m2.getName() ) );
 
         // filter items if marker is set
         if ( marker != null )
@@ -189,6 +189,5 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
         }
         return pml;
     }
-
 }
 

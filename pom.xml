@@ -24,10 +24,10 @@
     <module>security</module>
     <module>repository</module>
     <module>quota</module>
-    <module>http</module>
-    <module>jetty-rs</module>
     <module>karaf</module>
     <module>kurjun-web</module>
+    <module>security-manager</module>
+    <module>identity-manager</module>
   </modules>
 
   <description>

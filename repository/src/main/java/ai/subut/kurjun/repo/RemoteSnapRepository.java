@@ -26,6 +26,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.common.service.KurjunConstants;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.snap.DefaultSnapMetadata;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
@@ -216,6 +217,13 @@ class RemoteSnapRepository extends RemoteRepositoryBase
     }
 
 
+    @Override
+    public String getMd5()
+    {
+        return null;
+    }
+
+
     private List<SerializableMetadata> parseItems( List<String> items )
     {
         List<SerializableMetadata> ls = new LinkedList<>();
@@ -227,5 +235,11 @@ class RemoteSnapRepository extends RemoteRepositoryBase
         return ls;
     }
 
+
+    @Override
+    public KurjunContext getContext()
+    {
+        return null;
+    }
 }
 

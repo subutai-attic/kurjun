@@ -30,6 +30,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.common.service.KurjunConstants;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.utils.InetUtils;
 import ai.subut.kurjun.metadata.common.raw.RawMetadata;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
@@ -51,7 +52,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     static final String INFO_PATH = "info";
     static final String GET_PATH = "get";
     static final String LIST_PATH = "list";
-
+    private final String MD5_PATH = "md5";
     @Inject
     private WebClientFactory webClientFactory;
 
@@ -69,7 +70,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
 
     @Inject
     public RemoteRawRepository( PackageCache cache, @Assisted( "url" ) String url,
-            @Assisted @Nullable Identity identity )
+                                @Assisted @Nullable Identity identity )
     {
         this.cache = cache;
         this.identity = identity;
@@ -133,23 +134,29 @@ public class RemoteRawRepository extends RemoteRepositoryBase
         {
             if ( resp.getEntity() instanceof InputStream )
             {
-                InputStream inputStream = ( InputStream ) resp.getEntity();
+                byte[] bytes = null;
+                try
+                {
+                    bytes = IOUtils.toByteArray( ( InputStream ) resp.getEntity() );
+                }
+                catch ( IOException e )
+                {
+                    throw new RuntimeException( "Failed to convert package input stream to byte array", e );
+                }
 
-                byte[] md5Calculated = cacheStream( inputStream );
-                
+                byte[] md5Calculated = MiscUtils.calculateMd5( new ByteArrayInputStream( bytes ) );
+
                 // compare the requested and received md5 checksums
                 if ( Arrays.equals( metadata.getMd5Sum(), md5Calculated ) )
                 {
-                    return cache.get( md5Calculated );
+                    byte[] md5 = cacheStream( new ByteArrayInputStream( bytes ) );
+                    return cache.get( md5 );
                 }
                 else
                 {
-                    deleteCache( md5Calculated );
-                    
-                    LOGGER.error(
-                            "Md5 checksum mismatch after getting the package from remote host. "
-                            + "Requested with md5={}, name={}",
-                            Hex.toHexString( metadata.getMd5Sum() ), metadata.getName() );
+                    LOGGER.error( "Md5 checksum mismatch after getting the package from remote host. "
+                                    + "Requested with md5={}, name={}", Hex.toHexString( metadata.getMd5Sum() ),
+                            metadata.getName() );
                 }
             }
         }
@@ -190,6 +197,25 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     protected Logger getLogger()
     {
         return LOGGER;
+    }
+
+
+    @Override
+    public String getMd5()
+    {
+        WebClient webClient = webClientFactory.make( this, MD5_PATH, null );
+
+        Response resp = doGet( webClient );
+
+        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
+        {
+            String md5 = resp.getEntity().toString();
+            if ( md5 != null )
+            {
+                return md5;
+            }
+        }
+        return "";
     }
 
 
@@ -255,4 +281,10 @@ public class RemoteRawRepository extends RemoteRepositoryBase
         return null;
     }
 
+
+    @Override
+    public KurjunContext getContext()
+    {
+        return null;
+    }
 }

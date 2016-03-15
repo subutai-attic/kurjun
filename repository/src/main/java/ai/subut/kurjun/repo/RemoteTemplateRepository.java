@@ -32,6 +32,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.common.service.KurjunConstants;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.utils.InetUtils;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
@@ -57,9 +58,11 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     static final String INFO_PATH = "info";
     static final String LIST_PATH = "list";
     static final String GET_PATH = "get";
+    static final String MD5_PATH = "md5";
 
     @Inject
     private WebClientFactory webClientFactory;
+
 
     @Inject
     private Gson gson;
@@ -160,9 +163,13 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     @Override
     public InputStream getPackageStream( Metadata metadata )
     {
+        LOGGER.debug( "Checking if template exists with md5:{}", Hex.encode( metadata.getMd5Sum() ) );
+
         InputStream cachedStream = checkCache( metadata );
+
         if ( cachedStream != null )
         {
+            LOGGER.debug( "Template is cached." );
             return cachedStream;
         }
 
@@ -177,30 +184,51 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         {
             if ( resp.getEntity() instanceof InputStream )
             {
-                InputStream inputStream = ( InputStream ) resp.getEntity();
-
-                byte[] md5Calculated = cacheStream( inputStream );
-
-                // compare the requested and received md5 checksums
-                if ( Arrays.equals( metadata.getMd5Sum(), md5Calculated ) )
+                byte[] md5Calculated;
+                byte[] buffer = new byte[8192];
+                try
                 {
-                    return cache.get( md5Calculated );
+                    int bytesRead;
+
+                    InputStream inputStream = ( InputStream ) resp.getEntity();
+
+                    File tmpFile = getTempFile();
+
+                    FileOutputStream fileOutputStream = new FileOutputStream( tmpFile );
+
+                    LOGGER.debug( "Saving remote file to temp file" );
+                    while ( ( bytesRead = inputStream.read( buffer ) ) > 0 )
+                    {
+                        fileOutputStream.write( bytesRead );
+                    }
+
+                    md5Calculated = put( tmpFile );
+
+                    if ( Arrays.equals( metadata.getMd5Sum(), md5Calculated ) )
+                    {
+
+                        LOGGER.debug( "Calculated md5:{} provided md5:{}", Hex.encode( md5Calculated ),
+                                Hex.encode( metadata.getMd5Sum() ) );
+                        return cache.get( md5Calculated );
+                    }
+                    else
+                    {
+                        LOGGER.error(
+                                "Md5 checksum mismatch after getting the package from remote host. Requested with md5 "
+                                        + "Provided: {} vs Calculated: {}", Hex.encode( metadata.getMd5Sum() ),
+                                Hex.encode( md5Calculated ) );
+                    }
                 }
-                else
+                catch ( IOException e )
                 {
-                    deleteCache( md5Calculated );
-
-                    LOGGER.error(
-                            "Md5 checksum mismatch after getting the package from remote host. "
-                            + "Requested with md5={}, name={}, version={}",
-                            Hex.toHexString( metadata.getMd5Sum() ), metadata.getName(), metadata.getVersion() );
+                    throw new RuntimeException( "Failed to convert package input stream to byte array", e );
                 }
             }
         }
         return null;
     }
-    
-    
+
+
     @Override
     public List<SerializableMetadata> listPackages()
     {
@@ -237,6 +265,24 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         return LOGGER;
     }
 
+
+    @Override
+    public String getMd5()
+    {
+        WebClient webClient = webClientFactory.make( this, context + "/" + MD5_PATH, null );
+
+        Response response = doGet( webClient );
+
+        if ( response != null && response.getStatus() == Response.Status.OK.getStatusCode() )
+        {
+            String md5 = response.getEntity().toString();
+            if ( md5 != null )
+            {
+                return md5;
+            }
+        }
+        return "";
+    }
 
     private Response doGet( WebClient webClient )
     {
@@ -286,5 +332,12 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         {
         }.getType();
         return gson.fromJson( items, collectionType );
+    }
+
+
+    @Override
+    public KurjunContext getContext()
+    {
+        return null;
     }
 }
