@@ -28,5 +28,7 @@ public interface RemoteRepository extends Repository
      */
     MetadataCache getMetadataCache();
 
+    String getMd5();
+
 }
 

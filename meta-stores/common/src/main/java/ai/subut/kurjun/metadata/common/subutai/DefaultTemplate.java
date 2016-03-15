@@ -15,7 +15,6 @@ import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 
 /**
  * Default serializable POJO implementation class of {@link SubutaiTemplateMetadata}.
- *
  */
 public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMetadata
 {
@@ -29,13 +28,14 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
     private String configContents;
     private String packagesContents;
     private String ownerFprint;
-    private Map< String, String> extra = new HashMap<>();
+    private long length;
+    private Map<String, String> extra = new HashMap<>();
 
 
     @Override
     public Object getId()
     {
-        if ( ownerFprint != null && md5Sum != null  )
+        if ( ownerFprint != null && md5Sum != null )
         {
             return new TemplateId( ownerFprint, Hex.encodeHexString( md5Sum ) ).get();
         }
@@ -44,7 +44,7 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
             return null;
         }
     }
-   
+
 
     public void setId( String ownerFprint, byte[] md5Sum )
     {
@@ -52,7 +52,7 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
         this.md5Sum = md5Sum;
     }
 
-    
+
     @Override
     public byte[] getMd5Sum()
     {
@@ -177,6 +177,19 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
     }
 
 
+    public void setLength( final long length )
+    {
+        this.length = length;
+    }
+
+
+    @Override
+    public long getSize()
+    {
+        return this.length;
+    }
+
+
     public void setExtra( Map<String, String> extra )
     {
         this.extra = extra;
@@ -209,5 +222,4 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
         }
         return false;
     }
-
 }

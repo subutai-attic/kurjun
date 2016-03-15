@@ -67,4 +67,10 @@ public interface SubutaiTemplateMetadata extends Metadata
      * @return map of property values
      */
     Map< String, String> getExtra();
+
+    /**
+     * Gets the the size of the package in bytes
+     * @return long size
+     * */
+    long getSize();
 }

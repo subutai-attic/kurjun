@@ -24,9 +24,8 @@ import ai.subut.kurjun.common.service.KurjunProperties;
 
 
 /**
- * Implementation of {@link KurjunProperties} that reads properties from file
- * specified by {@link KurjunPropertiesImpl#CONF_FILE_PATH}.
- *
+ * Implementation of {@link KurjunProperties} that reads properties from file specified by {@link
+ * KurjunPropertiesImpl#CONF_FILE_PATH}.
  */
 public class KurjunPropertiesImpl implements KurjunProperties
 {
@@ -42,8 +41,7 @@ public class KurjunPropertiesImpl implements KurjunProperties
     public KurjunPropertiesImpl() throws ConfigurationException
     {
         // conf = new PropertiesConfiguration( CONF_FILE_PATH );
-        conf = new PropertiesConfiguration(
-                this.getClass().getResource( "/" + CONF_FILE_PATH ).toExternalForm() );
+        conf = new PropertiesConfiguration( this.getClass().getResource( "/" + CONF_FILE_PATH ).toExternalForm() );
         conf.setThrowExceptionOnMissing( false );
     }
 
@@ -148,10 +146,12 @@ public class KurjunPropertiesImpl implements KurjunProperties
     @Override
     public Properties getContextProperties( String context )
     {
-        Objects.requireNonNull( context, "context name" );
+        Objects.requireNonNull( context, "context name is null" );
 
         Properties freshnew = new Properties();
+        freshnew.putAll( propertyMap() );
         Properties existing = propertiesByContext.putIfAbsent( context, freshnew );
+
         if ( existing != null )
         {
             return existing;

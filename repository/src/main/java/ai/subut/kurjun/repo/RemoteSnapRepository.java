@@ -26,6 +26,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.common.service.KurjunConstants;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.snap.DefaultSnapMetadata;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
@@ -156,29 +157,22 @@ class RemoteSnapRepository extends RemoteRepositoryBase
         {
             if ( resp.getEntity() instanceof InputStream )
             {
-                byte[] bytes = null;
-                try
-                {
-                    bytes = IOUtils.toByteArray( ( InputStream ) resp.getEntity() );
-                }
-                catch ( IOException e )
-                {
-                    throw new RuntimeException( "Failed to convert package input stream to byte array", e );
-                }
+                InputStream inputStream = ( InputStream ) resp.getEntity();
 
-                byte[] md5Calculated = MiscUtils.calculateMd5( new ByteArrayInputStream( bytes ) );
+                byte[] md5Calculated = cacheStream( inputStream );
 
                 // compare the requested and received md5 checksums
                 if ( Arrays.equals( metadata.getMd5Sum(), md5Calculated ) )
                 {
-                    byte[] md5 = cacheStream( new ByteArrayInputStream( bytes ) );
-                    return cache.get( md5 );
+                    return cache.get( md5Calculated );
                 }
                 else
                 {
+                    deleteCache( md5Calculated );
+
                     LOGGER.error(
                             "Md5 checksum mismatch after getting the package from remote host. "
-                                    + "Requested with md5={}, name={}, version={}",
+                            + "Requested with md5={}, name={}, version={}",
                             Hex.toHexString( metadata.getMd5Sum() ), metadata.getName(), metadata.getVersion() );
                 }
             }
@@ -223,6 +217,13 @@ class RemoteSnapRepository extends RemoteRepositoryBase
     }
 
 
+    @Override
+    public String getMd5()
+    {
+        return null;
+    }
+
+
     private List<SerializableMetadata> parseItems( List<String> items )
     {
         List<SerializableMetadata> ls = new LinkedList<>();
@@ -234,5 +235,11 @@ class RemoteSnapRepository extends RemoteRepositoryBase
         return ls;
     }
 
+
+    @Override
+    public KurjunContext getContext()
+    {
+        return null;
+    }
 }
 

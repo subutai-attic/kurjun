@@ -3,6 +3,8 @@ package ai.subut.kurjun.repo;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,7 +23,6 @@ import ai.subut.kurjun.model.storage.FileStore;
 
 /**
  * Abstract base class for local repositories.
- *
  */
 abstract class LocalRepositoryBase extends RepositoryBase implements LocalRepository
 {
@@ -114,8 +115,8 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
     {
         return delete( Hex.encodeHexString( md5 ), md5 );
     }
-    
-    
+
+
     @Override
     public boolean delete( Object id, byte[] md5 ) throws IOException
     {
@@ -130,7 +131,7 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
         }
         return false;
     }
-    
+
 
     /**
      * Gets logger instance associated classes that extend this abstract class.
@@ -171,9 +172,32 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
         else
         {
             // sort by version in descending fasion and get the first item which is will be the latest version
-            items.sort( (m1, m2) -> -1 * m1.getVersion().compareTo( m2.getVersion() ) );
+            items.sort( ( m1, m2 ) -> -1 * m1.getVersion().compareTo( m2.getVersion() ) );
             return items.get( 0 );
         }
+    }
+
+
+    @Override
+    public byte[] md5()
+    {
+        try
+        {
+            MessageDigest messageDigest = MessageDigest.getInstance( "MD5" );
+            List<SerializableMetadata> list = listPackages();
+
+            if ( list.size() != 0 )
+            {
+                messageDigest.update( list.toString().getBytes() );
+                return messageDigest.digest();
+            }
+        }
+        catch ( NoSuchAlgorithmException e )
+        {
+            e.printStackTrace();
+        }
+
+        return new byte[0];
     }
 }
 

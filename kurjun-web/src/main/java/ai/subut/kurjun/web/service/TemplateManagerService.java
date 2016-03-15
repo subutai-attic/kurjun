@@ -1,6 +1,7 @@
 package ai.subut.kurjun.web.service;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -8,7 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
+import ai.subut.kurjun.common.service.KurjunContext;
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.repository.LocalRepository;
+import ninja.Renderable;
 
 
 public interface TemplateManagerService
@@ -16,38 +20,11 @@ public interface TemplateManagerService
     /**
      * Gets template info.
      *
-     * @param repository repository
      * @param md5 md5 checksum of the package to retrieve info
-     * @param templateOwner template owner
      *
      * @return JSON encoded meta data
      */
-    DefaultTemplate getTemplate( String repository, byte[] md5, String templateOwner )
-            throws IOException;
-
-
-    /**
-     * Gets template info by name and version.
-     *
-     * @param repository repository
-     * @param name name of the package
-     * @param version version of the package, may be {@code null}
-     *
-     * @return JSON encoded meta data
-     */
-    DefaultTemplate getTemplate( String repository, String name, String version )
-            throws IOException;
-
-
-    /**
-     * Gets template info by name, The version is ignored, the repository is public and treated as not Kurjun client
-     *
-     * @param name name of the package
-     *
-     * @return JSON encoded meta data
-     */
-    DefaultTemplate getTemplate( String name );
-
+    SerializableMetadata getTemplate( byte[] md5 ) throws IOException;
 
     /**
      * Gets the list of remote repo urls
@@ -67,8 +44,7 @@ public interface TemplateManagerService
      *
      * @return input stream to read package data
      */
-    InputStream getTemplateData( String repository, byte[] md5, String templateOwner, boolean isKurjunClient )
-            throws IOException;
+    InputStream getTemplateData( String repository, byte[] md5, boolean isKurjunClient ) throws IOException;
 
 
     /**
@@ -79,7 +55,7 @@ public interface TemplateManagerService
      *
      * @return list of JSON encoded meta data
      */
-    List<DefaultTemplate> list( String repository, boolean isKurjunClient ) throws IOException;
+    List<SerializableMetadata> list( String repository, boolean isKurjunClient ) throws IOException;
 
 
     List<Map<String, Object>> getSharedTemplateInfos( byte[] md5, String templateOwner ) throws IOException;
@@ -93,7 +69,7 @@ public interface TemplateManagerService
      *
      * @return list of JSON encoded meta data
      */
-    List<DefaultTemplate> list();
+    List<SerializableMetadata> list();
 
 
     /**
@@ -112,17 +88,24 @@ public interface TemplateManagerService
      */
     String upload( String repository, InputStream inputStream ) throws IOException;
 
+    /**
+     * Uploads package data from supplied input stream to the repository defined by supplied repository.
+     *
+     * @param repository repository
+     * @param file input stream to read package data
+     *
+     * @return template id of uploaded package upload succeeds; {@code null} otherwise
+     */
+    String upload( String repository, File file ) throws IOException;
 
     /**
      * Deletes package from the repository defined by supplied repository.
      *
-     * @param repository repository
-     * @param templateOwner template owner
-     * @param md5 md5 checksum of the package to delete
+     * @param md5 checksum of the package to delete
      *
      * @return {@code true} if package successfully deleted; {@code false} otherwise
      */
-    boolean delete( String repository, String templateOwner, byte[] md5 ) throws IOException;
+    boolean delete( String md5 ) throws IOException;
 
 
     /**
@@ -152,7 +135,7 @@ public interface TemplateManagerService
     /**
      * Create repository for the user with the given user name
      */
-    void createUserRepository( String userName );
+    LocalRepository createUserRepository( KurjunContext userName );
 
 
     /**
@@ -171,4 +154,11 @@ public interface TemplateManagerService
      * @param targetUserName target username
      */
     void unshareTemplate( String templateId, String targetUserName );
+
+    /*
+    *
+    * */
+    Renderable renderableTemplate( String repository, String md5, boolean isKurjunClient ) throws IOException;
+
+    String md5();
 }

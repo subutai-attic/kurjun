@@ -1,68 +1,210 @@
 package ai.subut.kurjun.web.service.impl;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.math.BigInteger;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
 
+import ai.subut.kurjun.ar.CompressionType;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
+import ai.subut.kurjun.metadata.common.subutai.TemplateId;
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
+import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.repo.RepositoryFactory;
+import ai.subut.kurjun.web.context.ArtifactContext;
+import ai.subut.kurjun.web.model.UserContextImpl;
 import ai.subut.kurjun.web.service.TemplateManagerService;
+import ai.subut.kurjun.web.utils.Utils;
+import ninja.Renderable;
+import ninja.utils.ResponseStreams;
 
 
 public class TemplateManagerServiceImpl implements TemplateManagerService
 {
 
+
+    private RepositoryFactory repositoryFactory;
+    private ArtifactContext artifactContext;
+
+
     @Inject
-    RepositoryFactory repositoryFactory;
+    public TemplateManagerServiceImpl( final RepositoryFactory repositoryFactory,
+                                       final ArtifactContext artifactContext )
+    {
+        this.repositoryFactory = repositoryFactory;
+        this.artifactContext = artifactContext;
+
+        _local();
+        _remote();
+    }
+
+
+    private void _local()
+    {
+
+    }
+
+
+    private void _remote()
+    {
+
+    }
 
 
     @Override
-    public DefaultTemplate getTemplate( final String repository, final byte[] md5, final String templateOwner ) throws IOException
+    public SerializableMetadata getTemplate( final byte[] md5 ) throws IOException
+    {
+        KurjunContext context = artifactContext.getRepository( new BigInteger( 1, md5 ).toString( 16 ) );
+        DefaultTemplate defaultTemplate = new DefaultTemplate();
+        defaultTemplate.setId( context.getName(), md5 );
+
+        return repositoryFactory.createLocalTemplate( context ).getPackageInfo( defaultTemplate );
+    }
+
+
+    @Override
+    public InputStream getTemplateData( final String repository, final byte[] md5, final boolean isKurjunClient )
+            throws IOException
+    {
+        DefaultTemplate defaultTemplate = new DefaultTemplate();
+        defaultTemplate.setId( repository, md5 );
+        LocalRepository localRepository = repositoryFactory.createLocalTemplate( new UserContextImpl( repository ) );
+
+        return localRepository.getPackageStream( defaultTemplate );
+    }
+
+
+    @Override
+    public List<SerializableMetadata> list( final String repository, final boolean isKurjunClient ) throws IOException
+    {
+        UserContextImpl userContext = new UserContextImpl( repository );
+
+        return repositoryFactory.createLocalTemplate( userContext ).listPackages();
+    }
+
+
+    @Override
+    public boolean isUploadAllowed( final String repository )
+    {
+        return false;
+    }
+
+
+    @Override
+    public String upload( final String repository, final InputStream inputStream ) throws IOException
     {
 
+        SubutaiTemplateMetadata metadata =
+                ( SubutaiTemplateMetadata ) getRepo( repository ).put( inputStream, CompressionType.GZIP, repository );
+
+        if ( metadata != null )
+        {
+            if ( metadata.getMd5Sum() != null )
+            {
+                artifactContext.store( metadata.getMd5Sum(), new UserContextImpl( repository ) );
+            }
+        }
+
+        return toId( metadata != null ? metadata.getMd5Sum() : new byte[0], repository );
+    }
+
+
+    @Override
+    public String upload( final String repository, final File file ) throws IOException
+    {
+        SubutaiTemplateMetadata metadata =
+                ( SubutaiTemplateMetadata ) getRepo( repository ).put( file, CompressionType.GZIP, repository );
+
+        if ( metadata != null )
+        {
+            if ( metadata.getMd5Sum() != null )
+            {
+                artifactContext.store( metadata.getMd5Sum(), new UserContextImpl( repository ) );
+            }
+        }
+
+        return toId( metadata != null ? metadata.getMd5Sum() : new byte[0], repository );
+    }
+
+
+    @Override
+    public boolean delete( String md5 ) throws IOException
+    {
+        KurjunContext user = artifactContext.getRepository( md5 );
+        TemplateId templateId = new TemplateId( user.getName(), md5 );
+
+        return getRepo( md5 ).delete( templateId, Utils.MD5.toByteArray( md5 ) );
+    }
+
+
+    @Override
+    public LocalRepository createUserRepository( final KurjunContext userName )
+    {
+        return repositoryFactory.createLocalTemplate( userName );
+    }
+
+
+    @Override
+    public void shareTemplate( final String templateId, final String targetUserName )
+    {
+
+    }
+
+
+    @Override
+    public Renderable renderableTemplate( final String repository, String md5, final boolean isKurjunClient )
+            throws IOException
+    {
+        LocalRepository publicRepository = getRepo( repository );
+
+        DefaultTemplate defaultTemplate = new DefaultTemplate();
+
+        defaultTemplate.setId( repository, Utils.MD5.toByteArray( md5 ) );
+
+        DefaultTemplate metadata = ( DefaultTemplate ) publicRepository.getPackageInfo( defaultTemplate );
+
+        InputStream inputStream = getTemplateData( repository, Utils.MD5.toByteArray( md5 ), false );
+
+        if ( inputStream != null )
+        {
+            return ( context, result ) -> {
+
+                result.addHeader( "Content-Disposition", "attachment;filename=" + makeTemplateName( metadata ) );
+                result.addHeader( "Contenty-Type", "application/octet-stream" );
+                result.addHeader( "Content-Length", String.valueOf( defaultTemplate.getSize() ) );
+
+                ResponseStreams responseStreams = context.finalizeHeaders( result );
+
+                try ( OutputStream outputStream = responseStreams.getOutputStream() )
+                {
+                    ByteStreams.copy( inputStream, outputStream );
+                }
+                catch ( IOException e )
+                {
+                    e.printStackTrace();
+                }
+            };
+        }
         return null;
     }
 
 
     @Override
-    public DefaultTemplate getTemplate( final String repository, final String name, final String version) throws IOException
+    public String md5()
     {
-        return null;
-    }
-
-
-    @Override
-    public DefaultTemplate getTemplate( final String name )
-    {
-        return null;
-    }
-
-
-    @Override
-    public List<Map<String, Object>> getRemoteRepoUrls()
-    {
-        return null;
-    }
-
-
-    @Override
-    public InputStream getTemplateData( final String repository, final byte[] md5, final String templateOwner,
-                                        final boolean isKurjunClient ) throws IOException
-    {
-        return null;
-    }
-
-
-    @Override
-    public List<DefaultTemplate> list( final String repository, final boolean isKurjunClient ) throws IOException
-    {
-        return null;
+        return Utils.MD5.toString( getPublicRepository().md5() );
     }
 
 
@@ -77,35 +219,22 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     @Override
     public List<Map<String, Object>> listAsSimple( final String repository ) throws IOException
     {
+
         return null;
     }
 
 
     @Override
-    public List<DefaultTemplate> list()
-    {
-        return null;
-    }
-
-
-    @Override
-    public boolean isUploadAllowed( final String repository )
-    {
-        return false;
-    }
-
-
-    @Override
-    public String upload( final String repository, final InputStream inputStream ) throws IOException
+    public List<SerializableMetadata> list()
     {
         return null;
     }
 
 
     @Override
-    public boolean delete( final String repository, final String templateOwner, final byte[] md5 ) throws IOException
+    public List<Map<String, Object>> getRemoteRepoUrls()
     {
-        return false;
+        return null;
     }
 
 
@@ -124,29 +253,41 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
+    public void unshareTemplate( final String templateId, final String targetUserName )
+    {
+
+    }
+
+
+    @Override
     public Set<String> getRepositories()
     {
         return null;
     }
 
 
-    @Override
-    public void createUserRepository( final String userName )
+    private String toId( final byte[] md5, String repo )
     {
+        String hash = new BigInteger( 1, Arrays.copyOf( md5, md5.length ) ).toString( 16 );
 
+        return repo + "." + hash;
     }
 
 
-    @Override
-    public void shareTemplate( final String templateId, final String targetUserName )
+    private LocalRepository getRepo( String repo )
     {
-
+        return repositoryFactory.createLocalTemplate( new UserContextImpl( repo ) );
     }
 
 
-    @Override
-    public void unshareTemplate( final String templateId, final String targetUserName )
+    private LocalRepository getPublicRepository()
     {
+        return repositoryFactory.createLocalTemplate( new UserContextImpl( "public" ) );
+    }
 
+
+    private String makeTemplateName( SerializableMetadata metadata )
+    {
+        return metadata.getName() + "_" + metadata.getVersion() + ".tar.gz";
     }
 }

@@ -30,6 +30,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.ar.CompressionType;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.utils.InetUtils;
 import ai.subut.kurjun.index.service.PackagesIndexParser;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
@@ -79,6 +80,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
     // TODO: Kairat parameterize release path params
     static final String RELEASE_PATH = "dists/trusty/Release";
 
+    private static final String MD5_PATH = "/md5";
     private static final int CONN_TIMEOUT = 3000;
     private static final int READ_TIMEOUT = 3000;
     private static final int CONN_TIMEOUT_FOR_URL_CHECK = 200;
@@ -186,26 +188,19 @@ class RemoteAptRepository extends RemoteRepositoryBase
         {
             if ( resp.getEntity() instanceof InputStream )
             {
-                byte[] bytes = null;
-                try
-                {
-                    bytes = IOUtils.toByteArray( ( InputStream ) resp.getEntity() );
-                }
-                catch ( IOException e )
-                {
-                    throw new RuntimeException( "Failed to convert package input stream to byte array", e );
-                }
+                InputStream inputStream = ( InputStream ) resp.getEntity();
 
-                byte[] md5Calculated = MiscUtils.calculateMd5( new ByteArrayInputStream( bytes ) );
+                byte[] md5Calculated = cacheStream( inputStream );
 
                 // compare the requested and received md5 checksums
                 if ( Arrays.equals( pm.getMd5Sum(), md5Calculated ) )
                 {
-                    byte[] md5 = cacheStream( new ByteArrayInputStream( bytes ) );
-                    return cache.get( md5 );
+                    return cache.get( md5Calculated );
                 }
                 else
                 {
+                    deleteCache( md5Calculated );
+
                     LOGGER.error( "Md5 checksum mismatch after getting the package {} from remote host",
                             pm.getFilename() );
                 }
@@ -240,12 +235,32 @@ class RemoteAptRepository extends RemoteRepositoryBase
         return result;
     }
 
+
     @Override
     protected Logger getLogger()
     {
         return LOGGER;
     }
 
+
+    @Override
+    public String getMd5()
+    {
+
+        WebClient webClient = webClientFactory.make( this, MD5_PATH, null );
+
+        Response resp = doGet( webClient );
+
+        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
+        {
+            String md5 = resp.getEntity().toString();
+            if ( md5 != null )
+            {
+                return md5;
+            }
+        }
+        return "";
+    }
 
     private Response doGet( WebClient webClient )
     {
@@ -365,6 +380,13 @@ class RemoteAptRepository extends RemoteRepositoryBase
             }
         }
         return Collections.emptyList();
+    }
+
+
+    @Override
+    public KurjunContext getContext()
+    {
+        return null;
     }
 }
 

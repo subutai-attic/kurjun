@@ -42,6 +42,7 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
         byte[] md5;
         try ( InputStream is = new FileInputStream( file ) )
         {
+            //buffered digest
             md5 = DigestUtils.md5( is );
         }
 
@@ -200,6 +201,13 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
                     }
                 }
                 return map;
+            }
+
+
+            @Override
+            public long getSize()
+            {
+                return 0;
             }
         };
     }
