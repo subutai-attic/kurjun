@@ -14,6 +14,7 @@ public class MiscUtils
      *
      * @return md5 checksum, or <code>null</code> if exception occurred
      */
+    @Deprecated
     public static byte[] calculateMd5( InputStream is )
     {
         byte[] md5 = null;
