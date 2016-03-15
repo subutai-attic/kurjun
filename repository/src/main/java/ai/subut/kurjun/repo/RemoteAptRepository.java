@@ -33,6 +33,7 @@ import ai.subut.kurjun.common.utils.InetUtils;
 import ai.subut.kurjun.index.service.PackagesIndexParser;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
+import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.index.Checksum;
 import ai.subut.kurjun.model.index.ChecksummedResource;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
@@ -41,7 +42,7 @@ import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.RemoteRepository;
-import ai.subut.kurjun.model.security.Identity;
+
 import ai.subut.kurjun.repo.cache.PackageCache;
 import ai.subut.kurjun.repo.util.PathBuilder;
 import ai.subut.kurjun.repo.util.http.WebClientFactory;
@@ -96,7 +97,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
 
 
     @Override
-    public Identity getIdentity()
+    public User getIdentity()
     {
         return null;
     }

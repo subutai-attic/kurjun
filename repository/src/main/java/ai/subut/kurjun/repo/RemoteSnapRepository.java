@@ -1,7 +1,6 @@
 package ai.subut.kurjun.repo;
 
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -31,12 +30,11 @@ import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.snap.DefaultSnapMetadata;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.annotation.Nullable;
+import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
-import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.repo.cache.PackageCache;
-import ai.subut.kurjun.repo.util.MiscUtils;
 import ai.subut.kurjun.repo.util.http.WebClientFactory;
 
 
@@ -61,11 +59,11 @@ class RemoteSnapRepository extends RemoteRepositoryBase
     private PackageCache cache;
 
     private final URL url;
-    private final Identity identity;
+    private final User identity;
 
 
     @Inject
-    public RemoteSnapRepository( PackageCache cache, @Assisted String url, @Assisted @Nullable Identity identity )
+    public RemoteSnapRepository( PackageCache cache, @Assisted String url, @Assisted @Nullable User identity )
     {
         this.cache = cache;
         this.identity = identity;
@@ -81,7 +79,7 @@ class RemoteSnapRepository extends RemoteRepositoryBase
 
 
     @Override
-    public Identity getIdentity()
+    public User getIdentity()
     {
         return identity;
     }

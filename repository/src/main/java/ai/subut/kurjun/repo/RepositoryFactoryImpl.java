@@ -6,10 +6,11 @@ import java.net.URL;
 import ai.subut.kurjun.cfparser.service.ControlFileParser;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
+import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.repository.RemoteRepository;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
-import ai.subut.kurjun.model.security.Identity;
+
 import ai.subut.kurjun.repo.cache.PackageCache;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
 import ai.subut.kurjun.snap.service.SnapMetadataParser;
@@ -89,21 +90,21 @@ public class RepositoryFactoryImpl implements RepositoryFactory
 
 
     @Override
-    public RemoteRepository createNonLocalSnap( String url, Identity identity )
+    public RemoteRepository createNonLocalSnap( String url, User identity )
     {
         return new RemoteSnapRepository( cache, url, identity );
     }
     
     
     @Override
-    public RemoteRawRepository createNonLocalRaw( String url, Identity identity )
+    public RemoteRawRepository createNonLocalRaw( String url, User identity )
     {
         return new RemoteRawRepository( cache, url, identity );
     }
 
 
     @Override
-    public RemoteRepository createNonLocalTemplate( String url, Identity identity, String kurjunContext, String token )
+    public RemoteRepository createNonLocalTemplate( String url, User identity, String kurjunContext, String token )
     {
         return new RemoteTemplateRepository( cache, url, identity, kurjunContext, token );
     }
