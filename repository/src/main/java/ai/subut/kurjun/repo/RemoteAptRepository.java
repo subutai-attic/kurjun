@@ -1,7 +1,6 @@
 package ai.subut.kurjun.repo;
 
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -21,7 +20,6 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.http.HTTPConduit;
 
@@ -45,7 +43,6 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.RemoteRepository;
 import ai.subut.kurjun.model.security.Identity;
 import ai.subut.kurjun.repo.cache.PackageCache;
-import ai.subut.kurjun.repo.util.MiscUtils;
 import ai.subut.kurjun.repo.util.PathBuilder;
 import ai.subut.kurjun.repo.util.http.WebClientFactory;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;

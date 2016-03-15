@@ -56,10 +56,10 @@ public class RawManagerServiceImpl implements RawManagerService
     }
 
 
-//    private void _remote()
-//    {
-//        this.localPublicRawRepository;
-//    }
+    //    private void _remote()
+    //    {
+    //        this.localPublicRawRepository;
+    //    }
 
 
     private LocalRawRepository getUserRawRepository( KurjunContext kurjunContext )
@@ -94,6 +94,7 @@ public class RawManagerServiceImpl implements RawManagerService
 
                     result.addHeader( "Content-Disposition", "attachment;filename=" + meta.getName() );
                     result.addHeader( "Contenty-Type", "application/octet-stream" );
+                    result.addHeader( "Content-Length", String.valueOf( meta.getSize() ) );
 
                     ResponseStreams responseStreams = context.finalizeHeaders( result );
 
@@ -138,6 +139,7 @@ public class RawManagerServiceImpl implements RawManagerService
 
                     result.addHeader( "Content-Disposition", "attachment;filename=" + meta.getName() );
                     result.addHeader( "Contenty-Type", "application/octet-stream" );
+                    result.addHeader( "Content-Length", String.valueOf( meta.getSize() ) );
 
                     ResponseStreams responseStreams = context.finalizeHeaders( result );
 
