@@ -23,7 +23,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 
 @Singleton
-public class AliquaController
+public class AliquaController extends BaseController
 {
 
     @Inject

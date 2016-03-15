@@ -29,7 +29,7 @@ import ninja.uploads.FileProvider;
  */
 
 @Singleton
-public class TemplateController
+public class TemplateController extends BaseController
 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger( TemplateController.class );

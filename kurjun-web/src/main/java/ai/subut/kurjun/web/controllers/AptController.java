@@ -29,7 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * REST Controller for Apt Management
  */
 @Singleton
-public class AptController
+public class AptController extends BaseController
 {
 
     @Inject
