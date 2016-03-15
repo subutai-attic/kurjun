@@ -107,21 +107,6 @@ abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepo
         }
         return null;
     }
-    
-    
-    protected void deleteCache( byte[] md5 )
-    {
-        boolean deleted = packageCache.delete( md5 );
-        if ( deleted )
-        {
-            getLogger().debug( "Package with md5 {} deleted from the cache", Hex.encodeHexString( md5 ) );
-        }
-        else
-        {
-            getLogger().debug( "Package with md5 {} cannot be found in the cache", Hex.encodeHexString( md5 ) );
-        }
-    }
-
 
     protected File getTempFile()
     {
