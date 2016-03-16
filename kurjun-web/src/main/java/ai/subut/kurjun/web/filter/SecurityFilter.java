@@ -1,9 +1,6 @@
 package ai.subut.kurjun.web.filter;
 
 
-import com.google.inject.Inject;
-
-import ai.subut.kurjun.identity.service.IdentityManager;
 import ninja.Context;
 import ninja.Filter;
 import ninja.FilterChain;
@@ -13,8 +10,8 @@ import ninja.Results;
 
 public class SecurityFilter implements Filter
 {
-    @Inject
-    IdentityManager identityManager;
+//    @Inject
+//    IdentityManager identityManager;
 
     @Override
     public Result filter( final FilterChain filterChain, final Context context )

@@ -160,7 +160,8 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
                 try
                 {
                     String json = IOUtils.toString( ( InputStream ) resp.getEntity() );
-                    return gson.fromJson( json, DefaultTemplate.class );
+
+                    return toObject( json );
                 }
                 catch ( IOException ex )
                 {
@@ -244,7 +245,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
                 {
                     List<String> items = IOUtils.readLines( ( InputStream ) resp.getEntity() );
 
-                    this.remoteIndexChache = toObject( items.get( 0 ) );
+                    this.remoteIndexChache = toObjectList( items.get( 0 ) );
 
                     return this.remoteIndexChache;
                 }
@@ -351,7 +352,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     }
 
 
-    private List<SerializableMetadata> toObject( String items )
+    private List<SerializableMetadata> toObjectList( String items )
     {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false );
@@ -360,6 +361,22 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
             return objectMapper.readValue( items, new TypeReference<List<DefaultTemplate>>()
             {
             } );
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    private SerializableMetadata toObject( String items )
+    {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false );
+        try
+        {
+            return objectMapper.readValue( items, DefaultTemplate.class );
         }
         catch ( IOException e )
         {

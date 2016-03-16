@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import ai.subut.kurjun.common.service.KurjunContext;
+import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.subutai.TemplateId;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
@@ -162,4 +163,6 @@ public interface TemplateManagerService
     Renderable renderableTemplate( String repository, String md5, boolean isKurjunClient ) throws IOException;
 
     String md5();
+
+    DefaultTemplate getTemplate( TemplateId templateId, String md5, String name, String version );
 }

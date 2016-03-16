@@ -165,7 +165,7 @@ public class MetadataUtils
         m.setConfigContents( metadata.getConfigContents() );
         m.setPackagesContents( metadata.getPackagesContents() );
         m.setExtra( metadata.getExtra() );
-        m.setLength( metadata.getSize() );
+        m.setSize( metadata.getSize() );
         return m;
     }
 

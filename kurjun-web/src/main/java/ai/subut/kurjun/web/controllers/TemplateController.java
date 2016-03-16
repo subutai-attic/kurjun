@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.subutai.TemplateId;
 import ai.subut.kurjun.metadata.common.utils.IdValidators;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
@@ -53,12 +54,12 @@ public class TemplateController extends BaseController
 
         KurjunFileItem fileItem = ( KurjunFileItem ) file;
 
-        if ( md5 != null )
+        if ( md5 != null && !md5.isEmpty() )
         {
-            if ( fileItem.md5().equals( md5 ) )
+            if ( !fileItem.md5().equals( md5 ) )
             {
                 fileItem.cleanup();
-                return Results.badRequest().render( "MD5 checksum miss match" );
+                return Results.badRequest().render( "MD5 checksum miss match" ).text();
             }
         }
 
@@ -68,24 +69,45 @@ public class TemplateController extends BaseController
         //temp contains [fprint].[md5]
         if ( temp.length == 2 )
         {
-            if ( !temp[1].equalsIgnoreCase( md5 ) )
-            {
-                return Results.badRequest().render( "MD5 checksum miss match" );
-            }
+            return Results.ok().render( id ).text();
         }
-        return Results.ok().render( id ).text();
+
+        return Results.internalServerError().render( "Server error" ).text();
     }
 
 
-    //    public Result info( @Param( "id" ) String fingerprint, @Param( "name" ) String name,
-    //                        @Param( "version" ) String version )
-    //    {
-    //        if ( fingerprint == null )
-    //        {
-    //            fingerprint = "public";
-    //        }
-    //
-    //    }
+    public Result info( @Param( "id" ) String id, @Param( "name" ) String name, @Param( "version" ) String version,
+                        @Param( "md5" ) String md5, @Param( "type" ) String type )
+    {
+        TemplateId tid = null;
+        DefaultTemplate defaultTemplate = null;
+
+        if ( id != null )
+        {
+            tid = IdValidators.Template.validate( id );
+            defaultTemplate = templateManagerService.getTemplate( tid, md5, name, version );
+        }
+        else
+        {
+            defaultTemplate = templateManagerService.getTemplate( null, md5, name, version );
+        }
+        if ( defaultTemplate == null )
+        {
+            return Results.noContent();
+        }
+        if ( type != null && !type.isEmpty() )
+        {
+            switch ( type )
+            {
+                case "id":
+                    return Results.ok().render( defaultTemplate.getId() ).text();
+                default:
+                    return Results.ok().render( defaultTemplate ).json();
+            }
+        }
+        
+        return Results.ok().render( defaultTemplate ).json();
+    }
 
 
     public Result download( Context context, @Param( "id" ) String templateId ) throws InternalServerErrorException

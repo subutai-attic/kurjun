@@ -125,7 +125,7 @@ public class LocalTemplateRepository extends LocalRepositoryBase
             if ( Arrays.equals( md5, meta.getMd5Sum() ) )
             {
                 DefaultTemplate dt = MetadataUtils.serializableTemplateMetadata( meta );
-                dt.setLength( temp.length() );
+                dt.setSize( temp.length() );
                 dt.setOwnerFprint( owner );
                 metadataStore.put( dt );
                 return dt;
@@ -157,7 +157,7 @@ public class LocalTemplateRepository extends LocalRepositoryBase
             if ( Arrays.equals( md5, meta.getMd5Sum() ) )
             {
                 DefaultTemplate dt = MetadataUtils.serializableTemplateMetadata( meta );
-                dt.setLength( file.length() );
+                dt.setSize( file.length() );
                 dt.setOwnerFprint( owner );
                 metadataStore.put( dt );
                 return dt;

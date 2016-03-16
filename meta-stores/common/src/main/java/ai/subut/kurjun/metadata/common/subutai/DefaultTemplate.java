@@ -28,7 +28,7 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
     private String configContents;
     private String packagesContents;
     private String ownerFprint;
-    private long length;
+    private long size;
     private Map<String, String> extra = new HashMap<>();
 
 
@@ -177,16 +177,16 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
     }
 
 
-    public void setLength( final long length )
+    public void setSize( final long size )
     {
-        this.length = length;
+        this.size = size;
     }
 
 
     @Override
     public long getSize()
     {
-        return this.length;
+        return this.size;
     }
 
 

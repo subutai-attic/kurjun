@@ -30,7 +30,9 @@ import ai.subut.kurjun.web.context.ArtifactContext;
 import ai.subut.kurjun.web.model.UserContextImpl;
 import ai.subut.kurjun.web.service.TemplateManagerService;
 import ai.subut.kurjun.web.utils.Utils;
+import ninja.Context;
 import ninja.Renderable;
+import ninja.Result;
 import ninja.lifecycle.Dispose;
 import ninja.lifecycle.Start;
 import ninja.utils.ResponseStreams;
@@ -220,11 +222,11 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
         if ( inputStream != null )
         {
-            return ( context, result ) -> {
+            return ( Context context, Result result ) -> {
 
                 result.addHeader( "Content-Disposition", "attachment;filename=" + makeTemplateName( metadata ) );
                 result.addHeader( "Contenty-Type", "application/octet-stream" );
-                result.addHeader( "Content-Length", String.valueOf( metadata.getSize() ) );
+                //result.addHeader( "Content-Length", String.valueOf( metadata.getSize() ) );
 
                 ResponseStreams responseStreams = context.finalizeHeaders( result );
 
@@ -239,6 +241,23 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
             };
         }
         return null;
+    }
+
+
+    @Override
+    public DefaultTemplate getTemplate( final TemplateId templateId, final String md5, String name, String version )
+    {
+        DefaultTemplate defaultTemplate = new DefaultTemplate();
+
+        if ( templateId != null )
+        {
+            defaultTemplate.setId( templateId.getOwnerFprint(), Utils.MD5.toByteArray( templateId.getMd5() ) );
+        }
+
+        defaultTemplate.setName( name );
+        defaultTemplate.setVersion( version );
+
+        return ( DefaultTemplate ) unifiedTemplateRepository.getPackageInfo( defaultTemplate );
     }
 
 

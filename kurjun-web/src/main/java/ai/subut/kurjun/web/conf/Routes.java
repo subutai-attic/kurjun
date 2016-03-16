@@ -31,7 +31,7 @@ public class Routes implements ApplicationRoutes
         router.GET().route( baseTemplateUrl + "list" ).with( TemplateController.class, "list" );
         router.GET().route( baseTemplateUrl + "get" ).with( TemplateController.class, "download" );
         router.GET().route( baseTemplateUrl + "md5" ).with( TemplateController.class, "md5" );
-//        router.GET().route( baseTemplateUrl + "info" ).with( TemplateController.class, "info" );
+        router.GET().route( baseTemplateUrl + "info" ).with( TemplateController.class, "info" );
         router.POST().route( baseTemplateUrl + "upload" ).with( TemplateController.class, "upload" );
         router.DELETE().route( baseTemplateUrl + "delete" ).with( TemplateController.class, "delete" );
 
