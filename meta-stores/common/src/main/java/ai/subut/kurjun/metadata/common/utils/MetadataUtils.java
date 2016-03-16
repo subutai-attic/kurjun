@@ -30,7 +30,6 @@ public class MetadataUtils
 
     public static final Gson JSON;
 
-
     static
     {
         GsonBuilder gb = new GsonBuilder();
@@ -42,7 +41,6 @@ public class MetadataUtils
         JSON = gb.create();
     }
 
-
     private MetadataUtils()
     {
         // utility class
@@ -52,13 +50,10 @@ public class MetadataUtils
     /**
      * Makes a comparator that compares meta data instances by their versions. Returned comparator sorts items in
      * ascending order by version values and takes into account null versions.
-     *
-     * @return
      */
     public static Comparator<Metadata> makeVersionComparator()
     {
-        return (Metadata m1, Metadata m2) ->
-        {
+        return ( Metadata m1, Metadata m2 ) -> {
             if ( m1.getVersion() != null )
             {
                 return m2.getVersion() != null ? m1.getVersion().compareTo( m2.getVersion() ) : 1;
@@ -77,6 +72,7 @@ public class MetadataUtils
      * serializable. This method ensures that the returned instance is serializable.
      *
      * @param meta meta data to convert
+     *
      * @return serializable instance of the supplied meta data
      */
     public static DefaultPackageMetadata serializablePackageMetadata( PackageMetadata meta )
@@ -97,6 +93,7 @@ public class MetadataUtils
      * serializable. This method ensures that the returned instance is serializable.
      *
      * @param meta meta data to convert
+     *
      * @return serializable instance of the supplied meta data
      */
     public static DefaultIndexPackageMetaData serializableIndexPackageMetadata( IndexPackageMetaData meta )
@@ -123,6 +120,7 @@ public class MetadataUtils
      * Converts supplied snap meta data to its serializable meta data form.
      *
      * @param meta snap meta data to convert
+     *
      * @return serializable meta data
      */
     public static DefaultSnapMetadata serializableSnapMetadata( SnapMetadata meta )
@@ -146,6 +144,7 @@ public class MetadataUtils
      * Converts supplied Subutai template metadata into its serializable form.
      *
      * @param metadata meta data to convert
+     *
      * @return serializable form of meta data
      */
     public static DefaultTemplate serializableTemplateMetadata( SubutaiTemplateMetadata metadata )
@@ -155,6 +154,7 @@ public class MetadataUtils
             return ( DefaultTemplate ) metadata;
         }
         DefaultTemplate m = new DefaultTemplate();
+        m.setId( metadata.getOwnerFprint(), metadata.getMd5Sum() );
         m.setMd5Sum( metadata.getMd5Sum() );
         m.setName( metadata.getName() );
         m.setVersion( metadata.getVersion() );
@@ -170,7 +170,7 @@ public class MetadataUtils
     }
 
 
-    public static Map< String, String> makeParamsMap( Metadata metadata )
+    public static Map<String, String> makeParamsMap( Metadata metadata )
     {
         Map<String, String> params = new HashMap<>();
         if ( metadata.getId() != null )

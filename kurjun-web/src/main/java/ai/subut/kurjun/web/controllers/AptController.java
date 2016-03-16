@@ -126,7 +126,6 @@ public class AptController extends BaseController
 
         if ( serializableMetadataList != null )
         {
-
             return Results.ok().render( serializableMetadataList ).text();
         }
 

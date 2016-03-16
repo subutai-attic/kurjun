@@ -182,12 +182,15 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         }
 
         WebClient webClient = webClientFactory.make( this, TEMPLATE_PATH + "/" + GET_PATH, makeParamsMap( metadata ) );
+        webClient.header( "Accept", "application/octet-stream" );
+
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
         }
 
         Response resp = doGet( webClient );
+
         if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
         {
             if ( resp.getEntity() instanceof InputStream )

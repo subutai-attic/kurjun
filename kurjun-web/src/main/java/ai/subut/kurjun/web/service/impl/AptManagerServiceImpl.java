@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.codec.binary.Hex;
 
@@ -20,6 +21,7 @@ import com.google.inject.Singleton;
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
+import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.Metadata;
@@ -229,7 +231,10 @@ public class AptManagerServiceImpl implements AptManagerService
     @Override
     public List<SerializableMetadata> list()
     {
-        return unifiedRepository.listPackages();
+
+        List<SerializableMetadata> list = unifiedRepository.listPackages();
+
+        return list.stream().map( pkg -> ( DefaultPackageMetadata) pkg ).collect( Collectors.toList() );
     }
 
 

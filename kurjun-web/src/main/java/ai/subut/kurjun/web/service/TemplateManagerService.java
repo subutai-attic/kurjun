@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import ai.subut.kurjun.common.service.KurjunContext;
+import ai.subut.kurjun.metadata.common.subutai.TemplateId;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ninja.Renderable;
@@ -105,7 +106,7 @@ public interface TemplateManagerService
      *
      * @return {@code true} if package successfully deleted; {@code false} otherwise
      */
-    boolean delete( String md5, String repository ) throws IOException;
+    boolean delete( TemplateId templateId ) throws IOException;
 
 
     /**

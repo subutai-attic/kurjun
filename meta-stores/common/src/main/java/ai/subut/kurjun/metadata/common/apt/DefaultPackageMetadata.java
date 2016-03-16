@@ -401,5 +401,34 @@ public class DefaultPackageMetadata implements PackageMetadata, SerializableMeta
     }
 
 
+    @Override
+    public String toString()
+    {
+        return "DefaultPackageMetadata{" +
+                "md5=" + Arrays.toString( md5 ) +
+                ", component='" + component + '\'' +
+                ", filename='" + filename + '\'' +
+                ", packageName='" + packageName + '\'' +
+                ", version='" + version + '\'' +
+                ", source='" + source + '\'' +
+                ", maintainer='" + maintainer + '\'' +
+                ", architecture=" + architecture +
+                ", installedSize=" + installedSize +
+                ", dependencies=" + dependencies +
+                ", recommends=" + recommends +
+                ", suggests=" + suggests +
+                ", enhances=" + enhances +
+                ", preDepends=" + preDepends +
+                ", conflicts=" + conflicts +
+                ", breaks=" + breaks +
+                ", replaces=" + replaces +
+                ", provides=" + provides +
+                ", section='" + section + '\'' +
+                ", priority=" + priority +
+                ", homepage=" + homepage +
+                ", description='" + description + '\'' +
+                ", extra=" + extra +
+                '}';
+    }
 }
 

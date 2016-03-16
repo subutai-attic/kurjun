@@ -19,6 +19,7 @@ import com.google.inject.Singleton;
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
+import ai.subut.kurjun.metadata.common.subutai.TemplateId;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
@@ -154,7 +155,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         {
             if ( metadata.getMd5Sum() != null )
             {
-                artifactContext.store( metadata.getMd5Sum(), new UserContextImpl( repository ) );
+                artifactContext.store( metadata.getMd5Sum(), new KurjunContext( repository ) );
             }
         }
 
@@ -181,9 +182,13 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public boolean delete( String md5, String repository ) throws IOException
+    public boolean delete( TemplateId tid ) throws IOException
     {
-        return getRepo( repository ).delete( repository + "." + md5, Utils.MD5.toByteArray( md5 ) );
+        LocalTemplateRepository repository = ( LocalTemplateRepository ) getRepo( tid.getOwnerFprint() );
+
+        boolean success = repository.delete( tid.get(), Utils.MD5.toByteArray( tid.getMd5() ) );
+
+        return success;
     }
 
 
@@ -205,13 +210,11 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     public Renderable renderableTemplate( final String repository, String md5, final boolean isKurjunClient )
             throws IOException
     {
-        LocalRepository publicRepository = getRepo( repository );
-
         DefaultTemplate defaultTemplate = new DefaultTemplate();
 
         defaultTemplate.setId( repository, Utils.MD5.toByteArray( md5 ) );
 
-        DefaultTemplate metadata = ( DefaultTemplate ) publicRepository.getPackageInfo( defaultTemplate );
+        DefaultTemplate metadata = ( DefaultTemplate ) unifiedTemplateRepository.getPackageInfo( defaultTemplate );
 
         InputStream inputStream = getTemplateData( repository, Utils.MD5.toByteArray( md5 ), false );
 
@@ -221,7 +224,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
                 result.addHeader( "Content-Disposition", "attachment;filename=" + makeTemplateName( metadata ) );
                 result.addHeader( "Contenty-Type", "application/octet-stream" );
-                result.addHeader( "Content-Length", String.valueOf( defaultTemplate.getSize() ) );
+                result.addHeader( "Content-Length", String.valueOf( metadata.getSize() ) );
 
                 ResponseStreams responseStreams = context.finalizeHeaders( result );
 

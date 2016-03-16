@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import ai.subut.kurjun.metadata.common.subutai.TemplateId;
+import ai.subut.kurjun.metadata.common.utils.IdValidators;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
 import ai.subut.kurjun.web.model.KurjunFileItem;
@@ -22,6 +24,8 @@ import ninja.exceptions.InternalServerErrorException;
 import ninja.params.Param;
 import ninja.uploads.FileItem;
 import ninja.uploads.FileProvider;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 
 /**
@@ -39,23 +43,26 @@ public class TemplateController extends BaseController
 
 
     @FileProvider( SubutaiFileHandler.class )
-    public Result upload( Context context, @Param( "id" ) String fingerprint, @Param( "file" ) FileItem file,
+    public Result upload( Context context, @Param( "repository" ) String repository, @Param( "file" ) FileItem file,
                           @Param( "md5" ) String md5 ) throws Exception
     {
-        if ( fingerprint == null )
+        if ( repository == null )
         {
-            fingerprint = "public";
+            repository = "public";
         }
 
         KurjunFileItem fileItem = ( KurjunFileItem ) file;
 
-        if ( fileItem.md5().equals( md5 ) )
+        if ( md5 != null )
         {
-            fileItem.cleanup();
-            return Results.badRequest().render( "MD5 checksum miss match" );
+            if ( fileItem.md5().equals( md5 ) )
+            {
+                fileItem.cleanup();
+                return Results.badRequest().render( "MD5 checksum miss match" );
+            }
         }
 
-        String id = templateManagerService.upload( fingerprint, fileItem.getInputStream() );
+        String id = templateManagerService.upload( repository, fileItem.getInputStream() );
 
         String[] temp = id.split( "\\." );
         //temp contains [fprint].[md5]
@@ -81,13 +88,16 @@ public class TemplateController extends BaseController
     //    }
 
 
-    public Result download( Context context, @Param( "id" ) String fingerprint, @Param( "md5" ) String md5 )
-            throws InternalServerErrorException
+    public Result download( Context context, @Param( "id" ) String templateId ) throws InternalServerErrorException
     {
+        checkNotNull( templateId, "Template ID cannot be null" );
+
+        TemplateId tid = IdValidators.Template.validate( templateId );
+
         Renderable renderable = null;
         try
         {
-            renderable = templateManagerService.renderableTemplate( fingerprint, md5, false );
+            renderable = templateManagerService.renderableTemplate( tid.getOwnerFprint(), tid.getMd5(), false );
         }
         catch ( IOException e )
         {
@@ -95,22 +105,21 @@ public class TemplateController extends BaseController
 
             throw new InternalServerErrorException( "Internal server error." );
         }
+
         return new Result( 200 ).render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
     }
 
 
-    public Result delete( Context context, @Param( "md5" ) String md5, @Param( "id" ) String fingerprint )
-    {
-        boolean success;
+    public Result delete( Context context, @Param( "id" ) String templateId )
 
-        if ( fingerprint == null )
-        {
-            fingerprint = "public";
-        }
+    {
+        TemplateId tid = IdValidators.Template.validate( templateId );
+
+        boolean success;
 
         try
         {
-            success = templateManagerService.delete( md5, fingerprint );
+            success = templateManagerService.delete( tid );
         }
         catch ( IOException e )
         {
@@ -123,7 +132,7 @@ public class TemplateController extends BaseController
     }
 
 
-    public Result list( Context context, @Param( "id" ) String fingerprint )
+    public Result list( Context context, @Param( "fingerprint" ) String fingerprint )
     {
         try
         {
