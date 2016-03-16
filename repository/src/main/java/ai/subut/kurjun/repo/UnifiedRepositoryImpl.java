@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
@@ -63,7 +64,11 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
             Set<ReleaseFile> releases = new HashSet<>();
             for ( Repository r : repositories )
             {
-                releases.addAll( r.getDistributions() );
+                Set<ReleaseFile> set = r.getDistributions();
+                if ( set != null )
+                {
+                    releases.addAll( set );
+                }
             }
             return releases;
         }
@@ -97,10 +102,9 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
     @Override
     public InputStream getPackageStream( Metadata metadata )
     {
-        Iterator<Repository> it = getAllRepositories().iterator();
-        while ( it.hasNext() )
+        for ( final Repository repository : getAllRepositories() )
         {
-            InputStream is = it.next().getPackageStream( metadata );
+            InputStream is = repository.getPackageStream( metadata );
             if ( is != null )
             {
                 return is;
@@ -114,9 +118,11 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
     public List<SerializableMetadata> listPackages()
     {
         List<SerializableMetadata> result = new LinkedList<>();
+
         for ( Repository repo : getAllRepositories() )
         {
             List<SerializableMetadata> list = repo.listPackages();
+
             for ( SerializableMetadata meta : list )
             {
                 if ( !result.contains( meta ) )
@@ -127,7 +133,6 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
         }
         return result;
     }
-
 
     private Comparator<Repository> makeLocalsFirstComparator()
     {
@@ -158,5 +163,11 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
         return list;
     }
 
+
+    @Override
+    public KurjunContext getContext()
+    {
+        return null;
+    }
 }
 

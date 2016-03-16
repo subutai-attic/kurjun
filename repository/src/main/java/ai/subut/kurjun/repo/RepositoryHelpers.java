@@ -42,7 +42,7 @@ public class RepositoryHelpers
         }
         return repository instanceof LocalAptRepository
                 || repository instanceof LocalAptRepositoryWrapper
-                || repository instanceof NonLocalAptRepository;
+                || repository instanceof RemoteAptRepository;
     }
 
 }

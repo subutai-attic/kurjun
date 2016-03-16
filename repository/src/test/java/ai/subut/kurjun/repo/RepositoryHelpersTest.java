@@ -29,7 +29,7 @@ public class RepositoryHelpersTest
         Repository r2 = new LocalAptRepositoryWrapper( null, temporaryFolder.newFolder().toString() );
         Assert.assertTrue( RepositoryHelpers.isAptRepository( r2 ) );
 
-        Repository r3 = new NonLocalAptRepository( new URL( "http://localhost:8080/vapt" ) );
+        Repository r3 = new RemoteAptRepository( new URL( "http://localhost:8080/vapt" ), null );
         Assert.assertTrue( RepositoryHelpers.isAptRepository( r3 ) );
 
         Repository r4 = new LocalSnapRepository( null, null, null, null );
@@ -48,6 +48,5 @@ public class RepositoryHelpersTest
         uni.getRepositories().add( r4 );
         Assert.assertFalse( RepositoryHelpers.isAptRepository( uni ) );
     }
-
 }
 

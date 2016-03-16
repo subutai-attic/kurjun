@@ -4,6 +4,7 @@ package ai.subut.kurjun.model.metadata;
 import java.io.IOException;
 import java.util.List;
 
+// TODO: Refactor the type of id from object to custom class
 
 /**
  * A store containing the metadata for packages. The md5 of the
@@ -16,24 +17,24 @@ public interface PackageMetadataStore
      * Checks to see if a package's metadata exists within this
      * PkgMetaStore.
      *
-     * @param md5 the md5 sum of the package
+     * @param id the id of the package
      * @return true if the metadata of a package having the same md5
      * sum exists
      * @throws IOException if there are problems accessing the store
      */
-    boolean contains( byte[] md5 ) throws IOException;
+    boolean contains( Object id ) throws IOException;
 
 
     /**
      * Gets the metadata of a package with the supplied md5 sum.
      *
-     * @param md5 the md5 sum of the package
+     * @param id the id of the package
      * @return the metadata, or null if no such metadata
      * @throws IOException if there are problems accessing the store
      */
-    SerializableMetadata get( byte[] md5 ) throws IOException;
-
-
+    SerializableMetadata get( Object id ) throws IOException;
+    
+    
     /**
      * Gets metadata of packages whose name match the supplied package name.
      *
@@ -57,11 +58,11 @@ public interface PackageMetadataStore
     /**
      * Removes the meta data associated with the package with the md5 sum.
      *
-     * @param md5 the md5 sum of the Debian package
+     * @param id the id of the Debian package
      * @return true if the metadata was removed, false if no such metadata existed
      * @throws IOException if there are problems accessing the store
      */
-    boolean remove( byte[] md5 ) throws IOException;
+    boolean remove( Object id ) throws IOException;
 
 
     /**

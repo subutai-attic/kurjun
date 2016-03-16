@@ -21,12 +21,13 @@
     <module>parsers</module>
     <module>file-stores</module>
     <module>meta-stores</module>
-    <module>security</module>
+    <!--<module>security</module>-->
     <module>repository</module>
     <module>quota</module>
-    <module>http</module>
-    <module>jetty</module>
     <module>karaf</module>
+    <module>kurjun-web</module>
+    <module>security-manager</module>
+    <module>identity-manager</module>
   </modules>
 
   <description>

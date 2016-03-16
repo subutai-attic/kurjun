@@ -4,7 +4,6 @@ package ai.subut.kurjun.common.service;
 /**
  * This class consists of constant values like property keys used in Kurjun properties or other constant values used
  * throughout the whole project.
- *
  */
 public final class KurjunConstants
 {
@@ -14,9 +13,10 @@ public final class KurjunConstants
         // not to be constructed
     }
 
+
     /**
-     * Packaging type of the repository. Values for this property are expected to be one of constants in
-     * {@code PackageType}.
+     * Packaging type of the repository. Values for this property are expected to be one of constants in {@code
+     * PackageType}.
      */
     public static final String REPO_PACKAGE_TYPE = "repo.package.type";
 
@@ -25,6 +25,11 @@ public final class KurjunConstants
      */
     public static final String FILE_STORE_FS_ROOT_DIR = "file.store.fs.root.dir";
 
+
+    public static final String KURJUN_SOURCE_LIST = "kurjun.source";
+
+
+    public static final String KURJUN_SERVER_LIST = "kurjun.server.list";
     /**
      * Property key to explicitly specify directory for file system backed file store. This property can only be used in
      * context properties.
@@ -61,7 +66,5 @@ public final class KurjunConstants
      * based db is used to store quotas info.
      */
     public static final String QUOTA_IN_MEMORY = "quota.storage.inmemory";
-
-
 }
 

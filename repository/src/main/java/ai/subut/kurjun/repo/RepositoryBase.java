@@ -1,16 +1,29 @@
 package ai.subut.kurjun.repo;
 
 
+import java.util.UUID;
+
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.repository.Protocol;
 import ai.subut.kurjun.model.repository.Repository;
+
+import static java.util.UUID.randomUUID;
 
 
 /**
  * Abstract base class for repositories. This can be a base for either local or remote repositories.
- *
  */
 abstract class RepositoryBase implements Repository
 {
+
+    private final UUID identifier = randomUUID();
+
+    @Override
+    public UUID getIdentifier()
+    {
+        return identifier;
+    }
+
 
     @Override
     public String getPath()
@@ -39,6 +52,7 @@ abstract class RepositoryBase implements Repository
         return getProtocol().isSecure();
     }
 
+    public abstract KurjunContext getContext();
 
     @Override
     public Protocol getProtocol()
@@ -55,6 +69,7 @@ abstract class RepositoryBase implements Repository
     }
 
 
+
     @Override
     public String toString()
     {
@@ -68,7 +83,4 @@ abstract class RepositoryBase implements Repository
             return "Kurjun repository: Local Repo";
         }
     }
-
-
 }
-

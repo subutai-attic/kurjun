@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>ai.subut.kurjun</groupId>
+    <artifactId>kurjun-parent</artifactId>
+    <version>1.0</version>
+  </parent>
+
+  <name>Kurjun Web</name>
+  <artifactId>kurjun-web</artifactId>
+  <description>Kurjun Web (Global Kurjun)</description>
+  <packaging>war</packaging>
+
+  <properties>
+    <project.build.sourceencoding>UTF-8</project.build.sourceencoding>
+    <ai.subut.kurjun.version>1.0</ai.subut.kurjun.version>
+
+    <!-- ================================ -->
+    <ninja.version>5.2.2</ninja.version>
+    <jetty.version>9.2.14.v20151106</jetty.version>
+    <!-- ================================ -->
+  </properties>
+
+  <build>
+    <finalName>kurjun</finalName>
+    <plugins>
+
+      <!-- Ninja SuperDevMode -->
+      <plugin>
+        <groupId>org.ninjaframework</groupId>
+        <artifactId>ninja-maven-plugin</artifactId>
+        <version>${ninja.version}</version>
+        <configuration>
+          <useDefaultExcludes>true</useDefaultExcludes>
+          <excludes>
+            <exclude>(.*)html$</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+      <!-- Needed to debug in SuperDevMode -->
+      <plugin>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <version>9.3.0.M2</version>
+        <configuration>
+          <stopKey>stop</stopKey>
+          <stopPort>8889</stopPort>
+          <scanIntervalSeconds>1</scanIntervalSeconds>
+          <reload>automatic</reload>
+          <scanTargetPatterns>
+            <scanTargetPattern>
+              <directory>target/classes</directory>
+              <includes>
+                <include>**/*</include>
+              </includes>
+              <excludes>
+                <exclude>**/*.ftl.html</exclude>
+                <exclude>assets/**</exclude>
+              </excludes>
+            </scanTargetPattern>
+          </scanTargetPatterns>
+          <systemProperties>
+            <systemProperty>
+              <name>ninja.mode</name>
+              <value>dev</value>
+            </systemProperty>
+          </systemProperties>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+          <createDependencyReducedPom>true</createDependencyReducedPom>
+          <filters>
+            <filter>
+              <artifact>*:*</artifact>
+              <excludes>
+                <exclude>META-INF/*.SF</exclude>
+                <exclude>META-INF/*.DSA</exclude>
+                <exclude>META-INF/*.RSA</exclude>
+              </excludes>
+            </filter>
+          </filters>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>ninja.standalone.NinjaJetty</mainClass>
+                </transformer>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+
+    <!-- Removing this may cause error reading of configuration file -->
+    <resources>
+
+      <resource>
+        <directory>src/main/java</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </resource>
+
+      <resource>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
+    </resources>
+
+  </build>
+
+  <!-- ============================================================================================================= -->
+  <!-- Dependencies -->
+  <!-- ============================================================================================================= -->
+
+  <dependencies>
+    <dependency>
+      <groupId>org.ninjaframework</groupId>
+      <artifactId>ninja-standalone</artifactId>
+      <version>${ninja.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>ai.subut.kurjun</groupId>
+      <artifactId>model</artifactId>
+      <version>${ai.subut.kurjun.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ai.subut.kurjun</groupId>
+      <artifactId>security</artifactId>
+      <version>${ai.subut.kurjun.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ai.subut.kurjun</groupId>
+      <artifactId>security-manager</artifactId>
+      <version>${ai.subut.kurjun.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ai.subut.kurjun</groupId>
+      <artifactId>identity-manager</artifactId>
+      <version>${ai.subut.kurjun.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ai.subut.kurjun</groupId>
+      <artifactId>repository</artifactId>
+      <version>${ai.subut.kurjun.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ai.subut.kurjun</groupId>
+      <artifactId>file-store-factory</artifactId>
+      <version>${ai.subut.kurjun.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>ai.subut.kurjun</groupId>
+      <artifactId>metadata-store-factory</artifactId>
+      <version>${ai.subut.kurjun.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>ai.subut.kurjun</groupId>
+      <artifactId>snap-parser</artifactId>
+      <version>${ai.subut.kurjun.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>ai.subut.kurjun</groupId>
+      <artifactId>kurjun-template-parser</artifactId>
+      <version>${ai.subut.kurjun.version}</version>
+    </dependency>
+    <!-- ***************************************** -->
+
+    <!-- ************* Jetty ********************* -->
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-server</artifactId>
+      <version>${jetty.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-servlet</artifactId>
+      <version>${jetty.version}</version>
+    </dependency>
+    <!-- ***************************************** -->
+
+    <!-- ************* Ninja ********************* -->
+
+    <dependency>
+      <groupId>org.ninjaframework</groupId>
+      <artifactId>ninja-servlet</artifactId>
+      <version>${ninja.version}</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>jcl-over-slf4j</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>log4j-over-slf4j</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.ninjaframework</groupId>
+      <artifactId>ninja-test-utilities</artifactId>
+      <version>${ninja.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- *************************************** -->
+
+    <!-- *************************************** -->
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.5</version>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-validator</groupId>
+      <artifactId>commons-validator</artifactId>
+      <version>1.5.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+    </dependency>
+    <!-- *************************************** -->
+  </dependencies>
+
+
+</project>

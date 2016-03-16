@@ -14,7 +14,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,6 +45,7 @@ import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
+import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
@@ -87,8 +87,8 @@ class LocalAptRepository extends LocalRepositoryBase
         DefaultRelease r = new DefaultRelease();
         r.setCodename( "trusty" );
         r.setArchitectures( Arrays.asList( Architecture.ALL, Architecture.AMD64, Architecture.i386 ) );
-        r.setComponents( Arrays.asList( "main" ) );
-        r.setDescription( "Short description of the repo" );
+        r.setComponents( Arrays.asList( "main", "contrib", "non-free" ) );
+        r.setDescription( "Kurjun virtual apt repository" );
         r.setVersion( "12.04" );
         releases.add( r );
 
@@ -130,7 +130,6 @@ class LocalAptRepository extends LocalRepositoryBase
         return releases;
     }
 
-
     @Override
     public PackageMetadata put( InputStream is, CompressionType compressionType ) throws IOException
     {
@@ -163,15 +162,30 @@ class LocalAptRepository extends LocalRepositoryBase
             fileStore.put( target.toFile() );
             return meta;
         }
-        catch ( ParseException ex )
+        catch ( Exception ex )
         {
-            throw new IOException( "Failed to parse control file", ex );
+            throw new IOException( ex.getMessage(), ex );
         }
         finally
         {
             Files.delete( target );
             FileUtils.deleteDirectory( tempDir.toFile() );
         }
+    }
+
+
+    @Override
+    public Metadata put( final InputStream is, final CompressionType compressionType, final String owner )
+            throws IOException
+    {
+        return null;
+    }
+
+
+    @Override
+    public Metadata put( final File file, final CompressionType compressionType, final String owner ) throws IOException
+    {
+        return null;
     }
 
 
@@ -251,5 +265,10 @@ class LocalAptRepository extends LocalRepositoryBase
     }
 
 
+    @Override
+    public KurjunContext getContext()
+    {
+        return context;
+    }
 }
 

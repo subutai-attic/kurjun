@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -41,6 +42,7 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
         byte[] md5;
         try ( InputStream is = new FileInputStream( file ) )
         {
+            //buffered digest
             md5 = DigestUtils.md5( is );
         }
 
@@ -107,6 +109,13 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
         {
 
             @Override
+            public String getId()
+            {
+                return Hex.encodeHexString( getMd5Sum() );
+            }
+
+
+            @Override
             public Architecture getArchitecture()
             {
                 String a = prop.getProperty( TemplateProperties.ARCH );
@@ -164,6 +173,13 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
 
 
             @Override
+            public String getOwnerFprint()
+            {
+                // there is no owner field in config file
+                return null;
+            }
+
+            @Override
             public Map<String, String> getExtra()
             {
                 Set<String> skipProperties = new HashSet<>();
@@ -185,6 +201,13 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
                     }
                 }
                 return map;
+            }
+
+
+            @Override
+            public long getSize()
+            {
+                return 0;
             }
         };
     }

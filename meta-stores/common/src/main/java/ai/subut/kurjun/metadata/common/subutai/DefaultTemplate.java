@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.codec.binary.Hex;
+
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
@@ -13,7 +15,6 @@ import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 
 /**
  * Default serializable POJO implementation class of {@link SubutaiTemplateMetadata}.
- *
  */
 public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMetadata
 {
@@ -26,7 +27,30 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
     private Architecture architecture;
     private String configContents;
     private String packagesContents;
-    private Map< String, String> extra = new HashMap<>();
+    private String ownerFprint;
+    private long length;
+    private Map<String, String> extra = new HashMap<>();
+
+
+    @Override
+    public Object getId()
+    {
+        if ( ownerFprint != null && md5Sum != null )
+        {
+            return new TemplateId( ownerFprint, Hex.encodeHexString( md5Sum ) ).get();
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+
+    public void setId( String ownerFprint, byte[] md5Sum )
+    {
+        this.ownerFprint = ownerFprint;
+        this.md5Sum = md5Sum;
+    }
 
 
     @Override
@@ -134,9 +158,35 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
 
 
     @Override
+    public String getOwnerFprint()
+    {
+        return ownerFprint;
+    }
+
+
+    public void setOwnerFprint( String ownerFprint )
+    {
+        this.ownerFprint = ownerFprint;
+    }
+
+
+    @Override
     public Map<String, String> getExtra()
     {
         return extra;
+    }
+
+
+    public void setLength( final long length )
+    {
+        this.length = length;
+    }
+
+
+    @Override
+    public long getSize()
+    {
+        return this.length;
     }
 
 
@@ -172,7 +222,4 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
         }
         return false;
     }
-
-
 }
-

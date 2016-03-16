@@ -161,9 +161,11 @@ public class MetadataUtils
         m.setParent( metadata.getParent() );
         m.setPackage( metadata.getPackage() );
         m.setArchitecture( metadata.getArchitecture() );
+        m.setOwnerFprint( metadata.getOwnerFprint() );
         m.setConfigContents( metadata.getConfigContents() );
         m.setPackagesContents( metadata.getPackagesContents() );
         m.setExtra( metadata.getExtra() );
+        m.setLength( metadata.getSize() );
         return m;
     }
 
@@ -171,6 +173,10 @@ public class MetadataUtils
     public static Map< String, String> makeParamsMap( Metadata metadata )
     {
         Map<String, String> params = new HashMap<>();
+        if ( metadata.getId() != null )
+        {
+            params.put( "id", String.valueOf( metadata.getId() ) );
+        }
         if ( metadata.getMd5Sum() != null )
         {
             params.put( "md5", Hex.encodeHexString( metadata.getMd5Sum() ) );

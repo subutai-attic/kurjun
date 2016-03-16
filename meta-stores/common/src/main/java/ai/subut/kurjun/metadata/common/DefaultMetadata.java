@@ -3,6 +3,8 @@ package ai.subut.kurjun.metadata.common;
 
 import java.util.Arrays;
 
+import org.apache.commons.codec.binary.Hex;
+
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 
@@ -18,6 +20,13 @@ public class DefaultMetadata implements SerializableMetadata
     private String name;
     private String version;
     private String serialized;
+
+
+    @Override
+    public Object getId()
+    {
+        return md5sum != null ? Hex.encodeHexString( md5sum ) : null;
+    }
 
 
     @Override

@@ -8,11 +8,12 @@ import com.google.inject.name.Named;
 
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.annotation.Nullable;
+import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.repository.LocalRepository;
-import ai.subut.kurjun.model.repository.NonLocalRepository;
+import ai.subut.kurjun.model.repository.RemoteRepository;
 import ai.subut.kurjun.model.repository.PackageType;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
-import ai.subut.kurjun.model.security.Identity;
+
 
 
 /**
@@ -50,6 +51,10 @@ public interface RepositoryFactory
      */
     @Named( PackageType.SNAP )
     LocalRepository createLocalSnap( KurjunContext context );
+    
+    
+    @Named( PackageType.RAW )
+    LocalRawRepository createLocalRaw( KurjunContext context );
 
 
     /**
@@ -70,19 +75,28 @@ public interface RepositoryFactory
      * @return non-local snap repository
      */
     @Named( PackageType.SNAP )
-    NonLocalRepository createNonLocalSnap( String url, @Nullable Identity identity );
+    RemoteRepository createNonLocalSnap( String url, @Nullable User identity );
+    
+    
+    
+    @Named( PackageType.RAW )
+    RemoteRawRepository createNonLocalRaw( @Assisted( "url" ) String url, @Nullable User identity );
+
 
     /**
      * Creates non-local template repository at specified URL.
      *
      * @param url URL to remote repository
      * @param identity identity to be used for requests for remote repo, maybe {@code null}
+     * @param kurjunContext kurjun context
      * @param token access token to the remote repository
      * @return non-local template repository
      */
     @Named( PackageType.SUBUTAI )
-    NonLocalRepository createNonLocalTemplate( @Assisted("url") String url, @Nullable Identity identity, @Assisted("token") @Nullable String token );
-    
+    RemoteRepository createNonLocalTemplate( @Assisted( "url" ) String url, @Nullable User identity,
+                                             @Assisted( "context" ) String kurjunContext, @Assisted( "token" ) @Nullable String token );
+
+
     /**
      * Creates non-local virtual apt repository at specified URL.
      *
@@ -90,7 +104,7 @@ public interface RepositoryFactory
      * @return non-local template repository
      */
     @Named( PackageType.DEB )
-    NonLocalRepository createNonLocalApt( URL url );
+    RemoteRepository createNonLocalApt( URL url );
 
 
     /**
@@ -100,6 +114,4 @@ public interface RepositoryFactory
      */
     UnifiedRepository createUnifiedRepo();
 
-
 }
-

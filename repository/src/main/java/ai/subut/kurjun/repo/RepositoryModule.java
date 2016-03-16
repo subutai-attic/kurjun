@@ -7,7 +7,7 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
 
 import ai.subut.kurjun.model.repository.LocalRepository;
-import ai.subut.kurjun.model.repository.NonLocalRepository;
+import ai.subut.kurjun.model.repository.RemoteRepository;
 import ai.subut.kurjun.model.repository.PackageType;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
 import ai.subut.kurjun.repo.util.AptIndiceBuilderModule;
@@ -28,11 +28,13 @@ public class RepositoryModule extends AbstractModule
                 .implement( LocalRepository.class, Names.named( "APT_WRAPPER" ), LocalAptRepositoryWrapper.class )
                 .implement( LocalRepository.class, Names.named( PackageType.DEB ), LocalAptRepository.class )
                 .implement( LocalRepository.class, Names.named( PackageType.SNAP ), LocalSnapRepository.class )
+                .implement( LocalRepository.class, Names.named( PackageType.RAW ), LocalRawRepository.class )
                 .implement( LocalRepository.class, Names.named( PackageType.SUBUTAI ), LocalTemplateRepository.class )
                 // non-local repositries
-                .implement( NonLocalRepository.class, Names.named( PackageType.DEB ), NonLocalAptRepository.class )
-                .implement( NonLocalRepository.class, Names.named( PackageType.SNAP ), NonLocalSnapRepository.class )
-                .implement( NonLocalRepository.class, Names.named( PackageType.SUBUTAI ), NonLocalTemplateRepository.class )
+                .implement( RemoteRepository.class, Names.named( PackageType.DEB ), RemoteAptRepository.class )
+                .implement( RemoteRepository.class, Names.named( PackageType.SNAP ), RemoteSnapRepository.class )
+                .implement( RemoteRepository.class, Names.named( PackageType.RAW ), RemoteRawRepository.class )
+                .implement( RemoteRepository.class, Names.named( PackageType.SUBUTAI ), RemoteTemplateRepository.class )
                 // unified repositories
                 .implement( UnifiedRepository.class, UnifiedRepositoryImpl.class )
                 // finally build the module

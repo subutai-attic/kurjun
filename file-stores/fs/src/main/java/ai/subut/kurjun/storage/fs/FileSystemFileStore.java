@@ -37,6 +37,7 @@ import ai.subut.kurjun.model.storage.FileStore;
  * embedded database. Actual files are saved under subdirectories of a common parent root directory specified in
  * constructor. Subdirectories are a one-letter directories that correspond to the first letter of the file name.
  */
+@SuppressWarnings( "JavadocReference" )
 class FileSystemFileStore implements FileStore
 {
 
@@ -49,7 +50,6 @@ class FileSystemFileStore implements FileStore
     /**
      * Constructs file system backed file store. File store location in a file system is determined by Kurjun property
      * {@link FileSystemFileStoreModule#ROOT_DIRECTORY} and the supplied context.
-     *
      */
     @Inject
     public FileSystemFileStore( KurjunProperties properties, @Assisted KurjunContext context )
@@ -95,7 +95,15 @@ class FileSystemFileStore implements FileStore
         try ( FileDb fileDb = new FileDb( makeDbFilePath() ) )
         {
             String path = fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), String.class );
-            return path != null ? new FileInputStream( path ) : null;
+
+            if ( path != null )
+            {
+                return new FileInputStream(path);
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 
@@ -238,7 +246,9 @@ class FileSystemFileStore implements FileStore
      *
      * @param source stream to copy
      * @param dest destination path to copy stream to
+     *
      * @return MD5 checksum of the stream
+     *
      * @throws IOException if i/o errors occur
      */
     private byte[] copyStream( InputStream source, Path dest ) throws IOException
@@ -269,6 +279,5 @@ class FileSystemFileStore implements FileStore
     {
         return rootLocation.resolve( FILEDB_NAME ).toString();
     }
-
 }
 

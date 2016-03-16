@@ -1,7 +1,7 @@
 package ai.subut.kurjun.repo.cache;
 
 
-import java.net.URL;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -20,7 +20,7 @@ import ai.subut.kurjun.model.repository.Repository;
 public class MetadataCacheFactory
 {
 
-    private ConcurrentMap<String, MetadataCache> caches = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, MetadataCache> caches = new ConcurrentHashMap<>();
 
 
     public MetadataCache get( Repository repository )
@@ -35,12 +35,12 @@ public class MetadataCacheFactory
 
     private String makeKey( Repository repository )
     {
-        URL url = repository.getUrl();
-        if ( url != null )
+        UUID id = repository.getIdentifier();
+        if ( id != null )
         {
-            return url.toString();
+            return id.toString();
         }
-        throw new IllegalArgumentException( "Supplied repository does have its URL set." );
+        throw new IllegalArgumentException( "Supplied repository does not have its identifier set." );
     }
 }
 

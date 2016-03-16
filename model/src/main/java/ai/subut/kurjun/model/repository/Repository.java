@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
@@ -16,6 +17,11 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
  */
 public interface Repository
 {
+    /**
+     * An unique identifier of this repository
+     * @return UUID value 
+     */
+    UUID getIdentifier();
 
     /**
      * Gets this Repository's URL which is composed from the protocol, port, server, and path components.
@@ -115,7 +121,6 @@ public interface Repository
      * @return list of package in the repository, never {@code null}.
      */
     List<SerializableMetadata> listPackages();
-
 
 }
 

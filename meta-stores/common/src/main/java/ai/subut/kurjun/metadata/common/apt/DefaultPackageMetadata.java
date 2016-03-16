@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.codec.binary.Hex;
+
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
@@ -46,6 +48,13 @@ public class DefaultPackageMetadata implements PackageMetadata, SerializableMeta
     private String description;
 
     private Map<String, String> extra = new HashMap<>();
+
+  
+    @Override
+    public Object getId()
+    {
+        return md5 != null ? Hex.encodeHexString( md5 ) : null;
+    }
 
 
     @Override

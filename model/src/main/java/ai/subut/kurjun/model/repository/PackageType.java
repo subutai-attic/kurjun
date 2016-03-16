@@ -15,6 +15,7 @@ public final class PackageType
     public static final String DEB = "deb";
     public static final String SNAP = "snap";
     public static final String SUBUTAI = "subutai";
+    public static final String RAW = "raw";
 
 
     private PackageType()
@@ -29,6 +30,7 @@ public final class PackageType
         ls.add( DEB );
         ls.add( SNAP );
         ls.add( SUBUTAI );
+        ls.add( RAW );
         return ls;
     }
 

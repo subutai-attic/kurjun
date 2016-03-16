@@ -15,18 +15,17 @@ import ai.subut.kurjun.model.metadata.apt.RelationOperator;
 
 
 /**
- * Gson type adapter for {@link Dependency}. This type adapter is introduced to correctly convert objects with
- * {@link Dependency} fields to and from JSON. Without such type adapter de-serialization of classes like
- * {@link PackageMetadata} that have fields of interface type {@link Dependency} result in either parse errors or
- * unexpected results.
- *
+ * Gson type adapter for {@link Dependency}. This type adapter is introduced to correctly convert objects with {@link
+ * Dependency} fields to and from JSON. Without such type adapter de-serialization of classes like {@link
+ * PackageMetadata} that have fields of interface type {@link Dependency} result in either parse errors or unexpected
+ * results.
  */
 class DependencyTypeAdapter extends TypeAdapter<Dependency>
 {
-    final String PACKAGE_PROPERTY = "packageName";
-    final String VERSION_PROPERTY = "version";
-    final String DEPENDNCY_OP_PROPERTY = "dependencyOperator";
-    final String ALTERNATIVES_PROPERTY = "alternatives";
+    static final String PACKAGE_PROPERTY = "packageName";
+    static final String VERSION_PROPERTY = "version";
+    static final String DEPENDNCY_OP_PROPERTY = "dependencyOperator";
+    static final String ALTERNATIVES_PROPERTY = "alternatives";
 
 
     @Override
@@ -69,7 +68,6 @@ class DependencyTypeAdapter extends TypeAdapter<Dependency>
     }
 
 
-    @SuppressWarnings( "ConvertToStringSwitch" )
     private Dependency readDependency( JsonReader in ) throws IOException
     {
         DefaultDependency dep = new DefaultDependency();
@@ -78,30 +76,28 @@ class DependencyTypeAdapter extends TypeAdapter<Dependency>
         while ( in.hasNext() )
         {
             String name = in.nextName();
-            if ( name.equals( PACKAGE_PROPERTY ) )
+            switch ( name )
             {
-                dep.setPackage( in.nextString() );
-            }
-            else if ( name.equals( VERSION_PROPERTY ) )
-            {
-                dep.setVersion( in.nextString() );
-            }
-            else if ( name.equals( DEPENDNCY_OP_PROPERTY ) )
-            {
-                dep.setDependencyOperator( RelationOperator.valueOf( in.nextString() ) );
-            }
-            else if ( name.equals( ALTERNATIVES_PROPERTY ) )
-            {
-                in.beginArray();
-                while ( in.hasNext() )
-                {
-                    dep.getAlternatives().add( readDependency( in ) );
-                }
-                in.endArray();
-            }
-            else
-            {
-                in.skipValue();
+                case PACKAGE_PROPERTY:
+                    dep.setPackage( in.nextString() );
+                    break;
+                case VERSION_PROPERTY:
+                    dep.setVersion( in.nextString() );
+                    break;
+                case DEPENDNCY_OP_PROPERTY:
+                    dep.setDependencyOperator( RelationOperator.valueOf( in.nextString() ) );
+                    break;
+                case ALTERNATIVES_PROPERTY:
+                    in.beginArray();
+                    while ( in.hasNext() )
+                    {
+                        dep.getAlternatives().add( readDependency( in ) );
+                    }
+                    in.endArray();
+                    break;
+                default:
+                    in.skipValue();
+                    break;
             }
         }
         in.endObject();

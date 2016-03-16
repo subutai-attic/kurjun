@@ -2,6 +2,7 @@ package ai.subut.kurjun.repo;
 
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -25,6 +26,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.ar.CompressionType;
+import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
@@ -35,7 +37,6 @@ import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
 
 /**
  * Local non-virtual apt repository.
- *
  */
 class LocalAptRepositoryWrapper extends RepositoryBase implements LocalRepository
 {
@@ -140,6 +141,21 @@ class LocalAptRepositoryWrapper extends RepositoryBase implements LocalRepositor
 
 
     @Override
+    public Metadata put( final InputStream is, final CompressionType compressionType, final String owner )
+            throws IOException
+    {
+        return null;
+    }
+
+
+    @Override
+    public Metadata put( final File file, final CompressionType compressionType, final String owner ) throws IOException
+    {
+        return null;
+    }
+
+
+    @Override
     public SerializableMetadata getPackageInfo( Metadata metadata )
     {
         throw new UnsupportedOperationException( "Not supported yet." );
@@ -167,11 +183,19 @@ class LocalAptRepositoryWrapper extends RepositoryBase implements LocalRepositor
     }
 
 
+    @Override
+    public boolean delete( Object id, byte[] md5 ) throws IOException
+    {
+        throw new UnsupportedOperationException( "Not supported in non-virtual local apt repository." );
+    }
+
+
     /**
      * Reads releases from {@code conf/distributions} file of this apt repository.
      *
-     * @throws IOException on any read failures
      * @return list of release names like 'trusty', 'utopic', etc.
+     *
+     * @throws IOException on any read failures
      */
     private void readDistributionsFile() throws IOException
     {
@@ -206,5 +230,17 @@ class LocalAptRepositoryWrapper extends RepositoryBase implements LocalRepositor
     }
 
 
+    @Override
+    public KurjunContext getContext()
+    {
+        return null;
+    }
+
+
+    @Override
+    public byte[] md5()
+    {
+        return new byte[0];
+    }
 }
 

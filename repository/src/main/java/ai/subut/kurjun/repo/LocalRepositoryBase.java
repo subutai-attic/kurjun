@@ -3,10 +3,14 @@ package ai.subut.kurjun.repo;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
+
+import org.apache.commons.codec.binary.Hex;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.model.metadata.Metadata;
@@ -19,7 +23,6 @@ import ai.subut.kurjun.model.storage.FileStore;
 
 /**
  * Abstract base class for local repositories.
- *
  */
 abstract class LocalRepositoryBase extends RepositoryBase implements LocalRepository
 {
@@ -31,9 +34,9 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
         PackageMetadataStore metadataStore = getMetadataStore();
         try
         {
-            if ( metadata.getMd5Sum() != null )
+            if ( metadata.getId() != null )
             {
-                return metadataStore.get( metadata.getMd5Sum() );
+                return metadataStore.get( metadata.getId() );
             }
             if ( metadata.getName() != null )
             {
@@ -110,13 +113,20 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
     @Override
     public boolean delete( byte[] md5 ) throws IOException
     {
+        return delete( Hex.encodeHexString( md5 ), md5 );
+    }
+
+
+    @Override
+    public boolean delete( Object id, byte[] md5 ) throws IOException
+    {
         PackageMetadataStore metadataStore = getMetadataStore();
         FileStore fileStore = getFileStore();
 
-        if ( metadataStore.contains( md5 ) )
+        if ( metadataStore.contains( id ) )
         {
-            fileStore.remove( md5 );
-            metadataStore.remove( md5 );
+            fileStore.remove( md5 );  // TODO
+            metadataStore.remove( id );
             return true;
         }
         return false;
@@ -162,9 +172,32 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
         else
         {
             // sort by version in descending fasion and get the first item which is will be the latest version
-            items.sort( (m1, m2) -> -1 * m1.getVersion().compareTo( m2.getVersion() ) );
+            items.sort( ( m1, m2 ) -> -1 * m1.getVersion().compareTo( m2.getVersion() ) );
             return items.get( 0 );
         }
+    }
+
+
+    @Override
+    public byte[] md5()
+    {
+        try
+        {
+            MessageDigest messageDigest = MessageDigest.getInstance( "MD5" );
+            List<SerializableMetadata> list = listPackages();
+
+            if ( list.size() != 0 )
+            {
+                messageDigest.update( list.toString().getBytes() );
+                return messageDigest.digest();
+            }
+        }
+        catch ( NoSuchAlgorithmException e )
+        {
+            e.printStackTrace();
+        }
+
+        return new byte[0];
     }
 }
 
