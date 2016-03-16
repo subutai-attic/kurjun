@@ -3,8 +3,6 @@ package ai.subut.kurjun.model.identity;
 
 import java.util.Date;
 
-import ai.subut.kurjun.model.security.KeyAlgorithm;
-
 
 /**
  *
