@@ -153,6 +153,16 @@
     </dependency>
     <dependency>
       <groupId>ai.subut.kurjun</groupId>
+      <artifactId>security-manager</artifactId>
+      <version>${ai.subut.kurjun.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ai.subut.kurjun</groupId>
+      <artifactId>identity-manager</artifactId>
+      <version>${ai.subut.kurjun.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ai.subut.kurjun</groupId>
       <artifactId>repository</artifactId>
       <version>${ai.subut.kurjun.version}</version>
     </dependency>

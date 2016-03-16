@@ -25,7 +25,22 @@ public class RelationManagerImpl implements RelationManager
     @Override
     public Relation buildTrustRelation( RelationObject source, RelationObject target, RelationObject trustObject )
     {
-        return null;
+        try
+        {
+            Relation relation = new DefaultRelation();
+
+            relation.setSource( source );
+            relation.setTarget( target );
+            relation.setTrustObject( trustObject );
+
+            return relation;
+
+        }
+        catch(Exception ex)
+        {
+            return null;
+        }
+
     }
 
 
