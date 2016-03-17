@@ -88,7 +88,7 @@ public class AptManagerServiceImpl implements AptManagerService
     {
         this.unifiedRepository = repositoryFactory.createUnifiedRepo();
         this.unifiedRepository.getRepositories().add( this.localRepository );
-        artifactContext.getRemoteAptRepositories();
+        this.unifiedRepository.getRepositories().addAll( artifactContext.getRemoteAptRepositories() );
     }
 
 
@@ -234,7 +234,7 @@ public class AptManagerServiceImpl implements AptManagerService
 
         List<SerializableMetadata> list = unifiedRepository.listPackages();
 
-        return list.stream().map( pkg -> ( DefaultPackageMetadata) pkg ).collect( Collectors.toList() );
+        return list.stream().map( pkg -> ( DefaultPackageMetadata ) pkg ).collect( Collectors.toList() );
     }
 
 

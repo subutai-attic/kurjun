@@ -133,8 +133,9 @@ public class TemplateController extends BaseController
 
 
     public Result delete( Context context, @Param( "id" ) String templateId )
-
     {
+        checkNotNull( templateId, "Template ID cannot be null" );
+
         TemplateId tid = IdValidators.Template.validate( templateId );
 
         boolean success;

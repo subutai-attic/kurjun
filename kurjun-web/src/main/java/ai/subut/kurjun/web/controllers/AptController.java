@@ -92,9 +92,9 @@ public class AptController extends BaseController
                         @Param( "version" ) String version )
 
     {
-//        checkNotNull( md5, "MD5 cannot be null" );
-//        checkNotNull( name, "Name cannot be null" );
-//        checkNotNull( version, "Version not found" );
+        //        checkNotNull( md5, "MD5 cannot be null" );
+        //        checkNotNull( name, "Name cannot be null" );
+        //        checkNotNull( version, "Version not found" );
 
         String metadata = managerService.getPackageInfo( Utils.MD5.toByteArray( md5 ), name, version );
 
@@ -120,12 +120,16 @@ public class AptController extends BaseController
     }
 
 
-    public Result list()
+    public Result list( @Param( "type" ) String type )
     {
         List<SerializableMetadata> serializableMetadataList = managerService.list();
 
         if ( serializableMetadataList != null )
         {
+            if ( type != null && type.equals( "json" ) )
+            {
+                return Results.ok().render( serializableMetadataList ).json();
+            }
             return Results.ok().render( serializableMetadataList ).text();
         }
 

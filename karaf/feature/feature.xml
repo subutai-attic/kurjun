@@ -8,7 +8,6 @@
     <bundle>mvn:${project.groupId}/db-file/${project.version}</bundle>
     <bundle>mvn:${project.groupId}/common-utils/${project.version}</bundle>
     <bundle>mvn:${project.groupId}/repository/${project.version}</bundle>
-    <bundle>mvn:${project.groupId}/security/${project.version}</bundle>
 
     <!-- file store bundles -->
     <bundle>mvn:${project.groupId}/s3-file-store/${project.version}</bundle>
@@ -29,8 +28,6 @@
     <bundle>mvn:${project.groupId}/kurjun-packages-parser/${project.version}</bundle>
     <bundle>mvn:${project.groupId}/snap-parser/${project.version}</bundle>
 
-    <!-- http bundles -->
-    <bundle>mvn:${project.groupId}/http/${project.version}</bundle>
     
   </feature>
 
