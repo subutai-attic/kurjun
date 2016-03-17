@@ -65,6 +65,8 @@ public class Routes implements ApplicationRoutes
         router.POST().route( baseIdentityUrl + "user/add" ).with( IdentityController.class, "addUser" );
         router.GET().route( baseIdentityUrl + "user/authz" ).with( IdentityController.class, "authorizeUser" );
 
+        //REST Security Controller
+        //router.GET().route( baseSecurityUrl + "keyman" ).with( IdentityController.class, "getUsers" );
 
     }
 }
