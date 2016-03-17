@@ -16,6 +16,9 @@ public interface RelationManager
     Relation buildTrustRelation( RelationObject source, RelationObject target, RelationObject trustObject );
 
     //***************************
+    Relation saveTrustRelation( Relation relation );
+
+    //***************************
     Relation getRelation( String relationId );
 
     //***************************

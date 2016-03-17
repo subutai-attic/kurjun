@@ -26,4 +26,5 @@ public interface Relation
     RelationObject getTrustObject();
 
     void setTrustObject( RelationObject trustObject );
+
 }

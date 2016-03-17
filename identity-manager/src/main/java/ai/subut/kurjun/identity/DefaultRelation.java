@@ -15,6 +15,11 @@ import ai.subut.kurjun.model.identity.RelationObject;
  */
 public class DefaultRelation implements Relation
 {
+
+    //*********************
+    public static final String MAP_NAME = "relations";
+    //*********************
+
     private String id;
 
     private RelationObject source;
@@ -90,4 +95,5 @@ public class DefaultRelation implements Relation
     {
         this.trustObject = trustObject;
     }
+
 }
