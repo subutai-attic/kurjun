@@ -72,7 +72,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
     static final String RELEASE_PATH = "/dists/trusty/Release";
 
     private static final String MD5_PATH = "/md5";
-    private static final String DEB_PATH = "/deb";
+    private static final String DEB_PATH = "deb";
     private static final int CONN_TIMEOUT = 3000;
     private static final int READ_TIMEOUT = 3000;
 
@@ -134,7 +134,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
     public Set<ReleaseFile> getDistributions()
     {
 
-        WebClient webClient = webClientFactory.make( this, DEB_PATH + RELEASE_PATH, null );
+        WebClient webClient = webClientFactory.make( this, "/" + DEB_PATH + RELEASE_PATH, null );
 
         Response resp = doGet( webClient );
         if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
@@ -191,7 +191,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
 
         DefaultPackageMetadata pm = gson.fromJson( m.serialize(), DefaultPackageMetadata.class );
 
-        WebClient webClient = webClientFactory.make( this, DEB_PATH + pm.getFilename(), null );
+        WebClient webClient = webClientFactory.make( this, "/" + DEB_PATH + pm.getFilename(), null );
 
         Response resp = doGet( webClient );
         if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
@@ -262,7 +262,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
     public String getMd5()
     {
 
-        WebClient webClient = webClientFactory.make( this, DEB_PATH + MD5_PATH, null );
+        WebClient webClient = webClientFactory.make( this, "/" + DEB_PATH + MD5_PATH, null );
 
         Response resp = doGet( webClient );
 
@@ -390,7 +390,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
 
     private List<SerializableMetadata> fetchPackagesMetadata( String path, String component )
     {
-        WebClient webClient = webClientFactory.make( this, path, null );
+        WebClient webClient = webClientFactory.make( this, DEB_PATH + "/" + path, null );
 
         Response resp = doGet( webClient );
         if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() && resp
