@@ -8,11 +8,12 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.bouncycastle.openpgp.PGPPublicKey;
+
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.validator.routines.EmailValidator;
 
 import ai.subut.kurjun.model.identity.User;
-
+import ai.subut.kurjun.security.manager.utils.pgp.PGPKeyUtil;
 
 
 /**
@@ -28,25 +29,44 @@ public class DefaultUser implements User, Serializable
     private String keyId;
     private String keyFingerprint;
     private Date date;
-    private int keyLength;
     private String emailAddress;
     private String sharedSecret;
     private String signature;
+    private String keyData;
 
 
-    public DefaultUser( String keyFingerprint )
-    {
-        this.keyFingerprint = keyFingerprint;
-    }
-
-
+    //*************************
     public DefaultUser( PGPPublicKey key )
     {
-        this.keyId = String.format( "%016X", key.getKeyID() );
-        this.keyFingerprint = Hex.encodeHexString( key.getFingerprint() );
-        this.date = key.getCreationTime();
-        this.keyLength = key.getBitStrength();
-        this.emailAddress = parseEmailAddress( key );
+        try
+        {
+            this.keyId = String.format( "%016X", key.getKeyID() );
+            this.keyFingerprint = Hex.encodeHexString( key.getFingerprint() );
+            this.date = key.getCreationTime();
+            this.emailAddress = parseEmailAddress( key );
+            this.setKeyData( PGPKeyUtil.exportAscii( key ) );
+        }
+        catch(Exception ex)
+        {
+
+        }
+    }
+
+    public DefaultUser( String keyASCII )
+    {
+        try
+        {
+            PGPPublicKey key = PGPKeyUtil.readPublicKey( keyASCII );
+            this.keyId = String.format( "%016X", key.getKeyID() );
+            this.keyFingerprint = Hex.encodeHexString( key.getFingerprint() );
+            this.date = key.getCreationTime();
+            this.emailAddress = parseEmailAddress( key );
+            this.setKeyData( keyASCII );
+        }
+        catch(Exception ex)
+        {
+
+        }
     }
 
 
@@ -71,14 +91,6 @@ public class DefaultUser implements User, Serializable
     public Date getDate()
     {
         return date;
-    }
-
-
-    //*************************
-    @Override
-    public int getKeyLength()
-    {
-        return keyLength;
     }
 
 
@@ -120,6 +132,24 @@ public class DefaultUser implements User, Serializable
     {
         this.signature = signature;
     }
+
+
+    //*************************
+    @Override
+    public String getKeyData()
+    {
+        return keyData;
+    }
+
+
+    //*************************
+    @Override
+    public void setKeyData( final String keyData )
+    {
+        this.keyData = keyData;
+    }
+
+
 
 
     //*************************

@@ -15,8 +15,6 @@ public interface User
 
     Date getDate();
 
-    int getKeyLength();
-
     String getEmailAddress();
 
     String getSharedSecret();
@@ -27,4 +25,9 @@ public interface User
 
     void setSignature( String signature );
 
+    //*************************
+    String getKeyData();
+
+    //*************************
+    void setKeyData( String keyData );
 }
