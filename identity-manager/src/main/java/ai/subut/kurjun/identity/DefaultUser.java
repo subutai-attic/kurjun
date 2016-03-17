@@ -21,6 +21,10 @@ import ai.subut.kurjun.model.identity.User;
 public class DefaultUser implements User, Serializable
 {
 
+    //*********************
+    public static final String MAP_NAME = "users";
+    //*********************
+
     private String keyId;
     private String keyFingerprint;
     private Date date;
@@ -46,6 +50,7 @@ public class DefaultUser implements User, Serializable
     }
 
 
+    //*************************
     @Override
     public String getKeyId()
     {
@@ -53,6 +58,7 @@ public class DefaultUser implements User, Serializable
     }
 
 
+    //*************************
     @Override
     public String getKeyFingerprint()
     {
@@ -60,6 +66,7 @@ public class DefaultUser implements User, Serializable
     }
 
 
+    //*************************
     @Override
     public Date getDate()
     {
@@ -67,6 +74,7 @@ public class DefaultUser implements User, Serializable
     }
 
 
+    //*************************
     @Override
     public int getKeyLength()
     {
@@ -74,6 +82,7 @@ public class DefaultUser implements User, Serializable
     }
 
 
+    //*************************
     @Override
     public String getEmailAddress()
     {
@@ -81,6 +90,7 @@ public class DefaultUser implements User, Serializable
     }
 
 
+    //*************************
     @Override
     public String getSharedSecret()
     {
@@ -88,6 +98,7 @@ public class DefaultUser implements User, Serializable
     }
 
 
+    //*************************
     @Override
     public void setSharedSecret( final String sharedSecret )
     {
@@ -95,6 +106,7 @@ public class DefaultUser implements User, Serializable
     }
 
 
+    //*************************
     @Override
     public String getSignature()
     {
@@ -102,6 +114,7 @@ public class DefaultUser implements User, Serializable
     }
 
 
+    //*************************
     @Override
     public void setSignature( final String signature )
     {
@@ -109,6 +122,7 @@ public class DefaultUser implements User, Serializable
     }
 
 
+    //*************************
     @Override
     public boolean equals( Object obj )
     {
@@ -121,6 +135,7 @@ public class DefaultUser implements User, Serializable
     }
 
 
+    //*************************
     @Override
     public int hashCode()
     {
@@ -130,6 +145,7 @@ public class DefaultUser implements User, Serializable
     }
 
 
+    //*************************
     private String parseEmailAddress( PGPPublicKey key )
     {
         Pattern uidEmailPattern = Pattern.compile( ".*?<(.*)>" );

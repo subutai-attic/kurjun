@@ -26,4 +26,5 @@ public interface User
     String getSignature();
 
     void setSignature( String signature );
+
 }

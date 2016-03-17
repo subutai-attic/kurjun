@@ -28,6 +28,12 @@
 
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>db-file</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>security-manager</artifactId>
       <version>${project.version}</version>
     </dependency>
