@@ -12,7 +12,7 @@ import ai.subut.kurjun.model.identity.User;
 public interface IdentityManager
 {
     //********************************************
-    User authenticateUser( String userName, String password );
+    User authenticateUser( String fingerprint, String password, int authType );
 
     //********************************************
     User authenticateByToken( String token );

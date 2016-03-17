@@ -38,11 +38,11 @@ public class IdentityController extends BaseController
 
 
     //*************************
-    public Result getUser( @Param( "id" ) String userId )
+    public Result getUser( @Param( "fingerprint" ) String fingerprint )
     {
-        User user = identityManagerService.getUser( userId );
+        User user = identityManagerService.getUser( fingerprint );
 
-        if(user!=null)
+        if(user != null)
         {
             return Results.ok().render( user ).json();
         }
@@ -52,4 +52,37 @@ public class IdentityController extends BaseController
         }
 
     }
+
+
+    //*************************
+    public Result addUser( @Param( "key" ) String publicKey )
+    {
+        User user = identityManagerService.addUser( publicKey );
+
+        if(user != null)
+        {
+            return Results.ok().render( user ).json();
+        }
+        else
+        {
+            return Results.internalServerError();
+        }
+    }
+
+
+    //*************************
+    public Result authorizeUser( @Param( "fingerprint" ) String fingerprint, @Param( "key" ) String publicKey  )
+    {
+        User user = identityManagerService.addUser( publicKey );
+
+        if(user != null)
+        {
+            return Results.ok().render( user ).json();
+        }
+        else
+        {
+            return Results.internalServerError();
+        }
+    }
+
 }

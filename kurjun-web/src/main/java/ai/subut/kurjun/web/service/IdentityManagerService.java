@@ -16,4 +16,10 @@ public interface IdentityManagerService
 
     //*************************************
     User getUser( String userId );
+
+    //*************************************
+    User addUser( String publicKeyASCII );
+
+    //*************************************
+    User authorizeUser( String fingerprint, String authzMessage );
 }

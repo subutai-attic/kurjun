@@ -40,4 +40,20 @@ public class IdentityManagerServiceImpl implements IdentityManagerService
         return identityManager.getUser( userId );
     }
 
+
+    //*************************************
+    @Override
+    public User addUser( String publicKeyASCII )
+    {
+        return identityManager.addUser( publicKeyASCII );
+    }
+
+
+    //*************************************
+    @Override
+    public User authorizeUser( String fingerprint, String authzMessage  )
+    {
+        return identityManager.authenticateUser( fingerprint, authzMessage,1 );
+    }
+
 }

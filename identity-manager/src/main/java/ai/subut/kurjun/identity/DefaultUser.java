@@ -33,6 +33,7 @@ public class DefaultUser implements User, Serializable
     private String sharedSecret;
     private String signature;
     private String keyData;
+    private String token;
 
 
     //*************************
@@ -150,6 +151,20 @@ public class DefaultUser implements User, Serializable
     }
 
 
+    //*************************
+    @Override
+    public String getToken()
+    {
+        return token;
+    }
+
+
+    //*************************
+    @Override
+    public void setToken( final String token )
+    {
+        this.token = token;
+    }
 
 
     //*************************

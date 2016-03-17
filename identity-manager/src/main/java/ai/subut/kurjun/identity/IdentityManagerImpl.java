@@ -2,6 +2,7 @@ package ai.subut.kurjun.identity;
 
 
 import java.util.List;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +39,6 @@ public class IdentityManagerImpl implements IdentityManager
 
 
     //***************************
-
-
     public IdentityManagerImpl()
     {
 
@@ -48,9 +47,25 @@ public class IdentityManagerImpl implements IdentityManager
 
     //********************************************
     @Override
-    public User authenticateUser( String userName, String password )
+    public User authenticateUser( String fingerprint, String authMessage, int authType )
     {
-        return null;
+        User user = getUser( fingerprint );
+
+        if(user != null)
+        {
+            if(securityManager.verifyPGPSignature( authMessage,user.getKeyData() ))
+            {
+
+            }
+            else
+            {
+                return null;
+            }
+        }
+        else
+        {
+            return null;
+        }
     }
 
 
@@ -114,6 +129,20 @@ public class IdentityManagerImpl implements IdentityManager
     public List<User> getAllUsers()
     {
         return null;
+    }
+
+
+    //********************************************
+    @Override
+    public User createJWTToken(User user)
+    {
+        String header;
+        String claim;
+        String sharedSecret = UUID.randomUUID().toString();
+
+        user.setSharedSecret( sharedSecret );
+
+        securityManager.createJWToken( header,claim,sharedSecret  );
     }
 
 

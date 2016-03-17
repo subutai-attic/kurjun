@@ -30,4 +30,10 @@ public interface User
 
     //*************************
     void setKeyData( String keyData );
+
+    //*************************
+    String getToken();
+
+    //*************************
+    void setToken( String token );
 }
