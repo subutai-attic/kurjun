@@ -3,6 +3,7 @@ package ai.subut.kurjun.web.conf;
 
 import ai.subut.kurjun.web.controllers.AliquaController;
 import ai.subut.kurjun.web.controllers.AptController;
+import ai.subut.kurjun.web.controllers.IdentityController;
 import ai.subut.kurjun.web.controllers.TemplateController;
 import ninja.Router;
 import ninja.application.ApplicationRoutes;
@@ -22,6 +23,9 @@ public class Routes implements ApplicationRoutes
 
     private static final String baseRawUrl = baseUrl + "file/";
 
+    private static final String baseIdentityUrl = baseUrl + "identity/";
+
+    private static final String baseSecurityUrl = baseUrl + "security/";
 
     @Override
     public void init( final Router router )
@@ -54,5 +58,13 @@ public class Routes implements ApplicationRoutes
         router.GET().route( baseRawUrl + "list" ).with( AliquaController.class, "getList" );
         router.POST().route( baseRawUrl + "upload" ).with( AliquaController.class, "upload" );
         router.DELETE().route( baseRawUrl + "delete" ).with( AliquaController.class, "delete" );
+
+        //REST Identity Controller
+        router.GET().route( baseIdentityUrl + "user/list" ).with( IdentityController.class, "getUsers" );
+        router.GET().route( baseIdentityUrl + "user/get" ).with( IdentityController.class, "getUser" );
+        router.POST().route( baseIdentityUrl + "user/add" ).with( IdentityController.class, "addUser" );
+        router.GET().route( baseIdentityUrl + "user/authz" ).with( IdentityController.class, "authorizeUser" );
+
+
     }
 }

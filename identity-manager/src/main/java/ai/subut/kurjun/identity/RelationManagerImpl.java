@@ -13,7 +13,6 @@ import ai.subut.kurjun.identity.service.FileDbProvider;
 import ai.subut.kurjun.identity.service.RelationManager;
 import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.model.identity.RelationObject;
-import ai.subut.kurjun.model.identity.User;
 
 
 /**
