@@ -1,6 +1,7 @@
-package ai.subut.kurjun.web.controllers;
+package ai.subut.kurjun.web.controllers.rest;
 
 
+import ai.subut.kurjun.web.controllers.BaseController;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -22,7 +23,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 
 @Singleton
-public class AliquaController extends BaseController
+public class RestAliquaController extends BaseController
 {
 
     @Inject
