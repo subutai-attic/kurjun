@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 
 import ai.subut.kurjun.cfparser.service.ControlFileParser;
 import ai.subut.kurjun.common.service.KurjunContext;
+import ai.subut.kurjun.index.service.PackagesIndexParser;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.repository.LocalRepository;
@@ -27,11 +28,14 @@ import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
 public class RepositoryFactoryImpl implements RepositoryFactory
 {
     private ReleaseIndexParser releaseIndexParser;
+    private PackagesIndexParser packagesIndexParser;
+
     private ControlFileParser controlFileParser;
     private SnapMetadataParser snapParser;
     private SubutaiTemplateParser templateParser;
     private FileStoreFactory fileStoreFactory;
     private PackageMetadataStoreFactory metadataStoreFactory;
+
     private PackageCache cache;
     private WebClientFactory webClientFactory;
     private Gson gson;
@@ -40,8 +44,10 @@ public class RepositoryFactoryImpl implements RepositoryFactory
     public RepositoryFactoryImpl( ReleaseIndexParser releaseIndexParser, ControlFileParser controlFileParser,
                                   SnapMetadataParser snapMetadataParser, SubutaiTemplateParser templateParser,
                                   FileStoreFactory fileStoreFactory, PackageMetadataStoreFactory metadataStoreFactory,
-                                  PackageCache cache, final WebClientFactory webClientFactory, final Gson gson )
+                                  PackageCache cache, final WebClientFactory webClientFactory, final Gson gson,
+                                  PackagesIndexParser packagesIndexParser )
     {
+        this.packagesIndexParser = packagesIndexParser;
         this.releaseIndexParser = releaseIndexParser;
         this.controlFileParser = controlFileParser;
         this.snapParser = snapMetadataParser;
@@ -114,11 +120,7 @@ public class RepositoryFactoryImpl implements RepositoryFactory
     @Override
     public RemoteRepository createNonLocalApt( URL url )
     {
-        RemoteAptRepository repo = new RemoteAptRepository( url, webClientFactory );
-        repo.releaseIndexParser = releaseIndexParser;
-        repo.packagesIndexParser = null; // TODO: 
-        repo.cache = cache;
-        return repo;
+        return new RemoteAptRepository( url, webClientFactory, releaseIndexParser, packagesIndexParser, cache );
     }
 
 

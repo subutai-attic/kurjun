@@ -21,7 +21,6 @@
     <module>parsers</module>
     <module>file-stores</module>
     <module>meta-stores</module>
-    <!--<module>security</module>-->
     <module>repository</module>
     <module>quota</module>
     <module>karaf</module>

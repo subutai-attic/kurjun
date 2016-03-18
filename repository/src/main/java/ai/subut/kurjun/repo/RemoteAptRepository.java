@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.http.HTTPConduit;
 
@@ -59,28 +60,22 @@ class RemoteAptRepository extends RemoteRepositoryBase
 
 
     private final URL url;
-
-    @Inject
-    ReleaseIndexParser releaseIndexParser;
-
-    @Inject
-    PackagesIndexParser packagesIndexParser;
-
+    private ReleaseIndexParser releaseIndexParser;
+    private PackagesIndexParser packagesIndexParser;
+    private PackageCache cache;
     @Inject
     Gson gson;
 
-    @Inject
-    PackageCache cache;
-
-    @Inject
-    WebClientFactory webClientFactory;
+    private WebClientFactory webClientFactory;
 
     // TODO: Kairat parameterize release path params
-    static final String RELEASE_PATH = "dists/trusty/Release";
+    static final String RELEASE_PATH = "/dists/trusty/Release";
 
     private static final String MD5_PATH = "/md5";
+    private static final String DEB_PATH = "deb";
     private static final int CONN_TIMEOUT = 3000;
     private static final int READ_TIMEOUT = 3000;
+
     private static final int CONN_TIMEOUT_FOR_URL_CHECK = 200;
     private List<SerializableMetadata> remoteIndexChache;
     private String md5Sum = "";
@@ -92,9 +87,13 @@ class RemoteAptRepository extends RemoteRepositoryBase
      * @param url URL of the remote repository
      */
     @Inject
-    public RemoteAptRepository( @Assisted URL url, WebClientFactory webClientFactory )
+    public RemoteAptRepository( @Assisted URL url, WebClientFactory webClientFactory,
+                                ReleaseIndexParser releaseIndexParser, PackagesIndexParser packagesIndexParser,
+                                PackageCache cache )
     {
-
+        this.releaseIndexParser = releaseIndexParser;
+        this.packagesIndexParser = packagesIndexParser;
+        this.cache = cache;
         this.url = url;
         this.webClientFactory = webClientFactory;
 
@@ -104,8 +103,8 @@ class RemoteAptRepository extends RemoteRepositoryBase
 
     private void _initCache()
     {
-        this.md5Sum = getMd5();
         this.remoteIndexChache = listPackages();
+        this.md5Sum = getMd5();
     }
 
 
@@ -135,7 +134,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
     public Set<ReleaseFile> getDistributions()
     {
 
-        WebClient webClient = webClientFactory.make( this, RELEASE_PATH, null );
+        WebClient webClient = webClientFactory.make( this, "/" + DEB_PATH + RELEASE_PATH, null );
 
         Response resp = doGet( webClient );
         if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
@@ -192,7 +191,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
 
         DefaultPackageMetadata pm = gson.fromJson( m.serialize(), DefaultPackageMetadata.class );
 
-        WebClient webClient = webClientFactory.make( this, pm.getFilename(), null );
+        WebClient webClient = webClientFactory.make( this, "/" + DEB_PATH + pm.getFilename(), null );
 
         Response resp = doGet( webClient );
         if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
@@ -263,16 +262,26 @@ class RemoteAptRepository extends RemoteRepositoryBase
     public String getMd5()
     {
 
-        WebClient webClient = webClientFactory.make( this, MD5_PATH, null );
+        WebClient webClient = webClientFactory.make( this, "/" + DEB_PATH + MD5_PATH, null );
 
         Response resp = doGet( webClient );
 
         if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
         {
-            String md5 = resp.getEntity().toString();
-            if ( md5 != null )
+            if ( resp.getEntity() instanceof InputStream )
             {
-                return md5;
+                try
+                {
+                    List<String> items = IOUtils.readLines( ( InputStream ) resp.getEntity() );
+                    if ( items.size() > 0 )
+                    {
+                        return items.get( 0 );
+                    }
+                }
+                catch ( IOException ex )
+                {
+                    LOGGER.error( "Failed to read packages list", ex );
+                }
             }
         }
         return "";
@@ -381,7 +390,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
 
     private List<SerializableMetadata> fetchPackagesMetadata( String path, String component )
     {
-        WebClient webClient = webClientFactory.make( this, path, null );
+        WebClient webClient = webClientFactory.make( this, DEB_PATH + "/" + path, null );
 
         Response resp = doGet( webClient );
         if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() && resp
