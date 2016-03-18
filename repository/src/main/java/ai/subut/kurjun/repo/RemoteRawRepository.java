@@ -35,7 +35,6 @@ import ai.subut.kurjun.common.service.KurjunConstants;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.utils.InetUtils;
 import ai.subut.kurjun.metadata.common.raw.RawMetadata;
-import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.annotation.Nullable;
 import ai.subut.kurjun.model.identity.User;
@@ -338,7 +337,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
         objectMapper.configure( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false );
         try
         {
-            return objectMapper.readValue( items, new TypeReference<List<DefaultTemplate>>()
+            return objectMapper.readValue( items, new TypeReference<List<RawMetadata>>()
             {
             } );
         }
