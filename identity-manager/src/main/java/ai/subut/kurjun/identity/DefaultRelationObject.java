@@ -1,13 +1,15 @@
 package ai.subut.kurjun.identity;
 
 
+import java.io.Serializable;
+
 import ai.subut.kurjun.model.identity.RelationObject;
 
 
 /**
  *
  */
-public class DefaultRelationObject implements RelationObject
+public class DefaultRelationObject implements RelationObject,Serializable
 {
     //*********************
     public static final String MAP_NAME = "relation-objects";
