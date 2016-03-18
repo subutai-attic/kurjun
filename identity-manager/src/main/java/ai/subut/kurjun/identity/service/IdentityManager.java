@@ -21,7 +21,7 @@ public interface IdentityManager
 
 
     //********************************************
-    UserSession login( String fingerprint, String authMessage );
+    UserSession loginUser( String fingerprint, String authMessage );
 
 
     //********************************************

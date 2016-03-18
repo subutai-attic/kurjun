@@ -17,6 +17,14 @@ import ai.subut.kurjun.security.manager.utils.token.TokenUtils;
  */
 public class SecurityManagerImpl implements SecurityManager
 {
+
+    /*******************************************/
+    public SecurityManagerImpl()
+    {
+
+    }
+
+
     /*******************************************/
     @Override
     public byte[] calculateMd5( InputStream is )
