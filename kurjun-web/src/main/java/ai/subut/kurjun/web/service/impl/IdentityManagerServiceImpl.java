@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 
 import ai.subut.kurjun.identity.service.IdentityManager;
 import ai.subut.kurjun.model.identity.User;
+import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.web.service.IdentityManagerService;
 
 
@@ -51,9 +52,25 @@ public class IdentityManagerServiceImpl implements IdentityManagerService
 
     //*************************************
     @Override
-    public User authorizeUser( String fingerprint, String authzMessage )
+    public User authenticateUser( String fingerprint, String authzMessage )
     {
-        return identityManager.authenticateUser( fingerprint, authzMessage,1 );
+        return identityManager.authenticateUser( fingerprint, authzMessage);
+    }
+
+
+    //*************************************
+    @Override
+    public UserSession loginUser( String fingerprint, String authzMessage )
+    {
+        return identityManager.login( fingerprint, authzMessage);
+    }
+
+
+    //*************************************
+    @Override
+    public UserSession loginPublicUser()
+    {
+        return identityManager.loginPublicUser( );
     }
 
 }

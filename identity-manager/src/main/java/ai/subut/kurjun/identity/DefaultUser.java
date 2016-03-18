@@ -33,12 +33,18 @@ public class DefaultUser implements User, Serializable
     private String emailAddress = "";
     private String signature = "";
     private String keyData = "";
-
+    private int type = 2;
     private UserToken userToken = null;
 
 
 
     //*************************
+    public DefaultUser()
+    {
+        this.setUserToken( null );
+    }
+
+
     public DefaultUser( PGPPublicKey key )
     {
         try
@@ -48,7 +54,6 @@ public class DefaultUser implements User, Serializable
             this.date = key.getCreationTime();
             this.emailAddress = parseEmailAddress( key );
             this.setKeyData( PGPKeyUtil.exportAscii( key ) );
-            this.setUserToken( null );
         }
         catch(Exception ex)
         {
@@ -66,7 +71,6 @@ public class DefaultUser implements User, Serializable
             this.date = key.getCreationTime();
             this.emailAddress = parseEmailAddress( key );
             this.setKeyData( keyASCII );
-            this.setUserToken( null );
         }
         catch(Exception ex)
         {
@@ -88,6 +92,14 @@ public class DefaultUser implements User, Serializable
     public String getKeyFingerprint()
     {
         return keyFingerprint;
+    }
+
+
+    //*************************
+    @Override
+    public void setKeyFingerprint(String keyFingerprint)
+    {
+        this.keyFingerprint = keyFingerprint;
     }
 
 
@@ -152,6 +164,22 @@ public class DefaultUser implements User, Serializable
     public void setUserToken( final UserToken userToken )
     {
         this.userToken = userToken;
+    }
+
+
+    //*************************
+    @Override
+    public int getType()
+    {
+        return type;
+    }
+
+
+    //*************************
+    @Override
+    public void setType( final int type )
+    {
+        this.type = type;
     }
 
 

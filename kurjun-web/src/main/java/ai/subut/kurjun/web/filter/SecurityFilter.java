@@ -4,6 +4,7 @@ package ai.subut.kurjun.web.filter;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 
+import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.web.service.IdentityManagerService;
 import ninja.Context;
 import ninja.Filter;
@@ -15,36 +16,39 @@ import ninja.Results;
 public class SecurityFilter implements Filter
 {
     @Inject
-    IdentityManagerService identityManager;
+    IdentityManagerService identityManagerService;
+
+    public static final String USER_SESSION = "USER_SESSION";
 
     @Override
-    public Result filter( final FilterChain filterChain, final Context context )
+    public Result filter( final FilterChain filterChain, final Context ctx )
     {
-
         try
         {
-            String sptoken = context.getParameter( "sptoken" );
+            UserSession uSession = null;
+            String sptoken = ctx.getParameter( "sptoken" );
 
             if( Strings.isNullOrEmpty(sptoken))
             {
-
+                uSession = identityManagerService.loginPublicUser();
             }
             else
             {
-                identityManager.
+                uSession = identityManagerService.loginUser ("token", sptoken);
             }
+
+            //******************************
+            if(uSession != null)
+            {
+                ctx.setAttribute( USER_SESSION, uSession );
+            }
+            //******************************
         }
         catch(Exception ex)
         {
             return Results.forbidden().render( "Not allowed" ).text();
         }
 
-
-        if ( 2 == 3 )
-        {
-        }
-        context.setAttribute( "sptoke", "hello" );
-
-        return filterChain.next( context );
+        return filterChain.next( ctx );
     }
 }
