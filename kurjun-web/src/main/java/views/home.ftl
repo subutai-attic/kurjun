@@ -56,12 +56,12 @@
             <#if templates?? && templates?has_content >
             <#list templates as t >
             <tr>
-                <td>${t.name}</td>
+                <td><a href="/templates/${t.id}/info" class="js-colorbox">${t.name}</a></td>
                 <td></td>
                 <td>${t.architecture}</td>
                 <td>${t.parent}</td>
                 <td>${t.version}</td>
-                <td><a href="#" onclick="removeTemplate('${t.id}')">remove</a></td>
+                <td><a href="#" onclick="removeTemplate('${t.id}')">remove</a>  |  <a href="/templates/${t.id}/download" target="_blank">download</a></td>
             </tr>
             </#list>
             </#if>
@@ -84,6 +84,7 @@
     $(document).ready( function () {
         $('#add_tpl_btn').colorbox({href:"#js-add-tpl", inline: true});
         $('#add_user_btn').colorbox({href:"#js-add-user", inline: true});
+        $('.js-colorbox').colorbox({});
 
         $('#templates_tbl').DataTable();
     } );

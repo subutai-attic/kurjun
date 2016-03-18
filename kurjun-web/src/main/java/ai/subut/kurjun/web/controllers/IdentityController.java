@@ -24,7 +24,6 @@ public class IdentityController extends BaseController {
     //*************************
     public Result loginPage()
     {
-        LOGGER.info("login page");
         return Results.html().template("views/login.ftl");
     }
 
@@ -45,5 +44,22 @@ public class IdentityController extends BaseController {
             return Results.redirect("/login");
         }
     }
+
+    public Result createUser( @Param( "key" ) String publicKey, FlashScope flashScope )
+    {
+        User user = identityManagerService.addUser( publicKey );
+
+        if(user != null)
+        {
+            flashScope.success( "User created successfully" );
+            return Results.redirect( "/" );
+        }
+        else
+        {
+            flashScope.error( "Failed to create user.");
+            return Results.redirect( "/" );
+        }
+    }
+
 
 }
