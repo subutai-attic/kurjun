@@ -7,6 +7,7 @@ import org.bouncycastle.openpgp.PGPPublicKey;
 
 import ai.subut.kurjun.security.manager.service.SecurityManager;
 import ai.subut.kurjun.security.manager.utils.SecurityUtils;
+import ai.subut.kurjun.security.manager.utils.pgp.PGPEncryptionUtil;
 import ai.subut.kurjun.security.manager.utils.pgp.PGPKeyUtil;
 import ai.subut.kurjun.security.manager.utils.token.TokenUtils;
 
@@ -16,6 +17,14 @@ import ai.subut.kurjun.security.manager.utils.token.TokenUtils;
  */
 public class SecurityManagerImpl implements SecurityManager
 {
+
+    /*******************************************/
+    public SecurityManagerImpl()
+    {
+
+    }
+
+
     /*******************************************/
     @Override
     public byte[] calculateMd5( InputStream is )
@@ -55,7 +64,6 @@ public class SecurityManagerImpl implements SecurityManager
     }
 
     /********** JWT Utils ************/
-
     /*******************************************/
     @Override
     public String createJWToken(String headerJson, String claimJson,String sharedKey)
@@ -71,11 +79,43 @@ public class SecurityManagerImpl implements SecurityManager
         return TokenUtils.verifySignature( token,sharedKey );
     }
 
+
     /*******************************************/
     @Override
     public String getJWTSubject(String token)
     {
         return TokenUtils.getSubject( token);
-   }
+    }
+
+
+    /*******************************************/
+    @Override
+    public boolean verifyPGPSignature(String message, PGPPublicKey pubKey)
+    {
+        try
+        {
+            return PGPEncryptionUtil.verify(message.getBytes(),pubKey  );
+        }
+        catch ( PGPException e )
+        {
+            return false;
+        }
+    }
+
+
+    /*******************************************/
+    @Override
+    public boolean verifyPGPSignature( String message, String pubKeyASCII)
+    {
+        try
+        {
+            PGPPublicKey pubKey = PGPKeyUtil.readPublicKey( pubKeyASCII );
+            return verifyPGPSignature( message, pubKey );
+        }
+        catch ( PGPException e )
+        {
+            return false;
+        }
+    }
 
 }

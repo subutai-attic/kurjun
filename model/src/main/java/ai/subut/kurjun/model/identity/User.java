@@ -9,22 +9,51 @@ import java.util.Date;
  */
 public interface User
 {
+    //*************************
     String getKeyId();
 
+
+    //*************************
     String getKeyFingerprint();
 
+
+    //*************************
+    void setKeyFingerprint( String keyFingerprint );
+
+    //*************************
     Date getDate();
 
-    int getKeyLength();
 
+    //*************************
     String getEmailAddress();
 
-    String getSharedSecret();
 
-    void setSharedSecret( String sharedSecret );
-
+    //*************************
     String getSignature();
 
+
+    //*************************
     void setSignature( String signature );
 
+
+    //*************************
+    String getKeyData();
+
+
+    //*************************
+    void setKeyData( String keyData );
+
+
+    //*************************
+    UserToken getUserToken();
+
+
+    //*************************
+    void setUserToken( UserToken userToken );
+
+    //*************************
+    int getType();
+
+    //*************************
+    void setType( int type );
 }

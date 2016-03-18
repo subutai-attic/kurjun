@@ -11,6 +11,7 @@
 
   <groupId>ai.subut.kurjun</groupId>
   <artifactId>security-manager</artifactId>
+  <name>Kurjun Security Manager</name>
   <version>1.0</version>
 
   <properties>

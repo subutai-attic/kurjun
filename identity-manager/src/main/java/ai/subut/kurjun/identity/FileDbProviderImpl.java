@@ -12,7 +12,7 @@ import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.identity.service.FileDbProvider;
 
 
-class FileDbProviderImpl implements FileDbProvider
+public class FileDbProviderImpl implements FileDbProvider
 {
 
     private String file;

@@ -1,6 +1,7 @@
 package ai.subut.kurjun.identity;
 
 
+import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.UUID;
@@ -13,7 +14,7 @@ import ai.subut.kurjun.model.identity.RelationObject;
 /**
  *
  */
-public class DefaultRelation implements Relation
+public class DefaultRelation implements Relation, Serializable
 {
 
     //*********************

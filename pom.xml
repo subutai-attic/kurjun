@@ -24,9 +24,9 @@
     <module>repository</module>
     <module>quota</module>
     <module>karaf</module>
-    <module>kurjun-web</module>
     <module>security-manager</module>
     <module>identity-manager</module>
+    <module>kurjun-web</module>
   </modules>
 
   <description>
