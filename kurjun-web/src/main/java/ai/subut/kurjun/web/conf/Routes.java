@@ -42,12 +42,15 @@ public class Routes implements ApplicationRoutes
         // -------------------------------------------------------------------------------------------------------------
         router.POST().route( "/login" ).with( IdentityController.class, "authorizeUser" );
         router.GET().route( "/login" ).with( IdentityController.class, "loginPage" );
+        router.POST().route( "/users" ).with( IdentityController.class, "createUser" );
 
         // -------------------------------------------------------------------------------------------------------------
         //  Templates
         // -------------------------------------------------------------------------------------------------------------
         //router.GET().route( "/templates" ).with( TemplateController.class, "listTemplates" );
         router.POST().route( "/templates" ).with( TemplateController.class, "uploadTemplate" );
+        router.GET().route( "/templates/{id}/info" ).with( TemplateController.class, "getTemplateInfo" );
+        router.GET().route( "/templates/{id}/download" ).with( TemplateController.class, "downloadTemplate" );
         router.POST().route( "/templates/{id}" ).with( TemplateController.class, "deleteTemplate" );
 
     }

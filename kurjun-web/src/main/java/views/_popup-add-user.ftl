@@ -7,11 +7,11 @@
         </span>
     </div>
     <div class="b-form__wrapper g-margin-bottom-half">
-        <form>
+        <form method="post" action="/users">
             <div class="b-workspace__content">
                 <div class="b-form__wrapper g-margin-bottom-half">
                     <label class="b-form-label">User Public Key</label>
-                    <input type="text" class="b-form-input b-form-input_full">
+                    <input type="text" name="key" class="b-form-input b-form-input_full">
                 </div>
             </div>
             <div class="b-popup__footer">
