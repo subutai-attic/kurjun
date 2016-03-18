@@ -41,7 +41,9 @@ public interface SecurityManager
 
     String getJWTSubject( String token );
 
+
     boolean verifyPGPSignature( String message, PGPPublicKey pubKey );
+
 
     boolean verifyPGPSignature( String message, String pubKeyASCII );
 }

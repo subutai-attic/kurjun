@@ -1,11 +1,14 @@
 package ai.subut.kurjun.identity;
 
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.apache.commons.lang.time.DateUtils;
 
 import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.identity.service.FileDbProvider;
@@ -16,7 +19,9 @@ import com.google.inject.Inject;
 
 import ai.subut.kurjun.identity.service.RelationManager;
 import ai.subut.kurjun.model.identity.User;
+import ai.subut.kurjun.model.identity.UserToken;
 import ai.subut.kurjun.security.manager.service.SecurityManager;
+import ai.subut.kurjun.security.manager.utils.token.TokenUtils;
 
 
 /**
@@ -55,7 +60,10 @@ public class IdentityManagerImpl implements IdentityManager
         {
             if(securityManager.verifyPGPSignature( authMessage,user.getKeyData() ))
             {
+                UserToken uToken = createUserToken( user, user.getKeyFingerprint(), "", "", null );
+                user.setUserToken( uToken );
 
+                return user;
             }
             else
             {
@@ -71,9 +79,17 @@ public class IdentityManagerImpl implements IdentityManager
 
     //********************************************
     @Override
-    public User authenticateByToken( String token)
+    public User authenticateByToken( String token, String sharedSecret )
     {
-        return null;
+        if(securityManager.verifyJWTSignature( token, sharedSecret ))
+        {
+            String fingerprint = TokenUtils.getSubject( token );
+            return getUser( fingerprint );
+        }
+        else
+        {
+            return null;
+        }
     }
 
 
@@ -134,15 +150,35 @@ public class IdentityManagerImpl implements IdentityManager
 
     //********************************************
     @Override
-    public User createJWTToken(User user)
+    public UserToken createUserToken( User user, String token, String secret, String issuer, Date validDate )
     {
-        String header;
-        String claim;
-        String sharedSecret = UUID.randomUUID().toString();
+        UserToken userToken = new DefaultUserToken();
 
-        user.setSharedSecret( sharedSecret );
+        if ( Strings.isNullOrEmpty( token ) )
+        {
+            token = UUID.randomUUID().toString();
+        }
+        if ( Strings.isNullOrEmpty( issuer ) )
+        {
+            issuer = "io.subutai";
+        }
+        if ( Strings.isNullOrEmpty( secret ) )
+        {
+            secret = UUID.randomUUID().toString();
+        }
+        if ( validDate == null )
+        {
+            validDate = DateUtils
+                    .addMinutes( new Date( System.currentTimeMillis() ), 120 );
+        }
 
-        securityManager.createJWToken( header,claim,sharedSecret  );
+        userToken.setToken( token );
+        userToken.setHashAlgorithm( "HS256" );
+        userToken.setIssuer( issuer );
+        userToken.setSecret( secret );
+        userToken.setValidDate( validDate );
+
+        return userToken;
     }
 
 

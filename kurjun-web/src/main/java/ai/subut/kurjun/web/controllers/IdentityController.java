@@ -77,7 +77,7 @@ public class IdentityController extends BaseController
 
         if(user != null)
         {
-            return Results.ok().render( user ).json();
+            return Results.ok().render( user.getUserToken().getFullToken() ).json();
         }
         else
         {

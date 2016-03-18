@@ -15,8 +15,8 @@ import ai.subut.kurjun.web.service.IdentityManagerService;
  */
 public class IdentityManagerServiceImpl implements IdentityManagerService
 {
-    private SecurityManager securityManager;
     private IdentityManager identityManager;
+    private SecurityManager securityManager;
 
     @Inject
     public IdentityManagerServiceImpl(IdentityManager identityManager, SecurityManager securityManager)
@@ -51,7 +51,7 @@ public class IdentityManagerServiceImpl implements IdentityManagerService
 
     //*************************************
     @Override
-    public User authorizeUser( String fingerprint, String authzMessage  )
+    public User authorizeUser( String fingerprint, String authzMessage )
     {
         return identityManager.authenticateUser( fingerprint, authzMessage,1 );
     }

@@ -17,10 +17,6 @@ public interface User
 
     String getEmailAddress();
 
-    String getSharedSecret();
-
-    void setSharedSecret( String sharedSecret );
-
     String getSignature();
 
     void setSignature( String signature );
@@ -32,8 +28,8 @@ public interface User
     void setKeyData( String keyData );
 
     //*************************
-    String getToken();
+    UserToken getUserToken();
 
     //*************************
-    void setToken( String token );
+    void setUserToken( UserToken userToken );
 }

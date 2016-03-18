@@ -13,6 +13,7 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.validator.routines.EmailValidator;
 
 import ai.subut.kurjun.model.identity.User;
+import ai.subut.kurjun.model.identity.UserToken;
 import ai.subut.kurjun.security.manager.utils.pgp.PGPKeyUtil;
 
 
@@ -26,14 +27,15 @@ public class DefaultUser implements User, Serializable
     public static final String MAP_NAME = "users";
     //*********************
 
-    private String keyId;
-    private String keyFingerprint;
-    private Date date;
-    private String emailAddress;
-    private String sharedSecret;
-    private String signature;
-    private String keyData;
-    private String token;
+    private String keyId = "";
+    private String keyFingerprint = "";
+    private Date date = null;
+    private String emailAddress = "";
+    private String signature = "";
+    private String keyData = "";
+
+    private UserToken userToken = null;
+
 
 
     //*************************
@@ -46,6 +48,7 @@ public class DefaultUser implements User, Serializable
             this.date = key.getCreationTime();
             this.emailAddress = parseEmailAddress( key );
             this.setKeyData( PGPKeyUtil.exportAscii( key ) );
+            this.setUserToken( null );
         }
         catch(Exception ex)
         {
@@ -63,6 +66,7 @@ public class DefaultUser implements User, Serializable
             this.date = key.getCreationTime();
             this.emailAddress = parseEmailAddress( key );
             this.setKeyData( keyASCII );
+            this.setUserToken( null );
         }
         catch(Exception ex)
         {
@@ -105,22 +109,6 @@ public class DefaultUser implements User, Serializable
 
     //*************************
     @Override
-    public String getSharedSecret()
-    {
-        return sharedSecret;
-    }
-
-
-    //*************************
-    @Override
-    public void setSharedSecret( final String sharedSecret )
-    {
-        this.sharedSecret = sharedSecret;
-    }
-
-
-    //*************************
-    @Override
     public String getSignature()
     {
         return signature;
@@ -153,17 +141,17 @@ public class DefaultUser implements User, Serializable
 
     //*************************
     @Override
-    public String getToken()
+    public UserToken getUserToken()
     {
-        return token;
+        return userToken;
     }
 
 
     //*************************
     @Override
-    public void setToken( final String token )
+    public void setUserToken( final UserToken userToken )
     {
-        this.token = token;
+        this.userToken = userToken;
     }
 
 
