@@ -14,6 +14,7 @@ import org.apache.commons.fileupload.FileItemHeaders;
 import org.apache.commons.fileupload.FileItemStream;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import ai.subut.kurjun.web.model.KurjunFileItem;
 import ninja.uploads.FileItem;
@@ -21,7 +22,7 @@ import ninja.uploads.FileItemProvider;
 import ninja.utils.NinjaConstant;
 import ninja.utils.NinjaProperties;
 
-
+@Singleton
 public class SubutaiFileHandler implements FileItemProvider
 {
 
@@ -51,6 +52,7 @@ public class SubutaiFileHandler implements FileItemProvider
     {
 
         File tmpFile;
+
         byte[] md5Digest;
 
         try ( InputStream is = item.openStream() )

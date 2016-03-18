@@ -18,13 +18,20 @@ public class RawMetadata implements Metadata, SerializableMetadata
     private byte[] md5Sum;
     private String name;
     private long size;
+    private String fingerprint;
 
 
-    public RawMetadata( final byte[] md5Sum, final String name, final long size )
+    public RawMetadata()
+    {
+    }
+
+
+    public RawMetadata( final byte[] md5Sum, final String name, final long size, final String fingerprint )
     {
         this.md5Sum = md5Sum;
         this.name = name;
         this.size = size;
+        this.fingerprint = fingerprint;
     }
 
 
@@ -43,7 +50,7 @@ public class RawMetadata implements Metadata, SerializableMetadata
     @Override
     public Object getId()
     {
-        return md5Sum != null ? Hex.encodeHexString( md5Sum ) : null;
+        return md5Sum != null ? fingerprint + "." + Hex.encodeHexString( md5Sum ) : fingerprint + ".";
     }
 
 
@@ -87,23 +94,55 @@ public class RawMetadata implements Metadata, SerializableMetadata
     }
 
 
-    @Override
-    public int hashCode()
+    public String getFingerprint()
     {
-        int hash = 13;
-        hash = 17 * hash + Arrays.hashCode( this.md5Sum );
-        return hash;
+        return fingerprint;
+    }
+
+
+    public void setFingerprint( final String fingerprint )
+    {
+        this.fingerprint = fingerprint;
     }
 
 
     @Override
-    public boolean equals( Object obj )
+    public boolean equals( final Object o )
     {
-        if ( obj instanceof RawMetadata )
+        if ( this == o )
         {
-            RawMetadata other = ( RawMetadata ) obj;
-            return Arrays.equals( this.md5Sum, other.md5Sum );
+            return true;
         }
-        return false;
+        if ( !( o instanceof RawMetadata ) )
+        {
+            return false;
+        }
+
+        final RawMetadata that = ( RawMetadata ) o;
+
+        if ( size != that.size )
+        {
+            return false;
+        }
+        if ( !Arrays.equals( md5Sum, that.md5Sum ) )
+        {
+            return false;
+        }
+        if ( name != null ? !name.equals( that.name ) : that.name != null )
+        {
+            return false;
+        }
+        return !( fingerprint != null ? !fingerprint.equals( that.fingerprint ) : that.fingerprint != null );
+    }
+
+
+    @Override
+    public int hashCode()
+    {
+        int result = Arrays.hashCode( md5Sum );
+        result = 31 * result + ( name != null ? name.hashCode() : 0 );
+        result = 31 * result + ( int ) ( size ^ ( size >>> 32 ) );
+        result = 31 * result + ( fingerprint != null ? fingerprint.hashCode() : 0 );
+        return result;
     }
 }

@@ -28,4 +28,6 @@ public interface RawManagerService
     Metadata put( File file, String repository );
 
     List<SerializableMetadata> list();
+
+    Metadata put( final File file, final String filename, final String repository );
 }

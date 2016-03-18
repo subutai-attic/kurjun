@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 import java.util.Set;
 
@@ -62,6 +60,8 @@ public class LocalRawRepository extends LocalRepositoryBase
     public Metadata put( final InputStream is, final CompressionType compressionType, final String owner )
             throws IOException
     {
+        Objects.requireNonNull( is, "InputStream cannot be null" );
+
         return null;
     }
 
@@ -69,38 +69,47 @@ public class LocalRawRepository extends LocalRepositoryBase
     @Override
     public Metadata put( final File file, final CompressionType compressionType, final String owner ) throws IOException
     {
-        return null;
+        DefaultMetadata metadata = new DefaultMetadata();
+        metadata.setName( file.getName() );
+
+        SerializableMetadata oldmeta = getPackageInfo( metadata );
+
+        if ( oldmeta != null )
+        {
+            // delete old record having the same file name
+            delete( oldmeta.getMd5Sum() );
+        }
+
+        byte[] md5 = getFileStore().put( file );
+
+        RawMetadata meta = new RawMetadata( md5, file.getName(), file.length(), owner );
+        getMetadataStore().put( meta );
+
+        return meta;
     }
 
-
-    public Metadata put( InputStream is, String fileName ) throws IOException
+    public Metadata put( final File file, String name, final String owner )
+            throws IOException
     {
-        Objects.requireNonNull( is, "InputStream cannot be null" );
-        Objects.requireNonNull( fileName, "fileName cannot be null" );
+        DefaultMetadata metadata = new DefaultMetadata();
 
-        File temp = Files.createTempFile( "template", null ).toFile();
-        try
+        metadata.setName( name );
+
+        SerializableMetadata oldmeta = getPackageInfo( metadata );
+
+        if ( oldmeta != null )
         {
-            DefaultMetadata metadata = new DefaultMetadata();
-            metadata.setName( fileName );
-            SerializableMetadata oldmeta = getPackageInfo( metadata );
-            if ( oldmeta != null )
-            {
-                // delete old record having the same file name
-                delete( oldmeta.getMd5Sum() );
-            }
-
-            Files.copy( is, temp.toPath(), StandardCopyOption.REPLACE_EXISTING );
-            byte[] md5 = getFileStore().put( temp );
-            RawMetadata meta = new RawMetadata( md5, fileName, temp.length() );
-
-            getMetadataStore().put( meta );
-            return meta;
+            // delete old record having the same file name
+            delete( oldmeta.getMd5Sum() );
         }
-        finally
-        {
-            temp.delete();
-        }
+
+        byte[] md5 = getFileStore().put( file );
+
+        RawMetadata meta = new RawMetadata( md5, name, file.length(), owner );
+
+        getMetadataStore().put( meta );
+
+        return meta;
     }
 
 

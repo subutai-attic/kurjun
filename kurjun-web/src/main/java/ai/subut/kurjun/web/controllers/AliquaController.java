@@ -1,11 +1,10 @@
 package ai.subut.kurjun.web.controllers;
 
 
-import java.math.BigInteger;
-
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import ai.subut.kurjun.metadata.common.raw.RawMetadata;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
 import ai.subut.kurjun.web.model.KurjunFileItem;
@@ -31,22 +30,25 @@ public class AliquaController extends BaseController
 
 
     @FileProvider( SubutaiFileHandler.class )
-    public Result upload( Context context, @Param( "file" ) FileItem fileItem )
+    public Result upload( Context context, @Param( "file" ) FileItem fileItem,
+                          @Param( "fingerprint" ) String fingerprint )
     {
 
         //checkNotNull( fileItem, "MD5 cannot be null" );
+        if ( fingerprint == null )
+        {
+            fingerprint = "raw";
+        }
 
         KurjunFileItem kurjunFileItem = ( KurjunFileItem ) fileItem;
 
         Metadata metadata;
 
-        metadata = rawManagerService.put( kurjunFileItem.getFile() );
+        metadata = rawManagerService.put( kurjunFileItem.getFile(), kurjunFileItem.getFileName(), fingerprint );
 
         if ( metadata != null )
         {
-            return Results.ok()
-                          .render( metadata.getName() + "." + new BigInteger( 1, metadata.getMd5Sum() ).toString( 16 ) )
-                          .text();
+            return Results.ok().render( metadata.getId() ).text();
         }
 
         return Results.internalServerError().render( "Could not save file" ).text();
@@ -77,7 +79,7 @@ public class AliquaController extends BaseController
         {
             return Results.ok().render( md5 + " deleted" ).text();
         }
-        return Results.notFound();
+        return Results.notFound().text();
     }
 
 
@@ -90,5 +92,17 @@ public class AliquaController extends BaseController
     public Result getList()
     {
         return Results.ok().render( rawManagerService.list() ).json();
+    }
+
+
+    public Result info( @Param( "id" ) String id, @Param( "name" ) String name, @Param( "md5" ) String md5,
+                        @Param( "type" ) String type, @Param( "fingerprint" ) String fingerprint )
+    {
+        RawMetadata rawMetadata = new RawMetadata();
+        rawMetadata.setName( name );
+        rawMetadata.setMd5Sum( Utils.MD5.toByteArray( md5 ) );
+        rawMetadata.setFingerprint( fingerprint );
+
+        return null;
     }
 }
