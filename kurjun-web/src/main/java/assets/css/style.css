@@ -2320,26 +2320,6 @@ td.b-main-table__status-col {
     position: relative;
 }
 
-.b-login:before {
-    content: "";
-    position: absolute;
-    background: url("../assets/elements/login-pattern-before.svg") no-repeat;
-    width: 214px;
-    height: 156px;
-    left: 50px;
-    top: 50px;
-}
-
-.b-login:after {
-    content: "";
-    position: absolute;
-    background: url("../assets/elements/login-pattern-after.svg") no-repeat;
-    width: 214px;
-    height: 156px;
-    right: 50px;
-    bottom: 50px;
-}
-
 .b-login__form {
     width: 325px;
 }
@@ -2593,10 +2573,6 @@ td.b-main-table__status-col {
     width: 180px;
 }
 
-.b-popup-body__box tooltip {
-    width: 100%;
-}
-
 .b-cloud {
 	position: relative;
 }
@@ -2645,4 +2621,14 @@ td.b-main-table__status-col {
 .b-tools-menu ul li {
     padding: 10px;
 	position: relative;
+}
+
+table .odd
+{
+    background: white;
+}
+
+#add_tpl {
+    background: white;
+    border: 1px solid #CCCEEE;
 }

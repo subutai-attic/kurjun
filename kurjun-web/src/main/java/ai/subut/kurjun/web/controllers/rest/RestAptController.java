@@ -1,4 +1,4 @@
-package ai.subut.kurjun.web.controllers;
+package ai.subut.kurjun.web.controllers.rest;
 
 
 import java.io.FileInputStream;
@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 
+import ai.subut.kurjun.web.controllers.BaseController;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -30,7 +31,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * REST Controller for Apt Management
  */
 @Singleton
-public class AptController extends BaseController
+public class RestAptController extends BaseController
 {
 
     @Inject

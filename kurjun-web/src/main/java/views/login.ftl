@@ -33,9 +33,11 @@
 
             <div class="b-workspace__content">
                 <div class="b-form">
+                    <#if flash.error??>
                     <div class="b-form__error-message">
-                        Error message
+                        ${flash.error}
                     </div>
+                    </#if>
                     <form method="POST" action="/login">
                         <div class="b-form__wrapper g-margin-bottom-half">
                             <label class="b-form-label">Fingerprint</label>
