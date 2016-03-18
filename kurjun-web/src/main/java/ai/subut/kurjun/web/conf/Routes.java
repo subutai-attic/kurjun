@@ -27,6 +27,10 @@ public class Routes implements ApplicationRoutes
     @Override
     public void init( final Router router )
     {
+        //ROOT
+        router.GET().route( "/" ).with( IdentityController.class, "homePage" );
+
+
         //REST Template Controller
 
         router.GET().route( baseTemplateUrl + "list" ).with( TemplateController.class, "list" );
@@ -61,7 +65,8 @@ public class Routes implements ApplicationRoutes
         router.GET().route( baseIdentityUrl + "user/list" ).with( IdentityController.class, "getUsers" );
         router.GET().route( baseIdentityUrl + "user/get" ).with( IdentityController.class, "getUser" );
         router.POST().route( baseIdentityUrl + "user/add" ).with( IdentityController.class, "addUser" );
-        router.GET().route( baseIdentityUrl + "user/auth" ).with( IdentityController.class, "rest_authorizeUser" );
+        router.POST().route( baseIdentityUrl + "user/auth" ).with( IdentityController.class, "authorizeUser" );
+        router.GET().route( "/login" ).with( IdentityController.class, "loginPage" );
 
         //REST Security Controller
         //router.GET().route( baseSecurityUrl + "keyman" ).with( IdentityController.class, "getUsers" );
@@ -70,9 +75,6 @@ public class Routes implements ApplicationRoutes
         // Web UI routes
         router.GET().route( "/assets/{fileName: .*}" ).with( DownloadController.class, "serveStatic" );
 
-        router.GET().route( "/login" ).with( IdentityController.class, "loginPage" );
-        router.POST().route( "/login" ).with( IdentityController.class, "authorizeUser" );
 
-        router.GET().route( "/" ).with( IdentityController.class, "homePage" );
     }
 }
