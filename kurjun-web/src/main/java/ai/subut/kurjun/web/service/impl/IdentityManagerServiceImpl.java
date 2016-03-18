@@ -62,7 +62,7 @@ public class IdentityManagerServiceImpl implements IdentityManagerService
     @Override
     public UserSession loginUser( String fingerprint, String authzMessage )
     {
-        return identityManager.login( fingerprint, authzMessage);
+        return identityManager.loginUser( fingerprint, authzMessage);
     }
 
 

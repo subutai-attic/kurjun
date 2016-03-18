@@ -86,7 +86,7 @@ public class IdentityManagerImpl implements IdentityManager
 
     //********************************************
     @Override
-    public UserSession login( String fingerprint, String authMessage)
+    public UserSession loginUser( String fingerprint, String authMessage)
     {
         try
         {
