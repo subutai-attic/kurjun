@@ -72,21 +72,24 @@ public class IdentityController extends BaseController
 
 
     //*************************
-
     public Result homePage()
     {
         return Results.html().template( "views/home.ftl" );
     }
 
+
+    //*************************
     public Result loginPage()
     {
         return Results.html().template( "views/login.ftl" );
     }
 
+
+    //*************************
     public Result authorizeUser(@Param( "fingerprint" ) String fingerprint, @Param( "message" ) String message,
                                 FlashScope flashScope )
     {
-        User user = identityManagerService.addUser( message );
+        User user = identityManagerService.authenticateUser( fingerprint, message );
 
         if(user != null)
         {
@@ -96,20 +99,6 @@ public class IdentityController extends BaseController
         {
             flashScope.error( "Failed to authorize.");
             return Results.redirect( "/login" );
-        }
-    }
-
-    public Result rest_authorizeUser( @Param( "fingerprint" ) String fingerprint, @Param( "message" ) String message  )
-    {
-        User user = identityManagerService.addUser( message );
-
-        if(user != null)
-        {
-            return Results.ok().render( user.getUserToken().getFullToken() ).json();
-        }
-        else
-        {
-            return Results.internalServerError();
         }
     }
 
