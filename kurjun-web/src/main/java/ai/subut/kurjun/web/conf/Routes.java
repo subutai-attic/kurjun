@@ -52,6 +52,7 @@ public class Routes implements ApplicationRoutes
         router.GET().route( baseRawUrl + "get" ).with( AliquaController.class, "getFile" );
         router.GET().route( baseRawUrl + "md5" ).with( AliquaController.class, "md5" );
         router.GET().route( baseRawUrl + "list" ).with( AliquaController.class, "getList" );
+        router.GET().route( baseRawUrl + "info" ).with( AliquaController.class, "info" );
         router.POST().route( baseRawUrl + "upload" ).with( AliquaController.class, "upload" );
         router.DELETE().route( baseRawUrl + "delete" ).with( AliquaController.class, "delete" );
     }

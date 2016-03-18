@@ -187,7 +187,7 @@ public class RawManagerServiceImpl implements RawManagerService
         Metadata metadata = null;
         try
         {
-            metadata = localPublicRawRepository.put( new FileInputStream( file ), file.getName() );
+            metadata = localPublicRawRepository.put( file, CompressionType.NONE, "raw" );
         }
         catch ( IOException e )
         {
@@ -204,6 +204,22 @@ public class RawManagerServiceImpl implements RawManagerService
         try
         {
             metadata = localPublicRawRepository.put( new FileInputStream( file ), CompressionType.NONE, repository );
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace();
+        }
+        return metadata;
+    }
+
+
+    @Override
+    public Metadata put( final File file, final String filename, final String repository )
+    {
+        Metadata metadata = null;
+        try
+        {
+            metadata = localPublicRawRepository.put( file, filename, repository );
         }
         catch ( IOException e )
         {
