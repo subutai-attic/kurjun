@@ -3,6 +3,7 @@ package ai.subut.kurjun.web.controllers;
 
 import java.util.List;
 
+import ninja.session.FlashScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,9 +72,36 @@ public class IdentityController extends BaseController
 
 
     //*************************
-    public Result authorizeUser( @Param( "fingerprint" ) String fingerprint, @Param( "key" ) String publicKey  )
+
+    public Result homePage()
     {
-        User user = identityManagerService.addUser( publicKey );
+        return Results.html().template( "views/home.ftl" );
+    }
+
+    public Result loginPage()
+    {
+        return Results.html().template( "views/login.ftl" );
+    }
+
+    public Result authorizeUser(@Param( "fingerprint" ) String fingerprint, @Param( "message" ) String message,
+                                FlashScope flashScope )
+    {
+        User user = identityManagerService.addUser( message );
+
+        if(user != null)
+        {
+            return Results.redirect("/");
+        }
+        else
+        {
+            flashScope.error( "Failed to authorize.");
+            return Results.redirect( "/login" );
+        }
+    }
+
+    public Result rest_authorizeUser( @Param( "fingerprint" ) String fingerprint, @Param( "message" ) String message  )
+    {
+        User user = identityManagerService.addUser( message );
 
         if(user != null)
         {

@@ -32,7 +32,12 @@ import ai.subut.kurjun.web.service.impl.IdentityManagerServiceImpl;
 import ai.subut.kurjun.web.service.impl.RawManagerServiceImpl;
 import ai.subut.kurjun.web.service.impl.TemplateManagerServiceImpl;
 import ai.subut.kurjun.web.service.impl.UserRepoContextStoreImpl;
+import com.google.inject.Provides;
 import ninja.uploads.FileItemProvider;
+import ninja.utils.NinjaProperties;
+
+import javax.inject.Singleton;
+import java.util.Properties;
 
 
 public class Module extends AbstractModule
@@ -74,5 +79,22 @@ public class Module extends AbstractModule
 
         bind( IdentityManagerService.class ).to( IdentityManagerServiceImpl.class );
 
+    }
+
+    /**
+     * The application config goes as properties into the service module.
+     */
+    @Provides
+    @Singleton
+    public Properties provideProperties(NinjaProperties ninjaProperties )
+    {
+        Properties props = new Properties( ninjaProperties.getAllCurrentNinjaProperties() );
+
+        if ( ninjaProperties.isProd() )
+        {
+            props.setProperty( "prod", "true" );
+        }
+
+        return props;
     }
 }
