@@ -4,6 +4,7 @@ package ai.subut.kurjun.web.service.impl;
 import java.util.List;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import ai.subut.kurjun.identity.service.IdentityManager;
 import ai.subut.kurjun.model.identity.User;
@@ -14,6 +15,7 @@ import ai.subut.kurjun.web.service.IdentityManagerService;
 /**
  *
  */
+@Singleton
 public class IdentityManagerServiceImpl implements IdentityManagerService
 {
     private IdentityManager identityManager;
@@ -62,7 +64,7 @@ public class IdentityManagerServiceImpl implements IdentityManagerService
     @Override
     public UserSession loginUser( String fingerprint, String authzMessage )
     {
-        return identityManager.loginUser( fingerprint, authzMessage);
+        return identityManager.loginUser( fingerprint, authzMessage );
     }
 
 
@@ -70,7 +72,7 @@ public class IdentityManagerServiceImpl implements IdentityManagerService
     @Override
     public UserSession loginPublicUser()
     {
-        return identityManager.loginPublicUser( );
+        return identityManager.loginPublicUser();
     }
 
 }
