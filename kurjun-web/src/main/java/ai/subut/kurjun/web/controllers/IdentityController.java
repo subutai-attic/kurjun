@@ -84,4 +84,34 @@ public class IdentityController extends BaseController {
     }
 
 
+    public Result setSystemOwner( @AuthorizedUser UserSession userSession, @Param( "key" ) String key,
+                                  Context context, FlashScope flashScope )
+    {
+        User user = identityManagerService.setSystemOwner(key);
+
+        if (user != null)
+        {
+            //context.setAttribute( SecurityFilter.USER_TOKEN, user.getUserToken().getFullToken() );
+            flashScope.success("System owner set successfully.");
+        }
+
+        return Results.redirect("/users");
+    }
+
+
+    public Result getSystemOwner( @AuthorizedUser UserSession userSession, Context context, FlashScope flashScope )
+    {
+        User user = identityManagerService.getSystemOwner();
+
+        if (user != null)
+        {
+            LOGGER.info("owner found");
+            return Results.html().template("views/_popup-view-system-owner.ftl").render("sys_owner", user);
+        }
+        else {
+            LOGGER.info("ownwer NOT found");
+            return Results.html().template("views/_popup-view-system-owner.ftl").render("sys_owner", user);
+        }
+    }
+
 }
