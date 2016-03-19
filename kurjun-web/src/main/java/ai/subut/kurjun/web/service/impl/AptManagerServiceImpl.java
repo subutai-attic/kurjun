@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import ai.subut.kurjun.model.identity.UserSession;
 import org.apache.commons.codec.binary.Hex;
 
 import com.google.common.io.ByteStreams;
@@ -41,7 +42,6 @@ import ninja.Renderable;
 import ninja.utils.ResponseStreams;
 
 
-@Singleton
 public class AptManagerServiceImpl implements AptManagerService
 {
 
@@ -56,6 +56,7 @@ public class AptManagerServiceImpl implements AptManagerService
 
     private KurjunContext kurjunContext;
 
+    private UserSession userSession;
 
     @Inject
     public AptManagerServiceImpl( final RepositoryFactory repositoryFactory, final ArtifactContext artifactContext,
@@ -355,5 +356,15 @@ public class AptManagerServiceImpl implements AptManagerService
         defaultMetadata.setMd5sum( md5 );
         unifiedRepository.getPackageInfo( defaultMetadata );
         return unifiedRepository.getPackageStream( defaultMetadata );
+    }
+
+    @Override
+    public void setUserSession(UserSession userSession) {
+        this.userSession = userSession;
+    }
+
+    @Override
+    public UserSession getUserSession() {
+        return this.userSession;
     }
 }

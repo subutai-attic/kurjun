@@ -9,7 +9,7 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ninja.Renderable;
 
 
-public interface RawManagerService
+public interface RawManagerService extends BaseService
 {
     String md5();
 

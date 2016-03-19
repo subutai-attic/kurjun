@@ -5,6 +5,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import ai.subut.kurjun.model.identity.UserSession;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -13,9 +14,9 @@ import ai.subut.kurjun.metadata.storage.file.DbFilePackageMetadataStoreModule;
 import ai.subut.kurjun.web.service.RepositoryService;
 
 
-@Singleton
 public class RepositoryServiceImpl implements RepositoryService
 {
+    private UserSession userSession;
 
     @Inject KurjunProperties kurjunProperties;
 
@@ -39,5 +40,15 @@ public class RepositoryServiceImpl implements RepositoryService
         }
 
         return results;
+    }
+
+    @Override
+    public void setUserSession(UserSession userSession) {
+        this.userSession = userSession;
+    }
+
+    @Override
+    public UserSession getUserSession() {
+        return this.userSession;
     }
 }
