@@ -20,6 +20,9 @@ public class DefaultUserSession implements UserSession , Serializable
     private Date startDate = new Date( System.currentTimeMillis() );
     private Date endDate = new Date( System.currentTimeMillis() );
 
+    public DefaultUserSession()
+    {
+    }
 
     @Override
     public User getUser()

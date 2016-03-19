@@ -32,6 +32,15 @@ public class SecurityManagerImpl implements SecurityManager
         return SecurityUtils.calculateMd5( is );
     }
 
+
+    /*******************************************/
+    @Override
+    public String generateUUIDRandom()
+    {
+        return SecurityUtils.generateUUIDRandom();
+    }
+
+
     /*******************************************/
     @Override
     public String generateSecurePassword( String passwordToHash, String salt )

@@ -1,8 +1,10 @@
 package ai.subut.kurjun.identity;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -36,6 +38,8 @@ public class IdentityManagerImpl implements IdentityManager
 
     private static final Logger LOGGER = LoggerFactory.getLogger( IdentityManagerImpl.class );
 
+    private final String PUBLIC_USER_ID = "public-user";
+
     //***************************
     @Inject
     private SecurityManager securityManager;
@@ -54,24 +58,31 @@ public class IdentityManagerImpl implements IdentityManager
     }
 
 
-
     //********************************************
     private void createDefaultUsers()
     {
-        if(getUser( "public" ) == null)
+        if(getUser( PUBLIC_USER_ID ) == null)
         {
-            User user = addUser( "public", UserType.System.getId() );
+            User user = addUser( PUBLIC_USER_ID, UserType.System.getId() );
         }
     }
 
 
-    @Override
     //********************************************
+    @Override
+    public RelationManager getRelationManager()
+    {
+        return relationManager;
+    }
+
+
+    //********************************************
+    @Override
     public UserSession loginPublicUser()
     {
         try
         {
-            User user = getUser( "public" );
+            User user = getUser( PUBLIC_USER_ID );
             UserSession userSession = new DefaultUserSession();
             userSession.setUser( user );
 
@@ -245,9 +256,28 @@ public class IdentityManagerImpl implements IdentityManager
     @Override
     public List<User> getAllUsers()
     {
-        return null;
-    }
+        try
+        {
+            FileDb fileDb = fileDbProvider.get();
+            Map<String, User> map = fileDb.get( DefaultUser.MAP_NAME );
 
+            if ( map != null )
+            {
+                List<User> items = new ArrayList<>( map.values() );
+
+                return items;
+            }
+            else
+            {
+                return null;
+            }
+        }
+        catch ( Exception ex )
+        {
+            LOGGER.error( " ***** Error adding user:", ex );
+            return null;
+        }
+    }
 
     //********************************************
     @Override
