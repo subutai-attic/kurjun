@@ -1,45 +1,20 @@
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="favicon.ico" rel="icon" type="image/x-icon">
+<#import "layout-main.ftl" as layout>
 
-    <title>Kurjun</title>
+<#assign parentHead = styles in layout>
+<#assign parentScripts = scripts in layout>
 
-    <link rel="stylesheet" href="/assets/css/libs/datatables.css">
-    <link rel="stylesheet" href="/assets/css/colorbox.css">
+<#macro styles>
+</#macro>
 
-    <link rel="stylesheet" href="/assets/css/style.css">
-</head>
+<#macro scripts>
+</#macro>
 
-<body>
-
-<div class="b-workspace__header b-workspace__header_tabs">
-    <img src="/assets/img/icons/kurjun.png" height="50px" alt="">
-    <div class="b-nav-menu__add"><a href="#">Logout</a></div>
-</div>
-<div class="b-workspace__header b-workspace__header_tabs">
-
-    <div class="b-tabs-menu b-tabs-menu_header">
-
-        <ul>
-            <li class="b-tabs-menu__item b-tabs-menu__item_active">
-                Templates
-            </li>
-            <li class="b-tabs-menu__item">
-                Users
-            </li>
-        </ul>
-    </div>
-</div>
+<@layout.parentLayout "Templates">
 
 <div class="b-workspace__content">
     <div class="b-workspace-content__row">
         <button id="add_tpl_btn" class="b-btn b-btn_green b-btn_search-field-level">
             <i class="fa fa-plus"></i> Add Template
-        </button>
-        <button id="add_user_btn" class="b-btn b-btn_green b-btn_search-field-level">
-            <i class="fa fa-plus"></i> Add User
         </button>
         <table id="templates_tbl" class="b-data-table">
             <thead>
@@ -70,10 +45,7 @@
         <form id="removeTemplForm" method="post" action></form>
     </div>
 </div>
-<!-- BASE -->
-<script src="/assets/js/jquery-2.1.1.min.js"></script>
-<script src="/assets/js/datatables.min.js"></script>
-<script src="/assets/js/jquery.colorbox-min.js"></script>
+
 <script>
     function removeTemplate(templId)
     {
@@ -82,18 +54,18 @@
     }
 
     $(document).ready( function () {
+
+        $('li#hdr_templates_tab').addClass("b-tabs-menu__item_active");
+
         $('#add_tpl_btn').colorbox({href:"#js-add-tpl", inline: true});
-        $('#add_user_btn').colorbox({href:"#js-add-user", inline: true});
-        $('.js-colorbox').colorbox({});
 
         $('#templates_tbl').DataTable();
     } );
 
 
 </script>
-</body>
-</html>
 
 <#include "_popup-add-tpl.ftl"/>
-<#include "_popup-add-user.ftl"/>
 <#include "flashscope.ftl"/>
+
+</@layout.parentLayout>
