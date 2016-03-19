@@ -21,8 +21,7 @@ public class FileDbProviderImpl implements FileDbProvider
     @Inject
     public FileDbProviderImpl( KurjunProperties kurjunProperties )
     {
-        this.file = kurjunProperties.getWithDefault( KurjunConstants.SECURITY_FILEDB_PATH,
-                "./security.db" );
+        this.file = kurjunProperties.getWithDefault( KurjunConstants.SECURITY_FILEDB_PATH,"./security.db" );
     }
 
 
