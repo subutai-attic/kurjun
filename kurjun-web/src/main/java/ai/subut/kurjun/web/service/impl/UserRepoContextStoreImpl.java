@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
+import ai.subut.kurjun.model.identity.UserSession;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -15,7 +16,6 @@ import ai.subut.kurjun.web.model.UserContext;
 import ai.subut.kurjun.web.service.UserRepoContextStore;
 
 
-@Singleton
 public class UserRepoContextStoreImpl implements UserRepoContextStore
 {
     private static final String MAP_NAME_USER_REPO = "user_repo_contexts";
@@ -23,6 +23,8 @@ public class UserRepoContextStoreImpl implements UserRepoContextStore
     private static final String DB_FILE_LOCATION_NAME = "user.context.path";
 
     private String repoFile;
+
+    private UserSession userSession;
 
 
     @Inject
@@ -75,5 +77,15 @@ public class UserRepoContextStoreImpl implements UserRepoContextStore
     private String makeKey( UserContext userRepoContext )
     {
         return userRepoContext.getFingerprint();
+    }
+
+    @Override
+    public void setUserSession( UserSession userSession ) {
+        this.userSession = userSession;
+    }
+
+    @Override
+    public UserSession getUserSession() {
+        return this.userSession;
     }
 }

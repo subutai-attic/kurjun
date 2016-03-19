@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ai.subut.kurjun.model.identity.UserSession;
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -38,7 +39,6 @@ import ninja.lifecycle.Start;
 import ninja.utils.ResponseStreams;
 
 
-@Singleton
 public class TemplateManagerServiceImpl implements TemplateManagerService
 {
 
@@ -48,6 +48,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     private LocalTemplateRepository localPublicTemplateRepository;
     private UnifiedRepository unifiedTemplateRepository;
 
+    private UserSession userSession;
 
     @Inject
     public TemplateManagerServiceImpl( final RepositoryFactory repositoryFactory,
@@ -349,5 +350,15 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     private String makeTemplateName( SerializableMetadata metadata )
     {
         return metadata.getName() + "_" + metadata.getVersion() + ".tar.gz";
+    }
+
+    @Override
+    public void setUserSession(UserSession userSession) {
+        this.userSession = userSession;
+    }
+
+    @Override
+    public UserSession getUserSession() {
+        return this.userSession;
     }
 }

@@ -10,7 +10,7 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ninja.Renderable;
 
 
-public interface AptManagerService
+public interface AptManagerService extends BaseService
 {
 
     String md5();
