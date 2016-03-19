@@ -47,6 +47,12 @@
 
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>identity-manager</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>common-utils</artifactId>
       <version>${project.version}</version>
       <exclusions>

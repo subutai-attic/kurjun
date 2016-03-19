@@ -4,6 +4,7 @@ package ai.subut.kurjun.identity;
 import java.io.Serializable;
 
 import ai.subut.kurjun.model.identity.RelationObject;
+import ai.subut.kurjun.model.identity.RelationObjectType;
 
 
 /**
@@ -17,7 +18,7 @@ public class DefaultRelationObject implements RelationObject,Serializable
 
     private String id;
     private String className;
-    private int type;
+    private int type = RelationObjectType.User.getId();
 
 
     @Override
