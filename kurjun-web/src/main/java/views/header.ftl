@@ -1,6 +1,11 @@
 <div class="b-workspace__header b-workspace__header_tabs">
     <img src="/assets/img/icons/kurjun.png" height="50px" alt="">
-    <div class="b-nav-menu__add"><a href="#" id="js-logout">Logout</a></div>
+    <div class="b-nav-menu__add">
+        <#if userInfo??>
+        Hello <#-- ${(userInfo.emailAddress)!userInfo.keyFingerprint} -->
+        </#if>
+        <a href="#" id="js-logout">Logout</a>
+    </div>
     <form id="logoutForm" action="/logout" method="POST"></form>
 </div>
 <div class="b-workspace__header b-workspace__header_tabs">

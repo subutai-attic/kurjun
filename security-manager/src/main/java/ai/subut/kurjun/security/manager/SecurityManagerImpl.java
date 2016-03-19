@@ -103,6 +103,7 @@ public class SecurityManagerImpl implements SecurityManager
     {
         try
         {
+            message = message.trim();
             return PGPEncryptionUtil.verify(message.getBytes(),pubKey  );
         }
         catch ( PGPException e )
@@ -119,6 +120,8 @@ public class SecurityManagerImpl implements SecurityManager
         try
         {
             PGPPublicKey pubKey = PGPKeyUtil.readPublicKey( pubKeyASCII );
+            message = message.trim();
+
             return verifyPGPSignature( message, pubKey );
         }
         catch ( PGPException e )
