@@ -16,18 +16,19 @@
         <button id="add_user_btn" class="b-btn b-btn_green b-btn_search-field-level">
             <i class="fa fa-plus"></i> Add User
         </button>
-        <#if users?? >User size: ${users?size}</#if>
         <table id="users_tbl" class="b-data-table">
             <thead>
             <tr>
-                <th>Name</th>
+                <th>email</th>
+                <th>fingerprint</th>
             </tr>
             </thead>
             <tbody>
             <#if users?? && users?has_content >
                 <#list users as u >
                 <tr>
-                    <td>u</td>
+                    <td>${u.emailAddress}</td>
+                    <td>${u.keyFingerprint}</td>
                 </tr>
                 </#list>
             </#if>
