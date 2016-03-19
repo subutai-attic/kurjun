@@ -1,12 +1,13 @@
 <div class="b-workspace__header b-workspace__header_tabs">
     <img src="/assets/img/icons/kurjun.png" height="50px" alt="">
     <div class="b-nav-menu__add">
-        <#if userInfo??>
-        Hello <#-- ${(userInfo.emailAddress)!userInfo.keyFingerprint} -->
+        <#if userInfo?? && userInfo.emailAddress??>
+        Hello ${userInfo.emailAddress} | <a href="#" id="js-logout">Logout</a>
+        <#else>
+        Hello anonymous | <a href="/login" id="js-login">Login</a>
         </#if>
-        <a href="#" id="js-logout">Logout</a>
     </div>
-    <form id="logoutForm" action="/logout" method="POST"></form>
+    <form id="logoutForm" method="post" action="/logout" ></form>
 </div>
 <div class="b-workspace__header b-workspace__header_tabs">
 
