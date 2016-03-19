@@ -4,11 +4,14 @@ package ai.subut.kurjun.web.conf.routes.rest;
 import ai.subut.kurjun.web.controllers.rest.RestAliquaController;
 import ai.subut.kurjun.web.controllers.rest.RestAptController;
 import ai.subut.kurjun.web.controllers.rest.RestIdentityController;
+import ai.subut.kurjun.web.controllers.rest.RestRepositoryController;
 import ai.subut.kurjun.web.controllers.rest.RestTemplateController;
 import ninja.Router;
 import ninja.application.ApplicationRoutes;
 
-public class RestRoutes implements ApplicationRoutes {
+
+public class RestRoutes implements ApplicationRoutes
+{
 
     private static final String baseUrl = "/rest/";
 
@@ -22,9 +25,12 @@ public class RestRoutes implements ApplicationRoutes {
 
     private static final String baseSecurityUrl = baseUrl + "security/";
 
+    private static final String baseRepositoryUrl = baseUrl + "repository/";
+
 
     @Override
-    public void init(Router router) {
+    public void init( Router router )
+    {
 
         // REST Template Controller
 
@@ -38,9 +44,10 @@ public class RestRoutes implements ApplicationRoutes {
         //REST APT Controller
         router.GET().route( baseDebUrl + "dists/{release}/Release" ).with( RestAptController.class, "release" );
         router.GET()
-                .route( baseDebUrl + "dists/{release}/{component}/{arch: binary-\\w+}/{packages: Packages(\\.\\w+)?}" )
-                .with( RestAptController.class, "packageIndexes" );
-        router.GET().route( baseDebUrl + "pool/{filename: .+}" ).with( RestAptController.class, "getPackageByFileName" );
+              .route( baseDebUrl + "dists/{release}/{component}/{arch: binary-\\w+}/{packages: Packages(\\.\\w+)?}" )
+              .with( RestAptController.class, "packageIndexes" );
+        router.GET().route( baseDebUrl + "pool/{filename: .+}" )
+              .with( RestAptController.class, "getPackageByFileName" );
         router.GET().route( baseDebUrl + "info" ).with( RestAptController.class, "info" );
         router.GET().route( baseDebUrl + "md5" ).with( RestAptController.class, "md5" );
         router.GET().route( baseDebUrl + "get" ).with( RestAptController.class, "download" );
@@ -62,6 +69,8 @@ public class RestRoutes implements ApplicationRoutes {
         router.POST().route( baseIdentityUrl + "user/add" ).with( RestIdentityController.class, "addUser" );
         router.POST().route( baseIdentityUrl + "user/auth" ).with( RestIdentityController.class, "authorizeUser" );
 
+        //REST Repository Controller
+        router.GET().route( baseRepositoryUrl + "list" ).with( RestRepositoryController.class, "list" );
         //REST Security Controller
         //router.GET().route( baseSecurityUrl + "keyman" ).with( RestIdentityController.class, "getUsers" );
     }
