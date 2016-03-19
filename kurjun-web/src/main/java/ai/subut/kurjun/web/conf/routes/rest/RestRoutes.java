@@ -27,6 +27,7 @@ public class RestRoutes implements ApplicationRoutes
 
     private static final String baseRepositoryUrl = baseUrl + "repository/";
 
+    private static final String baseRelationUrl = baseUrl + "relation/";
 
     @Override
     public void init( Router router )
@@ -44,10 +45,9 @@ public class RestRoutes implements ApplicationRoutes
         //REST APT Controller
         router.GET().route( baseDebUrl + "dists/{release}/Release" ).with( RestAptController.class, "release" );
         router.GET()
-              .route( baseDebUrl + "dists/{release}/{component}/{arch: binary-\\w+}/{packages: Packages(\\.\\w+)?}" )
-              .with( RestAptController.class, "packageIndexes" );
-        router.GET().route( baseDebUrl + "pool/{filename: .+}" )
-              .with( RestAptController.class, "getPackageByFileName" );
+                .route( baseDebUrl + "dists/{release}/{component}/{arch: binary-\\w+}/{packages: Packages(\\.\\w+)?}" )
+                .with( RestAptController.class, "packageIndexes" );
+        router.GET().route( baseDebUrl + "pool/{filename: .+}" ).with( RestAptController.class, "getPackageByFileName" );
         router.GET().route( baseDebUrl + "info" ).with( RestAptController.class, "info" );
         router.GET().route( baseDebUrl + "md5" ).with( RestAptController.class, "md5" );
         router.GET().route( baseDebUrl + "get" ).with( RestAptController.class, "download" );
@@ -71,6 +71,14 @@ public class RestRoutes implements ApplicationRoutes
 
         //REST Repository Controller
         router.GET().route( baseRepositoryUrl + "list" ).with( RestRepositoryController.class, "list" );
+        //REST Relation Controller
+        router.POST().route( baseRelationUrl + "owner/set" ).with( RestIdentityController.class, "setRelationOwner" );
+        router.GET().route( baseRelationUrl + "owner/get" ).with( RestIdentityController.class, "getRelationOwner" );
+        router.GET().route( baseRelationUrl + "source/get" ).with( RestIdentityController.class, "getRelationsBySourceId" );
+        router.GET().route( baseRelationUrl + "target/get" ).with( RestIdentityController.class, "getRelationsByTargetId" );
+        router.GET().route( baseRelationUrl + "trust/get" ).with( RestIdentityController.class, "getRelationsByTrustId" );
+
+
         //REST Security Controller
         //router.GET().route( baseSecurityUrl + "keyman" ).with( RestIdentityController.class, "getUsers" );
     }
