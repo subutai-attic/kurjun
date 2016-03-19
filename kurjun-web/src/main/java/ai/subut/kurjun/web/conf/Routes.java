@@ -43,6 +43,8 @@ public class Routes implements ApplicationRoutes
         router.POST().route( "/login" ).with( IdentityController.class, "authorizeUser" );
         router.GET().route( "/login" ).with( IdentityController.class, "loginPage" );
         router.POST().route( "/users" ).with( IdentityController.class, "createUser" );
+        router.GET().route( "/users" ).with( IdentityController.class, "getUsers" );
+        router.POST().route( "/logout" ).with( IdentityController.class, "logout" );
 
         // -------------------------------------------------------------------------------------------------------------
         //  Templates

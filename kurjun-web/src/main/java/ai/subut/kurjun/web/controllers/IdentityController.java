@@ -11,6 +11,8 @@ import ninja.session.FlashScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 
 public class IdentityController extends BaseController {
 
@@ -33,7 +35,7 @@ public class IdentityController extends BaseController {
                                 FlashScope flashScope )
     {
         User user = identityManagerService.authenticateUser(fingerprint, message);
-
+        // TODO: create session
         if (user != null)
         {
             return Results.redirect("/");
@@ -52,13 +54,28 @@ public class IdentityController extends BaseController {
         if(user != null)
         {
             flashScope.success( "User created successfully" );
-            return Results.redirect( "/" );
+            return Results.redirect( "/users" );
         }
         else
         {
             flashScope.error( "Failed to create user.");
-            return Results.redirect( "/" );
+            return Results.redirect( "/users" );
         }
+    }
+
+
+    public Result getUsers()
+    {
+        List<User> users = identityManagerService.getAllUsers();
+
+        return Results.html().template("views/users.ftl").render("users", users);
+    }
+
+
+    public Result logout()
+    {
+        // TODO: clear session
+        return Results.redirect("/login");
     }
 
 

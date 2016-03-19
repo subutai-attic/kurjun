@@ -11,7 +11,7 @@
             <div class="b-workspace__content">
                 <div class="b-form__wrapper g-margin-bottom-half">
                     <label class="b-form-label">User Public Key</label>
-                    <input type="text" name="key" class="b-form-input b-form-input_full">
+                    <textarea name="key" class="b-form-input b-form-input_full bp-set-pub-key" style="width: 370px; height: 160px"></textarea>
                 </div>
             </div>
             <div class="b-popup__footer">

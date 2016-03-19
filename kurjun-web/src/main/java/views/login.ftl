@@ -20,7 +20,7 @@
 
 
 <div class="b-login">
-    <div class="b-login__form b-login__form_center">
+    <div class="b-login__form b-login__form_center" style="width: 400px">
         <div class="b-login-form-header">
             <a class="kurjun_login_ico" href="#"><img src="/assets/img/icons/kurjun.png" height="65px" alt=""></a>
             <div class="kurjun_login_text">Kurjun</div>
@@ -50,12 +50,7 @@
                         </div>
                         <div class="b-form__wrapper g-margin-bottom">
                             <label class="b-form-label">Message</label>
-                            <input
-                                    class="b-form-input b-form-input_full"
-                                    id="subt-input__password"
-                                    name="message"
-                                    tabindex=2
-                                    type="text">
+                            <textarea name="message" id="subt-input__password" tabindex=2 class="b-form-input b-form-input_full bp-set-pub-key" style="width: 370px; height: 160px"></textarea>
                         </div>
                         <div class="b-login-form-btn">
                             <button type="submit" class="b-btn b-btn_green b-btn_full-width" id="subt-button__login">
