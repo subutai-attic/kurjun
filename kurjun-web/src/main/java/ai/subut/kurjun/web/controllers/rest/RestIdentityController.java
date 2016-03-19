@@ -88,4 +88,35 @@ public class RestIdentityController extends BaseController
         }
     }
 
+
+    //*************************
+    public Result setSystemOwner(@Param( "key" ) String key, FlashScope flashScope )
+    {
+        User user = identityManagerService.setSystemOwner(key);
+
+        if (user != null)
+        {
+            return Results.ok().render( user.getUserToken().getFullToken() ).json();
+        }
+        else
+        {
+            return Results.internalServerError();
+        }
+    }
+
+
+    //*************************
+    public Result getSystemOwner()
+    {
+        User user = identityManagerService.getSystemOwner();
+
+        if (user != null)
+        {
+            return Results.ok().render( user.getUserToken().getFullToken() ).json();
+        }
+        else
+        {
+            return Results.internalServerError();
+        }
+    }
 }

@@ -34,4 +34,10 @@ public interface IdentityManagerService
 
     //*************************************
     UserSession loginPublicUser();
+
+    //*************************************
+    User setSystemOwner( String publicKeyASCII );
+
+    //*************************************
+    User getSystemOwner();
 }

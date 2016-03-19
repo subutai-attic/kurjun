@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bouncycastle.openpgp.PGPPublicKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,8 +38,8 @@ public class IdentityManagerImpl implements IdentityManager
 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger( IdentityManagerImpl.class );
-
     private final String PUBLIC_USER_ID = "public-user";
+
 
     //***************************
     @Inject
@@ -63,7 +64,7 @@ public class IdentityManagerImpl implements IdentityManager
     {
         if(getUser( PUBLIC_USER_ID ) == null)
         {
-            User user = addUser( PUBLIC_USER_ID, UserType.System.getId() );
+            User publicUser = addUser( PUBLIC_USER_ID, UserType.System.getId() );
         }
     }
 
@@ -93,7 +94,6 @@ public class IdentityManagerImpl implements IdentityManager
             return null;
         }
     }
-
 
     //********************************************
     @Override
@@ -199,6 +199,56 @@ public class IdentityManagerImpl implements IdentityManager
         catch ( Exception ex )
         {
             LOGGER.error( " ***** Error getting user with fingerprint:" + fingerprint, ex );
+            return null;
+        }
+    }
+
+
+    //********************************************
+    @Override
+    public User getSystemOwner()
+    {
+        try
+        {
+            List<User> users = getAllUsers();
+
+            if(users.isEmpty())
+            {
+                LOGGER.info( " ***** Owner of the system is not set yet");
+            }
+            else
+            {
+                for(User user: users)
+                {
+                    if(user.getType() == UserType.RegularOwner.getId())
+                    {
+                        return user;
+                    }
+                }
+            }
+
+        }
+        catch ( Exception ex )
+        {
+            LOGGER.error( " ***** Error !!! Owner of the system is not set yet" , ex );
+            return null;
+        }
+
+        return null;
+    }
+
+
+    //********************************************
+    @Override
+    public User setSystemOwner( String publicKeyASCII )
+    {
+        if(getSystemOwner() == null)
+        {
+            return addUser( publicKeyASCII, UserType.RegularOwner.getId() );
+        }
+        else
+        {
+            LOGGER.info( " ***** System Owner is already set !!!" );
             return null;
         }
     }

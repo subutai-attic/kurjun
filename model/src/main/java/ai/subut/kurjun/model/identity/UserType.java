@@ -7,7 +7,8 @@ package ai.subut.kurjun.model.identity;
 public enum UserType
 {
     System( 1, "System-User" ),
-    Regular( 2, "Regular-User" );
+    Regular( 2, "Regular-User" ),
+    RegularOwner( 3, "Regular-Owner" );
 
     private String name;
     private int id;
