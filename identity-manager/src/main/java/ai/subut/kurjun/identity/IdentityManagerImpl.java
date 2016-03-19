@@ -55,6 +55,7 @@ public class IdentityManagerImpl implements IdentityManager
 
 
 
+
     //********************************************
     private void createDefaultUsers()
     {
@@ -65,8 +66,16 @@ public class IdentityManagerImpl implements IdentityManager
     }
 
 
-    @Override
     //********************************************
+    @Override
+    public RelationManager getRelationManager()
+    {
+        return relationManager;
+    }
+
+
+    //********************************************
+    @Override
     public UserSession loginPublicUser()
     {
         try

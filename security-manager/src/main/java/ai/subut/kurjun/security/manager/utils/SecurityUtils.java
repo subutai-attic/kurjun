@@ -7,6 +7,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
+import java.util.Random;
+import java.util.UUID;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -26,6 +28,37 @@ public class SecurityUtils
         }
 
         return sb.toString();
+    }
+
+
+    /* *************************************************
+     */
+    public static int generateShortRandom()
+    {
+        Random randomGenerator = new Random();
+
+        return randomGenerator.nextInt(99000 - 10000 + 1) + 10000;
+    }
+
+
+    /* *************************************************
+     */
+    public static long generateLongRandom()
+    {
+        Random randomGenerator = new Random();
+        return randomGenerator.nextLong();
+    }
+
+
+    /* *************************************************
+     */
+    public static String generateUUIDRandom()
+    {
+        String uuid = UUID.randomUUID().toString();
+
+        uuid += "-" + generateShortRandom();
+
+        return uuid;
     }
 
 

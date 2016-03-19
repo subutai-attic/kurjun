@@ -21,6 +21,8 @@ public interface SecurityManager
     byte[] calculateMd5( InputStream is );
 
 
+    String generateUUIDRandom();
+
     String generateSecurePassword( String passwordToHash, String salt );
 
 

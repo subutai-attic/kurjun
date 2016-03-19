@@ -16,7 +16,10 @@ import ai.subut.kurjun.model.identity.UserToken;
  */
 public interface IdentityManager
 {
-    //********************************************
+   //********************************************
+   RelationManager getRelationManager();
+
+   //********************************************
     UserSession loginPublicUser();
 
 
