@@ -64,11 +64,11 @@ public class RestRoutes implements ApplicationRoutes {
         router.POST().route( baseIdentityUrl + "user/auth" ).with( RestIdentityController.class, "authorizeUser" );
 
         //REST Relation Controller
-        router.POST().route( baseRelationUrl + "owner/set" ).with( RestIdentityController.class, "setRelationOwner" );
-        router.GET().route( baseRelationUrl + "owner/get" ).with( RestIdentityController.class, "getRelationOwner" );
-        router.GET().route( baseRelationUrl + "source/get" ).with( RestIdentityController.class, "getRelationsBySourceId" );
-        router.GET().route( baseRelationUrl + "target/get" ).with( RestIdentityController.class, "getRelationsByTargetId" );
-        router.GET().route( baseRelationUrl + "trust/get" ).with( RestIdentityController.class, "getRelationsByTrustId" );
+        router.POST().route( baseRelationUrl + "owner/set" ).with( RestIdentityController.class, "setSystemOwner" );
+        router.GET().route( baseRelationUrl + "owner/get" ).with( RestIdentityController.class, "getSystemOwner" );
+        //router.GET().route( baseRelationUrl + "source/get" ).with( RestIdentityController.class, "getRelationsBySourceId" );
+        //router.GET().route( baseRelationUrl + "target/get" ).with( RestIdentityController.class, "getRelationsByTargetId" );
+        //router.GET().route( baseRelationUrl + "trust/get" ).with( RestIdentityController.class, "getRelationsByTrustId" );
 
 
         //REST Security Controller
