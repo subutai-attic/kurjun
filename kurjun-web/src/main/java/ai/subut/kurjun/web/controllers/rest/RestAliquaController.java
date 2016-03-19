@@ -1,12 +1,12 @@
 package ai.subut.kurjun.web.controllers.rest;
 
 
-import ai.subut.kurjun.web.controllers.BaseController;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.metadata.common.raw.RawMetadata;
 import ai.subut.kurjun.model.metadata.Metadata;
+import ai.subut.kurjun.web.controllers.BaseController;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
 import ai.subut.kurjun.web.model.KurjunFileItem;
 import ai.subut.kurjun.web.service.RawManagerService;
@@ -100,10 +100,21 @@ public class RestAliquaController extends BaseController
                         @Param( "type" ) String type, @Param( "fingerprint" ) String fingerprint )
     {
         RawMetadata rawMetadata = new RawMetadata();
+
+        if ( fingerprint == null && md5 != null )
+        {
+            fingerprint = "raw";
+        }
         rawMetadata.setName( name );
         rawMetadata.setMd5Sum( Utils.MD5.toByteArray( md5 ) );
         rawMetadata.setFingerprint( fingerprint );
 
-        return null;
+        Metadata metadata = rawManagerService.getInfo( rawMetadata );
+
+        if ( metadata != null )
+        {
+            return Results.ok().render( metadata ).json();
+        }
+        return Results.notFound().render( "Not found" ).text();
     }
 }

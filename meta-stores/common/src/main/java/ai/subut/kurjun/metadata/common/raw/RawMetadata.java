@@ -50,7 +50,12 @@ public class RawMetadata implements Metadata, SerializableMetadata
     @Override
     public Object getId()
     {
-        return md5Sum != null ? fingerprint + "." + Hex.encodeHexString( md5Sum ) : fingerprint + ".";
+        if ( md5Sum == null || fingerprint == null )
+        {
+            return null;
+        }
+
+        return fingerprint + "." + Hex.encodeHexString( md5Sum );
     }
 
 
