@@ -1,4 +1,3 @@
-<div style="display: none">
 <div id="js-add-tpl">
     <div class="b-popup__header">
         <span>Add template</span>
@@ -8,6 +7,18 @@
     </div>
         <div class="b-form__wrapper g-margin-bottom-half">
             <form method="POST" enctype="multipart/form-data" action="/templates">
+                <div class="b-workspace__content">
+                    <div class="b-form__wrapper g-margin-bottom-half">
+                        <label for="repository" class="b-form-label">Repository</label>
+                        <select name="repository" id="repository">
+                            <#if repos?? && repos?has_content >
+                                <#list repos as repo>
+                                <option value="${repo}">${repo}</option>
+                                </#list>
+                            </#if>
+                        </select>
+                    </div>
+                </div>
                 <div class="b-workspace__content">
                     <div class="b-form__wrapper g-margin-bottom-half">
                         <input type="file" name="file" id="fileinput" />
@@ -21,5 +32,4 @@
                 </div>
             </form>
         </div>
-</div>
 </div>

@@ -13,9 +13,9 @@
 
 <div class="b-workspace__content">
     <div class="b-workspace-content__row">
-        <button id="add_tpl_btn" class="b-btn b-btn_green b-btn_search-field-level">
+        <a href="/templates/upload" class="b-btn b-btn_green b-btn_search-field-level js-colorbox">
             <i class="fa fa-plus"></i> Add Template
-        </button>
+        </a>
         <table id="templates_tbl" class="b-data-table">
             <thead>
             <tr>
@@ -57,7 +57,7 @@
 
         $('li#hdr_templates_tab').addClass("b-tabs-menu__item_active");
 
-        $('#add_tpl_btn').colorbox({href:"#js-add-tpl", inline: true});
+        //$('#add_tpl_btn').colorbox({href:"#js-add-tpl", inline: true});
 
         $('#templates_tbl').DataTable();
     } );
@@ -65,7 +65,6 @@
 
 </script>
 
-<#include "_popup-add-tpl.ftl"/>
 <#include "flashscope.ftl"/>
 
 </@layout.parentLayout>
