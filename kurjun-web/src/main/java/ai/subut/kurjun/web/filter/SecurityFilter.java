@@ -1,7 +1,9 @@
 package ai.subut.kurjun.web.filter;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
 import com.google.inject.Inject;
 
 import ai.subut.kurjun.model.identity.UserSession;
@@ -11,6 +13,7 @@ import ninja.Filter;
 import ninja.FilterChain;
 import ninja.Result;
 import ninja.Results;
+import ninja.session.Session;
 
 
 public class SecurityFilter implements Filter
@@ -23,6 +26,14 @@ public class SecurityFilter implements Filter
     @Override
     public Result filter( final FilterChain filterChain, final Context ctx )
     {
+        Session session = ctx.getSession();
+
+        /*
+        if ( session == null || session.get( USER_SESSION ) == null )
+        {
+            return Results.redirect( "/login" );
+        }
+        */
         try
         {
             UserSession uSession = null;
@@ -40,7 +51,7 @@ public class SecurityFilter implements Filter
             //******************************
             if(uSession != null)
             {
-                ctx.setAttribute( USER_SESSION, uSession );
+                session.put( USER_SESSION, new Gson().toJson( uSession ) );
             }
             //******************************
         }
