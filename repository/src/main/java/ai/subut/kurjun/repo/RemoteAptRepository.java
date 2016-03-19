@@ -77,7 +77,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
     private static final int READ_TIMEOUT = 3000;
 
     private static final int CONN_TIMEOUT_FOR_URL_CHECK = 200;
-    private List<SerializableMetadata> remoteIndexChache;
+    private List<SerializableMetadata> remoteIndexChache = new LinkedList<>(  );
     private String md5Sum = "";
 
 

@@ -50,6 +50,7 @@ public class TemplateController extends BaseController
         if ( repository == null )
         {
             repository = "public";
+            LOGGER.debug( "Repository is not specified. Using public repo: {}", repository );
         }
 
         KurjunFileItem fileItem = ( KurjunFileItem ) file;
@@ -58,13 +59,14 @@ public class TemplateController extends BaseController
         {
             if ( !fileItem.md5().equals( md5 ) )
             {
+                LOGGER.debug( "MD5 mismatch, cleaning up" );
+
                 fileItem.cleanup();
                 return Results.badRequest().render( "MD5 checksum miss match" ).text();
             }
         }
-
         String id = templateManagerService.upload( repository, fileItem.getInputStream() );
-
+        LOGGER.debug( "Saving file. Tempalte ID {}", id );
         String[] temp = id.split( "\\." );
         //temp contains [fprint].[md5]
         if ( temp.length == 2 )
@@ -105,7 +107,7 @@ public class TemplateController extends BaseController
                     return Results.ok().render( defaultTemplate ).json();
             }
         }
-        
+
         return Results.ok().render( defaultTemplate ).json();
     }
 

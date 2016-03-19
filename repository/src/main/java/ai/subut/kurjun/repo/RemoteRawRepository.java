@@ -67,7 +67,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     private final User identity;
 
     private String md5Sum = "";
-    private List<SerializableMetadata> remoteIndexChache;
+    private List<SerializableMetadata> remoteIndexChache = new LinkedList<>(  );
 
     private static final int CONN_TIMEOUT = 3000;
     private static final int READ_TIMEOUT = 3000;

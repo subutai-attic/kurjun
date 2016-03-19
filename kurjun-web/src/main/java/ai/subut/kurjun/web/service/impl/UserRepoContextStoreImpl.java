@@ -46,6 +46,7 @@ public class UserRepoContextStoreImpl implements UserRepoContextStore
     public UserContext removeUserRepoContext( UserContext userRepoContext ) throws IOException
     {
         UserContext removed;
+
         try ( FileDb fileDb = new FileDb( repoFile ) )
         {
             removed = fileDb.remove( MAP_NAME_USER_REPO, makeKey( userRepoContext ) );

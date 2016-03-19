@@ -75,7 +75,8 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     private String token = null;
 
     private String md5Sum = "";
-    private List<SerializableMetadata> remoteIndexChache;
+    private List<SerializableMetadata> remoteIndexChache = new LinkedList<>(  );
+
 
     private static final int CONN_TIMEOUT = 3000;
     private static final int READ_TIMEOUT = 3000;
@@ -96,6 +97,8 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         this.identity = identity;
         this.context = kurjunContext;
         this.token = token;
+
+
         try
         {
             this.url = new URL( url );

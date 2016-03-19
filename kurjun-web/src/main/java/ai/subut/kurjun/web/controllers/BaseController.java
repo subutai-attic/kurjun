@@ -6,7 +6,6 @@ import ninja.FilterWith;
 
 
 @FilterWith( value = SecurityFilter.class)
-
 public class BaseController
 {
 
