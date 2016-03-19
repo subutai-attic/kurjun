@@ -44,7 +44,7 @@
                             <input
                                     class="b-form-input b-form-input_full"
                                     id="subt-input__login"
-                                    name="fingerpring"
+                                    name="fingerprint"
                                     tabindex=1
                                     type="text">
                         </div>
