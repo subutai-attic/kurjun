@@ -27,7 +27,7 @@
             <#if users?? && users?has_content >
                 <#list users as u >
                 <tr>
-                    <td>${u.emailAddress}</td>
+                    <td><#if u.emailAddress??>${u.emailAddress}</#if></td>
                     <td>${u.keyFingerprint}</td>
                 </tr>
                 </#list>

@@ -64,7 +64,7 @@ public class IdentityController extends BaseController {
     }
 
 
-    public Result getUsers()
+    public Result listUsers()
     {
         List<User> users = identityManagerService.getAllUsers();
 

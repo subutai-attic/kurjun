@@ -35,7 +35,7 @@ public class Routes implements ApplicationRoutes
         // -------------------------------------------------------------------------------------------------------------
         //  Home
         // -------------------------------------------------------------------------------------------------------------
-        router.GET().route( "/" ).with( HomeController.class, "homePage" );
+        //router.GET().route( "/" ).with( HomeController.class, "homePage" );
 
         // -------------------------------------------------------------------------------------------------------------
         //  Identity
@@ -43,13 +43,14 @@ public class Routes implements ApplicationRoutes
         router.POST().route( "/login" ).with( IdentityController.class, "authorizeUser" );
         router.GET().route( "/login" ).with( IdentityController.class, "loginPage" );
         router.POST().route( "/users" ).with( IdentityController.class, "createUser" );
-        router.GET().route( "/users" ).with( IdentityController.class, "getUsers" );
+        router.GET().route( "/users" ).with( IdentityController.class, "listUsers" );
         router.POST().route( "/logout" ).with( IdentityController.class, "logout" );
 
         // -------------------------------------------------------------------------------------------------------------
         //  Templates
         // -------------------------------------------------------------------------------------------------------------
-        //router.GET().route( "/templates" ).with( TemplateController.class, "listTemplates" );
+        router.GET().route( "/" ).with( TemplateController.class, "listTemplates" );
+        router.GET().route( "/templates/upload" ).with( TemplateController.class, "getUploadTemplateForm" );
         router.POST().route( "/templates" ).with( TemplateController.class, "uploadTemplate" );
         router.GET().route( "/templates/{id}/info" ).with( TemplateController.class, "getTemplateInfo" );
         router.GET().route( "/templates/{id}/download" ).with( TemplateController.class, "downloadTemplate" );
