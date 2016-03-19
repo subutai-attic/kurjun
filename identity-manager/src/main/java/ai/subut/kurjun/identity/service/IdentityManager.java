@@ -16,10 +16,11 @@ import ai.subut.kurjun.model.identity.UserToken;
  */
 public interface IdentityManager
 {
-   //********************************************
-   RelationManager getRelationManager();
+    //********************************************
+    RelationManager getRelationManager();
 
-   //********************************************
+
+    //********************************************
     UserSession loginPublicUser();
 
 
@@ -40,6 +41,12 @@ public interface IdentityManager
 
 
     //********************************************
+    User getSystemOwner();
+
+    //********************************************
+    User setSystemOwner( String publicKeyASCII );
+
+    //********************************************
     User addUser( String publicKeyASCII );
 
 
@@ -57,6 +64,4 @@ public interface IdentityManager
 
     //********************************************
     boolean hasPermmission( User user, RelationObject relationObject, Permission permission );
-
-
 }

@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.identity.service.IdentityManager;
+import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.web.service.IdentityManagerService;
@@ -74,5 +75,24 @@ public class IdentityManagerServiceImpl implements IdentityManagerService
     {
         return identityManager.loginPublicUser();
     }
+
+
+    //*************************************
+    @Override
+    public User setSystemOwner( String publicKeyASCII )
+    {
+        return identityManager.setSystemOwner( publicKeyASCII );
+    }
+
+
+
+    //*************************************
+    @Override
+    public User getSystemOwner()
+    {
+        return identityManager.getSystemOwner();
+    }
+
+
 
 }

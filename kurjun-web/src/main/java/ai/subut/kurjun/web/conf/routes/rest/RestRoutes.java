@@ -22,6 +22,7 @@ public class RestRoutes implements ApplicationRoutes {
 
     private static final String baseSecurityUrl = baseUrl + "security/";
 
+    private static final String baseRelationUrl = baseUrl + "relation/";
 
     @Override
     public void init(Router router) {
@@ -61,6 +62,14 @@ public class RestRoutes implements ApplicationRoutes {
         router.GET().route( baseIdentityUrl + "user/get" ).with( RestIdentityController.class, "getUser" );
         router.POST().route( baseIdentityUrl + "user/add" ).with( RestIdentityController.class, "addUser" );
         router.POST().route( baseIdentityUrl + "user/auth" ).with( RestIdentityController.class, "authorizeUser" );
+
+        //REST Relation Controller
+        router.POST().route( baseRelationUrl + "owner/set" ).with( RestIdentityController.class, "setRelationOwner" );
+        router.GET().route( baseRelationUrl + "owner/get" ).with( RestIdentityController.class, "getRelationOwner" );
+        router.GET().route( baseRelationUrl + "source/get" ).with( RestIdentityController.class, "getRelationsBySourceId" );
+        router.GET().route( baseRelationUrl + "target/get" ).with( RestIdentityController.class, "getRelationsByTargetId" );
+        router.GET().route( baseRelationUrl + "trust/get" ).with( RestIdentityController.class, "getRelationsByTrustId" );
+
 
         //REST Security Controller
         //router.GET().route( baseSecurityUrl + "keyman" ).with( RestIdentityController.class, "getUsers" );
