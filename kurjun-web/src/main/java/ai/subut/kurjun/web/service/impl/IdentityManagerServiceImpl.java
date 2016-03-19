@@ -16,11 +16,12 @@ import ai.subut.kurjun.web.service.IdentityManagerService;
 /**
  *
  */
-@Singleton
 public class IdentityManagerServiceImpl implements IdentityManagerService
 {
     private IdentityManager identityManager;
     private SecurityManager securityManager;
+
+    private UserSession userSession;
 
     @Inject
     public IdentityManagerServiceImpl(IdentityManager identityManager, SecurityManager securityManager)
@@ -94,5 +95,13 @@ public class IdentityManagerServiceImpl implements IdentityManagerService
     }
 
 
+    @Override
+    public void setUserSession(UserSession userSession) {
+        this.userSession = userSession;
+    }
 
+    @Override
+    public UserSession getUserSession() {
+        return this.userSession;
+    }
 }

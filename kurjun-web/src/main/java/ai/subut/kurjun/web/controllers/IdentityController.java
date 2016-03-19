@@ -2,6 +2,8 @@ package ai.subut.kurjun.web.controllers;
 
 
 import ai.subut.kurjun.model.identity.User;
+import ai.subut.kurjun.model.identity.UserSession;
+import ai.subut.kurjun.web.security.AuthorizedUser;
 import ai.subut.kurjun.web.service.IdentityManagerService;
 import com.google.inject.Inject;
 import ninja.Result;
@@ -47,7 +49,7 @@ public class IdentityController extends BaseController {
         }
     }
 
-    public Result createUser( @Param( "key" ) String publicKey, FlashScope flashScope )
+    public Result createUser( @AuthorizedUser UserSession userSession, @Param( "key" ) String publicKey, FlashScope flashScope )
     {
         User user = identityManagerService.addUser( publicKey );
 
@@ -64,7 +66,7 @@ public class IdentityController extends BaseController {
     }
 
 
-    public Result listUsers()
+    public Result listUsers( @AuthorizedUser UserSession userSession )
     {
         List<User> users = identityManagerService.getAllUsers();
 
@@ -72,7 +74,7 @@ public class IdentityController extends BaseController {
     }
 
 
-    public Result logout()
+    public Result logout( @AuthorizedUser UserSession userSession )
     {
         // TODO: clear session
         return Results.redirect("/login");

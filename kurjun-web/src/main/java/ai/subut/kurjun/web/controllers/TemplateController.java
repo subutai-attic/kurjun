@@ -74,8 +74,8 @@ public class TemplateController extends BaseController {
 
 
     @FileProvider( SubutaiFileHandler.class )
-    public Result uploadTemplate( @Param( "repository" ) String repository, @Param( "file" ) FileItem file,
-                                  @Param( "md5" ) String md5, FlashScope flashScope )
+    public Result uploadTemplate( @AuthorizedUser UserSession userSession, @Param( "repository" ) String repository,
+                                  @Param( "file" ) FileItem file, @Param( "md5" ) String md5, FlashScope flashScope )
     {
         try {
             if ( StringUtils.isBlank( repository ) ) {
@@ -111,7 +111,8 @@ public class TemplateController extends BaseController {
     }
 
 
-    public Result getTemplateInfo(@PathParam( "id" ) String id, @Param( "name" ) String name, @Param( "version" ) String version,
+    public Result getTemplateInfo( @AuthorizedUser UserSession userSession, @PathParam( "id" ) String id,
+                                   @Param( "name" ) String name, @Param( "version" ) String version,
                                   @Param( "md5" ) String md5, @Param( "type" ) String type )
     {
         if ( !StringUtils.isBlank(id) )
@@ -129,7 +130,7 @@ public class TemplateController extends BaseController {
     }
 
 
-    public Result downloadTemplate( @PathParam( "id" ) String id )
+    public Result downloadTemplate( @AuthorizedUser UserSession userSession, @PathParam( "id" ) String id )
     {
         try
         {
@@ -145,7 +146,8 @@ public class TemplateController extends BaseController {
     }
 
 
-    public Result deleteTemplate( @PathParam( "id" ) String id, FlashScope flashScope )
+    public Result deleteTemplate( @AuthorizedUser UserSession userSession, @PathParam( "id" ) String id,
+                                  FlashScope flashScope )
     {
         try
         {
