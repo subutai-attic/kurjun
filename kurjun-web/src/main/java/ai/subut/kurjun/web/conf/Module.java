@@ -5,10 +5,10 @@ import com.google.inject.AbstractModule;
 
 import ai.subut.kurjun.cfparser.ControlFileParserModule;
 import ai.subut.kurjun.common.KurjunPropertiesModule;
+import ai.subut.kurjun.identity.FileDbProviderImpl;
 import ai.subut.kurjun.identity.IdentityManagerImpl;
 import ai.subut.kurjun.identity.RelationManagerImpl;
 import ai.subut.kurjun.identity.service.FileDbProvider;
-import ai.subut.kurjun.identity.FileDbProviderImpl;
 import ai.subut.kurjun.identity.service.IdentityManager;
 import ai.subut.kurjun.identity.service.RelationManager;
 import ai.subut.kurjun.index.PackagesIndexParserModule;
@@ -26,10 +26,12 @@ import ai.subut.kurjun.web.handler.SubutaiFileHandler;
 import ai.subut.kurjun.web.init.KurjunInitializer;
 import ai.subut.kurjun.web.service.IdentityManagerService;
 import ai.subut.kurjun.web.service.RawManagerService;
+import ai.subut.kurjun.web.service.RepositoryService;
 import ai.subut.kurjun.web.service.TemplateManagerService;
 import ai.subut.kurjun.web.service.UserRepoContextStore;
 import ai.subut.kurjun.web.service.impl.IdentityManagerServiceImpl;
 import ai.subut.kurjun.web.service.impl.RawManagerServiceImpl;
+import ai.subut.kurjun.web.service.impl.RepositoryServiceImpl;
 import ai.subut.kurjun.web.service.impl.TemplateManagerServiceImpl;
 import ai.subut.kurjun.web.service.impl.UserRepoContextStoreImpl;
 import com.google.inject.Provides;
@@ -71,6 +73,8 @@ public class Module extends AbstractModule
 
         bind( FileDbProvider.class ).to( FileDbProviderImpl.class );
 
+        bind( RepositoryService.class ).to( RepositoryServiceImpl.class );
+
         bind( RelationManager.class ).to( RelationManagerImpl.class );
 
         bind( IdentityManager.class ).to( IdentityManagerImpl.class );
@@ -78,7 +82,6 @@ public class Module extends AbstractModule
         bind( SecurityManager.class ).to( SecurityManagerImpl.class );
 
         bind( IdentityManagerService.class ).to( IdentityManagerServiceImpl.class );
-
     }
 
     /**

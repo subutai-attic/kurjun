@@ -1,7 +1,6 @@
 package ai.subut.kurjun.web.filter;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.inject.Inject;

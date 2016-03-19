@@ -4,11 +4,14 @@ package ai.subut.kurjun.web.conf.routes.rest;
 import ai.subut.kurjun.web.controllers.rest.RestAliquaController;
 import ai.subut.kurjun.web.controllers.rest.RestAptController;
 import ai.subut.kurjun.web.controllers.rest.RestIdentityController;
+import ai.subut.kurjun.web.controllers.rest.RestRepositoryController;
 import ai.subut.kurjun.web.controllers.rest.RestTemplateController;
 import ninja.Router;
 import ninja.application.ApplicationRoutes;
 
-public class RestRoutes implements ApplicationRoutes {
+
+public class RestRoutes implements ApplicationRoutes
+{
 
     private static final String baseUrl = "/rest/";
 
@@ -22,10 +25,13 @@ public class RestRoutes implements ApplicationRoutes {
 
     private static final String baseSecurityUrl = baseUrl + "security/";
 
+    private static final String baseRepositoryUrl = baseUrl + "repository/";
+
     private static final String baseRelationUrl = baseUrl + "relation/";
 
     @Override
-    public void init(Router router) {
+    public void init( Router router )
+    {
 
         // REST Template Controller
 
@@ -63,6 +69,8 @@ public class RestRoutes implements ApplicationRoutes {
         router.POST().route( baseIdentityUrl + "user/add" ).with( RestIdentityController.class, "addUser" );
         router.POST().route( baseIdentityUrl + "user/auth" ).with( RestIdentityController.class, "authorizeUser" );
 
+        //REST Repository Controller
+        router.GET().route( baseRepositoryUrl + "list" ).with( RestRepositoryController.class, "list" );
         //REST Relation Controller
         router.POST().route( baseRelationUrl + "owner/set" ).with( RestIdentityController.class, "setSystemOwner" );
         router.GET().route( baseRelationUrl + "owner/get" ).with( RestIdentityController.class, "getSystemOwner" );

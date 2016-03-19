@@ -1,6 +1,7 @@
 package ai.subut.kurjun.web.controllers.rest;
 
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +13,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.web.handler.SubutaiFileHandler;
 import ai.subut.kurjun.web.service.impl.AptManagerServiceImpl;
 import ai.subut.kurjun.web.utils.Utils;
 import ninja.Context;
@@ -20,7 +22,6 @@ import ninja.Result;
 import ninja.Results;
 import ninja.params.Param;
 import ninja.params.PathParam;
-import ninja.uploads.DiskFileItemProvider;
 import ninja.uploads.FileItem;
 import ninja.uploads.FileProvider;
 
@@ -38,9 +39,11 @@ public class RestAptController extends BaseController
     private AptManagerServiceImpl managerService;
 
 
-    @FileProvider( DiskFileItemProvider.class )
+    @FileProvider( SubutaiFileHandler.class )
     public Result upload( Context context, @Param( "file" ) FileItem file ) throws IOException
     {
+
+        File filename = file.getFile();
         try ( InputStream inputStream = new FileInputStream( file.getFile() ) )
         {
             URI uri = managerService.upload( inputStream );
@@ -146,9 +149,9 @@ public class RestAptController extends BaseController
 
         if ( success )
         {
-            return Results.ok().text();
+            return Results.ok().render( "Deleted: " + success ).text();
         }
-        return Results.noContent().text();
+        return Results.notFound().render( "Not found: " + md5 ).text();
     }
 
 

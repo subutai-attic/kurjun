@@ -24,7 +24,6 @@ import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.repository.RemoteRepository;
 import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.web.context.ArtifactContext;
-import ai.subut.kurjun.web.model.RepositoryCache;
 import ai.subut.kurjun.web.model.UserContext;
 import ai.subut.kurjun.web.model.UserContextImpl;
 import ai.subut.kurjun.web.service.UserRepoContextStore;
@@ -153,20 +152,6 @@ public class KurjunInitializer
 
         return false;
     }
-
-
-    private void fetch( Set<RemoteRepository> remoteRepository )
-    {
-        for ( RemoteRepository repo : remoteRepository )
-        {
-            Thread thread = new Thread( () -> {
-                artifactContext.store( repo.getHostname(), new RepositoryCache( repo.getMd5(), repo.listPackages() ) );
-            } );
-
-            thread.start();
-        }
-    }
-
 
     private void indexArtifacts()
     {

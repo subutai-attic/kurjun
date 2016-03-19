@@ -226,7 +226,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
                 result.addHeader( "Content-Disposition", "attachment;filename=" + makeTemplateName( metadata ) );
                 result.addHeader( "Contenty-Type", "application/octet-stream" );
-                //result.addHeader( "Content-Length", String.valueOf( metadata.getSize() ) );
+                result.addHeader( "Content-Length", String.valueOf( metadata.getSize() ) );
 
                 ResponseStreams responseStreams = context.finalizeHeaders( result );
 

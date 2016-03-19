@@ -5,8 +5,7 @@ import ai.subut.kurjun.web.filter.SecurityFilter;
 import ninja.FilterWith;
 
 
-@FilterWith( { SecurityFilter.class } )
-
+@FilterWith( value = SecurityFilter.class)
 public class BaseController
 {
 
