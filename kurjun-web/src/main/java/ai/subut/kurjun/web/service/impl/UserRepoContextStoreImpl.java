@@ -6,24 +6,30 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.web.model.UserContext;
 import ai.subut.kurjun.web.service.UserRepoContextStore;
 
+
 @Singleton
 public class UserRepoContextStoreImpl implements UserRepoContextStore
 {
-
     private static final String MAP_NAME_USER_REPO = "user_repo_contexts";
 
-    private final String repoFile;
+    private static final String DB_FILE_LOCATION_NAME = "user.context.path";
+
+    private String repoFile;
 
 
-    public UserRepoContextStoreImpl()
+    @Inject
+    public UserRepoContextStoreImpl( KurjunProperties kurjunProperties )
     {
-        this.repoFile = "kurjun/misc/user_repositories";
+        String fileDbDirectory = kurjunProperties.get( DB_FILE_LOCATION_NAME );
+        this.repoFile = fileDbDirectory;
     }
 
 

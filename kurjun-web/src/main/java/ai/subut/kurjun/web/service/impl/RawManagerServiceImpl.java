@@ -182,6 +182,14 @@ public class RawManagerServiceImpl implements RawManagerService
 
 
     @Override
+    public SerializableMetadata getInfo( final Metadata metadata )
+    {
+
+        return unifiedRepository.getPackageInfo( metadata );
+    }
+
+
+    @Override
     public Metadata put( final File file )
     {
         Metadata metadata = null;
@@ -219,13 +227,20 @@ public class RawManagerServiceImpl implements RawManagerService
         Metadata metadata = null;
         try
         {
-            metadata = localPublicRawRepository.put( file, filename, repository );
+            LocalRawRepository localRawRepository = getLocalPublicRawRepository( new KurjunContext( repository ) );
+            metadata = localRawRepository.put( file, filename, repository );
         }
         catch ( IOException e )
         {
             e.printStackTrace();
         }
         return metadata;
+    }
+
+
+    public LocalRawRepository getLocalPublicRawRepository( KurjunContext context )
+    {
+        return repositoryFactory.createLocalRaw( context );
     }
 
 

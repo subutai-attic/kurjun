@@ -71,6 +71,7 @@ public class RestRoutes implements ApplicationRoutes
 
         //REST Repository Controller
         router.GET().route( baseRepositoryUrl + "list" ).with( RestRepositoryController.class, "list" );
+
         //REST Relation Controller
         router.POST().route( baseRelationUrl + "owner/set" ).with( RestIdentityController.class, "setRelationOwner" );
         router.GET().route( baseRelationUrl + "owner/get" ).with( RestIdentityController.class, "getRelationOwner" );

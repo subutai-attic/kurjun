@@ -1,7 +1,12 @@
 package ai.subut.kurjun.web.conf;
 
 
+import java.util.Properties;
+
+import javax.inject.Singleton;
+
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
 
 import ai.subut.kurjun.cfparser.ControlFileParserModule;
 import ai.subut.kurjun.common.KurjunPropertiesModule;
@@ -34,12 +39,8 @@ import ai.subut.kurjun.web.service.impl.RawManagerServiceImpl;
 import ai.subut.kurjun.web.service.impl.RepositoryServiceImpl;
 import ai.subut.kurjun.web.service.impl.TemplateManagerServiceImpl;
 import ai.subut.kurjun.web.service.impl.UserRepoContextStoreImpl;
-import com.google.inject.Provides;
 import ninja.uploads.FileItemProvider;
 import ninja.utils.NinjaProperties;
-
-import javax.inject.Singleton;
-import java.util.Properties;
 
 
 public class Module extends AbstractModule
@@ -61,9 +62,9 @@ public class Module extends AbstractModule
 
         bind( ArtifactContext.class ).to( GlobalArtifactContext.class );
 
-        bind( KurjunInitializer.class );
-
         bind( UserRepoContextStore.class ).to( UserRepoContextStoreImpl.class );
+
+        bind( KurjunInitializer.class );
 
         bind( TemplateManagerService.class ).to( TemplateManagerServiceImpl.class );
 

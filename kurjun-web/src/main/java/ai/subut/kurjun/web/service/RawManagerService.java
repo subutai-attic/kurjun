@@ -23,6 +23,8 @@ public interface RawManagerService
 
     SerializableMetadata getInfo( byte[] md5 );
 
+    SerializableMetadata getInfo( Metadata metadata );
+
     Metadata put( File file );
 
     Metadata put( File file, String repository );
