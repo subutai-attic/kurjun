@@ -165,4 +165,6 @@ public interface TemplateManagerService extends BaseService
     String md5();
 
     DefaultTemplate getTemplate( TemplateId templateId, String md5, String name, String version );
+
+    boolean downloadTemplates();
 }

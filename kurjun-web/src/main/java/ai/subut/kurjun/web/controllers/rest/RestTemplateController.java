@@ -4,7 +4,6 @@ package ai.subut.kurjun.web.controllers.rest;
 import java.io.IOException;
 import java.util.List;
 
-import ai.subut.kurjun.web.controllers.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +14,7 @@ import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.subutai.TemplateId;
 import ai.subut.kurjun.metadata.common.utils.IdValidators;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.web.controllers.BaseController;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
 import ai.subut.kurjun.web.model.KurjunFileItem;
 import ai.subut.kurjun.web.service.TemplateManagerService;
@@ -100,7 +100,7 @@ public class RestTemplateController extends BaseController
         {
             switch ( type )
             {
-                case "id":
+                case "text":
                     return Results.ok().render( defaultTemplate.getId() ).text();
                 default:
                     return Results.ok().render( defaultTemplate ).json();
