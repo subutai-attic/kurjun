@@ -849,6 +849,56 @@ public class PGPEncryptionUtil
     }
 
 
+    public static ContentAndSignatures getContentAndSignatures( byte[] signedMessage) throws PGPException
+    {
+        try
+        {
+            PGPOnePassSignatureList onePassSignatureList = null;
+            PGPSignatureList signatureList = null;
+            PGPCompressedData compressedData;
+            PGPObjectFactory plainFact = new PGPObjectFactory( signedMessage, new JcaKeyFingerprintCalculator() );
+            Object message = plainFact.nextObject();
+            ByteArrayOutputStream actualOutput = new ByteArrayOutputStream();
+
+            while ( message != null )
+            {
+                if ( message instanceof PGPCompressedData )
+                {
+                    compressedData = ( PGPCompressedData ) message;
+                    plainFact =
+                            new PGPObjectFactory( compressedData.getDataStream(), new JcaKeyFingerprintCalculator() );
+                    message = plainFact.nextObject();
+                }
+
+                if ( message instanceof PGPLiteralData )
+                {
+                    // have to read it and keep it somewhere.
+                    Streams.pipeAll( ( ( PGPLiteralData ) message ).getInputStream(), actualOutput );
+                }
+                else if ( message instanceof PGPOnePassSignatureList )
+                {
+                    onePassSignatureList = ( PGPOnePassSignatureList ) message;
+                }
+                else if ( message instanceof PGPSignatureList )
+                {
+                    signatureList = ( PGPSignatureList ) message;
+                }
+                else
+                {
+                    throw new PGPException( "message unknown message type." );
+                }
+                message = plainFact.nextObject();
+            }
+
+            return new ContentAndSignatures(signedMessage ,onePassSignatureList ,signatureList );
+        }
+        catch ( Exception e )
+        {
+            throw new PGPException( "Error in verify", e );
+        }
+    }
+
+
     public static boolean verify( byte[] signedMessage, PGPPublicKey publicKey ) throws PGPException
     {
         try
@@ -894,7 +944,6 @@ public class PGPEncryptionUtil
             throw new PGPException( "Error in verify", e );
         }
     }
-
 
     public static byte[] sign( byte[] message, PGPSecretKey secretKey, String secretPwd, boolean armor )
             throws PGPException
@@ -1052,6 +1101,81 @@ public class PGPEncryptionUtil
     }
 
 
+    public static boolean verifySign( byte[] signedMessage, PGPPublicKey publicKey) throws PGPException
+    {
+
+        try
+        {
+            ArmoredInputStream aIn = new ArmoredInputStream( new ByteArrayInputStream( signedMessage ) );
+            JcaPGPObjectFactory pgpFact = new JcaPGPObjectFactory( aIn );
+
+            Object message;
+
+            PGPOnePassSignatureList onePassSignatureList = null;
+            PGPSignatureList signatureList = null;
+
+            message = pgpFact.nextObject();
+            ByteArrayOutputStream actualOutput = new ByteArrayOutputStream();
+
+            while ( message != null )
+            {
+                if ( message instanceof PGPOnePassSignatureList )
+                {
+                    onePassSignatureList = ( PGPOnePassSignatureList ) message;
+                }
+                else if ( message instanceof PGPSignatureList )
+                {
+                    signatureList = ( PGPSignatureList ) message;
+                }
+                else
+                {
+                    throw new PGPException( "message unknown message type." );
+                }
+                message = pgpFact.nextObject();
+            }
+            actualOutput.close();
+            byte[] output = actualOutput.toByteArray();
+
+
+            //verify signature
+            if ( onePassSignatureList == null || signatureList == null )
+            {
+                throw new PGPException( "Poor PGP. Signatures not found." );
+            }
+            else
+            {
+
+                for ( int i = 0; i < onePassSignatureList.size(); i++ )
+                {
+                    PGPOnePassSignature ops = onePassSignatureList.get( 0 );
+
+                    if ( publicKey != null )
+                    {
+                        ops.init( new JcaPGPContentVerifierBuilderProvider().setProvider( provider ), publicKey );
+                        ops.update( output );
+                        PGPSignature signature = signatureList.get( i );
+                        if ( ops.verify( signature ) )
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            throw new SignatureException( "Signature verification failed" );
+                        }
+                    }
+                }
+            }
+
+
+            return false;
+        }
+        catch ( Exception e )
+        {
+            throw new PGPException( "Error in Sign verification", e );
+        }
+    }
+
+
     /*
      * verify a clear text signed file
      */
@@ -1085,6 +1209,70 @@ public class PGPEncryptionUtil
 
 
         PGPPublicKey publicKey = pgpRings.getPublicKey( sig.getKeyID() );
+        sig.init( new JcaPGPContentVerifierBuilderProvider().setProvider( "BC" ), publicKey );
+
+        //
+        // read the input, making sure we ignore the last newline.
+        //
+
+        InputStream sigIn = new ByteArrayInputStream( bout.toByteArray() );
+
+        lookAhead = readInputLine( lineOut, sigIn );
+
+        processLine( sig, lineOut.toByteArray() );
+
+        if ( lookAhead != -1 )
+        {
+            do
+            {
+                lookAhead = readInputLine( lineOut, lookAhead, sigIn );
+
+                sig.update( ( byte ) '\r' );
+                sig.update( ( byte ) '\n' );
+
+                processLine( sig, lineOut.toByteArray() );
+            }
+            while ( lookAhead != -1 );
+        }
+
+        sigIn.close();
+
+        return sig.verify();
+    }
+
+    /*
+     * verify a clear text signed file
+     */
+    public static boolean verifyClearSign( byte[] message, PGPPublicKey publicKey ) throws Exception
+    {
+        ArmoredInputStream aIn = new ArmoredInputStream( new ByteArrayInputStream( message ) );
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+
+
+        //
+        // write out signed section using the local line separator.
+        // note: trailing white space needs to be removed from the end of
+        // each line RFC 4880 Section 7.1
+        //
+        ByteArrayOutputStream lineOut = new ByteArrayOutputStream();
+        int lookAhead = readInputLine( lineOut, aIn );
+
+        if ( lookAhead != -1 && aIn.isClearText() )
+        {
+            bout.write( lineOut.toByteArray() );
+            while ( lookAhead != -1 && aIn.isClearText() )
+            {
+                lookAhead = readInputLine( lineOut, lookAhead, aIn );
+                bout.write( lineOut.toByteArray() );
+            }
+        }
+
+        JcaPGPObjectFactory pgpFact = new JcaPGPObjectFactory( aIn );
+        PGPSignatureList p3 = ( PGPSignatureList ) pgpFact.nextObject();
+        PGPSignature sig = p3.get( 0 );
+
+
+        //PGPPublicKey publicKey = pgpRings.getPublicKey( sig.getKeyID() );
         sig.init( new JcaPGPContentVerifierBuilderProvider().setProvider( "BC" ), publicKey );
 
         //

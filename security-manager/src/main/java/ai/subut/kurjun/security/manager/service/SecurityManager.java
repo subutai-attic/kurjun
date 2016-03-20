@@ -5,6 +5,7 @@ import java.io.InputStream;
 
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPublicKey;
+import org.bouncycastle.openpgp.PGPPublicKeyRing;
 
 
 /**
@@ -22,6 +23,7 @@ public interface SecurityManager
 
 
     String generateUUIDRandom();
+
 
     String generateSecurePassword( String passwordToHash, String salt );
 
@@ -44,7 +46,7 @@ public interface SecurityManager
     String getJWTSubject( String token );
 
 
-    boolean verifyPGPSignature( String message, PGPPublicKey pubKey );
+    boolean verifyPGPSignature( String message, PGPPublicKeyRing pubKeyRing );
 
 
     boolean verifyPGPSignature( String message, String pubKeyASCII );
