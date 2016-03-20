@@ -42,7 +42,7 @@ public class IdentityController extends BaseController {
 
         if (user != null)
         {
-            context.setAttribute( SecurityFilter.USER_TOKEN, user.getUserToken().getFullToken() );
+            context.getSession().put( SecurityFilter.USER_SESSION, user.getUserToken().getFullToken() );
             return Results.redirect("/");
         }
         else
@@ -51,6 +51,7 @@ public class IdentityController extends BaseController {
             return Results.redirect("/login");
         }
     }
+
 
     public Result createUser( @AuthorizedUser UserSession userSession, @Param( "key" ) String publicKey, FlashScope flashScope )
     {
