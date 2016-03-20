@@ -22,7 +22,6 @@ import ninja.uploads.FileProvider;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 
-@Singleton
 public class RestAliquaController extends BaseController
 {
 

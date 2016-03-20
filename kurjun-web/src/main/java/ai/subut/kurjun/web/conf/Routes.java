@@ -3,10 +3,8 @@ package ai.subut.kurjun.web.conf;
 
 import ai.subut.kurjun.web.conf.routes.rest.RestRoutes;
 import ai.subut.kurjun.web.controllers.DownloadController;
-import ai.subut.kurjun.web.controllers.HomeController;
 import ai.subut.kurjun.web.controllers.IdentityController;
 import ai.subut.kurjun.web.controllers.TemplateController;
-import ai.subut.kurjun.web.controllers.rest.*;
 import com.google.inject.Inject;
 import ninja.Router;
 import ninja.application.ApplicationRoutes;
@@ -35,7 +33,7 @@ public class Routes implements ApplicationRoutes
         // -------------------------------------------------------------------------------------------------------------
         //  Home
         // -------------------------------------------------------------------------------------------------------------
-        router.GET().route( "/" ).with( HomeController.class, "homePage" );
+        //router.GET().route( "/" ).with( HomeController.class, "homePage" );
 
         // -------------------------------------------------------------------------------------------------------------
         //  Identity
@@ -43,13 +41,16 @@ public class Routes implements ApplicationRoutes
         router.POST().route( "/login" ).with( IdentityController.class, "authorizeUser" );
         router.GET().route( "/login" ).with( IdentityController.class, "loginPage" );
         router.POST().route( "/users" ).with( IdentityController.class, "createUser" );
-        router.GET().route( "/users" ).with( IdentityController.class, "getUsers" );
+        router.GET().route( "/users" ).with( IdentityController.class, "listUsers" );
         router.POST().route( "/logout" ).with( IdentityController.class, "logout" );
+        router.POST().route( "/system/owner" ).with( IdentityController.class, "setSystemOwner");
+        router.GET().route( "/system/owner" ).with( IdentityController.class, "getSystemOwner");
 
         // -------------------------------------------------------------------------------------------------------------
         //  Templates
         // -------------------------------------------------------------------------------------------------------------
-        //router.GET().route( "/templates" ).with( TemplateController.class, "listTemplates" );
+        router.GET().route( "/" ).with( TemplateController.class, "listTemplates" );
+        router.GET().route( "/templates/upload" ).with( TemplateController.class, "getUploadTemplateForm" );
         router.POST().route( "/templates" ).with( TemplateController.class, "uploadTemplate" );
         router.GET().route( "/templates/{id}/info" ).with( TemplateController.class, "getTemplateInfo" );
         router.GET().route( "/templates/{id}/download" ).with( TemplateController.class, "downloadTemplate" );

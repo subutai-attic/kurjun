@@ -71,14 +71,14 @@ public class RestRoutes implements ApplicationRoutes
 
         //REST Repository Controller
         router.GET().route( baseRepositoryUrl + "list" ).with( RestRepositoryController.class, "list" );
-
+/* Ninja can't initialize routes because following controller methods are not exist
         //REST Relation Controller
-//        router.POST().route( baseRelationUrl + "owner/set" ).with( RestIdentityController.class, "setRelationOwner" );
-//        router.GET().route( baseRelationUrl + "owner/get" ).with( RestIdentityController.class, "getRelationOwner" );
-//        router.GET().route( baseRelationUrl + "source/get" ).with( RestIdentityController.class, "getRelationsBySourceId" );
-//        router.GET().route( baseRelationUrl + "target/get" ).with( RestIdentityController.class, "getRelationsByTargetId" );
-//        router.GET().route( baseRelationUrl + "trust/get" ).with( RestIdentityController.class, "getRelationsByTrustId" );
-
+        router.POST().route( baseRelationUrl + "owner/set" ).with( RestIdentityController.class, "setRelationOwner" );
+        router.GET().route( baseRelationUrl + "owner/get" ).with( RestIdentityController.class, "getRelationOwner" );
+        router.GET().route( baseRelationUrl + "source/get" ).with( RestIdentityController.class, "getRelationsBySourceId" );
+        router.GET().route( baseRelationUrl + "target/get" ).with( RestIdentityController.class, "getRelationsByTargetId" );
+        router.GET().route( baseRelationUrl + "trust/get" ).with( RestIdentityController.class, "getRelationsByTrustId" );
+*/
 
         //REST Security Controller
         //router.GET().route( baseSecurityUrl + "keyman" ).with( RestIdentityController.class, "getUsers" );

@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
+import ai.subut.kurjun.model.identity.UserSession;
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -30,7 +31,6 @@ import ninja.utils.ResponseStreams;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 
-@Singleton
 public class RawManagerServiceImpl implements RawManagerService
 {
     private RepositoryFactory repositoryFactory;
@@ -38,6 +38,7 @@ public class RawManagerServiceImpl implements RawManagerService
     private UnifiedRepository unifiedRepository;
     private ArtifactContext artifactContext;
 
+    private UserSession userSession;
 
     @Inject
     public RawManagerServiceImpl( final RepositoryFactory repositoryFactory, final ArtifactContext artifactContext )
@@ -248,5 +249,15 @@ public class RawManagerServiceImpl implements RawManagerService
     public List<SerializableMetadata> list()
     {
         return unifiedRepository.listPackages();
+    }
+
+    @Override
+    public void setUserSession(UserSession userSession) {
+        this.userSession = userSession;
+    }
+
+    @Override
+    public UserSession getUserSession() {
+        return this.userSession;
     }
 }

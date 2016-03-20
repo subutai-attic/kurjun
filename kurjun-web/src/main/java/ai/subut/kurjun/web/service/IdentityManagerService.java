@@ -10,7 +10,7 @@ import ai.subut.kurjun.model.identity.UserSession;
 /**
  *
  */
-public interface IdentityManagerService
+public interface IdentityManagerService extends BaseService
 {
     //*************************************
     List<User> getAllUsers();

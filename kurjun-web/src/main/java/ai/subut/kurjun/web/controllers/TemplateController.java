@@ -4,14 +4,18 @@ package ai.subut.kurjun.web.controllers;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.subutai.TemplateId;
 import ai.subut.kurjun.metadata.common.utils.IdValidators;
+import ai.subut.kurjun.model.identity.UserSession;
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
 import ai.subut.kurjun.web.model.KurjunFileItem;
+import ai.subut.kurjun.web.security.AuthorizedUser;
+import ai.subut.kurjun.web.service.RepositoryService;
 import ai.subut.kurjun.web.service.TemplateManagerService;
+import com.google.gson.Gson;
 import com.google.inject.Inject;
 import ninja.Renderable;
 import ninja.Result;
 import ninja.Results;
-import ninja.exceptions.InternalServerErrorException;
 import ninja.params.Param;
 import ninja.params.PathParam;
 import ninja.session.FlashScope;
@@ -21,8 +25,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class TemplateController extends BaseController {
@@ -32,13 +36,49 @@ public class TemplateController extends BaseController {
     @Inject
     private TemplateManagerService templateManagerService;
 
+    @Inject
+    private RepositoryService repositoryService;
+
+
+    public Result listTemplates( @AuthorizedUser UserSession userSession, FlashScope flashScope )
+    {
+        List<SerializableMetadata> defaultTemplateList = new ArrayList<>();
+        try
+        {
+            String fingerprint = "public";
+            if ( userSession.getUser() != null && StringUtils.isBlank(userSession.getUser().getKeyFingerprint()) )
+            {
+                fingerprint = userSession.getUser().getKeyFingerprint();
+            }
+
+            //LOGGER.info( "token: "+userSession.getUser().getUserToken().getFullToken());
+            LOGGER.info("User session: "+new Gson().toJson( userSession ));
+
+            defaultTemplateList = templateManagerService.list( fingerprint, false );
+        }
+        catch ( IOException e )
+        {
+            flashScope.error( "Failed to get list of templates.");
+            LOGGER.error( "Failed to get list of templates: " + e.getMessage() );
+        }
+
+        return Results.html().template("views/home.ftl").render( "templates", defaultTemplateList );
+    }
+
+
+    public Result getUploadTemplateForm( @AuthorizedUser UserSession userSession )
+    {
+        List<String> repos = repositoryService.getRepositories();
+        return Results.html().template("views/_popup-add-tpl.ftl").render("repos", repos);
+    }
+
 
     @FileProvider( SubutaiFileHandler.class )
-    public Result uploadTemplate( @Param( "repository" ) String repository, @Param( "file" ) FileItem file,
-                                  @Param( "md5" ) String md5, FlashScope flashScope )
+    public Result uploadTemplate( @AuthorizedUser UserSession userSession, @Param( "repository" ) String repository,
+                                  @Param( "file" ) FileItem file, @Param( "md5" ) String md5, FlashScope flashScope )
     {
         try {
-            if (repository == null) {
+            if ( StringUtils.isBlank( repository ) ) {
                 repository = "public";
             }
 
@@ -71,7 +111,8 @@ public class TemplateController extends BaseController {
     }
 
 
-    public Result getTemplateInfo(@PathParam( "id" ) String id, @Param( "name" ) String name, @Param( "version" ) String version,
+    public Result getTemplateInfo( @AuthorizedUser UserSession userSession, @PathParam( "id" ) String id,
+                                   @Param( "name" ) String name, @Param( "version" ) String version,
                                   @Param( "md5" ) String md5, @Param( "type" ) String type )
     {
         if ( !StringUtils.isBlank(id) )
@@ -89,7 +130,7 @@ public class TemplateController extends BaseController {
     }
 
 
-    public Result downloadTemplate( @PathParam( "id" ) String id )
+    public Result downloadTemplate( @AuthorizedUser UserSession userSession, @PathParam( "id" ) String id )
     {
         try
         {
@@ -105,7 +146,8 @@ public class TemplateController extends BaseController {
     }
 
 
-    public Result deleteTemplate( @PathParam( "id" ) String id, FlashScope flashScope )
+    public Result deleteTemplate( @AuthorizedUser UserSession userSession, @PathParam( "id" ) String id,
+                                  FlashScope flashScope )
     {
         try
         {

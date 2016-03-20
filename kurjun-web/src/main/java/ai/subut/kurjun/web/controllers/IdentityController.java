@@ -2,8 +2,12 @@ package ai.subut.kurjun.web.controllers;
 
 
 import ai.subut.kurjun.model.identity.User;
+import ai.subut.kurjun.model.identity.UserSession;
+import ai.subut.kurjun.web.filter.SecurityFilter;
+import ai.subut.kurjun.web.security.AuthorizedUser;
 import ai.subut.kurjun.web.service.IdentityManagerService;
 import com.google.inject.Inject;
+import ninja.Context;
 import ninja.Result;
 import ninja.Results;
 import ninja.params.Param;
@@ -24,7 +28,7 @@ public class IdentityController extends BaseController {
 
 
     //*************************
-    public Result loginPage()
+    public Result loginPage( Context context )
     {
         return Results.html().template("views/login.ftl");
     }
@@ -32,12 +36,13 @@ public class IdentityController extends BaseController {
 
     //*************************
     public Result authorizeUser(@Param( "fingerprint" ) String fingerprint, @Param( "message" ) String message,
-                                FlashScope flashScope )
+                                Context context, FlashScope flashScope )
     {
         User user = identityManagerService.authenticateUser(fingerprint, message);
-        // TODO: create session
+
         if (user != null)
         {
+            context.setAttribute( SecurityFilter.USER_TOKEN, user.getUserToken().getFullToken() );
             return Results.redirect("/");
         }
         else
@@ -47,7 +52,7 @@ public class IdentityController extends BaseController {
         }
     }
 
-    public Result createUser( @Param( "key" ) String publicKey, FlashScope flashScope )
+    public Result createUser( @AuthorizedUser UserSession userSession, @Param( "key" ) String publicKey, FlashScope flashScope )
     {
         User user = identityManagerService.addUser( publicKey );
 
@@ -64,7 +69,7 @@ public class IdentityController extends BaseController {
     }
 
 
-    public Result getUsers()
+    public Result listUsers( @AuthorizedUser UserSession userSession )
     {
         List<User> users = identityManagerService.getAllUsers();
 
@@ -72,11 +77,41 @@ public class IdentityController extends BaseController {
     }
 
 
-    public Result logout()
+    public Result logout( Context context )
     {
-        // TODO: clear session
-        return Results.redirect("/login");
+        context.setAttribute(SecurityFilter.USER_TOKEN, null);
+        return Results.redirect("/");
     }
 
+
+    public Result setSystemOwner( @AuthorizedUser UserSession userSession, @Param( "key" ) String key,
+                                  Context context, FlashScope flashScope )
+    {
+        User user = identityManagerService.setSystemOwner(key);
+
+        if (user != null)
+        {
+            //context.setAttribute( SecurityFilter.USER_TOKEN, user.getUserToken().getFullToken() );
+            flashScope.success("System owner set successfully.");
+        }
+
+        return Results.redirect("/users");
+    }
+
+
+    public Result getSystemOwner( @AuthorizedUser UserSession userSession, Context context, FlashScope flashScope )
+    {
+        User user = identityManagerService.getSystemOwner();
+
+        if (user != null)
+        {
+            LOGGER.info("owner found");
+            return Results.html().template("views/_popup-view-system-owner.ftl").render("sys_owner", user);
+        }
+        else {
+            LOGGER.info("ownwer NOT found");
+            return Results.html().template("views/_popup-view-system-owner.ftl").render("sys_owner", user);
+        }
+    }
 
 }

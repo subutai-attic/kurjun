@@ -198,7 +198,7 @@ public class IdentityManagerImpl implements IdentityManager
         }
         catch ( Exception ex )
         {
-            LOGGER.error( " ***** Error getting user with fingerprint:" + fingerprint, ex );
+            LOGGER.error( " ***** Error getting user with fingerprint:" + fingerprint );
             return null;
         }
     }

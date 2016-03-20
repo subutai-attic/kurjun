@@ -17,7 +17,7 @@ import ai.subut.kurjun.model.repository.LocalRepository;
 import ninja.Renderable;
 
 
-public interface TemplateManagerService
+public interface TemplateManagerService extends BaseService
 {
     /**
      * Gets template info.
