@@ -4,9 +4,11 @@ import java.io.InputStream;
 
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPublicKey;
+import org.bouncycastle.openpgp.PGPPublicKeyRing;
 
 import ai.subut.kurjun.security.manager.service.SecurityManager;
 import ai.subut.kurjun.security.manager.utils.SecurityUtils;
+import ai.subut.kurjun.security.manager.utils.pgp.ContentAndSignatures;
 import ai.subut.kurjun.security.manager.utils.pgp.PGPEncryptionUtil;
 import ai.subut.kurjun.security.manager.utils.pgp.PGPKeyUtil;
 import ai.subut.kurjun.security.manager.utils.token.TokenUtils;
@@ -99,18 +101,20 @@ public class SecurityManagerImpl implements SecurityManager
 
     /*******************************************/
     @Override
-    public boolean verifyPGPSignature(String message, PGPPublicKey pubKey)
+    public boolean verifyPGPSignature( String message, PGPPublicKeyRing pubKeyRing )
     {
         try
         {
             message = message.trim();
-            return PGPEncryptionUtil.verify(message.getBytes(),pubKey  );
+
+            return PGPEncryptionUtil.verifyClearSign( message.getBytes(), pubKeyRing );
         }
-        catch ( PGPException e )
+        catch ( Exception e )
         {
             return false;
         }
     }
+
 
 
     /*******************************************/
@@ -119,10 +123,10 @@ public class SecurityManagerImpl implements SecurityManager
     {
         try
         {
-            PGPPublicKey pubKey = PGPKeyUtil.readPublicKey( pubKeyASCII );
+            PGPPublicKeyRing pubKeyRing = PGPKeyUtil.readPublicKeyRing( pubKeyASCII );
             message = message.trim();
 
-            return verifyPGPSignature( message, pubKey );
+            return verifyPGPSignature( message, pubKeyRing );
         }
         catch ( PGPException e )
         {
