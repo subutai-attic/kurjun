@@ -199,7 +199,7 @@ public class FileDb implements Closeable
 
 
     /**
-     * Associated the key to the given value in a map with supplied name.
+     * Associate the key to the given value in a map with supplied name.
      *
      * @param <T> type of the value
      * @param mapName name of the map to put mapping to

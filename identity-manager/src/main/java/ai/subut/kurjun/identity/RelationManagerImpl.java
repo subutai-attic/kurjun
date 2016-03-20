@@ -1,9 +1,8 @@
 package ai.subut.kurjun.identity;
 
 
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -202,7 +201,19 @@ public class RelationManagerImpl implements RelationManager
     @Override
     public List<Relation> getRelationsByObject( final RelationObject trustObject )
     {
-        return null;
+        try
+        {
+            FileDb fileDb = fileDbProvider.get();
+            Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
+
+            return map.values().parallelStream().filter( r -> r.getTrustObject().equals(trustObject)).collect(Collectors.toList());
+        }
+        catch ( Exception ex )
+        {
+            LOGGER.error( " ***** Failed to get relations by this TrustObject: " + trustObject.getId(), ex );
+        }
+
+        return Collections.emptyList();
     }
 
 
@@ -210,7 +221,19 @@ public class RelationManagerImpl implements RelationManager
     @Override
     public List<Relation> getRelationsBySource( final RelationObject sourceObject )
     {
-        return null;
+        try
+        {
+            FileDb fileDb = fileDbProvider.get();
+            Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
+
+            return map.values().parallelStream().filter( r -> r.getTrustObject().equals(sourceObject)).collect(Collectors.toList());
+        }
+        catch ( Exception ex )
+        {
+            LOGGER.error( " ***** Failed to get relations by this SourceObject: " + sourceObject.getId(), ex );
+        }
+
+        return Collections.emptyList();
     }
 
 
@@ -218,7 +241,19 @@ public class RelationManagerImpl implements RelationManager
     @Override
     public List<Relation> getRelationsByTarget( final RelationObject targetObject )
     {
-        return null;
+        try
+        {
+            FileDb fileDb = fileDbProvider.get();
+            Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
+
+            return map.values().parallelStream().filter( r -> r.getTrustObject().equals(targetObject)).collect(Collectors.toList());
+        }
+        catch ( Exception ex )
+        {
+            LOGGER.error( " ***** Failed to get relations by this TargetObject: " + targetObject.getId(), ex );
+        }
+
+        return Collections.emptyList();
     }
 
 
@@ -226,6 +261,14 @@ public class RelationManagerImpl implements RelationManager
     @Override
     public void removeRelation( final String relationId )
     {
-
+        try
+        {
+            FileDb fileDb = fileDbProvider.get();
+            fileDb.remove( DefaultRelation.MAP_NAME, relationId );
+        }
+        catch ( Exception ex )
+        {
+            LOGGER.error( " ***** Failed to remove this relation: " + relationId, ex );
+        }
     }
 }
