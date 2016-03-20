@@ -12,17 +12,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import ai.subut.kurjun.model.identity.UserSession;
 import org.apache.commons.codec.binary.Hex;
 
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
+import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.Metadata;
@@ -57,6 +56,7 @@ public class AptManagerServiceImpl implements AptManagerService
     private KurjunContext kurjunContext;
 
     private UserSession userSession;
+
 
     @Inject
     public AptManagerServiceImpl( final RepositoryFactory repositoryFactory, final ArtifactContext artifactContext,
@@ -230,10 +230,25 @@ public class AptManagerServiceImpl implements AptManagerService
 
 
     @Override
-    public List<SerializableMetadata> list()
+    public List<SerializableMetadata> list( String repository )
     {
+        List<SerializableMetadata> list;
 
-        List<SerializableMetadata> list = unifiedRepository.listPackages();
+        switch ( repository )
+        {
+            //return local list
+            case "public":
+                list = localRepository.listPackages();
+                break;
+            //return unified repo list
+            case "all":
+                list = unifiedRepository.listPackages();
+                break;
+            //return personal repository list
+            default:
+                list = repositoryFactory.createLocalTemplate( new KurjunContext( repository ) ).listPackages();
+                break;
+        }
 
         return list.stream().map( pkg -> ( DefaultPackageMetadata ) pkg ).collect( Collectors.toList() );
     }
@@ -358,13 +373,17 @@ public class AptManagerServiceImpl implements AptManagerService
         return unifiedRepository.getPackageStream( defaultMetadata );
     }
 
+
     @Override
-    public void setUserSession(UserSession userSession) {
+    public void setUserSession( UserSession userSession )
+    {
         this.userSession = userSession;
     }
 
+
     @Override
-    public UserSession getUserSession() {
+    public UserSession getUserSession()
+    {
         return this.userSession;
     }
 }

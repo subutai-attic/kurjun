@@ -58,7 +58,7 @@ public class RestRoutes implements ApplicationRoutes
         //REST Raw file Controller
         router.GET().route( baseRawUrl + "get" ).with( RestAliquaController.class, "getFile" );
         router.GET().route( baseRawUrl + "md5" ).with( RestAliquaController.class, "md5" );
-        router.GET().route( baseRawUrl + "list" ).with( RestAliquaController.class, "getList" );
+        router.GET().route( baseRawUrl + "list" ).with( RestAliquaController.class, "list" );
         router.GET().route( baseRawUrl + "info" ).with( RestAliquaController.class, "info" );
         router.POST().route( baseRawUrl + "upload" ).with( RestAliquaController.class, "upload" );
         router.DELETE().route( baseRawUrl + "delete" ).with( RestAliquaController.class, "delete" );

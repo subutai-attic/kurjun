@@ -8,11 +8,11 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 
-import ai.subut.kurjun.web.controllers.BaseController;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.web.controllers.BaseController;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
 import ai.subut.kurjun.web.service.impl.AptManagerServiceImpl;
 import ai.subut.kurjun.web.utils.Utils;
@@ -124,9 +124,14 @@ public class RestAptController extends BaseController
     }
 
 
-    public Result list( @Param( "type" ) String type )
+    public Result list( @Param( "type" ) String type, @Param( "repository" ) String repository )
     {
-        List<SerializableMetadata> serializableMetadataList = managerService.list();
+        if ( repository == null )
+        {
+            repository = "all";
+        }
+
+        List<SerializableMetadata> serializableMetadataList = managerService.list( repository );
 
         if ( serializableMetadataList != null )
         {

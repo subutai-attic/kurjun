@@ -2,7 +2,6 @@ package ai.subut.kurjun.web.controllers.rest;
 
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import ai.subut.kurjun.metadata.common.raw.RawMetadata;
 import ai.subut.kurjun.model.metadata.Metadata;
@@ -89,9 +88,14 @@ public class RestAliquaController extends BaseController
     }
 
 
-    public Result getList()
+    public Result list( @Param( "repository" ) String repository )
     {
-        return Results.ok().render( rawManagerService.list() ).json();
+        if ( repository == null )
+        {
+            repository = "all";
+        }
+        
+        return Results.ok().render( rawManagerService.list( repository ) ).json();
     }
 
 

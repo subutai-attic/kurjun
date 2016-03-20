@@ -156,16 +156,16 @@ public class RestTemplateController extends BaseController
     }
 
 
-    public Result list( Context context, @Param( "fingerprint" ) String fingerprint )
+    public Result list( Context context, @Param( "repository" ) String repository )
     {
         try
         {
-            if ( fingerprint == null )
+            if ( repository == null )
             {
-                fingerprint = "public";
+                repository = "all";
             }
 
-            List<SerializableMetadata> defaultTemplateList = templateManagerService.list( fingerprint, false );
+            List<SerializableMetadata> defaultTemplateList = templateManagerService.list( repository, false );
 
             return Results.ok().render( defaultTemplateList ).json();
         }
