@@ -147,6 +147,10 @@ public class IdentityManagerImpl implements IdentityManager
                 UserToken uToken = createUserToken( user, user.getKeyFingerprint(), "", "", null );
                 user.setUserToken( uToken );
 
+                //*************
+                saveUser( user );
+                //*************
+
                 return user;
             }
             else
@@ -283,8 +287,9 @@ public class IdentityManagerImpl implements IdentityManager
                     user = new DefaultUser( securityManager.readPGPKey( publicKeyASCII ) );
                     user.setType( UserType.Regular.getId() );
 
-                    FileDb fileDb = fileDbProvider.get();
-                    fileDb.put( DefaultUser.MAP_NAME, user.getKeyFingerprint().toLowerCase(), user );
+                    //****************
+                    saveUser( user );
+                    //****************
                 }
                 else
                 {
@@ -295,6 +300,25 @@ public class IdentityManagerImpl implements IdentityManager
         catch ( Exception ex )
         {
             LOGGER.error( " ***** Error adding user:", ex );
+            return null;
+        }
+
+        return user;
+    }
+
+
+    //********************************************
+    @Override
+    public User saveUser( User user )
+    {
+        try
+        {
+            FileDb fileDb = fileDbProvider.get();
+            fileDb.put( DefaultUser.MAP_NAME, user.getKeyFingerprint().toLowerCase(), user );
+        }
+        catch ( Exception ex )
+        {
+            LOGGER.error( " ***** Error saving user:", ex );
             return null;
         }
 
