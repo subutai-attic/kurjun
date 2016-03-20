@@ -53,7 +53,7 @@ public class IdentityController extends BaseController {
     }
 
 
-    public Result createUser( @AuthorizedUser UserSession userSession, @Param( "key" ) String publicKey, FlashScope flashScope )
+    public Result createUser(@Param( "key" ) String publicKey, FlashScope flashScope )
     {
         User user = identityManagerService.addUser( publicKey );
 
@@ -70,7 +70,7 @@ public class IdentityController extends BaseController {
     }
 
 
-    public Result listUsers( @AuthorizedUser UserSession userSession )
+    public Result listUsers()
     {
         List<User> users = identityManagerService.getAllUsers();
 
@@ -85,7 +85,7 @@ public class IdentityController extends BaseController {
     }
 
 
-    public Result setSystemOwner( @AuthorizedUser UserSession userSession, @Param( "key" ) String key,
+    public Result setSystemOwner( @Param( "key" ) String key,
                                   Context context, FlashScope flashScope )
     {
         User user = identityManagerService.setSystemOwner(key);
@@ -100,7 +100,7 @@ public class IdentityController extends BaseController {
     }
 
 
-    public Result getSystemOwner( @AuthorizedUser UserSession userSession, Context context, FlashScope flashScope )
+    public Result getSystemOwner( Context context, FlashScope flashScope )
     {
         User user = identityManagerService.getSystemOwner();
 

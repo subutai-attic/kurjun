@@ -2,7 +2,6 @@ package ai.subut.kurjun.web.filter;
 
 
 import com.google.common.base.Strings;
-import com.google.gson.Gson;
 import com.google.inject.Inject;
 
 import ai.subut.kurjun.model.identity.UserSession;
@@ -62,8 +61,9 @@ public class SecurityFilter implements Filter
                 ctx.setAttribute( "USER_SESSION", uSession );
                 //--------------------------------------
 
-                if ( !(result.getRenderable() instanceof NoHttpBody)  /* If not redirecting */
-                        && Result.TEXT_HTML.equals( result.getContentType()) /* handle only html content types */  )
+
+                if ( !(result.getRenderable() instanceof NoHttpBody)  // If not redirecting
+                        && Result.TEXT_HTML.equals( result.getContentType())) //  handle only html content types
                 {
                     result.render( "userInfo", uSession );
                 }

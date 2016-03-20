@@ -1,28 +1,24 @@
 package ai.subut.kurjun.web.security;
 
-import ai.subut.kurjun.identity.DefaultUserSession;
-import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.web.filter.SecurityFilter;
-import com.google.gson.Gson;
 import ninja.Context;
 import ninja.params.ArgumentExtractor;
 
 
-public class AuthorizedUserExtractor implements ArgumentExtractor<UserSession>
+public class AuthorizedUserExtractor implements ArgumentExtractor<String>
 {
     @Override
-    public UserSession extract( Context context )
+    public String extract( Context context )
     {
         String uSessionStr = context.getSession().get(SecurityFilter.USER_SESSION);
-        UserSession userSession = new Gson().fromJson( uSessionStr, DefaultUserSession.class );
-        return userSession;
+        return uSessionStr;
     }
 
 
     @Override
-    public Class<UserSession> getExtractedType()
+    public Class<String> getExtractedType()
     {
-        return UserSession.class;
+        return String.class;
     }
 
 
