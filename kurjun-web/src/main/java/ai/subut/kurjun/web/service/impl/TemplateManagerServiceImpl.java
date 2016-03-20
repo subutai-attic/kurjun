@@ -20,6 +20,7 @@ import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.subutai.TemplateId;
+import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
@@ -258,6 +259,44 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         defaultTemplate.setVersion( version );
 
         return ( DefaultTemplate ) unifiedTemplateRepository.getPackageInfo( defaultTemplate );
+    }
+
+
+    @Override
+    public boolean downloadTemplates()
+    {
+        DefaultTemplate defaultTemplate = new DefaultTemplate();
+        defaultTemplate.setName( "master" );
+        final Metadata[] loaded = new DefaultTemplate[1];
+
+        if ( localPublicTemplateRepository.getPackageInfo( defaultTemplate ) == null )
+        {
+            Thread thread = new Thread( () -> {
+
+                InputStream inputStream = unifiedTemplateRepository.getPackageStream( defaultTemplate );
+
+                if ( inputStream != null )
+                {
+                    try
+                    {
+                        loaded[0] = ( DefaultTemplate ) localPublicTemplateRepository
+                                .put( inputStream, CompressionType.GZIP, "public" );
+                    }
+                    catch ( IOException e )
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            } );
+
+            thread.run();
+
+            if ( loaded[0] instanceof DefaultTemplate )
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
 
