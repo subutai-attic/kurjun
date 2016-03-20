@@ -3,10 +3,8 @@ package ai.subut.kurjun.web.conf;
 
 import ai.subut.kurjun.web.conf.routes.rest.RestRoutes;
 import ai.subut.kurjun.web.controllers.DownloadController;
-import ai.subut.kurjun.web.controllers.HomeController;
 import ai.subut.kurjun.web.controllers.IdentityController;
 import ai.subut.kurjun.web.controllers.TemplateController;
-import ai.subut.kurjun.web.controllers.rest.*;
 import com.google.inject.Inject;
 import ninja.Router;
 import ninja.application.ApplicationRoutes;
@@ -45,6 +43,8 @@ public class Routes implements ApplicationRoutes
         router.POST().route( "/users" ).with( IdentityController.class, "createUser" );
         router.GET().route( "/users" ).with( IdentityController.class, "listUsers" );
         router.POST().route( "/logout" ).with( IdentityController.class, "logout" );
+        router.POST().route( "/system/owner" ).with( IdentityController.class, "setSystemOwner");
+        router.GET().route( "/system/owner" ).with( IdentityController.class, "getSystemOwner");
 
         // -------------------------------------------------------------------------------------------------------------
         //  Templates
