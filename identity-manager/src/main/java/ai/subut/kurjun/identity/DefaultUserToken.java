@@ -25,7 +25,6 @@ public class DefaultUserToken implements UserToken, Serializable
     private Date validDate;
 
 
-
     //***********************************
     @Override
     public String getHeader()

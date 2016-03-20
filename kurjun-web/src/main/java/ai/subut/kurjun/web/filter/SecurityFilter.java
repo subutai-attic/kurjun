@@ -27,22 +27,23 @@ public class SecurityFilter implements Filter
     @Override
     public Result filter( final FilterChain filterChain, final Context ctx )
     {
-        Session session = ctx.getSession();
-        Result result = filterChain.next( ctx );
-        /*
-        if ( session == null || session.get( USER_SESSION ) == null )
-        {
-            return Results.redirect( "/login" );
-        }
-        */
         try
         {
+            Session session = ctx.getSession();
+            Result result = filterChain.next( ctx );
             UserSession uSession = null;
             String sptoken = ctx.getParameter( USER_TOKEN );
 
             if( Strings.isNullOrEmpty(sptoken))
             {
-                uSession = identityManagerService.loginPublicUser();
+                if ( session != null && session.get( USER_SESSION ) != null )
+                {
+                    uSession = identityManagerService.loginUser ("token", session.get( USER_SESSION ));
+                }
+                else
+                {
+                    uSession = identityManagerService.loginPublicUser();
+                }
             }
             else
             {
@@ -52,7 +53,15 @@ public class SecurityFilter implements Filter
             //******************************
             if( uSession != null )
             {
-                session.put( USER_SESSION, new Gson().toJson( uSession ) );
+                //--------------------------------------
+                if(!uSession.equals( "public-user" ))
+                {
+                    session.put( USER_SESSION, uSession.getUserToken().getFullToken() );
+                }
+                //--------------------------------------
+                ctx.setAttribute( "USER_SESSION", uSession );
+                //--------------------------------------
+
                 if ( !(result.getRenderable() instanceof NoHttpBody)  /* If not redirecting */
                         && Result.TEXT_HTML.equals( result.getContentType()) /* handle only html content types */  )
                 {
