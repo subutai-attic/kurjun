@@ -79,6 +79,22 @@ public class IdentityManagerImpl implements IdentityManager
 
     //********************************************
     @Override
+    public User getPublicUser()
+    {
+        return getUser( PUBLIC_USER_ID );
+    }
+
+
+    //********************************************
+    @Override
+    public String getPublicUserId()
+    {
+        return PUBLIC_USER_ID;
+    }
+
+
+    //********************************************
+    @Override
     public UserSession loginPublicUser()
     {
         try
@@ -94,6 +110,7 @@ public class IdentityManagerImpl implements IdentityManager
             return null;
         }
     }
+
 
     //********************************************
     @Override

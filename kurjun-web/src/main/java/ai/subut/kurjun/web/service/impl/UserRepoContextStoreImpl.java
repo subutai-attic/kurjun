@@ -8,7 +8,6 @@ import java.util.Set;
 import ai.subut.kurjun.model.identity.UserSession;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.db.file.FileDb;

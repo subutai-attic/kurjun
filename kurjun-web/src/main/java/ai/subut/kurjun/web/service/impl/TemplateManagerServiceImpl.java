@@ -30,6 +30,7 @@ import ai.subut.kurjun.repo.LocalTemplateRepository;
 import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.web.context.ArtifactContext;
 import ai.subut.kurjun.web.model.UserContextImpl;
+import ai.subut.kurjun.web.service.IdentityManagerService;
 import ai.subut.kurjun.web.service.TemplateManagerService;
 import ai.subut.kurjun.web.utils.Utils;
 import ninja.Context;
@@ -43,6 +44,10 @@ import ninja.utils.ResponseStreams;
 public class TemplateManagerServiceImpl implements TemplateManagerService
 {
 
+    //------------------------------
+    @Inject
+    IdentityManagerService identityManagerService;
+    //------------------------------
 
     private RepositoryFactory repositoryFactory;
     private ArtifactContext artifactContext;

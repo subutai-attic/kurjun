@@ -50,6 +50,9 @@ public interface RelationManager
     Relation getRelation( String relationId );
 
 
+    //********************************************
+    List<Relation> getAllRelations();
+
     //***************************
     List<Relation> getRelationsByObject( RelationObject trustObject );
 

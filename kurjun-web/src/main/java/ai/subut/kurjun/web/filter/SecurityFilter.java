@@ -53,7 +53,7 @@ public class SecurityFilter implements Filter
             if( uSession != null )
             {
                 //--------------------------------------
-                if(!uSession.equals( "public-user" ))
+                if(!uSession.equals( identityManagerService.getPublicUserId()))
                 {
                     session.put( USER_SESSION, uSession.getUserToken().getFullToken() );
                 }
