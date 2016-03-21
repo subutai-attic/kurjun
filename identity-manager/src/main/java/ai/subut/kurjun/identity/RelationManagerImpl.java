@@ -250,15 +250,11 @@ public class RelationManagerImpl implements RelationManager
     {
         try
         {
-            LOGGER.info("============raz");
             FileDb fileDb = fileDbProvider.get();
-            LOGGER.info("============dva");
             Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
-            LOGGER.info("============tri");
             if ( map != null )
             {
                 List<Relation> items = new ArrayList<>( map.values() );
-                LOGGER.info("chetyre");
                 return items;
             }
             else

@@ -8,6 +8,7 @@ import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
 import ai.subut.kurjun.web.model.KurjunFileItem;
+import ai.subut.kurjun.web.service.RelationManagerService;
 import ai.subut.kurjun.web.service.RepositoryService;
 import ai.subut.kurjun.web.service.TemplateManagerService;
 import com.google.inject.Inject;
@@ -26,7 +27,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class TemplateController extends BaseController {
@@ -39,14 +42,17 @@ public class TemplateController extends BaseController {
     @Inject
     private RepositoryService repositoryService;
 
+    @Inject
+    private RelationManagerService relationManagerService;
 
-    public Result listTemplates( Context context, FlashScope flashScope )
+
+    public Result listTemplates( Context context, FlashScope flashScope, @Param("repo") String repo )
     {
         List<SerializableMetadata> defaultTemplateList = new ArrayList<>();
+        Map<String, String> templateRepositories = new HashMap<>();
         try
         {
-            String fingerprint = "public";
-
+            String fingerprint = StringUtils.isBlank(repo)? "public":repo;
             //*****************************************************
             templateManagerService.setUserSession( (UserSession ) context.getAttribute( "USER_SESSION" ) );
             defaultTemplateList = templateManagerService.list( fingerprint, false );
@@ -58,7 +64,8 @@ public class TemplateController extends BaseController {
             LOGGER.error( "Failed to get list of templates: " + e.getMessage() );
         }
 
-        return Results.html().template("views/home.ftl").render( "templates", defaultTemplateList );
+        return Results.html().template("views/home.ftl").render( "templates", defaultTemplateList )
+                .render( "templ_repos", templateRepositories);
     }
 
 
