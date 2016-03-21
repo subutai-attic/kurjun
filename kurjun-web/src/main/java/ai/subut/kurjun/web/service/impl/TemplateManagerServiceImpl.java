@@ -7,12 +7,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ai.subut.kurjun.model.identity.Permission;
+import ai.subut.kurjun.model.identity.Relation;
+import ai.subut.kurjun.model.identity.RelationObjectType;
+import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.identity.UserSession;
+
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -58,6 +65,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     private UnifiedRepository unifiedTemplateRepository;
 
     private UserSession userSession;
+
 
     @Inject
     public TemplateManagerServiceImpl( final RepositoryFactory repositoryFactory,
@@ -160,6 +168,12 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     public String upload( final String repository, final InputStream inputStream ) throws IOException
     {
 
+        // *******CheckRepoOwner ***************
+        relationManagerService
+                .checkRelationOwner( userSession, repository, RelationObjectType.RepositoryTemplate.getId() );
+        //**************************************
+
+
         SubutaiTemplateMetadata metadata =
                 ( SubutaiTemplateMetadata ) getRepo( repository ).put( inputStream, CompressionType.GZIP, repository );
 
@@ -168,6 +182,10 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
             if ( metadata.getMd5Sum() != null )
             {
                 artifactContext.store( metadata.getMd5Sum(), new KurjunContext( repository ) );
+
+                //***** Build Relation ****************
+                //relationManagerService.buildTrustRelation( userSession.getUser(), userSession.getUser()  );
+                //*************************************
             }
         }
 
@@ -399,9 +417,10 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         return metadata.getName() + "_" + metadata.getVersion() + ".tar.gz";
     }
 
+
     @Override
-    public void setUserSession(UserSession userSession) {
+    public void setUserSession( UserSession userSession )
+    {
         this.userSession = userSession;
     }
-
 }

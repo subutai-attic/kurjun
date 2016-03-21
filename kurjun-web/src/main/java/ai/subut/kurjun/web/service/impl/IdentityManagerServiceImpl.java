@@ -47,6 +47,14 @@ public class IdentityManagerServiceImpl implements IdentityManagerService
 
     //*************************************
     @Override
+    public User getPublicUser()
+    {
+        return identityManager.getPublicUser();
+    }
+
+
+    //*************************************
+    @Override
     public User getUser( String userId )
     {
         return identityManager.getUser( userId );

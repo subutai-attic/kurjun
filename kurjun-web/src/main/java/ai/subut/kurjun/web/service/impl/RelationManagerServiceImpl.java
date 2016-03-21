@@ -91,13 +91,93 @@ public class RelationManagerServiceImpl implements RelationManagerService
     }
 
 
+    //*************************************
+    @Override
+    public Relation getRelation( String sourceId, String targetId , String trustObjectId , int trustObjectType)
+    {
+        return relationManager.getRelation( sourceId, targetId, trustObjectId, trustObjectType );
+    }
+
+
+    //*************************************
+    @Override
+    public List<Relation> getRelationsByObject( String trustObjectId, int trustObjectType )
+    {
+        return getRelationsByObject( trustObjectId, trustObjectType );
+    }
+
+
+    //***************************
+    @Override
+    public Relation getObjectOwner( String trustObjectId, int trustObjectType )
+    {
+        return relationManager.getObjectOwner( trustObjectId, trustObjectType );
+    }
+
+
+
+    //***************************
+    @Override
+    public Relation buildTrustRelation( User sourceUser, User targetUser, String trustObjectId, int trustObjectType,
+                                        Set<Permission> permissions )
+    {
+        return relationManager.buildTrustRelation( sourceUser, targetUser, trustObjectId,trustObjectType, permissions );
+    }
+
+
+    //***************************
+    @Override
+    public Set<Permission> buildPermissions( int permLevel )
+    {
+        return relationManager.buildPermissions( permLevel );
+    }
+
+
+    //***************************
+    @Override
+    public void checkRelationOwner( UserSession userSession, String objectId, int objectType )
+    {
+        Relation relation = null;
+        User owner = null;
+        User pubus = null;
+
+        relation = getObjectOwner( objectId, objectType );
+
+        if ( relation == null )
+        {
+            if ( objectId.equals( "public" ) )
+            {
+                owner = identityManagerService.getSystemOwner();
+                pubus = identityManagerService.getPublicUser();
+
+                buildTrustRelation( owner,pubus , objectId, objectType, buildPermissions( 2 ) );
+            }
+            else
+            {
+                owner = userSession.getUser();
+            }
+
+            buildTrustRelation( owner, owner, objectId, objectType, buildPermissions( 4 ) );
+        }
+    }
+
+
+    //***************************
+    @Override
+    public Set<Permission> checkUserPermissions( UserSession userSession, String objectId, int objectType )
+    {
+        return relationManager.getUserPermissions( userSession.getUser() ,objectId ,objectType );
+    }
+
+
+    //*******************************************************************************
     @Override
     public RelationObject toSourceObject( User user )
     {
         if ( user != null )
         {
             RelationObject owner = new DefaultRelationObject();
-            owner.setId( user.getKeyId() );
+            owner.setId( user.getKeyFingerprint() );
             owner.setType( RelationObjectType.User.getId() );
 
             return owner;
@@ -118,7 +198,7 @@ public class RelationManagerServiceImpl implements RelationManagerService
         if ( targetUser != null )
         {
             targetObject = new DefaultRelationObject();
-            targetObject.setId( targetUser.getKeyId() );
+            targetObject.setId( targetUser.getKeyFingerprint() );
             targetObject.setType( RelationObjectType.User.getId() );
         }
 
@@ -151,4 +231,7 @@ public class RelationManagerServiceImpl implements RelationManagerService
 
         return trustObject;
     }
+
+
+
 }
