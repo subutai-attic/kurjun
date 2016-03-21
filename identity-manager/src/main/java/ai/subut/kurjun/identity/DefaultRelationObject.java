@@ -17,7 +17,6 @@ public class DefaultRelationObject implements RelationObject,Serializable
     //*********************
 
     private String id;
-    private String className;
     private int type = RelationObjectType.User.getId();
 
 
@@ -33,21 +32,6 @@ public class DefaultRelationObject implements RelationObject,Serializable
     {
         this.id = id;
     }
-
-
-    @Override
-    public String getClassName()
-    {
-        return className;
-    }
-
-
-    @Override
-    public void setClassName( final String className )
-    {
-        this.className = className;
-    }
-
 
     @Override
     public int getType()

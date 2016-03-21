@@ -40,7 +40,7 @@ public interface IdentityManagerService extends BaseService
 
 
     //*************************************
-    User setSystemOwner( String publicKeyASCII );
+    User setSystemOwner( String fingerprint, String publicKeyASCII );
 
 
     //*************************************
