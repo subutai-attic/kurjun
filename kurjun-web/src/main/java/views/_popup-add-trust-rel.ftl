@@ -16,8 +16,17 @@
             </div>
             <div>
                 <div class="b-form__wrapper">
-                    <label for="template_id" class="b-form-label">Template ID</label>
-                    <input type="text" name="template_id" id="template_id" />
+                    <label><input type="radio" name="trust_obj_type" value="template" checked /> Template</label>
+                    <div id="trust_obj_template">
+                        <label class="b-form-label">Template ID</label>
+                        <input type="text" name="template_id" id="template_id" />
+                    </div>
+
+                    <label><input type="radio" name="trust_obj_type" value="repo" /> Repository</label>
+                    <div id="trust_obj_repo" style="">
+                        <label class="b-form-label">Repo URL</label>
+                        <input type="text" name="repo_url" id="repo_url" />
+                    </div>
                 </div>
             </div>
             <div>

@@ -34,4 +34,18 @@ public enum RelationObjectType
     {
         return id;
     }
+
+    public static RelationObjectType valueOf( int v )
+    {
+        switch ( v )
+        {
+            case 1: return User;
+            case 2: return RepositoryParent;
+            case 3: return RepositoryContent;
+            case 4: return RepositoryTemplate;
+            case 5: return RepositoryApt;
+            case 6: return RepositoryRaw;
+            default: return null;
+        }
+    }
 }

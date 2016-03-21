@@ -23,6 +23,9 @@
             <li id="hdr_relations_tab" class="b-tabs-menu__item">
                 <a href="/relations">Relations</a>
             </li>
+            <li id="hdr_repos_tab" class="b-tabs-menu__item">
+                <a href="/repositories">Repositories</a>
+            </li>
         </ul>
     </div>
 </div>

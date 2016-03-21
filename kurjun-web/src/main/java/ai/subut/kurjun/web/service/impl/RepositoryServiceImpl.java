@@ -2,10 +2,11 @@ package ai.subut.kurjun.web.service.impl;
 
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
+import ai.subut.kurjun.model.identity.RelationObjectType;
 import ai.subut.kurjun.model.identity.UserSession;
+import ai.subut.kurjun.web.service.RelationManagerService;
 import com.google.inject.Inject;
 
 import ai.subut.kurjun.common.service.KurjunProperties;
@@ -18,6 +19,9 @@ public class RepositoryServiceImpl implements RepositoryService
     private UserSession userSession;
 
     @Inject KurjunProperties kurjunProperties;
+
+    @Inject
+    private RelationManagerService relationManagerService;
 
 
     @Override
@@ -39,6 +43,17 @@ public class RepositoryServiceImpl implements RepositoryService
         }
 
         return results;
+    }
+
+    @Override
+    public List<String> getRepositoryList()
+    {
+        List<String> repoList = new ArrayList<>();
+        relationManagerService.getAllRelations().parallelStream().filter(
+                r -> RelationObjectType.RepositoryContent.getId() == r.getTrustObject().getType()
+        ).forEach( r -> repoList.add( r.getTrustObject().getId() ));
+
+        return repoList;
     }
 
     @Override
