@@ -12,6 +12,7 @@ import ninja.Result;
 import ninja.Results;
 import ninja.params.Param;
 import ninja.session.FlashScope;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,7 +86,7 @@ public class IdentityController extends BaseController {
     }
 
 
-    public Result setSystemOwner( @Param( "key" ) String key,
+    public Result setSystemOwner( @Param( "key" ) String key, @Param( "fingerprint" ) String fingerprint,
                                   Context context, FlashScope flashScope )
     {
         User user = identityManagerService.setSystemOwner(key);

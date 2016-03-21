@@ -10,6 +10,12 @@
             <form method="post" action="/system/owner">
                 <div class="b-workspace__content">
                     <div class="b-form__wrapper g-margin-bottom-half">
+                        <label class="b-form-label">Owner Fingerprint</label>
+                        <input type="text" name="fingerprint" class="b-form-input " />
+                    </div>
+                </div>
+                <div class="b-workspace__content">
+                    <div class="b-form__wrapper g-margin-bottom-half">
                         <label class="b-form-label">Owner Public Key</label>
                         <textarea name="key" class="b-form-input b-form-input_full bp-set-pub-key" style="width: 370px; height: 160px"></textarea>
                     </div>
