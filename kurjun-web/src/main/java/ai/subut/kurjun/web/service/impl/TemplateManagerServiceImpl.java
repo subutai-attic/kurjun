@@ -174,22 +174,35 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         //**************************************
 
 
-        SubutaiTemplateMetadata metadata =
-                ( SubutaiTemplateMetadata ) getRepo( repository ).put( inputStream, CompressionType.GZIP, repository );
-
-        if ( metadata != null )
+        //***** Check permissions (WRITE) *****************
+        if ( relationManagerService
+                .checkUserPermissions( userSession, repository, RelationObjectType.RepositoryTemplate.getId() )
+                .contains( Permission.Write ) )
         {
-            if ( metadata.getMd5Sum() != null )
-            {
-                artifactContext.store( metadata.getMd5Sum(), new KurjunContext( repository ) );
+            SubutaiTemplateMetadata metadata = ( SubutaiTemplateMetadata ) getRepo( repository )
+                    .put( inputStream, CompressionType.GZIP, repository );
 
-                //***** Build Relation ****************
-                //relationManagerService.buildTrustRelation( userSession.getUser(), userSession.getUser()  );
-                //*************************************
+            if ( metadata != null )
+            {
+                if ( metadata.getMd5Sum() != null )
+                {
+                    artifactContext.store( metadata.getMd5Sum(), new KurjunContext( repository ) );
+                    String templateId = toId( metadata != null ? metadata.getMd5Sum() : new byte[0], repository );
+
+                    //***** Build Relation ****************
+                    relationManagerService.buildTrustRelation( userSession.getUser(), userSession.getUser(), templateId,
+                            RelationObjectType.RepositoryContent.getId(),
+                            relationManagerService.buildPermissions( 4 ) );
+                    //*************************************
+
+                    return templateId;
+                }
             }
         }
-
-        return toId( metadata != null ? metadata.getMd5Sum() : new byte[0], repository );
+        else
+        {
+            return null;
+        }
     }
 
 
