@@ -98,7 +98,6 @@ public class RelationManagerServiceImpl implements RelationManagerService
         {
             RelationObject owner = new DefaultRelationObject();
             owner.setId( user.getKeyId() );
-            owner.setClassName( user.getClass().getName() );
             owner.setType( RelationObjectType.User.getId() );
 
             return owner;
@@ -120,7 +119,6 @@ public class RelationManagerServiceImpl implements RelationManagerService
         {
             targetObject = new DefaultRelationObject();
             targetObject.setId( targetUser.getKeyId() );
-            targetObject.setClassName( targetUser.getClass().getName() );
             targetObject.setType( RelationObjectType.User.getId() );
         }
 
@@ -148,7 +146,6 @@ public class RelationManagerServiceImpl implements RelationManagerService
         {
             trustObject = new DefaultRelationObject();
             trustObject.setId( defaultTemplate.getId().toString() );
-            trustObject.setClassName( defaultTemplate.getClass().getName() );
             trustObject.setType( RelationObjectType.RepositoryContent.getId() );
         }
 

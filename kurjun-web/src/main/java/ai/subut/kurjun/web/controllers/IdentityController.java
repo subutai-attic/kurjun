@@ -2,9 +2,7 @@ package ai.subut.kurjun.web.controllers;
 
 
 import ai.subut.kurjun.model.identity.User;
-import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.web.filter.SecurityFilter;
-import ai.subut.kurjun.web.security.AuthorizedUser;
 import ai.subut.kurjun.web.service.IdentityManagerService;
 import com.google.inject.Inject;
 import ninja.Context;
@@ -12,7 +10,6 @@ import ninja.Result;
 import ninja.Results;
 import ninja.params.Param;
 import ninja.session.FlashScope;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,11 +86,10 @@ public class IdentityController extends BaseController {
     public Result setSystemOwner( @Param( "key" ) String key, @Param( "fingerprint" ) String fingerprint,
                                   Context context, FlashScope flashScope )
     {
-        User user = identityManagerService.setSystemOwner(key);
+        User user = identityManagerService.setSystemOwner(fingerprint, key);
 
         if (user != null)
         {
-            //context.setAttribute( SecurityFilter.USER_TOKEN, user.getUserToken().getFullToken() );
             flashScope.success("System owner set successfully.");
         }
 

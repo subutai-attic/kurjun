@@ -87,9 +87,9 @@ public class IdentityManagerServiceImpl implements IdentityManagerService
 
     //*************************************
     @Override
-    public User setSystemOwner( String publicKeyASCII )
+    public User setSystemOwner( String fingerprint, String publicKeyASCII )
     {
-        return identityManager.setSystemOwner( publicKeyASCII );
+        return identityManager.setSystemOwner( fingerprint, publicKeyASCII );
     }
 
 
@@ -101,6 +101,7 @@ public class IdentityManagerServiceImpl implements IdentityManagerService
     }
 
 
+    //*************************************
     @Override
     public void setUserSession( final UserSession userSession )
     {

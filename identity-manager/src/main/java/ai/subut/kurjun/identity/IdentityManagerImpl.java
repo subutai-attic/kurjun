@@ -261,11 +261,34 @@ public class IdentityManagerImpl implements IdentityManager
 
     //********************************************
     @Override
-    public User setSystemOwner( String publicKeyASCII )
+    public User setSystemOwner( String fingerprint, String publicKeyASCII )
     {
+
         if(getSystemOwner() == null)
         {
-            return addUser( publicKeyASCII, UserType.RegularOwner.getId() );
+            User user = null;
+
+            if(Strings.isNullOrEmpty( fingerprint))
+            {
+                user = addUser( publicKeyASCII, UserType.RegularOwner.getId() );
+            }
+            else
+            {
+                user = getUser( fingerprint );
+
+                if(user != null)
+                {
+                    user.setType( UserType.RegularOwner.getId() );
+                    saveUser( user );
+                }
+                else
+                {
+                    LOGGER.info( " ***** System Owner is not set, user not found with fingeprint:" + fingerprint);
+                }
+            }
+
+            return user;
+
         }
         else
         {

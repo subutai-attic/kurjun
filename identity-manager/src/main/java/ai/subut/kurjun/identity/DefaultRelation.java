@@ -9,6 +9,8 @@ import java.util.UUID;
 import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.model.identity.Permission;
 import ai.subut.kurjun.model.identity.RelationObject;
+import ai.subut.kurjun.model.identity.RelationObjectType;
+import ai.subut.kurjun.model.identity.RelationType;
 
 
 /**
@@ -26,6 +28,7 @@ public class DefaultRelation implements Relation, Serializable
     private RelationObject source;
     private RelationObject target;
     private RelationObject trustObject;
+    private int type = RelationType.Owner.getId();
 
     private Set<Permission> permissions = EnumSet.noneOf( Permission.class );
 
@@ -97,4 +100,17 @@ public class DefaultRelation implements Relation, Serializable
         this.trustObject = trustObject;
     }
 
+
+    @Override
+    public int getType()
+    {
+        return type;
+    }
+
+
+    @Override
+    public void setType( final int type )
+    {
+        this.type = type;
+    }
 }

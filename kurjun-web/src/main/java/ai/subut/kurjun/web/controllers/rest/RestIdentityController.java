@@ -90,9 +90,9 @@ public class RestIdentityController extends BaseController
 
 
     //*************************
-    public Result setSystemOwner(@Param( "key" ) String key, FlashScope flashScope )
+    public Result setSystemOwner(@Param( "fingerprint" ) String fingerprint, @Param( "key" ) String key, FlashScope flashScope )
     {
-        User user = identityManagerService.setSystemOwner(key);
+        User user = identityManagerService.setSystemOwner(fingerprint,key);
 
         if (user != null)
         {
