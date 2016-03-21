@@ -41,6 +41,7 @@ public class DefaultUser implements User, Serializable
     //*************************
     public DefaultUser()
     {
+        this.date = new Date(System.currentTimeMillis());
         this.setUserToken( null );
     }
 
@@ -76,6 +77,14 @@ public class DefaultUser implements User, Serializable
         {
 
         }
+    }
+
+
+    //*************************
+    @Override
+    public void setKeyId( final String keyId )
+    {
+        this.keyId = keyId;
     }
 
 
