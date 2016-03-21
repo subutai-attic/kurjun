@@ -4,6 +4,7 @@ package ai.subut.kurjun.web.conf;
 import ai.subut.kurjun.web.conf.routes.rest.RestRoutes;
 import ai.subut.kurjun.web.controllers.DownloadController;
 import ai.subut.kurjun.web.controllers.IdentityController;
+import ai.subut.kurjun.web.controllers.RelationController;
 import ai.subut.kurjun.web.controllers.TemplateController;
 import com.google.inject.Inject;
 import ninja.Router;
@@ -56,5 +57,13 @@ public class Routes implements ApplicationRoutes
         router.GET().route( "/templates/{id}/download" ).with( TemplateController.class, "downloadTemplate" );
         router.POST().route( "/templates/{id}" ).with( TemplateController.class, "deleteTemplate" );
 
+        // -------------------------------------------------------------------------------------------------------------
+        //  Relations
+        // -------------------------------------------------------------------------------------------------------------
+        router.POST().route( "/relations/trust" ).with( RelationController.class, "addTrustRelation" );
+        router.GET().route( "/relations" ).with( RelationController.class, "getRelations" );
+        router.GET().route( "/relations/source" ).with( RelationController.class, "getRelationsByOwner" );
+        router.GET().route( "/relations/target" ).with( RelationController.class, "getRelationsByTarget" );
+        router.GET().route( "/relations/object" ).with( RelationController.class, "getRelationsByObject" );
     }
 }

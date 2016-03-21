@@ -100,8 +100,4 @@ public class IdentityManagerServiceImpl implements IdentityManagerService
         this.userSession = userSession;
     }
 
-    @Override
-    public UserSession getUserSession() {
-        return this.userSession;
-    }
 }
