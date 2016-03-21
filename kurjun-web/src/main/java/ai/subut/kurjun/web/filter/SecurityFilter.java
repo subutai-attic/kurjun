@@ -26,8 +26,8 @@ public class SecurityFilter implements Filter
     @Override
     public Result filter( final FilterChain filterChain, final Context ctx )
     {
-        try
-        {
+        //try
+        //{
             Session session = ctx.getSession();
             Result result = filterChain.next( ctx );
             UserSession uSession = null;
@@ -73,11 +73,11 @@ public class SecurityFilter implements Filter
                 }
             }
             //******************************
-        }
+        /*}
         catch(Exception ex)
         {
             return Results.forbidden().render( "Not allowed" ).text();
-        }
+        }*/
 
         return filterChain.next( ctx );
     }

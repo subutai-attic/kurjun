@@ -75,7 +75,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     private String token = null;
 
     private String md5Sum = "";
-    private List<SerializableMetadata> remoteIndexChache = new LinkedList<>(  );
+    private List<SerializableMetadata> remoteIndexChache = new LinkedList<>();
 
 
     private static final int CONN_TIMEOUT = 3000;
@@ -231,9 +231,11 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         {
             return this.remoteIndexChache;
         }
+        Map<String, String> params = makeParamsMap( new DefaultMetadata() );
+        params.put( "repository", "public" );
 
-        WebClient webClient =
-                webClientFactory.make( this, TEMPLATE_PATH + "/" + LIST_PATH, makeParamsMap( new DefaultMetadata() ) );
+        //get only public Kurjun local packages
+        WebClient webClient = webClientFactory.make( this, TEMPLATE_PATH + "/" + LIST_PATH, params );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );

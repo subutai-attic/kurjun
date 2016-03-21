@@ -8,11 +8,11 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 
-import ai.subut.kurjun.web.controllers.BaseController;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.web.controllers.BaseController;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
 import ai.subut.kurjun.web.service.impl.AptManagerServiceImpl;
 import ai.subut.kurjun.web.utils.Utils;
@@ -24,8 +24,6 @@ import ninja.params.Param;
 import ninja.params.PathParam;
 import ninja.uploads.FileItem;
 import ninja.uploads.FileProvider;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 
 /**
@@ -54,7 +52,7 @@ public class RestAptController extends BaseController
 
     public Result release( Context context, @PathParam( "release" ) String release )
     {
-        checkNotNull( release, "Release cannot be null" );
+//        checkNotNull( release, "Release cannot be null" );
 
         String rel = managerService.getRelease( release, null, null );
 
@@ -71,10 +69,10 @@ public class RestAptController extends BaseController
                                   @PathParam( "component" ) String component, @PathParam( "arch" ) String arch,
                                   @PathParam( "packages" ) String packagesIndex )
     {
-        checkNotNull( release, "Release cannot be null" );
-        checkNotNull( component, "Component cannot be null" );
-        checkNotNull( arch, "Arch cannot be null" );
-        checkNotNull( packagesIndex, "Package Index cannot be null" );
+//        checkNotNull( release, "Release cannot be null" );
+//        checkNotNull( component, "Component cannot be null" );
+//        checkNotNull( arch, "Arch cannot be null" );
+//        checkNotNull( packagesIndex, "Package Index cannot be null" );
 
         Renderable renderable = managerService.getPackagesIndex( release, component, arch, packagesIndex );
 
@@ -84,7 +82,7 @@ public class RestAptController extends BaseController
 
     public Result getPackageByFileName( Context context, @PathParam( "filename" ) String filename )
     {
-        checkNotNull( filename, "File name cannot be null" );
+//        checkNotNull( filename, "File name cannot be null" );
 
         Renderable renderable = managerService.getPackageByFilename( filename );
 
@@ -112,7 +110,7 @@ public class RestAptController extends BaseController
 
     public Result download( Context context, @Param( "md5" ) String md5 )
     {
-        checkNotNull( md5, "MD5 cannot be null" );
+//        checkNotNull( md5, "MD5 cannot be null" );
 
         Renderable renderable = managerService.getPackage( Utils.MD5.toByteArray( md5 ) );
 
@@ -124,17 +122,22 @@ public class RestAptController extends BaseController
     }
 
 
-    public Result list( @Param( "type" ) String type )
+    public Result list( @Param( "type" ) String type, @Param( "repository" ) String repository )
     {
-        List<SerializableMetadata> serializableMetadataList = managerService.list();
+        if ( repository == null )
+        {
+            repository = "all";
+        }
+
+        List<SerializableMetadata> serializableMetadataList = managerService.list( repository );
 
         if ( serializableMetadataList != null )
         {
-            if ( type != null && type.equals( "json" ) )
+            if ( type != null && type.equals( "text" ) )
             {
-                return Results.ok().render( serializableMetadataList ).json();
+                return Results.ok().render( serializableMetadataList ).text();
             }
-            return Results.ok().render( serializableMetadataList ).text();
+            return Results.ok().render( serializableMetadataList ).json();
         }
 
         return Results.text();
@@ -143,7 +146,7 @@ public class RestAptController extends BaseController
 
     public Result delete( Context context, @Param( "md5" ) String md5 )
     {
-        checkNotNull( md5, "MD5 cannot be null" );
+//        checkNotNull( md5, "MD5 cannot be null" );
 
         boolean success = managerService.delete( Utils.MD5.toByteArray( md5 ) );
 

@@ -2,10 +2,7 @@ package ai.subut.kurjun.web.conf;
 
 
 import ai.subut.kurjun.web.conf.routes.rest.RestRoutes;
-import ai.subut.kurjun.web.controllers.DownloadController;
-import ai.subut.kurjun.web.controllers.IdentityController;
-import ai.subut.kurjun.web.controllers.RelationController;
-import ai.subut.kurjun.web.controllers.TemplateController;
+import ai.subut.kurjun.web.controllers.*;
 import com.google.inject.Inject;
 import ninja.Router;
 import ninja.application.ApplicationRoutes;
@@ -65,5 +62,12 @@ public class Routes implements ApplicationRoutes
         router.GET().route( "/relations/source" ).with( RelationController.class, "getRelationsByOwner" );
         router.GET().route( "/relations/target" ).with( RelationController.class, "getRelationsByTarget" );
         router.GET().route( "/relations/object" ).with( RelationController.class, "getRelationsByObject" );
+
+        // -------------------------------------------------------------------------------------------------------------
+        //  Repositories
+        // -------------------------------------------------------------------------------------------------------------
+        router.POST().route( "/repositories/add" ).with( RepositoryController.class, "addRepo" );
+        router.GET().route( "/repositories" ).with( RepositoryController.class, "getRepoList" );
+        router.GET().route( "/repositories/{id}" ).with( RepositoryController.class, "getRepo" );
     }
 }

@@ -30,6 +30,7 @@ public class RestRoutes implements ApplicationRoutes
 
     private static final String baseRelationsUrl = baseUrl + "relations/";
 
+
     @Override
     public void init( Router router )
     {
@@ -45,10 +46,10 @@ public class RestRoutes implements ApplicationRoutes
 
         //REST APT Controller
         router.GET().route( baseDebUrl + "dists/{release}/Release" ).with( RestAptController.class, "release" );
-        router.GET()
-                .route( baseDebUrl + "dists/{release}/{component}/{arch: binary-\\w+}/{packages: Packages(\\.\\w+)?}" )
-                .with( RestAptController.class, "packageIndexes" );
-        router.GET().route( baseDebUrl + "pool/{filename: .+}" ).with( RestAptController.class, "getPackageByFileName" );
+        router.GET().route( baseDebUrl + "dists/{release}/{component}/{arch}/{packages}" )
+              .with( RestAptController.class, "packageIndexes" );
+        router.GET().route( baseDebUrl + "pool/{filename: .+}" )
+              .with( RestAptController.class, "getPackageByFileName" );
         router.GET().route( baseDebUrl + "info" ).with( RestAptController.class, "info" );
         router.GET().route( baseDebUrl + "md5" ).with( RestAptController.class, "md5" );
         router.GET().route( baseDebUrl + "get" ).with( RestAptController.class, "download" );
@@ -59,7 +60,7 @@ public class RestRoutes implements ApplicationRoutes
         //REST Raw file Controller
         router.GET().route( baseRawUrl + "get" ).with( RestAliquaController.class, "getFile" );
         router.GET().route( baseRawUrl + "md5" ).with( RestAliquaController.class, "md5" );
-        router.GET().route( baseRawUrl + "list" ).with( RestAliquaController.class, "getList" );
+        router.GET().route( baseRawUrl + "list" ).with( RestAliquaController.class, "list" );
         router.GET().route( baseRawUrl + "info" ).with( RestAliquaController.class, "info" );
         router.POST().route( baseRawUrl + "upload" ).with( RestAliquaController.class, "upload" );
         router.DELETE().route( baseRawUrl + "delete" ).with( RestAliquaController.class, "delete" );
@@ -80,11 +81,16 @@ public class RestRoutes implements ApplicationRoutes
         router.GET().route( baseRelationsUrl + "owner/get" ).with( RestIdentityController.class, "getSystemOwner" );
         router.GET().route( baseRelationsUrl + "list" ).with( RestRelationController.class, "getAllRelations" );
         router.PUT().route( baseRelationsUrl + "trust" ).with( RestRelationController.class, "addTrustRelation" );
-        router.GET().route( baseRelationsUrl + "source/{fingerprint}" ).with( RestRelationController.class, "getRelationsByOwner" );
-        router.GET().route( baseRelationsUrl + "target/{fingerprint}" ).with( RestRelationController.class, "getRelationsByTarget" );
-        router.GET().route( baseRelationsUrl + "object/{id}" ).with( RestRelationController.class, "getRelationsByObject" );
-        //router.GET().route( baseRelationUrl + "target/get" ).with( RestIdentityController.class, "getRelationsByTargetId" );
-        //router.GET().route( baseRelationUrl + "trust/get" ).with( RestIdentityController.class, "getRelationsByTrustId" );
+        router.GET().route( baseRelationsUrl + "source/{fingerprint}" )
+              .with( RestRelationController.class, "getRelationsByOwner" );
+        router.GET().route( baseRelationsUrl + "target/{fingerprint}" )
+              .with( RestRelationController.class, "getRelationsByTarget" );
+        router.GET().route( baseRelationsUrl + "object/{id}" )
+              .with( RestRelationController.class, "getRelationsByObject" );
+        //router.GET().route( baseRelationUrl + "target/get" ).with( RestIdentityController.class,
+        // "getRelationsByTargetId" );
+        //router.GET().route( baseRelationUrl + "trust/get" ).with( RestIdentityController.class,
+        // "getRelationsByTrustId" );
 
 
         //REST Security Controller

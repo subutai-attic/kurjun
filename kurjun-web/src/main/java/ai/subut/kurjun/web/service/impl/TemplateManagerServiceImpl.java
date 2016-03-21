@@ -7,27 +7,20 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ai.subut.kurjun.model.identity.Permission;
-import ai.subut.kurjun.model.identity.Relation;
-import ai.subut.kurjun.model.identity.RelationObjectType;
-import ai.subut.kurjun.model.identity.User;
-import ai.subut.kurjun.model.identity.UserSession;
-
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.subutai.TemplateId;
+import ai.subut.kurjun.model.identity.RelationObjectType;
+import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
@@ -146,13 +139,17 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     @Override
     public List<SerializableMetadata> list( final String repository, final boolean isKurjunClient ) throws IOException
     {
-        if ( repository.equalsIgnoreCase( "public" ) )
+        switch ( repository )
         {
-            return unifiedTemplateRepository.listPackages();
-        }
-        else
-        {
-            return repositoryFactory.createLocalTemplate( new KurjunContext( repository ) ).listPackages();
+            //return local list
+            case "public":
+                return localPublicTemplateRepository.listPackages();
+            //return unified repo list
+            case "all":
+                return unifiedTemplateRepository.listPackages();
+            //return personal repository list
+            default:
+                return repositoryFactory.createLocalTemplate( new KurjunContext( repository ) ).listPackages();
         }
     }
 
@@ -229,9 +226,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     {
         LocalTemplateRepository repository = ( LocalTemplateRepository ) getRepo( tid.getOwnerFprint() );
 
-        boolean success = repository.delete( tid.get(), Utils.MD5.toByteArray( tid.getMd5() ) );
-
-        return success;
+        return repository.delete( tid.get(), Utils.MD5.toByteArray( tid.getMd5() ) );
     }
 
 
@@ -307,6 +302,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     {
         DefaultTemplate defaultTemplate = new DefaultTemplate();
         defaultTemplate.setName( "master" );
+
         final Metadata[] loaded = new DefaultTemplate[1];
 
         if ( localPublicTemplateRepository.getPackageInfo( defaultTemplate ) == null )

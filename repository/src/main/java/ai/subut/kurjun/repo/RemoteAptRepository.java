@@ -77,7 +77,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
     private static final int READ_TIMEOUT = 3000;
 
     private static final int CONN_TIMEOUT_FOR_URL_CHECK = 200;
-    private List<SerializableMetadata> remoteIndexChache = new LinkedList<>(  );
+    private List<SerializableMetadata> remoteIndexChache = new LinkedList<>();
     private String md5Sum = "";
 
 
@@ -134,7 +134,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
     public Set<ReleaseFile> getDistributions()
     {
 
-        WebClient webClient = webClientFactory.make( this, "/" + DEB_PATH + RELEASE_PATH, null );
+        WebClient webClient = webClientFactory.make( this, "/" + DEB_PATH +  RELEASE_PATH, null );
 
         Response resp = doGet( webClient );
         if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
@@ -191,7 +191,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
 
         DefaultPackageMetadata pm = gson.fromJson( m.serialize(), DefaultPackageMetadata.class );
 
-        WebClient webClient = webClientFactory.make( this, "/" + DEB_PATH + pm.getFilename(), null );
+        WebClient webClient = webClientFactory.make( this, "/" + DEB_PATH + "/" + pm.getFilename(), null );
 
         Response resp = doGet( webClient );
         if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
@@ -223,10 +223,10 @@ class RemoteAptRepository extends RemoteRepositoryBase
     @Override
     public List<SerializableMetadata> listPackages()
     {
-        if ( this.md5Sum.equalsIgnoreCase( getMd5() ) )
-        {
-            return this.remoteIndexChache;
-        }
+//        if ( this.md5Sum.equalsIgnoreCase( getMd5() ) )
+//        {
+//            return this.remoteIndexChache;
+//        }
 
         List<SerializableMetadata> result = new LinkedList<>();
         Set<ReleaseFile> distributions = getDistributions();

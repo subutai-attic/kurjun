@@ -113,6 +113,10 @@
       <scope>test</scope>
       <exclusions>
         <exclusion>
+          <artifactId>ninja-standalone</artifactId>
+          <groupId>org.ninjaframework</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>mockito-core</artifactId>
           <groupId>org.mockito</groupId>
         </exclusion>
@@ -131,6 +135,18 @@
         <exclusion>
           <artifactId>doctest</artifactId>
           <groupId>com.devbliss.doctest</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>1.7.12</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>log4j</artifactId>
+          <groupId>log4j</groupId>
         </exclusion>
       </exclusions>
     </dependency>
