@@ -40,10 +40,9 @@ public class RelationController extends BaseController {
 
     public Result getRelations( /*@AuthorizedUser UserSession userSession,*/ Context context, Session session )
     {
-
+        UserSession userSession = (UserSession ) context.getAttribute( "USER_SESSION" );
         return Results.html().template("views/relations.ftl").render( "relations",
-                relationManagerService.getTrustRelationsBySource(
-                        relationManagerService.toSourceObject( identityManagerService.loginPublicUser().getUser() ) ) ) ;
+                relationManagerService.getAllRelations());
     }
 
     public Result getRelationsByOwner( /*@AuthorizedUser UserSession userSession,*/ @Param( "fingerprint" ) String fingerprint )
@@ -55,9 +54,10 @@ public class RelationController extends BaseController {
                 ) );
     }
 
-    public Result getRelationsByTarget( /*@AuthorizedUser UserSession userSession,*/ @PathParam( "fingerprint" ) String fingerprint )
+    public Result getRelationsByTarget( /*@AuthorizedUser UserSession userSession,*/ @Param( "fingerprint" ) String fingerprint )
     {
-        return Results.html().template("vies/relations.ftl").render( "relations",
+        LOGGER.info("fprint: "+fingerprint);
+        return Results.html().template("views/relations.ftl").render( "relations",
                 relationManagerService.getTrustRelationsByTarget(
                         relationManagerService.toTargetObject(fingerprint) ) );
     }
@@ -73,9 +73,18 @@ public class RelationController extends BaseController {
 
     public Result addTrustRelation( /*@AuthorizedUser UserSession userSession,*/ @Param( "target_fprint" ) String targetFprint,
                                    @Param( "template_id" ) String templateId, @Params( "permission" ) String[] permissions,
-                                   FlashScope flashScope )
+                                   Context context, FlashScope flashScope )
     {
-        RelationObject owner = relationManagerService.toSourceObject( identityManagerService.loginPublicUser().getUser() );
+        UserSession userSession = (UserSession ) context.getAttribute( "USER_SESSION" );
+        LOGGER.info("source:"+userSession.getUser().getKeyFingerprint());
+        LOGGER.info("target:"+targetFprint);
+        LOGGER.info("template:"+templateId);
+        for (int i = 0; i < permissions.length; ++i)
+        {
+            LOGGER.info("permission: "+permissions[i]);
+        }
+
+        RelationObject owner = relationManagerService.toSourceObject( userSession.getUser() );
         RelationObject target = relationManagerService.toTargetObject( targetFprint );
         RelationObject trustObject = relationManagerService.toTrustObject( templateId, null, null, null );
         Set<Permission> objectPermissions = new HashSet<>();

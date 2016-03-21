@@ -12,6 +12,8 @@ import com.google.inject.Inject;
 import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.metadata.storage.file.DbFilePackageMetadataStoreModule;
 import ai.subut.kurjun.web.service.RepositoryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class RepositoryServiceImpl implements RepositoryService
@@ -23,6 +25,7 @@ public class RepositoryServiceImpl implements RepositoryService
     @Inject
     private RelationManagerService relationManagerService;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger( RepositoryService.class );
 
     @Override
     public synchronized List<String> getRepositories()
@@ -36,6 +39,7 @@ public class RepositoryServiceImpl implements RepositoryService
 
         for ( File file : files )
         {
+            LOGGER.info( "file path: "+file.getAbsolutePath() );
             if ( file.isDirectory() )
             {
                 results.add( file.getName() );

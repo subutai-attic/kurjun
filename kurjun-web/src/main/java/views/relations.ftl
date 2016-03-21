@@ -32,11 +32,11 @@
                     <td>${r.source.id}</td>
                     <td>${r.target.id}</td>
                     <td>${r.trustObject.id}</td>
-                    <td><ul>
+                    <td>
                         <#list r.permissions as p >
-                        <li>${p}</li>
+                        ${p.code}
                         </#list>
-                    </ul></td>
+                    </td>
                 </tr>
                 </#list>
             </#if>
