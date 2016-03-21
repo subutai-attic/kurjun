@@ -44,6 +44,58 @@ public class RelationManagerImpl implements RelationManager
 
     //***************************
     @Override
+    public Set<Permission> buildPermissions( int permLevel )
+    {
+        Set<Permission> perms = new HashSet<Permission>();
+
+        if(permLevel > 0)
+            perms.add(  Permission.Read) ;
+        if(permLevel > 1)
+            perms.add(  Permission.Write) ;
+        if(permLevel > 2)
+            perms.add(  Permission.Update) ;
+        if(permLevel > 3)
+            perms.add(  Permission.Delete) ;
+
+        return perms;
+    }
+
+
+    //***************************
+    @Override
+    public Set<Permission> buildPermissionsAllowAll()
+    {
+        return buildPermissions( 4 );
+    }
+
+
+    //***************************
+    @Override
+    public Set<Permission> buildPermissionsAllowReadWrite()
+    {
+        return buildPermissions( 2 );
+    }
+
+
+    //***************************
+    @Override
+    public Set<Permission> buildPermissionsDenyAll()
+    {
+        return buildPermissions( 0 );
+    }
+
+
+    //***************************
+    @Override
+    public Set<Permission> buildPermissionsDenyDelete()
+    {
+        return buildPermissions( 3 );
+    }
+
+
+
+    //***************************
+    @Override
     public RelationObject createRelationObject( String objectId, int objectType )
     {
         try
@@ -221,17 +273,18 @@ public class RelationManagerImpl implements RelationManager
 
         //********************************************
         @Override
-        public Relation getRelation( String sourceObjectId,String targetObjectId, String trustedObjectId )
+        public Relation getRelation( String sourceObjectId, String targetObjectId, String trustedObjectId,
+                                     int objectId )
         {
             try
             {
-                List<Relation> relations = getAllRelations();
+                RelationObject obj = createRelationObject( trustedObjectId, objectId );
+                List<Relation> relations = getRelationsByObject( obj );
 
                 for(Relation relation:relations)
                 {
                     if(relation.getSource().getId().equals( sourceObjectId ) &&
-                            relation.getTarget().getId().equals( sourceObjectId ) &&
-                            relation.getTrustObject().getId().equals( trustedObjectId )     )
+                            relation.getTarget().getId().equals( sourceObjectId ))
                     {
                         return relation;
                     }
@@ -265,6 +318,49 @@ public class RelationManagerImpl implements RelationManager
         }
 
         return Collections.emptyList();
+    }
+
+
+    //***************************
+    @Override
+    public List<Relation> getRelationsByObject( String trustObjectId, int trustObjectType )
+    {
+        try
+        {
+            return getRelationsByObject(createRelationObject( trustObjectId, trustObjectType ));
+        }
+        catch ( Exception ex )
+        {
+            LOGGER.error( " ***** Failed to get relations by this TrustObject: " + trustObjectId, ex );
+        }
+
+        return Collections.emptyList();
+    }
+
+
+    //***************************
+    @Override
+    public Relation getObjectOwner( String trustObjectId, int trustObjectType )
+    {
+        try
+        {
+            List<Relation> relations = getRelationsByObject(createRelationObject( trustObjectId, trustObjectType ));
+
+            for(Relation relation: relations)
+            {
+                if(relation.getSource().getId() == relation.getTarget().getId())
+                {
+                    return relation;
+                }
+            }
+
+        }
+        catch ( Exception ex )
+        {
+            LOGGER.error( " ***** Failed to get relations by this TrustObject: " + trustObjectId, ex );
+        }
+
+        return null;
     }
 
 
@@ -322,4 +418,30 @@ public class RelationManagerImpl implements RelationManager
             LOGGER.error( " ***** Failed to remove this relation: " + relationId, ex );
         }
     }
+
+
+    //***************************
+    @Override
+    public Set<Permission> getUserPermissions( User target , String trustObjectId, int trustObjectType)
+    {
+        try
+        {
+            List<Relation> relations = getRelationsByObject( createRelationObject( trustObjectId, trustObjectType ) );
+
+            for(Relation relation: relations)
+            {
+                if(relation.getTarget().getId()  == target.getKeyFingerprint() )
+                {
+                    return relation.getPermissions();
+                }
+            }
+        }
+        catch ( Exception ex )
+        {
+            LOGGER.error( " ***** Failed to find trustedObject: " + trustObjectId, ex );
+        }
+
+        return null;
+    }
+
 }

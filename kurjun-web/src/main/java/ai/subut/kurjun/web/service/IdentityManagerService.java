@@ -20,6 +20,9 @@ public interface IdentityManagerService extends BaseService
 
 
     //*************************************
+    User getPublicUser();
+
+    //*************************************
     User getUser( String userId );
 
 
