@@ -8,8 +8,10 @@ public enum RelationObjectType
 {
     User( 1, "User" ),
     RepositoryParent( 2, "Repository-Parent" ),
-    Repository( 3, "Repository" ),
-    RepositoryContent( 4, "Repository-Content" );
+    RepositoryContent( 3, "Repository-Content" ),
+    RepositoryTemplate( 4, "Repository-Template" ),
+    RepositoryApt( 5, "Repository-Apt" ),
+    RepositoryRaw( 6, "Repository-Raw" );
 
     private String name;
     private int id;
