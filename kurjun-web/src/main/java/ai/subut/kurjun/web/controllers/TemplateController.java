@@ -31,7 +31,7 @@ import java.util.List;
 
 public class TemplateController extends BaseController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( IdentityController.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( TemplateController.class );
 
     @Inject
     private TemplateManagerService templateManagerService;
