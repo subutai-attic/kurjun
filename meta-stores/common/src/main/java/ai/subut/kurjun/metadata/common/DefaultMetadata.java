@@ -11,7 +11,6 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
 
 /**
  * Default POJO implementation of {@link Metadata}.
- *
  */
 public class DefaultMetadata implements SerializableMetadata
 {
@@ -20,12 +19,30 @@ public class DefaultMetadata implements SerializableMetadata
     private String name;
     private String version;
     private String serialized;
+    private String fingerprint;
+
+
+    public String getFingerprint()
+    {
+        return fingerprint;
+    }
+
+
+    public void setFingerprint( final String fingerprint )
+    {
+        this.fingerprint = fingerprint;
+    }
 
 
     @Override
     public Object getId()
     {
-        return md5sum != null ? Hex.encodeHexString( md5sum ) : null;
+
+        if ( fingerprint != null && md5sum != null )
+        {
+            return fingerprint + "." + Hex.encodeHexString( md5sum );
+        }
+        return null;
     }
 
 
@@ -100,7 +117,5 @@ public class DefaultMetadata implements SerializableMetadata
         }
         return false;
     }
-
-
 }
 

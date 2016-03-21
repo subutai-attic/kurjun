@@ -8,15 +8,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
-import ai.subut.kurjun.model.identity.UserSession;
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.raw.RawMetadata;
+import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
@@ -33,12 +32,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class RawManagerServiceImpl implements RawManagerService
 {
+    private static final String DEFAULT_RAW_REPO_NAME = "raw";
+
     private RepositoryFactory repositoryFactory;
     private LocalRawRepository localPublicRawRepository;
     private UnifiedRepository unifiedRepository;
     private ArtifactContext artifactContext;
 
     private UserSession userSession;
+
 
     @Inject
     public RawManagerServiceImpl( final RepositoryFactory repositoryFactory, final ArtifactContext artifactContext )
@@ -53,7 +55,8 @@ public class RawManagerServiceImpl implements RawManagerService
 
     private void _local()
     {
-        this.localPublicRawRepository = this.repositoryFactory.createLocalRaw( new KurjunContext( "raw" ) );
+        this.localPublicRawRepository =
+                this.repositoryFactory.createLocalRaw( new KurjunContext( DEFAULT_RAW_REPO_NAME ) );
     }
 
 
@@ -112,12 +115,13 @@ public class RawManagerServiceImpl implements RawManagerService
 
 
     @Override
-    public Renderable getFile( final byte[] md5 )
+    public Renderable getFile( String repository, final byte[] md5 )
     {
-        checkNotNull( md5, "MD5 cannot be null" );
 
         DefaultMetadata defaultMetadata = new DefaultMetadata();
+
         defaultMetadata.setMd5sum( md5 );
+        defaultMetadata.setFingerprint( repository );
 
         RawMetadata meta = ( RawMetadata ) this.unifiedRepository.getPackageInfo( defaultMetadata );
 
@@ -153,16 +157,20 @@ public class RawManagerServiceImpl implements RawManagerService
     @Override
     public Renderable getFile( final byte[] md5, final boolean isKurjun )
     {
-        return getFile( md5 );
+
+        return getFile( DEFAULT_RAW_REPO_NAME, md5 );
     }
 
 
     @Override
-    public boolean delete( final byte[] md5 )
+    public boolean delete( String repository, final byte[] md5 )
     {
+        DefaultMetadata defaultMetadata = new DefaultMetadata();
+        defaultMetadata.setFingerprint( repository );
+        defaultMetadata.setMd5sum( md5 );
         try
         {
-            return localPublicRawRepository.delete( md5 );
+            return localPublicRawRepository.delete( defaultMetadata.getId(), md5 );
         }
         catch ( IOException e )
         {
@@ -196,7 +204,7 @@ public class RawManagerServiceImpl implements RawManagerService
         Metadata metadata = null;
         try
         {
-            metadata = localPublicRawRepository.put( file, CompressionType.NONE, "raw" );
+            metadata = localPublicRawRepository.put( file, CompressionType.NONE, DEFAULT_RAW_REPO_NAME );
         }
         catch ( IOException e )
         {
@@ -246,14 +254,32 @@ public class RawManagerServiceImpl implements RawManagerService
 
 
     @Override
-    public List<SerializableMetadata> list()
+    public List<SerializableMetadata> list( String repository )
     {
-        return unifiedRepository.listPackages();
+        switch ( repository )
+        {
+            //return local list
+            case "public":
+                return localPublicRawRepository.listPackages();
+            //return unified repo list
+            case "all":
+                return unifiedRepository.listPackages();
+            //return personal repository list
+            default:
+                return repositoryFactory.createLocalApt( new KurjunContext( repository ) ).listPackages();
+        }
     }
 
+
     @Override
-    public void setUserSession(UserSession userSession) {
+    public void setUserSession( UserSession userSession )
+    {
         this.userSession = userSession;
     }
 
+
+    public UserSession getUserSession()
+    {
+        return this.userSession;
+    }
 }

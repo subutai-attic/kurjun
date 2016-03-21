@@ -135,11 +135,11 @@
   <!-- ============================================================================================================= -->
 
   <dependencies>
-    <dependency>
-      <groupId>org.ninjaframework</groupId>
-      <artifactId>ninja-standalone</artifactId>
-      <version>${ninja.version}</version>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>org.ninjaframework</groupId>-->
+      <!--<artifactId>ninja-standalone</artifactId>-->
+      <!--<version>${ninja.version}</version>-->
+    <!--</dependency>-->
 
     <dependency>
       <groupId>ai.subut.kurjun</groupId>
@@ -187,17 +187,17 @@
     <!-- ***************************************** -->
 
     <!-- ************* Jetty ********************* -->
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-server</artifactId>
-      <version>${jetty.version}</version>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>org.eclipse.jetty</groupId>-->
+      <!--<artifactId>jetty-server</artifactId>-->
+      <!--<version>${jetty.version}</version>-->
+    <!--</dependency>-->
 
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-servlet</artifactId>
-      <version>${jetty.version}</version>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>org.eclipse.jetty</groupId>-->
+      <!--<artifactId>jetty-servlet</artifactId>-->
+      <!--<version>${jetty.version}</version>-->
+    <!--</dependency>-->
     <!-- ***************************************** -->
 
     <!-- ************* Ninja ********************* -->
@@ -239,12 +239,10 @@
       <version>1.5.0</version>
     </dependency>
 
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>org.slf4j</groupId>-->
+      <!--<artifactId>slf4j-log4j12</artifactId>-->
+    <!--</dependency>-->
     <!-- *************************************** -->
   </dependencies>
-
-
 </project>

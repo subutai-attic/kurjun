@@ -21,7 +21,7 @@ public interface AptManagerService extends BaseService
 
     URI upload( InputStream is );
 
-    List<SerializableMetadata> list();
+    List<SerializableMetadata> list(String repository);
 
     boolean delete( byte[] md5 ) throws IOException;
 

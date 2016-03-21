@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.core.Response;
@@ -55,6 +56,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     static final String LIST_PATH = "list";
     private final String MD5_PATH = "md5";
     private final String FILE_PATH = "/file/";
+    private String token = "";
 
     private WebClientFactory webClientFactory;
 
@@ -67,7 +69,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     private final User identity;
 
     private String md5Sum = "";
-    private List<SerializableMetadata> remoteIndexChache = new LinkedList<>(  );
+    private List<SerializableMetadata> remoteIndexChache = new LinkedList<>();
 
     private static final int CONN_TIMEOUT = 3000;
     private static final int READ_TIMEOUT = 3000;
@@ -120,7 +122,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
                 try
                 {
                     String json = IOUtils.toString( ( InputStream ) resp.getEntity() );
-                    return gson.fromJson( json, RawMetadata.class );
+                    return toObject(json);
                 }
                 catch ( IOException ex )
                 {
@@ -183,8 +185,11 @@ public class RemoteRawRepository extends RemoteRepositoryBase
         {
             return this.remoteIndexChache;
         }
+        Map<String, String> params = makeParamsMap( new RawMetadata() );
+        params.put( "repository", "public" );
 
-        WebClient webClient = webClientFactory.make( this, FILE_PATH + LIST_PATH, null );
+        WebClient webClient = webClientFactory.make( this, FILE_PATH + LIST_PATH, params );
+
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -316,6 +321,22 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     }
 
 
+    private Map<String, String> makeParamsMap( Metadata metadata )
+    {
+        Map<String, String> params = MetadataUtils.makeParamsMap( metadata );
+
+        if ( token != null )
+        {
+            params.put( "sptoken", token );
+        }
+
+        // Set parameter kc=kurjun_client to indicate this request is going from Kurjun
+        params.put( "kc", Boolean.TRUE.toString() );
+
+        return params;
+    }
+
+
     private SerializableMetadata toObject( String items )
     {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -330,6 +351,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
         }
         return null;
     }
+
 
     private List<SerializableMetadata> toObjectList( String items )
     {
