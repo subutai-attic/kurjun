@@ -7,7 +7,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +21,7 @@ import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.subutai.TemplateId;
+import ai.subut.kurjun.model.identity.Permission;
 import ai.subut.kurjun.model.identity.RelationObjectType;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.Metadata;
@@ -139,18 +142,47 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     @Override
     public List<SerializableMetadata> list( final String repository, final boolean isKurjunClient ) throws IOException
     {
+        List<SerializableMetadata> results = new ArrayList<SerializableMetadata>();
+
         switch ( repository )
         {
             //return local list
             case "public":
-                return localPublicTemplateRepository.listPackages();
+                results = localPublicTemplateRepository.listPackages();
             //return unified repo list
             case "all":
-                return unifiedTemplateRepository.listPackages();
+                results = unifiedTemplateRepository.listPackages();
             //return personal repository list
             default:
-                return repositoryFactory.createLocalTemplate( new KurjunContext( repository ) ).listPackages();
+                results = repositoryFactory.createLocalTemplate( new KurjunContext( repository ) ).listPackages();
         }
+
+        if ( !relationManagerService
+                .checkUserPermissions( userSession, repository, RelationObjectType.RepositoryTemplate.getId() )
+                .contains( Permission.Read ) )
+        {
+            return results;
+        }
+        else
+        {
+            //****CheckPermissions *************
+            for ( Iterator<SerializableMetadata> iterator = results.iterator(); iterator.hasNext(); )
+            {
+                final SerializableMetadata mdata = iterator.next();
+
+                //***** Check permissions (WRITE) *****************
+                if ( !relationManagerService
+                        .checkUserPermissions( userSession, mdata.getId().toString() , RelationObjectType.RepositoryContent.getId() )
+                        .contains( Permission.Read ) )
+                {
+                    iterator.remove();
+                }
+            }
+        }
+
+        //**********************************
+
+        return results;
     }
 
 
@@ -169,7 +201,6 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         relationManagerService
                 .checkRelationOwner( userSession, repository, RelationObjectType.RepositoryTemplate.getId() );
         //**************************************
-
 
         //***** Check permissions (WRITE) *****************
         if ( relationManagerService
@@ -195,6 +226,8 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
                     return templateId;
                 }
             }
+
+            return null;
         }
         else
         {
@@ -206,27 +239,55 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     @Override
     public String upload( final String repository, final File file ) throws IOException
     {
-        SubutaiTemplateMetadata metadata =
-                ( SubutaiTemplateMetadata ) getRepo( repository ).put( file, CompressionType.GZIP, repository );
+        // *******CheckRepoOwner ***************
+        relationManagerService
+                .checkRelationOwner( userSession, repository, RelationObjectType.RepositoryTemplate.getId() );
+        //**************************************
 
-        if ( metadata != null )
+        //***** Check permissions (WRITE) *****************
+        if ( relationManagerService
+                .checkUserPermissions( userSession, repository, RelationObjectType.RepositoryTemplate.getId() )
+                .contains( Permission.Write ) )
         {
-            if ( metadata.getMd5Sum() != null )
+            SubutaiTemplateMetadata metadata =
+                    ( SubutaiTemplateMetadata ) getRepo( repository ).put( file, CompressionType.GZIP, repository );
+
+            if ( metadata != null )
             {
-                artifactContext.store( metadata.getMd5Sum(), new UserContextImpl( repository ) );
+                if ( metadata.getMd5Sum() != null )
+                {
+                    String templateId = toId( metadata != null ? metadata.getMd5Sum() : new byte[0], repository );
+                    artifactContext.store( metadata.getMd5Sum(), new UserContextImpl( repository ) );
+
+                    //***** Build Relation ****************
+                    relationManagerService.buildTrustRelation( userSession.getUser(), userSession.getUser(), templateId,
+                            RelationObjectType.RepositoryContent.getId(),
+                            relationManagerService.buildPermissions( 4 ) );
+                    //*************************************
+                    return templateId;
+                }
             }
         }
-
-        return toId( metadata != null ? metadata.getMd5Sum() : new byte[0], repository );
+        return null;
     }
 
 
     @Override
     public boolean delete( TemplateId tid ) throws IOException
     {
-        LocalTemplateRepository repository = ( LocalTemplateRepository ) getRepo( tid.getOwnerFprint() );
+        //***** Check permissions (WRITE) *****************
+        if ( relationManagerService
+                .checkUserPermissions( userSession, tid.get(), RelationObjectType.RepositoryContent.getId() )
+                .contains( Permission.Delete ) )
+        {
+            LocalTemplateRepository repository = ( LocalTemplateRepository ) getRepo( tid.getOwnerFprint() );
 
-        return repository.delete( tid.get(), Utils.MD5.toByteArray( tid.getMd5() ) );
+            return repository.delete( tid.get(), Utils.MD5.toByteArray( tid.getMd5() ) );
+        }
+        else
+        {
+            return false;
+        }
     }
 
 

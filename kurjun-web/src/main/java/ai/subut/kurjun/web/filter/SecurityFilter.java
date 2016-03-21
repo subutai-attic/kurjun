@@ -29,7 +29,6 @@ public class SecurityFilter implements Filter
         //try
         //{
             Session session = ctx.getSession();
-            Result result = filterChain.next( ctx );
             UserSession uSession = null;
             String sptoken = ctx.getParameter( USER_TOKEN );
 
@@ -53,24 +52,17 @@ public class SecurityFilter implements Filter
             if( uSession != null )
             {
                 //--------------------------------------
-                if(!uSession.equals( identityManagerService.getPublicUserId()))
+                if(!uSession.getUser().getKeyFingerprint().equals( identityManagerService.getPublicUserId()))
                 {
                     session.put( USER_SESSION, uSession.getUserToken().getFullToken() );
                 }
                 //--------------------------------------
                 ctx.setAttribute( "USER_SESSION", uSession );
                 //--------------------------------------
-
-
-                if ( !(result.getRenderable() instanceof NoHttpBody)  // If not redirecting
-                        && Result.TEXT_HTML.equals( result.getContentType())) //  handle only html content types
-                {
-                    result.render( "userInfo", uSession );
-                }
-                else
-                {
-                    return result;
-                }
+            }
+            else
+            {
+                session.remove(  USER_SESSION );
             }
             //******************************
         /*}

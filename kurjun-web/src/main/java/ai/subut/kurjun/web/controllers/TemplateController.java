@@ -40,14 +40,17 @@ public class TemplateController extends BaseController {
     private RepositoryService repositoryService;
 
 
-    public Result listTemplates( FlashScope flashScope )
+    public Result listTemplates( Context context, FlashScope flashScope )
     {
         List<SerializableMetadata> defaultTemplateList = new ArrayList<>();
         try
         {
             String fingerprint = "public";
 
+            //*****************************************************
+            templateManagerService.setUserSession( (UserSession ) context.getAttribute( "USER_SESSION" ) );
             defaultTemplateList = templateManagerService.list( fingerprint, false );
+            //*****************************************************
         }
         catch ( IOException e )
         {
@@ -107,14 +110,18 @@ public class TemplateController extends BaseController {
     }
 
 
-    public Result getTemplateInfo( @PathParam( "id" ) String id,
+    public Result getTemplateInfo( Context context,@PathParam( "id" ) String id,
                                    @Param( "name" ) String name, @Param( "version" ) String version,
                                    @Param( "md5" ) String md5, @Param( "type" ) String type )
     {
         if ( !StringUtils.isBlank(id) )
         {
             TemplateId tid = IdValidators.Template.validate( id );
+
+            //*****************************************************
+            templateManagerService.setUserSession( (UserSession ) context.getAttribute( "USER_SESSION" ) );
             DefaultTemplate defaultTemplate = templateManagerService.getTemplate( tid, md5, name, version );
+            //*****************************************************
 
             if ( defaultTemplate != null )
             {
@@ -126,12 +133,17 @@ public class TemplateController extends BaseController {
     }
 
 
-    public Result downloadTemplate( @PathParam( "id" ) String id )
+    public Result downloadTemplate( Context context, @PathParam( "id" ) String id )
     {
         try
         {
             TemplateId tid = IdValidators.Template.validate( id );
+
+            //*****************************************************
+            templateManagerService.setUserSession( (UserSession ) context.getAttribute( "USER_SESSION" ) );
             Renderable renderable = templateManagerService.renderableTemplate( tid.getOwnerFprint(), tid.getMd5(), false );
+            //*****************************************************
+
             return new Result( 200 ).render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
         }
         catch ( IOException e )
@@ -142,13 +154,18 @@ public class TemplateController extends BaseController {
     }
 
 
-    public Result deleteTemplate( @PathParam( "id" ) String id,
+    public Result deleteTemplate( Context context,@PathParam( "id" ) String id,
                                   FlashScope flashScope )
     {
         try
         {
             TemplateId tid = IdValidators.Template.validate(id);
+
+            //*****************************************************
+            templateManagerService.setUserSession( (UserSession ) context.getAttribute( "USER_SESSION" ) );
             templateManagerService.delete(tid);
+            //*****************************************************
+
             flashScope.success( "Template removed successfully" );
         }
         catch (Exception e)

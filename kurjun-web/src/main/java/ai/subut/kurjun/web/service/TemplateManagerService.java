@@ -41,7 +41,6 @@ public interface TemplateManagerService extends BaseService
      *
      * @param repository repository
      * @param md5 md5 checksum of the package to retrieve
-     * @param templateOwner template owner
      * @param isKurjunClient where the client is Kurjun or not
      *
      * @return input stream to read package data
@@ -103,7 +102,7 @@ public interface TemplateManagerService extends BaseService
     /**
      * Deletes package from the repository defined by supplied repository.
      *
-     * @param md5 checksum of the package to delete
+     * @param templateId checksum of the package to delete
      *
      * @return {@code true} if package successfully deleted; {@code false} otherwise
      */

@@ -38,7 +38,7 @@ public class IdentityManagerImpl implements IdentityManager
 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger( IdentityManagerImpl.class );
-    private final String PUBLIC_USER_ID = "public-user";
+    public  static final String PUBLIC_USER_ID = "public-user";
 
 
     private FileDbProvider fileDbProvider;
@@ -193,9 +193,16 @@ public class IdentityManagerImpl implements IdentityManager
 
         if ( user != null )
         {
-            if ( securityManager.verifyJWTSignature( token, user.getUserToken().getSecret() ) )
+            if(user.getUserToken() != null)
             {
-                return user;
+                if ( securityManager.verifyJWTSignature( token, user.getUserToken().getSecret() ) )
+                {
+                    return user;
+                }
+                else
+                {
+                    return null;
+                }
             }
             else
             {

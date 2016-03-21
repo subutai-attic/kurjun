@@ -11,6 +11,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.web.controllers.BaseController;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
@@ -44,7 +45,11 @@ public class RestAptController extends BaseController
         File filename = file.getFile();
         try ( InputStream inputStream = new FileInputStream( file.getFile() ) )
         {
+            //********************************************
+            managerService.setUserSession( ( UserSession) context.getAttribute( "USER_SESSION" ) );
             URI uri = managerService.upload( inputStream );
+            //********************************************
+
             return Results.ok().render( uri ).text();
         }
     }
@@ -54,7 +59,10 @@ public class RestAptController extends BaseController
     {
 //        checkNotNull( release, "Release cannot be null" );
 
+        //********************************************
+        managerService.setUserSession( ( UserSession) context.getAttribute( "USER_SESSION" ) );
         String rel = managerService.getRelease( release, null, null );
+        //********************************************
 
         if ( rel != null )
         {
@@ -74,7 +82,10 @@ public class RestAptController extends BaseController
 //        checkNotNull( arch, "Arch cannot be null" );
 //        checkNotNull( packagesIndex, "Package Index cannot be null" );
 
+        //********************************************
+        managerService.setUserSession( ( UserSession) context.getAttribute( "USER_SESSION" ) );
         Renderable renderable = managerService.getPackagesIndex( release, component, arch, packagesIndex );
+        //********************************************
 
         return Results.ok().render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
     }
@@ -84,7 +95,10 @@ public class RestAptController extends BaseController
     {
 //        checkNotNull( filename, "File name cannot be null" );
 
+        //********************************************
+        managerService.setUserSession( ( UserSession) context.getAttribute( "USER_SESSION" ) );
         Renderable renderable = managerService.getPackageByFilename( filename );
+        //********************************************
 
         return Results.ok().render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
     }
@@ -98,7 +112,10 @@ public class RestAptController extends BaseController
         //        checkNotNull( name, "Name cannot be null" );
         //        checkNotNull( version, "Version not found" );
 
+        //********************************************
+        managerService.setUserSession( ( UserSession) context.getAttribute( "USER_SESSION" ) );
         String metadata = managerService.getPackageInfo( Utils.MD5.toByteArray( md5 ), name, version );
+        //********************************************
 
         if ( metadata != null )
         {
@@ -112,7 +129,10 @@ public class RestAptController extends BaseController
     {
 //        checkNotNull( md5, "MD5 cannot be null" );
 
+        //********************************************
+        managerService.setUserSession( ( UserSession) context.getAttribute( "USER_SESSION" ) );
         Renderable renderable = managerService.getPackage( Utils.MD5.toByteArray( md5 ) );
+        //********************************************
 
         if ( renderable != null )
         {
@@ -122,14 +142,17 @@ public class RestAptController extends BaseController
     }
 
 
-    public Result list( @Param( "type" ) String type, @Param( "repository" ) String repository )
+    public Result list( Context context, @Param( "type" ) String type, @Param( "repository" ) String repository )
     {
         if ( repository == null )
         {
             repository = "all";
         }
 
+        //********************************************
+        managerService.setUserSession( ( UserSession) context.getAttribute( "USER_SESSION" ) );
         List<SerializableMetadata> serializableMetadataList = managerService.list( repository );
+        //********************************************
 
         if ( serializableMetadataList != null )
         {
@@ -148,7 +171,10 @@ public class RestAptController extends BaseController
     {
 //        checkNotNull( md5, "MD5 cannot be null" );
 
+        //********************************************
+        managerService.setUserSession( ( UserSession) context.getAttribute( "USER_SESSION" ) );
         boolean success = managerService.delete( Utils.MD5.toByteArray( md5 ) );
+        //********************************************
 
         if ( success )
         {
