@@ -39,7 +39,6 @@ public class RepositoryServiceImpl implements RepositoryService
 
         for ( File file : files )
         {
-            LOGGER.info( "file path: "+file.getAbsolutePath() );
             if ( file.isDirectory() )
             {
                 results.add( file.getName() );

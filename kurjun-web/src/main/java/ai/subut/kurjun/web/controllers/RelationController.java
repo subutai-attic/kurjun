@@ -56,7 +56,6 @@ public class RelationController extends BaseController {
 
     public Result getRelationsByTarget( /*@AuthorizedUser UserSession userSession,*/ @Param( "fingerprint" ) String fingerprint )
     {
-        LOGGER.info("fprint: "+fingerprint);
         return Results.html().template("views/relations.ftl").render( "relations",
                 relationManagerService.getTrustRelationsByTarget(
                         relationManagerService.toTargetObject(fingerprint) ) );
@@ -76,14 +75,6 @@ public class RelationController extends BaseController {
                                    Context context, FlashScope flashScope )
     {
         UserSession userSession = (UserSession ) context.getAttribute( "USER_SESSION" );
-        LOGGER.info("source:"+userSession.getUser().getKeyFingerprint());
-        LOGGER.info("target:"+targetFprint);
-        LOGGER.info("template:"+templateId);
-        for (int i = 0; i < permissions.length; ++i)
-        {
-            LOGGER.info("permission: "+permissions[i]);
-        }
-
         RelationObject owner = relationManagerService.toSourceObject( userSession.getUser() );
         RelationObject target = relationManagerService.toTargetObject( targetFprint );
         RelationObject trustObject = relationManagerService.toTrustObject( templateId, null, null, null );
