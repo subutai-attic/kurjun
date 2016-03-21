@@ -179,6 +179,7 @@ public class RestTemplateController extends BaseController
 
     public Result md5()
     {
+
         return Results.ok().render( templateManagerService.md5() ).text();
     }
 }

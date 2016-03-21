@@ -1,21 +1,26 @@
 package ai.subut.kurjun.web.service.impl;
 
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import com.google.inject.Inject;
+
 import ai.subut.kurjun.identity.DefaultRelationObject;
 import ai.subut.kurjun.identity.service.RelationManager;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.subutai.TemplateId;
 import ai.subut.kurjun.metadata.common.utils.IdValidators;
-import ai.subut.kurjun.model.identity.*;
+import ai.subut.kurjun.model.identity.Permission;
+import ai.subut.kurjun.model.identity.Relation;
+import ai.subut.kurjun.model.identity.RelationObject;
+import ai.subut.kurjun.model.identity.RelationObjectType;
+import ai.subut.kurjun.model.identity.User;
+import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.web.service.IdentityManagerService;
 import ai.subut.kurjun.web.service.RelationManagerService;
 import ai.subut.kurjun.web.service.TemplateManagerService;
-
-import com.google.inject.Inject;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 
 /**
@@ -91,13 +96,93 @@ public class RelationManagerServiceImpl implements RelationManagerService
     }
 
 
+    //*************************************
+    @Override
+    public Relation getRelation( String sourceId, String targetId , String trustObjectId , int trustObjectType)
+    {
+        return relationManager.getRelation( sourceId, targetId, trustObjectId, trustObjectType );
+    }
+
+
+    //*************************************
+    @Override
+    public List<Relation> getRelationsByObject( String trustObjectId, int trustObjectType )
+    {
+        return getRelationsByObject( trustObjectId, trustObjectType );
+    }
+
+
+    //***************************
+    @Override
+    public Relation getObjectOwner( String trustObjectId, int trustObjectType )
+    {
+        return relationManager.getObjectOwner( trustObjectId, trustObjectType );
+    }
+
+
+
+    //***************************
+    @Override
+    public Relation buildTrustRelation( User sourceUser, User targetUser, String trustObjectId, int trustObjectType,
+                                        Set<Permission> permissions )
+    {
+        return relationManager.buildTrustRelation( sourceUser, targetUser, trustObjectId,trustObjectType, permissions );
+    }
+
+
+    //***************************
+    @Override
+    public Set<Permission> buildPermissions( int permLevel )
+    {
+        return relationManager.buildPermissions( permLevel );
+    }
+
+
+    //***************************
+    @Override
+    public void checkRelationOwner( UserSession userSession, String objectId, int objectType )
+    {
+        Relation relation = null;
+        User owner = null;
+        User pubus = null;
+
+        relation = getObjectOwner( objectId, objectType );
+
+        if ( relation == null )
+        {
+            if ( objectId.equals( "public" ) )
+            {
+                owner = identityManagerService.getSystemOwner();
+                pubus = identityManagerService.getPublicUser();
+
+                buildTrustRelation( owner,pubus , objectId, objectType, buildPermissions( 2 ) );
+            }
+            else
+            {
+                owner = userSession.getUser();
+            }
+
+            buildTrustRelation( owner, owner, objectId, objectType, buildPermissions( 4 ) );
+        }
+    }
+
+
+    //***************************
+    @Override
+    public Set<Permission> checkUserPermissions( UserSession userSession, String objectId, int objectType )
+    {
+        return relationManager.getUserPermissions( userSession.getUser() ,objectId ,objectType );
+    }
+
+
+    //*******************************************************************************
     @Override
     public RelationObject toSourceObject( User user )
     {
         if ( user != null )
         {
             RelationObject owner = new DefaultRelationObject();
-            owner.setId( user.getKeyId() );
+            owner.setId( user.getKeyFingerprint() );
             owner.setType( RelationObjectType.User.getId() );
 
             return owner;
@@ -118,7 +203,7 @@ public class RelationManagerServiceImpl implements RelationManagerService
         if ( targetUser != null )
         {
             targetObject = new DefaultRelationObject();
-            targetObject.setId( targetUser.getKeyId() );
+            targetObject.setId( targetUser.getKeyFingerprint() );
             targetObject.setType( RelationObjectType.User.getId() );
         }
 
@@ -151,4 +236,7 @@ public class RelationManagerServiceImpl implements RelationManagerService
 
         return trustObject;
     }
+
+
+
 }

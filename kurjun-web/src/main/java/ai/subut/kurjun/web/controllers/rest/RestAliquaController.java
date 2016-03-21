@@ -54,12 +54,18 @@ public class RestAliquaController extends BaseController
     }
 
 
-    public Result getFile( Context context, @Param( "md5" ) String md5 )
+    public Result getFile( Context context, @Param( "id" ) String id )
     {
-        checkNotNull( md5, "MD5 cannot be null" );
+        checkNotNull( id, "ID cannot be null" );
 
-        Renderable renderable = rawManagerService.getFile( Utils.MD5.toByteArray( md5 ) );
+        String[] temp = id.split( "\\." );
 
+        Renderable renderable = null;
+        //temp contains [fprint].[md5]
+        if ( temp.length == 2 )
+        {
+            renderable = rawManagerService.getFile( temp[0], Utils.MD5.toByteArray( temp[1] ) );
+        }
         if ( renderable != null )
         {
             return Results.ok().render( renderable );
@@ -68,17 +74,24 @@ public class RestAliquaController extends BaseController
     }
 
 
-    public Result delete( Context context, @Param( "md5" ) String md5 )
+    public Result delete( Context context, @Param( "id" ) String id )
     {
-        checkNotNull( md5, "MD5 cannot be null" );
+        checkNotNull( id, "ID cannot be null" );
+        String[] temp = id.split( "\\." );
 
-        boolean success = rawManagerService.delete( Utils.MD5.toByteArray( md5 ) );
+        boolean success = false;
+
+        if ( temp.length == 2 )
+        {
+            success = rawManagerService.delete( temp[0], Utils.MD5.toByteArray( temp[1] ) );
+        }
 
         if ( success )
         {
-            return Results.ok().render( md5 + " deleted" ).text();
+            return Results.ok().render( id + " deleted" ).text();
         }
-        return Results.notFound().text();
+
+        return Results.notFound().render( "Not found" ).text();
     }
 
 
@@ -94,7 +107,7 @@ public class RestAliquaController extends BaseController
         {
             repository = "all";
         }
-        
+
         return Results.ok().render( rawManagerService.list( repository ) ).json();
     }
 

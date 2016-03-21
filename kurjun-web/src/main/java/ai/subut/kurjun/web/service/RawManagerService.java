@@ -13,11 +13,11 @@ public interface RawManagerService extends BaseService
 {
     String md5();
 
-    Renderable getFile( byte[] md5 );
+    Renderable getFile( String repository, byte[] md5 );
 
     Renderable getFile( byte[] md5, boolean isKurjun );
 
-    boolean delete( byte[] md5 );
+    boolean delete(String repository, byte[] md5 );
 
     Renderable getFile( String name );
 

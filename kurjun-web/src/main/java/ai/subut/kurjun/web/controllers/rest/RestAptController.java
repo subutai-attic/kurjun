@@ -133,11 +133,11 @@ public class RestAptController extends BaseController
 
         if ( serializableMetadataList != null )
         {
-            if ( type != null && type.equals( "json" ) )
+            if ( type != null && type.equals( "text" ) )
             {
-                return Results.ok().render( serializableMetadataList ).json();
+                return Results.ok().render( serializableMetadataList ).text();
             }
-            return Results.ok().render( serializableMetadataList ).text();
+            return Results.ok().render( serializableMetadataList ).json();
         }
 
         return Results.text();

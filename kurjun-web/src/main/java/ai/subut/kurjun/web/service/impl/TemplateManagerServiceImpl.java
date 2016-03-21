@@ -19,6 +19,7 @@ import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.subutai.TemplateId;
+import ai.subut.kurjun.model.identity.RelationObjectType;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
@@ -164,6 +165,12 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     public String upload( final String repository, final InputStream inputStream ) throws IOException
     {
 
+        // *******CheckRepoOwner ***************
+        relationManagerService
+                .checkRelationOwner( userSession, repository, RelationObjectType.RepositoryTemplate.getId() );
+        //**************************************
+
+
         SubutaiTemplateMetadata metadata =
                 ( SubutaiTemplateMetadata ) getRepo( repository ).put( inputStream, CompressionType.GZIP, repository );
 
@@ -172,6 +179,10 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
             if ( metadata.getMd5Sum() != null )
             {
                 artifactContext.store( metadata.getMd5Sum(), new KurjunContext( repository ) );
+
+                //***** Build Relation ****************
+                //relationManagerService.buildTrustRelation( userSession.getUser(), userSession.getUser()  );
+                //*************************************
             }
         }
 
@@ -407,10 +418,5 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     public void setUserSession( UserSession userSession )
     {
         this.userSession = userSession;
-    }
-
-    public UserSession getUserSession()
-    {
-        return this.userSession;
     }
 }

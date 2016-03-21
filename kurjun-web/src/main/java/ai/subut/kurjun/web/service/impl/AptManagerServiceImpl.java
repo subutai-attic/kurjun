@@ -380,7 +380,7 @@ public class AptManagerServiceImpl implements AptManagerService
         this.userSession = userSession;
     }
 
-    public UserSession getUserSession()
+public UserSession getUserSession()
     {
         return this.userSession;
     }

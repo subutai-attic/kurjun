@@ -32,6 +32,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class RawManagerServiceImpl implements RawManagerService
 {
+    private static final String DEFAULT_RAW_REPO_NAME = "raw";
+
     private RepositoryFactory repositoryFactory;
     private LocalRawRepository localPublicRawRepository;
     private UnifiedRepository unifiedRepository;
@@ -53,7 +55,8 @@ public class RawManagerServiceImpl implements RawManagerService
 
     private void _local()
     {
-        this.localPublicRawRepository = this.repositoryFactory.createLocalRaw( new KurjunContext( "raw" ) );
+        this.localPublicRawRepository =
+                this.repositoryFactory.createLocalRaw( new KurjunContext( DEFAULT_RAW_REPO_NAME ) );
     }
 
 
@@ -112,12 +115,13 @@ public class RawManagerServiceImpl implements RawManagerService
 
 
     @Override
-    public Renderable getFile( final byte[] md5 )
+    public Renderable getFile( String repository, final byte[] md5 )
     {
-        checkNotNull( md5, "MD5 cannot be null" );
 
         DefaultMetadata defaultMetadata = new DefaultMetadata();
+
         defaultMetadata.setMd5sum( md5 );
+        defaultMetadata.setFingerprint( repository );
 
         RawMetadata meta = ( RawMetadata ) this.unifiedRepository.getPackageInfo( defaultMetadata );
 
@@ -153,16 +157,20 @@ public class RawManagerServiceImpl implements RawManagerService
     @Override
     public Renderable getFile( final byte[] md5, final boolean isKurjun )
     {
-        return getFile( md5 );
+
+        return getFile( DEFAULT_RAW_REPO_NAME, md5 );
     }
 
 
     @Override
-    public boolean delete( final byte[] md5 )
+    public boolean delete( String repository, final byte[] md5 )
     {
+        DefaultMetadata defaultMetadata = new DefaultMetadata();
+        defaultMetadata.setFingerprint( repository );
+        defaultMetadata.setMd5sum( md5 );
         try
         {
-            return localPublicRawRepository.delete( md5 );
+            return localPublicRawRepository.delete( defaultMetadata.getId(), md5 );
         }
         catch ( IOException e )
         {
@@ -196,7 +204,7 @@ public class RawManagerServiceImpl implements RawManagerService
         Metadata metadata = null;
         try
         {
-            metadata = localPublicRawRepository.put( file, CompressionType.NONE, "raw" );
+            metadata = localPublicRawRepository.put( file, CompressionType.NONE, DEFAULT_RAW_REPO_NAME );
         }
         catch ( IOException e )
         {

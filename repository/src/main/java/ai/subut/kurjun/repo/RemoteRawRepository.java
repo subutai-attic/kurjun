@@ -122,7 +122,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
                 try
                 {
                     String json = IOUtils.toString( ( InputStream ) resp.getEntity() );
-                    return gson.fromJson( json, RawMetadata.class );
+                    return toObject(json);
                 }
                 catch ( IOException ex )
                 {
