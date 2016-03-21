@@ -2,12 +2,11 @@ package ai.subut.kurjun.web.service.impl;
 
 
 import java.util.List;
+import java.util.Set;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import ai.subut.kurjun.identity.service.IdentityManager;
-import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.web.service.IdentityManagerService;
@@ -21,14 +20,14 @@ public class IdentityManagerServiceImpl implements IdentityManagerService
     private IdentityManager identityManager;
     private SecurityManager securityManager;
 
-    private UserSession userSession;
 
     @Inject
-    public IdentityManagerServiceImpl(IdentityManager identityManager, SecurityManager securityManager)
+    public IdentityManagerServiceImpl( IdentityManager identityManager, SecurityManager securityManager )
     {
         this.identityManager = identityManager;
         this.securityManager = securityManager;
     }
+
 
     //*************************************
     @Override
@@ -40,7 +39,15 @@ public class IdentityManagerServiceImpl implements IdentityManagerService
 
     //*************************************
     @Override
-    public User getUser(String userId)
+    public String getPublicUserId()
+    {
+        return identityManager.getPublicUserId();
+    }
+
+
+    //*************************************
+    @Override
+    public User getUser( String userId )
     {
         return identityManager.getUser( userId );
     }
@@ -58,7 +65,7 @@ public class IdentityManagerServiceImpl implements IdentityManagerService
     @Override
     public User authenticateUser( String fingerprint, String authzMessage )
     {
-        return identityManager.authenticateUser( fingerprint, authzMessage);
+        return identityManager.authenticateUser( fingerprint, authzMessage );
     }
 
 
@@ -86,7 +93,6 @@ public class IdentityManagerServiceImpl implements IdentityManagerService
     }
 
 
-
     //*************************************
     @Override
     public User getSystemOwner()
@@ -96,8 +102,8 @@ public class IdentityManagerServiceImpl implements IdentityManagerService
 
 
     @Override
-    public void setUserSession(UserSession userSession) {
-        this.userSession = userSession;
-    }
+    public void setUserSession( final UserSession userSession )
+    {
 
+    }
 }

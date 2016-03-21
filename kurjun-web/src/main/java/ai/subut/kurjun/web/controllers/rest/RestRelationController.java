@@ -1,14 +1,18 @@
 package ai.subut.kurjun.web.controllers.rest;
 
+import java.util.List;
 
-import ai.subut.kurjun.model.identity.*;
+import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.web.controllers.BaseController;
-import ai.subut.kurjun.web.security.AuthorizedUser;
 import ai.subut.kurjun.web.service.IdentityManagerService;
-import ai.subut.kurjun.web.service.RelationManagerService;
-import com.google.inject.Inject;
 import ninja.Result;
 import ninja.Results;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import ai.subut.kurjun.model.identity.*;
+import ai.subut.kurjun.web.security.AuthorizedUser;
+import ai.subut.kurjun.web.service.RelationManagerService;
 import ninja.params.Param;
 import ninja.params.Params;
 import ninja.params.PathParam;
@@ -21,9 +25,13 @@ import java.util.Set;
 /**
  * REST Controller for Trust Relation Management
  */
-public class RestRelationController extends BaseController {
-
+@Singleton
+public class RestRelationController extends BaseController
+{
     private static final Logger LOGGER = LoggerFactory.getLogger( RestIdentityController.class );
+
+    @Inject
+    IdentityManagerService identityManagerservice;
 
     @Inject
     private RelationManagerService relationManagerService;
@@ -32,17 +40,27 @@ public class RestRelationController extends BaseController {
     private IdentityManagerService identityManagerService;
 
 
+    public Result getAllRelations()
+    {
+        List<Relation> relations = relationManagerService.getAllRelations();
+
+        return Results.ok().render( relations ).json();
+    }
+
+
     public Result getRelationsByOwner( @AuthorizedUser UserSession userSession, @PathParam( "fingerprint" ) String fingerprint )
     {
         return Results.ok().json().render( relationManagerService.getTrustRelationsBySource(
                 relationManagerService.toSourceObject( identityManagerService.getUser( fingerprint ) ) ) );
     }
 
+
     public Result getRelationsByTarget( @AuthorizedUser UserSession userSession, @PathParam( "fingerprint" ) String fingerprint )
     {
         return Results.ok().json().render( relationManagerService.getTrustRelationsByTarget(
                 relationManagerService.toTargetObject(fingerprint) ) );
     }
+
 
     public Result getRelationsByObject( @AuthorizedUser UserSession userSession, @PathParam( "id" ) String id,
                                         @Param( "name" ) String name, @Param( "version" ) String version,
@@ -51,6 +69,7 @@ public class RestRelationController extends BaseController {
         return Results.ok().json().render( relationManagerService.getTrustRelationsByTarget(
                 relationManagerService.toTrustObject(id, name, md5, version)));
     }
+
 
     public Result addTrustRelation( @AuthorizedUser UserSession userSession, @Param( "fingerprint" ) String fingerprint,
                                     @Param( "template_id" ) String templateId, @Params( "permission" ) String[] permissions )

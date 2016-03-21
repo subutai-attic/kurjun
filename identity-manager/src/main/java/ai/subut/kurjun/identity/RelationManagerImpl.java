@@ -196,6 +196,35 @@ public class RelationManagerImpl implements RelationManager
         }
     }
 
+    //********************************************
+    @Override
+    public List<Relation> getAllRelations()
+    {
+        try
+        {
+            FileDb fileDb = fileDbProvider.get();
+            Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
+
+            if ( map != null )
+            {
+                List<Relation> items = new ArrayList<>( map.values() );
+
+                return items;
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+        catch ( Exception ex )
+        {
+            LOGGER.error( " ***** Error getting relation list:" , ex );
+            return null;
+        }
+    }
+
+
 
     //***************************
     @Override

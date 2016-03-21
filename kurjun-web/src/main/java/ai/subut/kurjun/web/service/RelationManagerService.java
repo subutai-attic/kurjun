@@ -13,6 +13,9 @@ import java.util.Set;
  */
 public interface RelationManagerService extends BaseService {
 
+    //*************************************
+    List<Relation> getAllRelations();
+
     Relation addTrustRelation(RelationObject source, RelationObject target, RelationObject trustObject,
                               Set<Permission> permissions);
 

@@ -21,6 +21,12 @@ public interface IdentityManager
 
 
     //********************************************
+    User getPublicUser();
+
+    //********************************************
+    String getPublicUserId();
+
+    //********************************************
     UserSession loginPublicUser();
 
 

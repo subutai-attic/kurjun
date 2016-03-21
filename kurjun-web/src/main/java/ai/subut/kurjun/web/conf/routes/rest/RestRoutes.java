@@ -1,7 +1,12 @@
 package ai.subut.kurjun.web.conf.routes.rest;
 
 
-import ai.subut.kurjun.web.controllers.rest.*;
+import ai.subut.kurjun.web.controllers.rest.RestAliquaController;
+import ai.subut.kurjun.web.controllers.rest.RestAptController;
+import ai.subut.kurjun.web.controllers.rest.RestIdentityController;
+import ai.subut.kurjun.web.controllers.rest.RestRelationController;
+import ai.subut.kurjun.web.controllers.rest.RestRepositoryController;
+import ai.subut.kurjun.web.controllers.rest.RestTemplateController;
 import ninja.Router;
 import ninja.application.ApplicationRoutes;
 
@@ -71,10 +76,16 @@ public class RestRoutes implements ApplicationRoutes
         router.GET().route( baseRepositoryUrl + "list" ).with( RestRepositoryController.class, "list" );
 
         //REST Relation Controller
+        router.POST().route( baseRelationsUrl + "owner/set" ).with( RestIdentityController.class, "setSystemOwner" );
+        router.GET().route( baseRelationsUrl + "owner/get" ).with( RestIdentityController.class, "getSystemOwner" );
+        router.GET().route( baseRelationsUrl + "list" ).with( RestRelationController.class, "getAllRelations" );
         router.PUT().route( baseRelationsUrl + "trust" ).with( RestRelationController.class, "addTrustRelation" );
         router.GET().route( baseRelationsUrl + "source/{fingerprint}" ).with( RestRelationController.class, "getRelationsByOwner" );
         router.GET().route( baseRelationsUrl + "target/{fingerprint}" ).with( RestRelationController.class, "getRelationsByTarget" );
         router.GET().route( baseRelationsUrl + "object/{id}" ).with( RestRelationController.class, "getRelationsByObject" );
+        //router.GET().route( baseRelationUrl + "target/get" ).with( RestIdentityController.class, "getRelationsByTargetId" );
+        //router.GET().route( baseRelationUrl + "trust/get" ).with( RestIdentityController.class, "getRelationsByTrustId" );
+
 
         //REST Security Controller
         //router.GET().route( baseSecurityUrl + "keyman" ).with( RestIdentityController.class, "getUsers" );
