@@ -5,6 +5,8 @@ import java.util.Properties;
 
 import javax.inject.Singleton;
 
+import ai.subut.kurjun.web.service.*;
+import ai.subut.kurjun.web.service.impl.*;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
@@ -29,16 +31,6 @@ import ai.subut.kurjun.web.context.ArtifactContext;
 import ai.subut.kurjun.web.context.GlobalArtifactContext;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
 import ai.subut.kurjun.web.init.KurjunInitializer;
-import ai.subut.kurjun.web.service.IdentityManagerService;
-import ai.subut.kurjun.web.service.RawManagerService;
-import ai.subut.kurjun.web.service.RepositoryService;
-import ai.subut.kurjun.web.service.TemplateManagerService;
-import ai.subut.kurjun.web.service.UserRepoContextStore;
-import ai.subut.kurjun.web.service.impl.IdentityManagerServiceImpl;
-import ai.subut.kurjun.web.service.impl.RawManagerServiceImpl;
-import ai.subut.kurjun.web.service.impl.RepositoryServiceImpl;
-import ai.subut.kurjun.web.service.impl.TemplateManagerServiceImpl;
-import ai.subut.kurjun.web.service.impl.UserRepoContextStoreImpl;
 import ninja.uploads.FileItemProvider;
 import ninja.utils.NinjaProperties;
 
@@ -83,6 +75,8 @@ public class Module extends AbstractModule
         bind( SecurityManager.class ).to( SecurityManagerImpl.class );
 
         bind( IdentityManagerService.class ).to( IdentityManagerServiceImpl.class );
+
+        bind( RelationManagerService.class ).to(RelationManagerServiceImpl.class );
     }
 
     /**

@@ -83,8 +83,4 @@ public class UserRepoContextStoreImpl implements UserRepoContextStore
         this.userSession = userSession;
     }
 
-    @Override
-    public UserSession getUserSession() {
-        return this.userSession;
-    }
 }

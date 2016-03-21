@@ -363,8 +363,4 @@ public class AptManagerServiceImpl implements AptManagerService
         this.userSession = userSession;
     }
 
-    @Override
-    public UserSession getUserSession() {
-        return this.userSession;
-    }
 }

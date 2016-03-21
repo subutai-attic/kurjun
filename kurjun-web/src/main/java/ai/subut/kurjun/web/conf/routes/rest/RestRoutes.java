@@ -28,7 +28,7 @@ public class RestRoutes implements ApplicationRoutes
 
     private static final String baseRepositoryUrl = baseUrl + "repository/";
 
-    private static final String baseRelationUrl = baseUrl + "relation/";
+    private static final String baseRelationsUrl = baseUrl + "relations/";
 
     @Override
     public void init( Router router )
@@ -69,19 +69,25 @@ public class RestRoutes implements ApplicationRoutes
         router.GET().route( baseIdentityUrl + "user/get" ).with( RestIdentityController.class, "getUser" );
         router.POST().route( baseIdentityUrl + "user/add" ).with( RestIdentityController.class, "addUser" );
         router.POST().route( baseIdentityUrl + "user/auth" ).with( RestIdentityController.class, "authorizeUser" );
+        router.POST().route( baseIdentityUrl + "system-owner" ).with( RestIdentityController.class, "setSystemOwner" );
+        router.GET().route( baseIdentityUrl + "system-owner" ).with( RestIdentityController.class, "getSystemOwner" );
 
         //REST Repository Controller
         router.GET().route( baseRepositoryUrl + "list" ).with( RestRepositoryController.class, "list" );
 
         //REST Relation Controller
-        router.POST().route( baseRelationUrl + "owner/set" ).with( RestIdentityController.class, "setSystemOwner" );
-        router.GET().route( baseRelationUrl + "owner/get" ).with( RestIdentityController.class, "getSystemOwner" );
-        router.GET().route( baseRelationUrl + "list" ).with( RestRelationController.class, "getAllRelations" );
+        router.POST().route( baseRelationsUrl + "owner/set" ).with( RestIdentityController.class, "setSystemOwner" );
+        router.GET().route( baseRelationsUrl + "owner/get" ).with( RestIdentityController.class, "getSystemOwner" );
+        router.GET().route( baseRelationsUrl + "list" ).with( RestRelationController.class, "getAllRelations" );
+        router.PUT().route( baseRelationsUrl + "trust" ).with( RestRelationController.class, "addTrustRelation" );
+        router.GET().route( baseRelationsUrl + "source/{fingerprint}" ).with( RestRelationController.class, "getRelationsByOwner" );
+        router.GET().route( baseRelationsUrl + "target/{fingerprint}" ).with( RestRelationController.class, "getRelationsByTarget" );
+        router.GET().route( baseRelationsUrl + "object/{id}" ).with( RestRelationController.class, "getRelationsByObject" );
         //router.GET().route( baseRelationUrl + "target/get" ).with( RestIdentityController.class, "getRelationsByTargetId" );
         //router.GET().route( baseRelationUrl + "trust/get" ).with( RestIdentityController.class, "getRelationsByTrustId" );
 
+
         //REST Security Controller
         //router.GET().route( baseSecurityUrl + "keyman" ).with( RestIdentityController.class, "getUsers" );
-
     }
 }

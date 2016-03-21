@@ -20,6 +20,9 @@
             <li id="hdr_users_tab" class="b-tabs-menu__item">
                 <a href="/users">Users</a>
             </li>
+            <li id="hdr_relations_tab" class="b-tabs-menu__item">
+                <a href="/relations">Relations</a>
+            </li>
         </ul>
     </div>
 </div>

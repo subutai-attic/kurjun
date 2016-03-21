@@ -46,8 +46,4 @@ public class RepositoryServiceImpl implements RepositoryService
         this.userSession = userSession;
     }
 
-    @Override
-    public UserSession getUserSession() {
-        return this.userSession;
-    }
 }

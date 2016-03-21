@@ -256,8 +256,4 @@ public class RawManagerServiceImpl implements RawManagerService
         this.userSession = userSession;
     }
 
-    @Override
-    public UserSession getUserSession() {
-        return this.userSession;
-    }
 }
