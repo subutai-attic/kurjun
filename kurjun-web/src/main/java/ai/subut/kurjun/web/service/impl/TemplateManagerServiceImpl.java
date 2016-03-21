@@ -409,8 +409,6 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         this.userSession = userSession;
     }
 
-
-    @Override
     public UserSession getUserSession()
     {
         return this.userSession;
