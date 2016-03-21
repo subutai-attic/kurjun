@@ -20,6 +20,8 @@ import ai.subut.kurjun.model.identity.RelationObjectType;
 import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.security.manager.service.SecurityManager;
 
+import static ai.subut.kurjun.identity.IdentityManagerImpl.*;
+
 
 /**
  *
@@ -350,7 +352,7 @@ public class RelationManagerImpl implements RelationManager
 
             for(Relation relation: relations)
             {
-                if(relation.getSource().getId() == relation.getTarget().getId())
+                if(relation.getSource().getId().equals( relation.getTarget().getId()))
                 {
                     return relation;
                 }
@@ -424,17 +426,23 @@ public class RelationManagerImpl implements RelationManager
 
     //***************************
     @Override
-    public Set<Permission> getUserPermissions( User target , String trustObjectId, int trustObjectType)
+    public Set<Permission> getUserPermissions( User target, String trustObjectId, int trustObjectType )
     {
+        Set<Permission> perms = buildPermissionsDenyAll();
+
         try
         {
             List<Relation> relations = getRelationsByObject( createRelationObject( trustObjectId, trustObjectType ) );
 
             for(Relation relation: relations)
             {
-                if(relation.getTarget().getId()  == target.getKeyFingerprint() )
+                if(relation.getTarget().getId().equals( target.getKeyFingerprint()) )
                 {
-                    return relation.getPermissions();
+                    perms.addAll( relation.getPermissions() );
+                }
+                else if(relation.getTarget().getId().equals( IdentityManagerImpl.PUBLIC_USER_ID) )
+                {
+                    perms.addAll( relation.getPermissions() );
                 }
             }
         }
@@ -443,7 +451,7 @@ public class RelationManagerImpl implements RelationManager
             LOGGER.error( " ***** Failed to find trustedObject: " + trustObjectId, ex );
         }
 
-        return null;
+        return perms;
     }
 
 }

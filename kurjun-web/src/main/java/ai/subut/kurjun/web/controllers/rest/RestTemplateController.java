@@ -81,11 +81,15 @@ public class RestTemplateController extends BaseController
     }
 
 
-    public Result info( @Param( "id" ) String id, @Param( "name" ) String name, @Param( "version" ) String version,
+    public Result info( Context context, @Param( "id" ) String id, @Param( "name" ) String name, @Param( "version" ) String version,
                         @Param( "md5" ) String md5, @Param( "type" ) String type )
     {
         TemplateId tid = null;
         DefaultTemplate defaultTemplate = null;
+
+        //*****************************************************
+        templateManagerService.setUserSession( (UserSession ) context.getAttribute( "USER_SESSION" ) );
+        //*****************************************************
 
         if ( id != null )
         {
@@ -124,7 +128,10 @@ public class RestTemplateController extends BaseController
         Renderable renderable = null;
         try
         {
+            //*****************************************************
+            templateManagerService.setUserSession( (UserSession ) context.getAttribute( "USER_SESSION" ) );
             renderable = templateManagerService.renderableTemplate( tid.getOwnerFprint(), tid.getMd5(), false );
+            //*****************************************************
         }
         catch ( IOException e )
         {
@@ -147,7 +154,10 @@ public class RestTemplateController extends BaseController
 
         try
         {
+            //*****************************************************
+            templateManagerService.setUserSession( (UserSession ) context.getAttribute( "USER_SESSION" ) );
             success = templateManagerService.delete( tid );
+            //*****************************************************
         }
         catch ( IOException e )
         {
@@ -156,7 +166,10 @@ public class RestTemplateController extends BaseController
             throw new InternalServerErrorException( "Error while deleting artifact" );
         }
 
-        return Results.ok().render( String.format( "Deleted: %b", success ) ).text();
+        if(success)
+            return Results.ok().render( String.format( "Deleted: %b", success ) ).text();
+        else
+            return Results.forbidden();
     }
 
 
@@ -169,7 +182,10 @@ public class RestTemplateController extends BaseController
                 repository = "all";
             }
 
+            //*****************************************************
+            templateManagerService.setUserSession( (UserSession ) context.getAttribute( "USER_SESSION" ) );
             List<SerializableMetadata> defaultTemplateList = templateManagerService.list( repository, false );
+            //*****************************************************
 
             return Results.ok().render( defaultTemplateList ).json();
         }
