@@ -10,6 +10,9 @@ import java.util.Date;
 public interface User
 {
     //*************************
+    void setKeyId( String keyId );
+
+    //*************************
     String getKeyId();
 
 

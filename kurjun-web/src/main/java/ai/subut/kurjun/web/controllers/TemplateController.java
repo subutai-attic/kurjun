@@ -8,11 +8,11 @@ import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
 import ai.subut.kurjun.web.model.KurjunFileItem;
-import ai.subut.kurjun.web.security.AuthorizedUser;
 import ai.subut.kurjun.web.service.RepositoryService;
 import ai.subut.kurjun.web.service.TemplateManagerService;
-import com.google.gson.Gson;
 import com.google.inject.Inject;
+
+import ninja.Context;
 import ninja.Renderable;
 import ninja.Result;
 import ninja.Results;
@@ -67,7 +67,7 @@ public class TemplateController extends BaseController {
 
 
     @FileProvider( SubutaiFileHandler.class )
-    public Result uploadTemplate( @Param( "repository" ) String repository,
+    public Result uploadTemplate( Context context, @Param( "repository" ) String repository,
                                   @Param( "file" ) FileItem file, @Param( "md5" ) String md5, FlashScope flashScope )
     {
         try {
@@ -85,7 +85,10 @@ public class TemplateController extends BaseController {
                 }
             }
             */
-            String id = templateManagerService.upload(repository, fileItem.getInputStream());
+            //*****************************************************
+            templateManagerService.setUserSession( (UserSession ) context.getAttribute( "USER_SESSION" ) );
+            String id = templateManagerService.upload( repository, fileItem.getInputStream() );
+            //*****************************************************
 
             String[] temp = id.split("\\.");
             //temp contains [fprint].[md5]

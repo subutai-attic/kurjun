@@ -13,6 +13,7 @@ import com.google.inject.Singleton;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.subutai.TemplateId;
 import ai.subut.kurjun.metadata.common.utils.IdValidators;
+import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.web.controllers.BaseController;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
@@ -64,7 +65,10 @@ public class RestTemplateController extends BaseController
             }
         }
 
+        //*****************************************************
+        templateManagerService.setUserSession( (UserSession ) context.getAttribute( "USER_SESSION" ) );
         String id = templateManagerService.upload( repository, fileItem.getInputStream() );
+        //*****************************************************
 
         String[] temp = id.split( "\\." );
         //temp contains [fprint].[md5]

@@ -12,5 +12,7 @@ public interface RelationObject
 
     int getType();
 
+    String getUniqId();
+
     void setType( int type );
 }
