@@ -25,8 +25,6 @@ import ninja.params.PathParam;
 import ninja.uploads.FileItem;
 import ninja.uploads.FileProvider;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 
 /**
  * REST Controller for Apt Management
@@ -54,7 +52,7 @@ public class RestAptController extends BaseController
 
     public Result release( Context context, @PathParam( "release" ) String release )
     {
-        checkNotNull( release, "Release cannot be null" );
+//        checkNotNull( release, "Release cannot be null" );
 
         String rel = managerService.getRelease( release, null, null );
 
@@ -71,10 +69,10 @@ public class RestAptController extends BaseController
                                   @PathParam( "component" ) String component, @PathParam( "arch" ) String arch,
                                   @PathParam( "packages" ) String packagesIndex )
     {
-        checkNotNull( release, "Release cannot be null" );
-        checkNotNull( component, "Component cannot be null" );
-        checkNotNull( arch, "Arch cannot be null" );
-        checkNotNull( packagesIndex, "Package Index cannot be null" );
+//        checkNotNull( release, "Release cannot be null" );
+//        checkNotNull( component, "Component cannot be null" );
+//        checkNotNull( arch, "Arch cannot be null" );
+//        checkNotNull( packagesIndex, "Package Index cannot be null" );
 
         Renderable renderable = managerService.getPackagesIndex( release, component, arch, packagesIndex );
 
@@ -84,7 +82,7 @@ public class RestAptController extends BaseController
 
     public Result getPackageByFileName( Context context, @PathParam( "filename" ) String filename )
     {
-        checkNotNull( filename, "File name cannot be null" );
+//        checkNotNull( filename, "File name cannot be null" );
 
         Renderable renderable = managerService.getPackageByFilename( filename );
 
@@ -112,7 +110,7 @@ public class RestAptController extends BaseController
 
     public Result download( Context context, @Param( "md5" ) String md5 )
     {
-        checkNotNull( md5, "MD5 cannot be null" );
+//        checkNotNull( md5, "MD5 cannot be null" );
 
         Renderable renderable = managerService.getPackage( Utils.MD5.toByteArray( md5 ) );
 
@@ -148,7 +146,7 @@ public class RestAptController extends BaseController
 
     public Result delete( Context context, @Param( "md5" ) String md5 )
     {
-        checkNotNull( md5, "MD5 cannot be null" );
+//        checkNotNull( md5, "MD5 cannot be null" );
 
         boolean success = managerService.delete( Utils.MD5.toByteArray( md5 ) );
 

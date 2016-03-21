@@ -31,7 +31,7 @@ import java.util.List;
 
 public class TemplateController extends BaseController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( IdentityController.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( TemplateController.class );
 
     @Inject
     private TemplateManagerService templateManagerService;
@@ -40,19 +40,12 @@ public class TemplateController extends BaseController {
     private RepositoryService repositoryService;
 
 
-    public Result listTemplates( @AuthorizedUser UserSession userSession, FlashScope flashScope )
+    public Result listTemplates( FlashScope flashScope )
     {
         List<SerializableMetadata> defaultTemplateList = new ArrayList<>();
         try
         {
             String fingerprint = "public";
-            if ( userSession.getUser() != null && StringUtils.isBlank(userSession.getUser().getKeyFingerprint()) )
-            {
-                fingerprint = userSession.getUser().getKeyFingerprint();
-            }
-
-            //LOGGER.info( "token: "+userSession.getUser().getUserToken().getFullToken());
-            LOGGER.info("User session: "+new Gson().toJson( userSession ));
 
             defaultTemplateList = templateManagerService.list( fingerprint, false );
         }
@@ -66,7 +59,7 @@ public class TemplateController extends BaseController {
     }
 
 
-    public Result getUploadTemplateForm( @AuthorizedUser UserSession userSession )
+    public Result getUploadTemplateForm()
     {
         List<String> repos = repositoryService.getRepositories();
         return Results.html().template("views/_popup-add-tpl.ftl").render("repos", repos);
@@ -74,7 +67,7 @@ public class TemplateController extends BaseController {
 
 
     @FileProvider( SubutaiFileHandler.class )
-    public Result uploadTemplate( @AuthorizedUser UserSession userSession, @Param( "repository" ) String repository,
+    public Result uploadTemplate( @Param( "repository" ) String repository,
                                   @Param( "file" ) FileItem file, @Param( "md5" ) String md5, FlashScope flashScope )
     {
         try {
@@ -111,9 +104,9 @@ public class TemplateController extends BaseController {
     }
 
 
-    public Result getTemplateInfo( @AuthorizedUser UserSession userSession, @PathParam( "id" ) String id,
+    public Result getTemplateInfo( @PathParam( "id" ) String id,
                                    @Param( "name" ) String name, @Param( "version" ) String version,
-                                  @Param( "md5" ) String md5, @Param( "type" ) String type )
+                                   @Param( "md5" ) String md5, @Param( "type" ) String type )
     {
         if ( !StringUtils.isBlank(id) )
         {
@@ -130,7 +123,7 @@ public class TemplateController extends BaseController {
     }
 
 
-    public Result downloadTemplate( @AuthorizedUser UserSession userSession, @PathParam( "id" ) String id )
+    public Result downloadTemplate( @PathParam( "id" ) String id )
     {
         try
         {
@@ -146,7 +139,7 @@ public class TemplateController extends BaseController {
     }
 
 
-    public Result deleteTemplate( @AuthorizedUser UserSession userSession, @PathParam( "id" ) String id,
+    public Result deleteTemplate( @PathParam( "id" ) String id,
                                   FlashScope flashScope )
     {
         try

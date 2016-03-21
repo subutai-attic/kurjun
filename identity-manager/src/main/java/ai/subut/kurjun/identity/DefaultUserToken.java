@@ -1,6 +1,7 @@
 package ai.subut.kurjun.identity;
 
 
+import java.io.Serializable;
 import java.util.Date;
 
 import ai.subut.kurjun.model.identity.UserToken;
@@ -10,7 +11,7 @@ import ai.subut.kurjun.security.manager.utils.token.TokenUtils;
 /**
  *
  */
-public class DefaultUserToken implements UserToken
+public class DefaultUserToken implements UserToken, Serializable
 {
 
     private String token;
@@ -22,7 +23,6 @@ public class DefaultUserToken implements UserToken
     private String issuer;
 
     private Date validDate;
-
 
 
     //***********************************

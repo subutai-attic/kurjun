@@ -9,7 +9,7 @@
 <#macro scripts>
 </#macro>
 
-<@layout.parentLayout "Users">
+<@layout.parentLayout>
 
 <div class="b-workspace__content">
     <div class="b-workspace-content__row">

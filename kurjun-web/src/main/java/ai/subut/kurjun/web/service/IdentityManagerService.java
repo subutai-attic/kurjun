@@ -2,7 +2,6 @@ package ai.subut.kurjun.web.service;
 
 
 import java.util.List;
-
 import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.identity.UserSession;
 
@@ -14,6 +13,10 @@ public interface IdentityManagerService extends BaseService
 {
     //*************************************
     List<User> getAllUsers();
+
+
+    //*************************************
+    String getPublicUserId();
 
 
     //*************************************
@@ -35,9 +38,12 @@ public interface IdentityManagerService extends BaseService
     //*************************************
     UserSession loginPublicUser();
 
+
     //*************************************
-    User setSystemOwner( String publicKeyASCII );
+    User setSystemOwner( String fingerprint, String publicKeyASCII );
+
 
     //*************************************
     User getSystemOwner();
+
 }

@@ -15,7 +15,7 @@ public class HomeController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger( IdentityController.class );
 
-    public Result homePage(@AuthorizedUser UserSession userSession, Session session, FlashScope flashScope )
+    public Result homePage( Session session, FlashScope flashScope )
     {
         return Results.ok();
     }

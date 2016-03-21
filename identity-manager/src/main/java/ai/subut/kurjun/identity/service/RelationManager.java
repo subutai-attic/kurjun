@@ -15,17 +15,18 @@ import ai.subut.kurjun.model.identity.User;
  */
 public interface RelationManager
 {
+
     //***************************
-    RelationObject createRelationObject( String objectId, String className, int objectType );
+    RelationObject createRelationObject( String objectId, int objectType );
 
 
     //***************************
-    Relation buildTrustRelation( User user, String targetObjectId, String tclassName, int targetObjectType,
-                                 String trustObjectId, String rclassName, int trustObjectType,
+    Relation buildTrustRelation( User user, String targetObjectId, int targetObjectType,
+                                 String trustObjectId, int trustObjectType,
                                  Set<Permission> permissions );
 
     //***************************
-    Relation buildTrustRelation( User sourceUser, User targetUser, String trustObjectId, String rclassName,
+    Relation buildTrustRelation( User sourceUser, User targetUser, String trustObjectId,
                                  int trustObjectType, Set<Permission> permissions );
 
     //***************************
@@ -33,8 +34,8 @@ public interface RelationManager
                                  Set<Permission> permissions );
 
     //***************************
-    Relation buildTrustRelation( String sourceObjectId, String sclassName, int sourceObjectType, String targetObjectId,
-                                 String tclassName, int targetObjectType, String trustObjectId, String rclassName,
+    Relation buildTrustRelation( String sourceObjectId, int sourceObjectType, String targetObjectId,
+                                 int targetObjectType, String trustObjectId,
                                  int trustObjectType, Set<Permission> permissions );
 
     //***************************
@@ -49,6 +50,12 @@ public interface RelationManager
     //***************************
     Relation getRelation( String relationId );
 
+
+    //********************************************
+    List<Relation> getAllRelations();
+
+    //********************************************
+    Relation getRelation( String sourceObjectId, String targetObjectId, String trustedObjectId );
 
     //***************************
     List<Relation> getRelationsByObject( RelationObject trustObject );

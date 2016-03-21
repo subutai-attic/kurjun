@@ -2,9 +2,7 @@ package ai.subut.kurjun.web.controllers;
 
 
 import ai.subut.kurjun.model.identity.User;
-import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.web.filter.SecurityFilter;
-import ai.subut.kurjun.web.security.AuthorizedUser;
 import ai.subut.kurjun.web.service.IdentityManagerService;
 import com.google.inject.Inject;
 import ninja.Context;
@@ -42,7 +40,7 @@ public class IdentityController extends BaseController {
 
         if (user != null)
         {
-            context.setAttribute( SecurityFilter.USER_TOKEN, user.getUserToken().getFullToken() );
+            context.getSession().put( SecurityFilter.USER_SESSION, user.getUserToken().getFullToken() );
             return Results.redirect("/");
         }
         else
@@ -52,7 +50,8 @@ public class IdentityController extends BaseController {
         }
     }
 
-    public Result createUser( @AuthorizedUser UserSession userSession, @Param( "key" ) String publicKey, FlashScope flashScope )
+
+    public Result createUser(@Param( "key" ) String publicKey, FlashScope flashScope )
     {
         User user = identityManagerService.addUser( publicKey );
 
@@ -69,7 +68,7 @@ public class IdentityController extends BaseController {
     }
 
 
-    public Result listUsers( @AuthorizedUser UserSession userSession )
+    public Result listUsers()
     {
         List<User> users = identityManagerService.getAllUsers();
 
@@ -84,14 +83,13 @@ public class IdentityController extends BaseController {
     }
 
 
-    public Result setSystemOwner( @AuthorizedUser UserSession userSession, @Param( "key" ) String key,
+    public Result setSystemOwner( @Param( "key" ) String key, @Param( "fingerprint" ) String fingerprint,
                                   Context context, FlashScope flashScope )
     {
-        User user = identityManagerService.setSystemOwner(key);
+        User user = identityManagerService.setSystemOwner(fingerprint, key);
 
         if (user != null)
         {
-            //context.setAttribute( SecurityFilter.USER_TOKEN, user.getUserToken().getFullToken() );
             flashScope.success("System owner set successfully.");
         }
 
@@ -99,7 +97,7 @@ public class IdentityController extends BaseController {
     }
 
 
-    public Result getSystemOwner( @AuthorizedUser UserSession userSession, Context context, FlashScope flashScope )
+    public Result getSystemOwner( Context context, FlashScope flashScope )
     {
         User user = identityManagerService.getSystemOwner();
 

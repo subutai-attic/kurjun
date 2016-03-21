@@ -44,7 +44,7 @@ public class RelationManagerImpl implements RelationManager
 
     //***************************
     @Override
-    public RelationObject createRelationObject( String objectId, String className, int objectType )
+    public RelationObject createRelationObject( String objectId, int objectType )
     {
         try
         {
@@ -59,7 +59,6 @@ public class RelationManagerImpl implements RelationManager
                 relationObject.setId( objectId );
             }
 
-            relationObject.setClassName( className );
             relationObject.setType( objectType );
 
             return relationObject;
@@ -73,14 +72,13 @@ public class RelationManagerImpl implements RelationManager
 
     //***************************
     @Override
-    public Relation buildTrustRelation( User user, String targetObjectId, String tclassName, int targetObjectType,
-                                        String trustObjectId, String rclassName, int trustObjectType,
+    public Relation buildTrustRelation( User user, String targetObjectId, int targetObjectType,
+                                        String trustObjectId, int trustObjectType,
                                         Set<Permission> permissions )
     {
-        RelationObject sourceObject = createRelationObject( user.getKeyFingerprint(), user.getClass().toString(),
-                RelationObjectType.User.getId() );
-        RelationObject targetObject = createRelationObject( targetObjectId, tclassName, targetObjectType );
-        RelationObject trustObject = createRelationObject( trustObjectId, rclassName, trustObjectType );
+        RelationObject sourceObject = createRelationObject( user.getKeyFingerprint(), RelationObjectType.User.getId() );
+        RelationObject targetObject = createRelationObject( targetObjectId,  targetObjectType );
+        RelationObject trustObject = createRelationObject( trustObjectId,  trustObjectType );
 
         return buildTrustRelation( sourceObject, targetObject, trustObject ,permissions );
     }
@@ -88,16 +86,14 @@ public class RelationManagerImpl implements RelationManager
 
     //***************************
     @Override
-    public Relation buildTrustRelation( User sourceUser, User targetUser, String trustObjectId, String rclassName,
+    public Relation buildTrustRelation( User sourceUser, User targetUser, String trustObjectId,
                                         int trustObjectType, Set<Permission> permissions )
     {
         RelationObject sourceObject =
-                createRelationObject( sourceUser.getKeyFingerprint(), sourceUser.getClass().toString(),
-                        RelationObjectType.User.getId() );
+                createRelationObject( sourceUser.getKeyFingerprint(), RelationObjectType.User.getId() );
         RelationObject targetObject =
-                createRelationObject( targetUser.getKeyFingerprint(), targetUser.getClass().toString(),
-                        RelationObjectType.User.getId() );
-        RelationObject trustObject = createRelationObject( trustObjectId, rclassName, trustObjectType );
+                createRelationObject( targetUser.getKeyFingerprint(), RelationObjectType.User.getId() );
+        RelationObject trustObject = createRelationObject( trustObjectId, trustObjectType );
 
         return buildTrustRelation( sourceObject, targetObject, trustObject, permissions );
     }
@@ -109,11 +105,9 @@ public class RelationManagerImpl implements RelationManager
                                         Set<Permission> permissions )
     {
         RelationObject sourceObject =
-                createRelationObject( sourceUser.getKeyFingerprint(), sourceUser.getClass().toString(),
-                        RelationObjectType.User.getId() );
+                createRelationObject( sourceUser.getKeyFingerprint(), RelationObjectType.User.getId() );
         RelationObject targetObject =
-                createRelationObject( targetUser.getKeyFingerprint(), targetUser.getClass().toString(),
-                        RelationObjectType.User.getId() );
+                createRelationObject( targetUser.getKeyFingerprint(), RelationObjectType.User.getId() );
 
         return buildTrustRelation( sourceObject, targetObject, trustObject, permissions );
     }
@@ -121,14 +115,14 @@ public class RelationManagerImpl implements RelationManager
 
     //***************************
     @Override
-    public Relation buildTrustRelation( String sourceObjectId, String sclassName, int sourceObjectType,
-                                        String targetObjectId, String tclassName, int targetObjectType,
-                                        String trustObjectId, String rclassName, int trustObjectType,
+    public Relation buildTrustRelation( String sourceObjectId, int sourceObjectType,
+                                        String targetObjectId, int targetObjectType,
+                                        String trustObjectId,  int trustObjectType,
                                         Set<Permission> permissions )
     {
-        RelationObject sourceObject = createRelationObject( sourceObjectId, sclassName, sourceObjectType );
-        RelationObject targetObject = createRelationObject( targetObjectId, tclassName, targetObjectType );
-        RelationObject trustObject = createRelationObject( trustObjectId, rclassName, trustObjectType );
+        RelationObject sourceObject = createRelationObject( sourceObjectId, sourceObjectType );
+        RelationObject targetObject = createRelationObject( targetObjectId, targetObjectType );
+        RelationObject trustObject = createRelationObject( trustObjectId,  trustObjectType );
 
         return buildTrustRelation( sourceObject, targetObject, trustObject, permissions );
     }
@@ -194,6 +188,63 @@ public class RelationManagerImpl implements RelationManager
             LOGGER.error( " ***** Error getting relation with relationId:" + relationId, ex );
             return null;
         }
+    }
+
+    //********************************************
+    @Override
+    public List<Relation> getAllRelations()
+    {
+        try
+        {
+            FileDb fileDb = fileDbProvider.get();
+            Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
+
+            if ( map != null )
+            {
+                List<Relation> items = new ArrayList<>( map.values() );
+
+                return items;
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+        catch ( Exception ex )
+        {
+            LOGGER.error( " ***** Error getting relation list:" , ex );
+            return null;
+        }
+    }
+
+
+        //********************************************
+        @Override
+        public Relation getRelation( String sourceObjectId,String targetObjectId, String trustedObjectId )
+        {
+            try
+            {
+                List<Relation> relations = getAllRelations();
+
+                for(Relation relation:relations)
+                {
+                    if(relation.getSource().getId().equals( sourceObjectId ) &&
+                            relation.getTarget().getId().equals( sourceObjectId ) &&
+                            relation.getTrustObject().getId().equals( trustedObjectId )     )
+                    {
+                        return relation;
+                    }
+                }
+
+                return null;
+
+            }
+            catch ( Exception ex )
+            {
+                LOGGER.error( " ***** Error getting relation with sourceId:" + sourceObjectId, ex );
+                return null;
+            }
     }
 
 

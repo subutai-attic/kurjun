@@ -21,6 +21,14 @@ public interface IdentityManager
 
 
     //********************************************
+    User getPublicUser();
+
+
+    //********************************************
+    String getPublicUserId();
+
+
+    //********************************************
     UserSession loginPublicUser();
 
 
@@ -43,8 +51,10 @@ public interface IdentityManager
     //********************************************
     User getSystemOwner();
 
+
     //********************************************
-    User setSystemOwner( String publicKeyASCII );
+    User setSystemOwner( String fingerprint, String publicKeyASCII );
+
 
     //********************************************
     User addUser( String publicKeyASCII );
@@ -52,6 +62,10 @@ public interface IdentityManager
 
     //********************************************
     User addUser( String publicKeyASCII, int userType );
+
+
+    //********************************************
+    User saveUser( User user );
 
 
     //********************************************

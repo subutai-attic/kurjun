@@ -2,7 +2,6 @@ package ai.subut.kurjun.web.filter;
 
 
 import com.google.common.base.Strings;
-import com.google.gson.Gson;
 import com.google.inject.Inject;
 
 import ai.subut.kurjun.model.identity.UserSession;
@@ -27,22 +26,23 @@ public class SecurityFilter implements Filter
     @Override
     public Result filter( final FilterChain filterChain, final Context ctx )
     {
-        Session session = ctx.getSession();
-        Result result = filterChain.next( ctx );
-        /*
-        if ( session == null || session.get( USER_SESSION ) == null )
-        {
-            return Results.redirect( "/login" );
-        }
-        */
         try
         {
+            Session session = ctx.getSession();
+            Result result = filterChain.next( ctx );
             UserSession uSession = null;
             String sptoken = ctx.getParameter( USER_TOKEN );
 
             if( Strings.isNullOrEmpty(sptoken))
             {
-                uSession = identityManagerService.loginPublicUser();
+                if ( session != null && session.get( USER_SESSION ) != null )
+                {
+                    uSession = identityManagerService.loginUser ("token", session.get( USER_SESSION ));
+                }
+                else
+                {
+                    uSession = identityManagerService.loginPublicUser();
+                }
             }
             else
             {
@@ -52,9 +52,18 @@ public class SecurityFilter implements Filter
             //******************************
             if( uSession != null )
             {
-                session.put( USER_SESSION, new Gson().toJson( uSession ) );
-                if ( !(result.getRenderable() instanceof NoHttpBody)  /* If not redirecting */
-                        && Result.TEXT_HTML.equals( result.getContentType()) /* handle only html content types */  )
+                //--------------------------------------
+                if(!uSession.equals( identityManagerService.getPublicUserId()))
+                {
+                    session.put( USER_SESSION, uSession.getUserToken().getFullToken() );
+                }
+                //--------------------------------------
+                ctx.setAttribute( "USER_SESSION", uSession );
+                //--------------------------------------
+
+
+                if ( !(result.getRenderable() instanceof NoHttpBody)  // If not redirecting
+                        && Result.TEXT_HTML.equals( result.getContentType())) //  handle only html content types
                 {
                     result.render( "userInfo", uSession );
                 }

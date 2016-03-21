@@ -79,6 +79,22 @@ public class IdentityManagerImpl implements IdentityManager
 
     //********************************************
     @Override
+    public User getPublicUser()
+    {
+        return getUser( PUBLIC_USER_ID );
+    }
+
+
+    //********************************************
+    @Override
+    public String getPublicUserId()
+    {
+        return PUBLIC_USER_ID;
+    }
+
+
+    //********************************************
+    @Override
     public UserSession loginPublicUser()
     {
         try
@@ -94,6 +110,7 @@ public class IdentityManagerImpl implements IdentityManager
             return null;
         }
     }
+
 
     //********************************************
     @Override
@@ -146,6 +163,10 @@ public class IdentityManagerImpl implements IdentityManager
             {
                 UserToken uToken = createUserToken( user, user.getKeyFingerprint(), "", "", null );
                 user.setUserToken( uToken );
+
+                //*************
+                saveUser( user );
+                //*************
 
                 return user;
             }
@@ -240,11 +261,34 @@ public class IdentityManagerImpl implements IdentityManager
 
     //********************************************
     @Override
-    public User setSystemOwner( String publicKeyASCII )
+    public User setSystemOwner( String fingerprint, String publicKeyASCII )
     {
+
         if(getSystemOwner() == null)
         {
-            return addUser( publicKeyASCII, UserType.RegularOwner.getId() );
+            User user = null;
+
+            if(Strings.isNullOrEmpty( fingerprint))
+            {
+                user = addUser( publicKeyASCII, UserType.RegularOwner.getId() );
+            }
+            else
+            {
+                user = getUser( fingerprint );
+
+                if(user != null)
+                {
+                    user.setType( UserType.RegularOwner.getId() );
+                    saveUser( user );
+                }
+                else
+                {
+                    LOGGER.info( " ***** System Owner is not set, user not found with fingeprint:" + fingerprint);
+                }
+            }
+
+            return user;
+
         }
         else
         {
@@ -283,8 +327,9 @@ public class IdentityManagerImpl implements IdentityManager
                     user = new DefaultUser( securityManager.readPGPKey( publicKeyASCII ) );
                     user.setType( UserType.Regular.getId() );
 
-                    FileDb fileDb = fileDbProvider.get();
-                    fileDb.put( DefaultUser.MAP_NAME, user.getKeyFingerprint().toLowerCase(), user );
+                    //****************
+                    saveUser( user );
+                    //****************
                 }
                 else
                 {
@@ -295,6 +340,25 @@ public class IdentityManagerImpl implements IdentityManager
         catch ( Exception ex )
         {
             LOGGER.error( " ***** Error adding user:", ex );
+            return null;
+        }
+
+        return user;
+    }
+
+
+    //********************************************
+    @Override
+    public User saveUser( User user )
+    {
+        try
+        {
+            FileDb fileDb = fileDbProvider.get();
+            fileDb.put( DefaultUser.MAP_NAME, user.getKeyFingerprint().toLowerCase(), user );
+        }
+        catch ( Exception ex )
+        {
+            LOGGER.error( " ***** Error saving user:", ex );
             return null;
         }
 
