@@ -41,6 +41,7 @@ public class IdentityManagerImpl implements IdentityManager
     private final String PUBLIC_USER_ID = "public-user";
 
 
+    private FileDbProvider fileDbProvider;
     //***************************
     @Inject
     private SecurityManager securityManager;
@@ -48,13 +49,14 @@ public class IdentityManagerImpl implements IdentityManager
     @Inject
     private RelationManager relationManager;
 
-    @Inject
-    private FileDbProvider fileDbProvider;
 
 
     //***************************
-    public IdentityManagerImpl()
+    @Inject
+    public IdentityManagerImpl( FileDbProvider fileDbProvider )
     {
+        this.fileDbProvider = fileDbProvider;
+
         createDefaultUsers();
     }
 
@@ -62,7 +64,7 @@ public class IdentityManagerImpl implements IdentityManager
     //********************************************
     private void createDefaultUsers()
     {
-        if(getUser( PUBLIC_USER_ID ) == null)
+        if ( getUser( PUBLIC_USER_ID ) == null )
         {
             User publicUser = addUser( PUBLIC_USER_ID, UserType.System.getId() );
         }
@@ -105,7 +107,7 @@ public class IdentityManagerImpl implements IdentityManager
 
             return userSession;
         }
-        catch(Exception ex)
+        catch ( Exception ex )
         {
             return null;
         }
@@ -114,7 +116,7 @@ public class IdentityManagerImpl implements IdentityManager
 
     //********************************************
     @Override
-    public UserSession loginUser( String fingerprint, String authMessage)
+    public UserSession loginUser( String fingerprint, String authMessage )
     {
         try
         {
@@ -126,18 +128,17 @@ public class IdentityManagerImpl implements IdentityManager
             }
             else
             {
-                user = authenticateUser(  fingerprint,  authMessage);
+                user = authenticateUser( fingerprint, authMessage );
             }
 
 
-            if(user != null)
+            if ( user != null )
             {
                 UserSession userSession = new DefaultUserSession();
                 userSession.setUser( user );
                 userSession.setUserToken( user.getUserToken() );
 
                 return userSession;
-
             }
             else
             {
@@ -184,13 +185,13 @@ public class IdentityManagerImpl implements IdentityManager
 
     //********************************************
     @Override
-    public User authenticateByToken( String token)
+    public User authenticateByToken( String token )
     {
         String fingerprint = TokenUtils.getSubject( token );
 
-        User user  = getUser( fingerprint );
+        User user = getUser( fingerprint );
 
-        if(user != null)
+        if ( user != null )
         {
             if ( securityManager.verifyJWTSignature( token, user.getUserToken().getSecret() ) )
             {
@@ -233,25 +234,24 @@ public class IdentityManagerImpl implements IdentityManager
         {
             List<User> users = getAllUsers();
 
-            if(users.isEmpty())
+            if ( users.isEmpty() )
             {
-                LOGGER.info( " ***** Owner of the system is not set yet");
+                LOGGER.info( " ***** Owner of the system is not set yet" );
             }
             else
             {
-                for(User user: users)
+                for ( User user : users )
                 {
-                    if(user.getType() == UserType.RegularOwner.getId())
+                    if ( user.getType() == UserType.RegularOwner.getId() )
                     {
                         return user;
                     }
                 }
             }
-
         }
         catch ( Exception ex )
         {
-            LOGGER.error( " ***** Error !!! Owner of the system is not set yet" , ex );
+            LOGGER.error( " ***** Error !!! Owner of the system is not set yet", ex );
             return null;
         }
 
@@ -264,11 +264,11 @@ public class IdentityManagerImpl implements IdentityManager
     public User setSystemOwner( String fingerprint, String publicKeyASCII )
     {
 
-        if(getSystemOwner() == null)
+        if ( getSystemOwner() == null )
         {
             User user = null;
 
-            if(Strings.isNullOrEmpty( fingerprint))
+            if ( Strings.isNullOrEmpty( fingerprint ) )
             {
                 user = addUser( publicKeyASCII, UserType.RegularOwner.getId() );
             }
@@ -276,19 +276,18 @@ public class IdentityManagerImpl implements IdentityManager
             {
                 user = getUser( fingerprint );
 
-                if(user != null)
+                if ( user != null )
                 {
                     user.setType( UserType.RegularOwner.getId() );
                     saveUser( user );
                 }
                 else
                 {
-                    LOGGER.info( " ***** System Owner is not set, user not found with fingeprint:" + fingerprint);
+                    LOGGER.info( " ***** System Owner is not set, user not found with fingeprint:" + fingerprint );
                 }
             }
 
             return user;
-
         }
         else
         {
@@ -314,9 +313,10 @@ public class IdentityManagerImpl implements IdentityManager
 
         try
         {
-            if(userType == UserType.System.getId())
+            if ( userType == UserType.System.getId() )
             {
                 user = new DefaultUser();
+                user.setKeyId( publicKeyASCII );
                 user.setKeyFingerprint( publicKeyASCII );
                 user.setType( UserType.System.getId() );
             }
@@ -326,16 +326,19 @@ public class IdentityManagerImpl implements IdentityManager
                 {
                     user = new DefaultUser( securityManager.readPGPKey( publicKeyASCII ) );
                     user.setType( UserType.Regular.getId() );
-
-                    //****************
-                    saveUser( user );
-                    //****************
                 }
                 else
                 {
                     LOGGER.info( " ***** Error adding user invalid public key" );
                 }
             }
+
+            //****************
+            if ( user != null )
+            {
+                saveUser( user );
+            }
+            //****************
         }
         catch ( Exception ex )
         {
@@ -392,6 +395,7 @@ public class IdentityManagerImpl implements IdentityManager
             return null;
         }
     }
+
 
     //********************************************
     @Override

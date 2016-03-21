@@ -3,6 +3,7 @@ package ai.subut.kurjun.identity;
 
 import java.io.Serializable;
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -113,4 +114,28 @@ public class DefaultRelation implements Relation, Serializable
     {
         this.type = type;
     }
+
+
+    //*************************
+    @Override
+    public boolean equals( Object obj )
+    {
+        if ( obj instanceof DefaultRelation )
+        {
+            DefaultRelation other = ( DefaultRelation ) obj;
+            return Objects.equals( this.id, other.id );
+        }
+        return false;
+    }
+
+
+    //*************************
+    @Override
+    public int hashCode()
+    {
+        int hash = 5;
+        hash = 19 * hash + Objects.hashCode( this.id );
+        return hash;
+    }
+
 }
