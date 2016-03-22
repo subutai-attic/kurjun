@@ -3,11 +3,11 @@
         <div class="b-popup__header">
             <span>Set system owner</span>
         <span onclick="$.colorbox.close();">
-            <img src="/assets/img/icons/b-icon-close.svg" class="b-icon g-right">
+            <img src="${contextPath}/assets/img/icons/b-icon-close.svg" class="b-icon g-right">
         </span>
         </div>
         <div class="b-form__wrapper g-margin-bottom-half">
-            <form method="post" action="/system/owner">
+            <form method="post" action="${contextPath}/system/owner">
                 <div class="b-workspace__content">
                     <div class="b-form__wrapper g-margin-bottom-half">
                         <label class="b-form-label">Owner Fingerprint</label>

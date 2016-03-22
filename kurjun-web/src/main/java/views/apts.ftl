@@ -13,18 +13,17 @@
 
 <div class="b-workspace__content">
     <div class="b-workspace-content__row">
-        <a href="/apt/upload" class="b-btn b-btn_green b-btn_search-field-level js-colorbox">
+        <a href="${contextPath}/apt/upload" class="b-btn b-btn_green b-btn_search-field-level js-colorbox">
             <i class="fa fa-plus"></i> Upload
         </a>
         <table id="apt_tbl" class="b-data-table">
             <thead>
             <tr>
                 <th>Name</th>
-                <th>Owner</th>
                 <th>Context</th>
                 <th>Arch</th>
-                <th>Parent</th>
                 <th>Version</th>
+                <th>size</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -32,18 +31,20 @@
             <#if apts?? && apts?has_content >
             <#list apts as a >
             <tr>
-                <td><a href="/apt/${a.id}/info" class="js-colorbox">${a.name}</a></td>
-                <td>${a.ownerFprint}</td>
+                <td><a href="${contextPath}/apt/${a.id}/info" class="js-colorbox">${a.name}</a></td>
                 <td>${a.id?split(".")[0]}</td>
                 <td>${a.architecture}</td>
-                <td>${a.parent}</td>
                 <td>${a.version}</td>
-                <td><a href="/apt/${md5sums[a.id]}/download" target="_blank">download</a>  |  <a href="#" onclick="remove('${md5sums[a.id]}')">remove</a></td>
+                <td>${a.installedSize}</td>
+                <td><a href="${contextPath}/apt/${md5sums[a.id]}/download" target="_blank">download</a>  |  <a href="#" onclick="remove('${md5sums[a.id]}')">remove</a></td>
             </tr>
             </#list>
             </#if>
             </tbody>
         </table>
+        <#--list md5sums?keys as key>
+            <li>${key}</li>
+        </#list-->
         <form id="removeAptForm" method="post" action></form>
     </div>
 </div>
@@ -53,7 +54,7 @@
     {
         var confirmed = confirm("Are you sure want to delete it?");
         if (confirmed) {
-            $('#removeAptForm').attr('action', '/apt/' + md5sum + '/delete');
+            $('#removeAptForm').attr('action', '${contextPath}/apt/' + md5sum + '/delete');
             $('#removeAptForm').submit();
         }
     }

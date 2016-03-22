@@ -51,7 +51,7 @@
         $('li#hdr_users_tab').addClass("b-tabs-menu__item_active");
         $('#add_user_btn').colorbox({href:"#js-add-user", inline: true});
         $('#set-sys-owner').colorbox({href:"#set-system-owner", inline: true});
-        $('#get-sys-owner').colorbox({href:"/system/owner"});
+        $('#get-sys-owner').colorbox({href:"${contextPath}/system/owner"});
 
         $('#users_tbl').DataTable();
     } );

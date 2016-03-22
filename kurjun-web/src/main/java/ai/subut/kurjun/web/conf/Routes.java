@@ -6,6 +6,9 @@ import ai.subut.kurjun.web.controllers.*;
 import com.google.inject.Inject;
 import ninja.Router;
 import ninja.application.ApplicationRoutes;
+import ninja.utils.NinjaProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -17,11 +20,15 @@ public class Routes implements ApplicationRoutes
     @Inject
     private RestRoutes restRoutes;
 
+    @Inject
+    private NinjaProperties ninjaProperties;
+
     @Override
     public void init( final Router router )
     {
-        restRoutes.init( router );
+        String contextPath = ninjaProperties.getContextPath();
 
+        restRoutes.init( router );
 
         // -------------------------------------------------------------------------------------------------------------
         //  Assets (CSS, JS, Images & Icons)

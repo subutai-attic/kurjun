@@ -13,12 +13,12 @@
 
 <div class="b-workspace__content">
     <div class="b-workspace-content__row">
-        <a href="/templates/upload" class="b-btn b-btn_green b-btn_search-field-level js-colorbox">
+        <a href="${contextPath}/templates/upload" class="b-btn b-btn_green b-btn_search-field-level js-colorbox">
             <i class="fa fa-plus"></i> Upload Template
         </a>
         <div style="margin-left: 200px">
 
-            <form method="get" actoin="/">
+            <form method="get" actoin="${contextPath}/">
                 <label>Show by repo: </label><select name="repo" id="repo-filter">
                     <#list repos as repo >
                         <option value="${repo}" <#if sel_repo==repo >selected</#if> >${repo}</option>
@@ -42,13 +42,13 @@
             <#if templates?? && templates?has_content >
             <#list templates as t >
             <tr>
-                <td><a href="/templates/${t.id}/info" class="js-colorbox">${t.name}</a></td>
+                <td><a href="${contextPath}/templates/${t.id}/info" class="js-colorbox">${t.name}</a></td>
                 <td>${t.ownerFprint}</td>
                 <td>${t.id?split(".")[0]}</td>
                 <td>${t.architecture}</td>
                 <td>${t.parent}</td>
                 <td>${t.version}</td>
-                <td><a href="/templates/${t.id}/download" target="_blank">download</a>  |  <a href="#" onclick="removeTemplate('${t.id}')">remove</a></td>
+                <td><a href="${contextPath}/templates/${t.id}/download" target="_blank">download</a>  |  <a href="#" onclick="removeTemplate('${t.id}')">remove</a></td>
             </tr>
             </#list>
             </#if>
@@ -63,7 +63,7 @@
     {
         var confirmed = confirm("Are you sure want to delete it?");
         if (confirmed) {
-            $('#removeTemplForm').attr('action', '/templates/' + templId + '/delete');
+            $('#removeTemplForm').attr('action', '${contextPath}/templates/' + templId + '/delete');
             $('#removeTemplForm').submit();
         }
     }
