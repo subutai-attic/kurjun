@@ -65,16 +65,6 @@ public class IdentityController extends BaseController {
             flashScope.error( "Failed to create user.");
             return Results.redirect( "/users" );
         }
-        /*if(user != null)
-        {
-            flashScope.success( "User created successfully" );
-            return Results.redirect( "/users" );
-        }
-        else
-        {
-            flashScope.error( "Failed to create user.");
-            return Results.redirect( "/users" );
-        }*/
     }
 
 
