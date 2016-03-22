@@ -49,5 +49,9 @@ public interface SecurityManager
     boolean verifyPGPSignature( String message, PGPPublicKeyRing pubKeyRing );
 
 
+    boolean verifyPGPSignatureAndContent( String signedMessage, String content, PGPPublicKeyRing pubKeyRing );
+
+    boolean verifyPGPSignatureAndContent( String signedMessage, String content, String pubKeyASCII );
+
     boolean verifyPGPSignature( String message, String pubKeyASCII );
 }

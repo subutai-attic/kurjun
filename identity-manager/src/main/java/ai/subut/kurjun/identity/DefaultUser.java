@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.bouncycastle.openpgp.PGPPublicKey;
@@ -43,7 +44,7 @@ public class DefaultUser implements User, Serializable
     {
         this.date = new Date(System.currentTimeMillis());
         this.setUserToken( null );
-        this.emailAddress = "public@subuta.ai";
+        this.emailAddress = "";
     }
 
 
@@ -55,6 +56,7 @@ public class DefaultUser implements User, Serializable
             this.keyFingerprint = Hex.encodeHexString( key.getFingerprint() );
             this.date = key.getCreationTime();
             this.emailAddress = parseEmailAddress( key );
+            this.signature = UUID.randomUUID().toString();
             this.setKeyData( PGPKeyUtil.exportAscii( key ) );
         }
         catch(Exception ex)
@@ -72,6 +74,7 @@ public class DefaultUser implements User, Serializable
             this.keyFingerprint = Hex.encodeHexString( key.getFingerprint() );
             this.date = key.getCreationTime();
             this.emailAddress = parseEmailAddress( key );
+            this.signature = UUID.randomUUID().toString();
             this.setKeyData( keyASCII );
         }
         catch(Exception ex)

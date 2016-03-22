@@ -116,6 +116,56 @@ public class SecurityManagerImpl implements SecurityManager
     }
 
 
+    /*******************************************/
+    @Override
+    public boolean verifyPGPSignatureAndContent( String signedMessage,String content, PGPPublicKeyRing pubKeyRing )
+    {
+        try
+        {
+            byte[] exractedContent = PGPEncryptionUtil.extractContentFromClearSign( content.getBytes() );
+
+            if(!content.getBytes().equals( exractedContent ))
+            {
+                return false;
+            }
+
+            signedMessage = signedMessage.trim();
+
+            return PGPEncryptionUtil.verifyClearSign( signedMessage.getBytes(), pubKeyRing );
+        }
+        catch ( Exception e )
+        {
+            return false;
+        }
+    }
+
+
+    /*******************************************/
+    @Override
+    public boolean verifyPGPSignatureAndContent( String signedMessage, String content, String pubKeyASCII )
+    {
+        try
+        {
+            PGPPublicKeyRing pubKeyRing = PGPKeyUtil.readPublicKeyRing( pubKeyASCII );
+
+            byte[] exractedContent = PGPEncryptionUtil.extractContentFromClearSign( signedMessage.getBytes() );
+            String extCont = new String(exractedContent);
+
+            if(!content.toLowerCase().equals( extCont.trim().toLowerCase() ))
+            {
+                return false;
+            }
+
+            signedMessage = signedMessage.trim();
+
+            return PGPEncryptionUtil.verifyClearSign( signedMessage.getBytes(), pubKeyRing );
+        }
+        catch ( Exception e )
+        {
+            return false;
+        }
+    }
+
 
     /*******************************************/
     @Override

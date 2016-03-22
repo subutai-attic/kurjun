@@ -80,7 +80,7 @@ public class RestIdentityController extends BaseController
 
         if(user != null)
         {
-            return Results.ok().render( user ).json();
+            return Results.ok().render( user.getSignature() ).text();
         }
         else
         {

@@ -179,7 +179,7 @@ public class RestTemplateController extends BaseController
         {
             if ( repository == null )
             {
-                repository = "all";
+                repository = "public";
             }
 
             //*****************************************************

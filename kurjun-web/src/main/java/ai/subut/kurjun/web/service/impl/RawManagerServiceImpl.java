@@ -15,6 +15,8 @@ import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.raw.RawMetadata;
+import ai.subut.kurjun.model.identity.Permission;
+import ai.subut.kurjun.model.identity.RelationObjectType;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
@@ -23,6 +25,7 @@ import ai.subut.kurjun.repo.LocalRawRepository;
 import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.web.context.ArtifactContext;
 import ai.subut.kurjun.web.service.RawManagerService;
+import ai.subut.kurjun.web.service.RelationManagerService;
 import ai.subut.kurjun.web.utils.Utils;
 import ninja.Renderable;
 import ninja.utils.ResponseStreams;
@@ -41,6 +44,8 @@ public class RawManagerServiceImpl implements RawManagerService
 
     private UserSession userSession;
 
+    @Inject
+    RelationManagerService relationManagerService;
 
     @Inject
     public RawManagerServiceImpl( final RepositoryFactory repositoryFactory, final ArtifactContext artifactContext )
@@ -282,4 +287,16 @@ public class RawManagerServiceImpl implements RawManagerService
     {
         return this.userSession;
     }
+
+
+
+    //*******************************************************************
+    private boolean checkRepoPermissions( String repoId, String contentId, Permission perm )
+    {
+        return relationManagerService
+                .checkRepoPermissions( userSession, repoId, RelationObjectType.RepositoryTemplate.getId(), contentId,
+                        RelationObjectType.RepositoryContent.getId(), perm );
+
+    }
+    //*******************************************************************
 }
