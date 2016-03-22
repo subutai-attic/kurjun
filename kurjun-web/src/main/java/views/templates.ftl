@@ -35,6 +35,7 @@
                 <th>Arch</th>
                 <th>Parent</th>
                 <th>Version</th>
+                <th>Size</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -48,6 +49,7 @@
                 <td>${t.architecture}</td>
                 <td>${t.parent}</td>
                 <td>${t.version}</td>
+                <td>${t.size}</td>
                 <td><a href="${contextPath}/templates/${t.id}/download" target="_blank">download</a>  |  <a href="#" onclick="removeTemplate('${t.id}')">remove</a></td>
             </tr>
             </#list>

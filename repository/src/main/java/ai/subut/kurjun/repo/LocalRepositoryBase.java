@@ -3,6 +3,7 @@ package ai.subut.kurjun.repo;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
@@ -34,9 +35,9 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
         PackageMetadataStore metadataStore = getMetadataStore();
         try
         {
-            if ( metadata.getId() != null )
+            if ( metadata.getId() != null || metadata.getMd5Sum() != null )
             {
-                return metadataStore.get( metadata.getId() );
+                return metadataStore.get( metadata.getId() != null? metadata.getId() : new BigInteger( 1, metadata.getMd5Sum() ).toString( 16 ) );
             }
             if ( metadata.getName() != null )
             {

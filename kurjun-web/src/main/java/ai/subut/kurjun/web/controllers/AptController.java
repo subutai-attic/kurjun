@@ -35,7 +35,7 @@ import java.util.Map;
  */
 public class AptController extends BaseController
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger( TemplateController.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( AptController.class );
 
     @Inject
     private AptManagerServiceImpl aptManagerService;
@@ -46,7 +46,6 @@ public class AptController extends BaseController
 
     public Result list( Context context, @Param( "type" ) String type, @Param( "repository" ) String repository )
     {
-        Map<String, String> md5Sums = new HashMap<>();
         if ( repository == null )
         {
             repository = "all";
@@ -55,15 +54,9 @@ public class AptController extends BaseController
         //********************************************
         aptManagerService.setUserSession( ( UserSession) context.getAttribute( "USER_SESSION" ) );
         List<SerializableMetadata> serializableMetadataList = aptManagerService.list( repository );
-
-        serializableMetadataList.stream().forEach(m -> {
-            LOGGER.info(m.getId().toString()+" = "+Utils.MD5.toString(m.getMd5Sum()));
-            md5Sums.put( m.getId().toString(), Utils.MD5.toString(m.getMd5Sum()) );
-        });
         //********************************************
 
-        return Results.html().template("views/apts.ftl").render( "apts", serializableMetadataList )
-                .render( "md5sums", md5Sums );
+        return Results.html().template("views/apts.ftl").render( "apts", serializableMetadataList );
     }
 
 
@@ -74,17 +67,15 @@ public class AptController extends BaseController
     }
 
     @FileProvider( SubutaiFileHandler.class )
-    public Result upload(Context context, @Param( "repository" ) String repository,
-                         @Param( "file" ) FileItem file, FlashScope flashScope ) throws IOException
+    public Result upload(Context context, @Param( "file" ) FileItem file, FlashScope flashScope ) throws IOException
     {
-        File filename = file.getFile();
         try ( InputStream inputStream = new FileInputStream( file.getFile() ) )
         {
             //********************************************
             aptManagerService.setUserSession( ( UserSession) context.getAttribute( "USER_SESSION" ) );
             URI uri = aptManagerService.upload( inputStream );
             //********************************************
-            
+
             if ( uri != null ) {
                 flashScope.success("File uploaded successfully");
                 return Results.redirect(context.getContextPath()+"/apt");
@@ -170,7 +161,7 @@ public class AptController extends BaseController
     }
 
 
-    public Result download( Context context, @Param( "md5" ) String md5, FlashScope flashScope )
+    public Result download( Context context, @PathParam( "id" ) String md5, FlashScope flashScope )
     {
 //        checkNotNull( md5, "MD5 cannot be null" );
 
@@ -181,14 +172,13 @@ public class AptController extends BaseController
 
         if ( renderable != null )
         {
-            flashScope.success("Deleted successfully");
             return Results.ok().render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
         }
         return Results.notFound().text().render( "Not found with MD5: " + md5 );
     }
 
 
-    public Result delete( Context context, @Param( "md5" ) String md5, FlashScope flashScope )
+    public Result delete( Context context, @PathParam( "id" ) String md5, FlashScope flashScope )
     {
 //        checkNotNull( md5, "MD5 cannot be null" );
 

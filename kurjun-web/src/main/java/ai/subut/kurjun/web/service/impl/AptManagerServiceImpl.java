@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.commons.codec.binary.Hex;
 
 import com.google.common.io.ByteStreams;
@@ -21,6 +24,7 @@ import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
+import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.model.identity.Permission;
 import ai.subut.kurjun.model.identity.RelationObjectType;
 import ai.subut.kurjun.model.identity.UserSession;
@@ -46,6 +50,8 @@ import ninja.utils.ResponseStreams;
 
 public class AptManagerServiceImpl implements AptManagerService
 {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( AptManagerServiceImpl.class );
 
     private RepositoryFactory repositoryFactory;
     private AptIndexBuilderFactory aptIndexBuilderFactory;
@@ -195,11 +201,20 @@ public class AptManagerServiceImpl implements AptManagerService
     @Override
     public Renderable getPackage( final byte[] md5 )
     {
+        DefaultMetadata m = new DefaultMetadata();
+        m.setMd5sum( md5 );
+
+        DefaultPackageMetadata md = ( DefaultPackageMetadata ) unifiedRepository.getPackageInfo( m );
+
         InputStream inputStream = getPackageStream( md5 );
 
         if ( inputStream != null )
         {
             return ( context, result ) -> {
+                result.addHeader( "Content-Disposition", "attachment;filename="
+                        + md.getName()+"_"+md.getVersion()+"_"+md.getArchitecture()+".deb" );
+                result.addHeader( "Contenty-Type", "application/octet-stream" );
+                //result.addHeader( "Content-Length", String.valueOf( md.getInstalledSize() ) );
 
                 ResponseStreams responseStreams = context.finalizeHeaders( result );
                 try ( OutputStream outputStream = responseStreams.getOutputStream() )
