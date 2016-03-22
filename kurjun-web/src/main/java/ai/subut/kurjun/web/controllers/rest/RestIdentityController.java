@@ -3,8 +3,12 @@ package ai.subut.kurjun.web.controllers.rest;
 
 import java.util.List;
 
+import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.web.controllers.BaseController;
+import ai.subut.kurjun.web.filter.SecurityFilter;
+import ninja.Context;
 import ninja.session.FlashScope;
+import ninja.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +57,19 @@ public class RestIdentityController extends BaseController
             return Results.notFound();
         }
 
+    }
+
+
+    public Result getActiveUser( Context context )
+    {
+        UserSession userSession = (UserSession) context.getAttribute(SecurityFilter.USER_SESSION);
+
+        if ( userSession != null )
+        {
+            return Results.ok().json().render(userSession.getUser().getKeyFingerprint());
+        }
+
+        return Results.notFound();
     }
 
 

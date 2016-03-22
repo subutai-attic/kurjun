@@ -1,9 +1,7 @@
 package ai.subut.kurjun.web.controllers;
 
-import ai.subut.kurjun.model.identity.Permission;
-import ai.subut.kurjun.model.identity.Relation;
-import ai.subut.kurjun.model.identity.RelationObject;
-import ai.subut.kurjun.model.identity.UserSession;
+import ai.subut.kurjun.identity.DefaultRelationObject;
+import ai.subut.kurjun.model.identity.*;
 import ai.subut.kurjun.web.controllers.rest.RestIdentityController;
 import ai.subut.kurjun.web.security.AuthorizedUser;
 import ai.subut.kurjun.web.service.IdentityManagerService;
@@ -71,13 +69,26 @@ public class RelationController extends BaseController {
     }
 
     public Result addTrustRelation( /*@AuthorizedUser UserSession userSession,*/ @Param( "target_fprint" ) String targetFprint,
-                                   @Param( "template_id" ) String templateId, @Params( "permission" ) String[] permissions,
+                                   @Param( "template_id" ) String templateId, @Param("repo") String repo,
+                                    @Param("trust_obj_type") String trustObjType,
+                                    @Params( "permission" ) String[] permissions,
                                    Context context, FlashScope flashScope )
     {
         UserSession userSession = (UserSession ) context.getAttribute( "USER_SESSION" );
         RelationObject owner = relationManagerService.toSourceObject( userSession.getUser() );
         RelationObject target = relationManagerService.toTargetObject( targetFprint );
-        RelationObject trustObject = relationManagerService.toTrustObject( templateId, null, null, null );
+        RelationObject trustObject = null;
+        if ( trustObjType.equals("template")) {
+            trustObject = new DefaultRelationObject();
+            trustObject.setId(templateId);
+            trustObject.setType(RelationObjectType.RepositoryTemplate.getId());
+        }
+        else {
+            trustObject = new DefaultRelationObject();
+            trustObject.setId(repo);
+            trustObject.setType(RelationObjectType.RepositoryContent.getId());
+        }
+        //trustObject = relationManagerService.toTrustObject( templateId, null, null, null );
         Set<Permission> objectPermissions = new HashSet<>();
         Arrays.asList( permissions ).forEach( p -> objectPermissions.add(Permission.valueOf(p)) );
 
