@@ -63,7 +63,7 @@ public class AptController extends BaseController
         //********************************************
 
         return Results.html().template("views/apts.ftl").render( "apts", serializableMetadataList )
-                .render( "md5sums", md5Sums ).render("util", new Utils());
+                .render( "md5sums", md5Sums );
     }
 
 
@@ -77,7 +77,6 @@ public class AptController extends BaseController
     public Result upload(Context context, @Param( "repository" ) String repository,
                          @Param( "file" ) FileItem file, FlashScope flashScope ) throws IOException
     {
-
         File filename = file.getFile();
         try ( InputStream inputStream = new FileInputStream( file.getFile() ) )
         {
@@ -85,10 +84,10 @@ public class AptController extends BaseController
             aptManagerService.setUserSession( ( UserSession) context.getAttribute( "USER_SESSION" ) );
             URI uri = aptManagerService.upload( inputStream );
             //********************************************
-
+            
             if ( uri != null ) {
                 flashScope.success("File uploaded successfully");
-                return Results.redirect("/apt");
+                return Results.redirect(context.getContextPath()+"/apt");
             }
         }
         catch ( IOException e )
@@ -97,7 +96,7 @@ public class AptController extends BaseController
         }
 
         flashScope.error("Failed to upload apt-file");
-        return Results.redirect( "/apt" );
+        return Results.redirect( context.getContextPath()+"/apt" );
     }
 
 
@@ -201,11 +200,11 @@ public class AptController extends BaseController
         if ( success )
         {
             flashScope.success("Deleted successfully");
-            return Results.redirect("/apt");
+            return Results.redirect(context.getContextPath()+"/apt");
         }
 
         flashScope.error("Failed to delete. Not found: "+md5);
-        return Results.redirect("/apt");
+        return Results.redirect(context.getContextPath()+"/apt");
     }
 
 
