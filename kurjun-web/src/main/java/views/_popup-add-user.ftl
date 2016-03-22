@@ -7,7 +7,7 @@
         </span>
     </div>
     <div class="b-form__wrapper g-margin-bottom-half">
-        <form method="post" action="/users">
+        <form method="post" action="/users/create">
             <div class="b-workspace__content">
                 <div class="b-form__wrapper g-margin-bottom-half">
                     <label class="b-form-label">User Public Key</label>
