@@ -49,13 +49,12 @@ public class TemplateController extends BaseController {
     public Result listTemplates( Context context, FlashScope flashScope, @Param("repo") String repo )
     {
         List<SerializableMetadata> defaultTemplateList = new ArrayList<>();
-        Map<String, String> templateRepositories = new HashMap<>();
         try
         {
-            String fingerprint = StringUtils.isBlank(repo)? "public":repo;
+            repo = StringUtils.isBlank(repo)? "public":repo;
             //*****************************************************
             templateManagerService.setUserSession( (UserSession ) context.getAttribute( "USER_SESSION" ) );
-            defaultTemplateList = templateManagerService.list( fingerprint, false );
+            defaultTemplateList = templateManagerService.list( repo, false );
             //*****************************************************
         }
         catch ( IOException e )
@@ -63,24 +62,30 @@ public class TemplateController extends BaseController {
             flashScope.error( "Failed to get list of templates.");
             LOGGER.error( "Failed to get list of templates: " + e.getMessage() );
         }
+        List<String> repos = repositoryService.getRepositories();
 
-        return Results.html().template("views/home.ftl").render( "templates", defaultTemplateList )
-                .render( "templ_repos", templateRepositories);
+        return Results.html().template("views/templates.ftl").render( "templates", defaultTemplateList )
+                .render("repos", repos).render("sel_repo", repo);
     }
 
 
     public Result getUploadTemplateForm()
     {
         List<String> repos = repositoryService.getRepositories();
-        return Results.html().template("views/_popup-add-tpl.ftl").render("repos", repos);
+        return Results.html().template("views/_popup-upload-templ.ftl").render("repos", repos);
     }
 
 
     @FileProvider( SubutaiFileHandler.class )
     public Result uploadTemplate( Context context, @Param( "repository" ) String repository,
-                                  @Param( "file" ) FileItem file, @Param( "md5" ) String md5, FlashScope flashScope )
+                                  @Param("repo_name") String repoName, @Param("repo_type") String repoType,
+                                  @Param( "file" ) FileItem file, FlashScope flashScope )
     {
         try {
+            if ( repoType.equals("new")) {
+                repository = repoName;
+            }
+
             if ( StringUtils.isBlank( repository ) ) {
                 repository = "public";
             }
@@ -151,12 +156,12 @@ public class TemplateController extends BaseController {
             Renderable renderable = templateManagerService.renderableTemplate( tid.getOwnerFprint(), tid.getMd5(), false );
             //*****************************************************
 
-            return new Result( 200 ).render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
+            return Results.ok().render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
         }
         catch ( IOException e )
         {
             LOGGER.error( "Failed to download template: " + e.getMessage() );
-            return Results.internalServerError();
+            return Results.internalServerError().text().render("Failed to download template");
         }
     }
 

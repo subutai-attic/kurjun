@@ -13,10 +13,15 @@ import ninja.Result;
 import ninja.Results;
 import ninja.session.Session;
 import ninja.utils.NoHttpBody;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class SecurityFilter implements Filter
 {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( SecurityFilter.class );
+
     @Inject
     IdentityManagerService identityManagerService;
 

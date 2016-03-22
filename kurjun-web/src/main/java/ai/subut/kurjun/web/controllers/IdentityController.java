@@ -79,6 +79,8 @@ public class IdentityController extends BaseController {
     public Result logout( Context context )
     {
         context.setAttribute(SecurityFilter.USER_TOKEN, null);
+        context.setAttribute(SecurityFilter.USER_SESSION, null);
+        context.getSession().clear();
         return Results.redirect("/");
     }
 

@@ -9,13 +9,23 @@
 <#macro scripts>
 </#macro>
 
-<@layout.parentLayout "Templates">
+<@layout.parentLayout>
 
 <div class="b-workspace__content">
     <div class="b-workspace-content__row">
         <a href="/templates/upload" class="b-btn b-btn_green b-btn_search-field-level js-colorbox">
-            <i class="fa fa-plus"></i> Add Template
+            <i class="fa fa-plus"></i> Upload Template
         </a>
+        <div style="margin-left: 200px">
+
+            <form method="get" actoin="/">
+                <label>Show by repo: </label><select name="repo" id="repo-filter">
+                    <#list repos as repo >
+                        <option value="${repo}" <#if sel_repo==repo >selected</#if> >${repo}</option>
+                    </#list>
+                </select>
+            </form>
+        </div>
         <table id="templates_tbl" class="b-data-table">
             <thead>
             <tr>
@@ -38,7 +48,7 @@
                 <td>${t.architecture}</td>
                 <td>${t.parent}</td>
                 <td>${t.version}</td>
-                <td><a href="#" onclick="removeTemplate('${t.id}')">remove</a>  |  <a href="/templates/${t.id}/download" target="_blank">download</a></td>
+                <td><a href="/templates/${t.id}/download" target="_blank">download</a>  |  <a href="#" onclick="removeTemplate('${t.id}')">remove</a></td>
             </tr>
             </#list>
             </#if>
@@ -51,8 +61,11 @@
 <script>
     function removeTemplate(templId)
     {
-        $('#removeTemplForm').attr('action', '/templates/'+templId);
-        $('#removeTemplForm').submit();
+        var confirmed = confirm("Are you sure want to delete it?");
+        if (confirmed) {
+            $('#removeTemplForm').attr('action', '/templates/' + templId + '/delete');
+            $('#removeTemplForm').submit();
+        }
     }
 
     $(document).ready( function () {
@@ -62,6 +75,10 @@
         //$('#add_tpl_btn').colorbox({href:"#js-add-tpl", inline: true});
 
         $('#templates_tbl').DataTable();
+
+        $('#repo-filter').on('change', function(e){
+            $(this).parent().submit();
+        });
     } );
 
 
