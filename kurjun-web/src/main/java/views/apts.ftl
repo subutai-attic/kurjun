@@ -19,6 +19,8 @@
         <table id="apt_tbl" class="b-data-table">
             <thead>
             <tr>
+                <th>id</th>
+                <th>md5</th>
                 <th>Name</th>
                 <th>Context</th>
                 <th>Arch</th>
@@ -31,6 +33,8 @@
             <#if apts?? && apts?has_content >
             <#list apts as a >
             <tr>
+                <td>${a.id}</td>
+                <td></td>
                 <td><a href="${contextPath}/apt/${a.id}/info" class="js-colorbox">${a.name}</a></td>
                 <td>${a.id?split(".")[0]}</td>
                 <td>${a.architecture}</td>
@@ -42,9 +46,9 @@
             </#if>
             </tbody>
         </table>
-        <#--list md5sums?keys as key>
-            <li>${key}</li>
-        </#list-->
+        <#list md5sums?keys as key>
+            <li>${key} val = ${md5sums[key]}</li>
+        </#list>
         <form id="removeAptForm" method="post" action></form>
     </div>
 </div>

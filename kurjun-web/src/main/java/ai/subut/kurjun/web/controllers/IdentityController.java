@@ -41,17 +41,17 @@ public class IdentityController extends BaseController {
         if (user != null)
         {
             context.getSession().put( SecurityFilter.USER_SESSION, user.getUserToken().getFullToken() );
-            return Results.redirect("/");
+            return Results.redirect(context.getContextPath()+"/");
         }
         else
         {
             flashScope.error("Failed to authorize.");
-            return Results.redirect("/login");
+            return Results.redirect(context.getContextPath()+"/login");
         }
     }
 
 
-    public Result createUser(@Param( "key" ) String publicKey, FlashScope flashScope )
+    public Result createUser(@Param( "key" ) String publicKey, Context context, FlashScope flashScope )
     {
         User user = identityManagerService.addUser( publicKey );
 
@@ -63,7 +63,7 @@ public class IdentityController extends BaseController {
         else
         {
             flashScope.error( "Failed to create user.");
-            return Results.redirect( "/users" );
+            return Results.redirect( context.getContextPath()+"/users" );
         }
     }
 
@@ -81,7 +81,7 @@ public class IdentityController extends BaseController {
         context.setAttribute(SecurityFilter.USER_TOKEN, null);
         context.setAttribute(SecurityFilter.USER_SESSION, null);
         context.getSession().clear();
-        return Results.redirect("/");
+        return Results.redirect(context.getContextPath()+"/");
     }
 
 
@@ -95,7 +95,7 @@ public class IdentityController extends BaseController {
             flashScope.success("System owner set successfully. MessageId:"+user.getSignature());
         }
 
-        return Results.redirect("/users");
+        return Results.redirect(context.getContextPath()+"/users");
     }
 
 

@@ -101,6 +101,6 @@ public class RelationController extends BaseController {
             flashScope.success("Trust relation added.");
         }
 
-        return Results.redirect("/relations");
+        return Results.redirect(context.getContextPath()+"/relations");
     }
 }

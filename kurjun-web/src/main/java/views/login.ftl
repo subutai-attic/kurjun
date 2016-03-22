@@ -66,7 +66,10 @@
 
 
 <!-- BASE -->
-<script src="/assets/js/jquery-2.1.1.min.js"></script>
+<script src="${contextPath}/assets/js/jquery-2.1.1.min.js"></script>
+<script>
+  console.log($('form').attr('action'));
+</script>
 
 </body>
 

@@ -97,7 +97,7 @@ public class TemplateController extends BaseController
                 if (!fileItem.md5().equals(md5)) {
                     fileItem.cleanup();
                     flashScope.error( "Failed: MD5 checksum mismatch.");
-                    return Results.redirect( "/" );
+                    return Results.redirect( context.getContextPath()+"/" );
                 }
             }
             */
@@ -109,7 +109,7 @@ public class TemplateController extends BaseController
             if( Strings.isNullOrEmpty(id))
             {
                 flashScope.error("Failed to upload template.Access Permission error.");
-                return Results.redirect( "/" );
+                return Results.redirect( context.getContextPath()+"/" );
             }
             else
             {
@@ -117,7 +117,7 @@ public class TemplateController extends BaseController
                 //temp contains [fprint].[md5]
                 if (temp.length == 2) {
                     flashScope.success("Template uploaded successfully");
-                    return Results.redirect( "/" );
+                    return Results.redirect( context.getContextPath()+"/" );
                 }
             }
         }
@@ -127,7 +127,7 @@ public class TemplateController extends BaseController
         }
 
         flashScope.error("Failed to upload template");
-        return Results.redirect( "/" );
+        return Results.redirect( context.getContextPath()+"/" );
     }
 
 
@@ -199,6 +199,6 @@ public class TemplateController extends BaseController
             flashScope.error("Failed to remove template.");
         }
 
-        return Results.redirect("/");
+        return Results.redirect(context.getContextPath()+"/");
     }
 }
