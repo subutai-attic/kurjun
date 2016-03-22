@@ -66,7 +66,6 @@ public class Routes implements ApplicationRoutes
         // -------------------------------------------------------------------------------------------------------------
         router.GET().route( "/apt" ).with( AptController.class, "list" );
         //router.GET().route( "/apt/{id}/info" ).with( AptController.class, "getTemplateInfo" );
-        router.GET().route( "/apt/upload" ).with( AptController.class, "getUploadForm" );
         router.POST().route( "/apt/upload" ).with( AptController.class, "upload" );
         router.GET().route( "/apt/{id}/download" ).with( AptController.class, "download" );
         router.POST().route( "/apt/{id}/delete" ).with( AptController.class, "delete" );
@@ -76,10 +75,9 @@ public class Routes implements ApplicationRoutes
         // -------------------------------------------------------------------------------------------------------------
         router.GET().route( "/raw-files" ).with( RawFileController.class, "list" );
         //router.GET().route( "/raw-files/info" ).with( RawFileController.class, "info" );
-        router.GET().route( "/raw-files/upload" ).with( RawFileController.class, "getUploadForm" );
         router.POST().route( "/raw-files/upload" ).with( RawFileController.class, "upload" );
-        router.GET().route( "/raw-files/download" ).with( RawFileController.class, "download" );
-        router.POST().route( "/raw-files/delete" ).with( RawFileController.class, "delete" );
+        router.GET().route( "/raw-files/{id}/download" ).with( RawFileController.class, "download" );
+        router.POST().route( "/raw-files/{id}/delete" ).with( RawFileController.class, "delete" );
 
         // -------------------------------------------------------------------------------------------------------------
         //  Relations
