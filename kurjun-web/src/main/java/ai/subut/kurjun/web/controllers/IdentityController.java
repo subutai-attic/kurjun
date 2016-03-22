@@ -57,11 +57,13 @@ public class IdentityController extends BaseController {
 
         if(user != null)
         {
-            return Results.html().template("views/_popup-view-user-status.ftl").render("user", user);
+            return Results.html().template("views/token.ftl").render("token", user.getSignature());
+            ///return Results.text().render(user.getSignature());
         }
         else
         {
-            return Results.html().template("views/_popup-view-user-status.ftl").render( "user", null );
+            flashScope.error( "Failed to create user.");
+            return Results.redirect( "/users" );
         }
     }
 
