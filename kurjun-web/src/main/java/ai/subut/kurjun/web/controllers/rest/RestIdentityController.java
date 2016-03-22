@@ -80,7 +80,7 @@ public class RestIdentityController extends BaseController
 
         if (user != null)
         {
-            return Results.ok().render( user.getUserToken().getFullToken() ).json();
+            return Results.ok().render( user.getUserToken().getFullToken() ).text();
         }
         else
         {
@@ -96,7 +96,7 @@ public class RestIdentityController extends BaseController
 
         if (user != null)
         {
-            return Results.ok().render( user.getUserToken().getFullToken() ).json();
+            return Results.ok().render( user.getKeyFingerprint() ).json();
         }
         else
         {
@@ -112,7 +112,7 @@ public class RestIdentityController extends BaseController
 
         if (user != null)
         {
-            return Results.ok().render( user.getUserToken().getFullToken() ).json();
+            return Results.ok().render( user.getKeyFingerprint() ).json();
         }
         else
         {
