@@ -13,7 +13,8 @@ import ninja.utils.NoHttpBody;
 public class AuthorizedFilter implements Filter {
 
     @Override
-    public Result filter(FilterChain filterChain, Context context) {
+    public Result filter(FilterChain filterChain, Context context)
+    {
         Result result = filterChain.next( context );
         UserSession us = (UserSession) context.getAttribute( SecurityFilter.USER_SESSION);
         if (us != null && us.getUser() != null

@@ -57,13 +57,11 @@ public class IdentityController extends BaseController {
 
         if(user != null)
         {
-            flashScope.success( "User created successfully" );
-            return Results.redirect( "/users" );
+            return Results.html().template("views/_popup-view-user-status.ftl").render("user", user);
         }
         else
         {
-            flashScope.error( "Failed to create user.");
-            return Results.redirect( "/users" );
+            return Results.html().template("views/_popup-view-user-status.ftl").render( "user", null );
         }
     }
 
@@ -92,7 +90,7 @@ public class IdentityController extends BaseController {
 
         if (user != null)
         {
-            flashScope.success("System owner set successfully.");
+            flashScope.success("System owner set successfully. MessageId:"+user.getSignature());
         }
 
         return Results.redirect("/users");
@@ -108,7 +106,8 @@ public class IdentityController extends BaseController {
             LOGGER.info("owner found");
             return Results.html().template("views/_popup-view-system-owner.ftl").render("sys_owner", user);
         }
-        else {
+        else
+        {
             LOGGER.info("ownwer NOT found");
             return Results.html().template("views/_popup-view-system-owner.ftl").render("sys_owner", user);
         }

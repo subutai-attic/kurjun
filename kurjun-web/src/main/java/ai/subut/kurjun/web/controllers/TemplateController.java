@@ -175,10 +175,14 @@ public class TemplateController extends BaseController {
 
             //*****************************************************
             templateManagerService.setUserSession( (UserSession ) context.getAttribute( "USER_SESSION" ) );
-            templateManagerService.delete(tid);
+            boolean status = templateManagerService.delete(tid);
             //*****************************************************
 
-            flashScope.success( "Template removed successfully" );
+            if(status)
+                flashScope.success( "Template removed successfully" );
+            else
+                flashScope.error( "Access permission error. Template not removed !!!" );
+
         }
         catch (Exception e)
         {

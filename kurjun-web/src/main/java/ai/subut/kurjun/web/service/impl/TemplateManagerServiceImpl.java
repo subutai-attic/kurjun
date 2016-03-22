@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
 
@@ -113,10 +114,15 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     public SerializableMetadata getTemplate( final byte[] md5 ) throws IOException
     {
         KurjunContext context = artifactContext.getRepository( new BigInteger( 1, md5 ).toString( 16 ) );
-        DefaultTemplate defaultTemplate = new DefaultTemplate();
-        defaultTemplate.setId( context.getName(), md5 );
 
-        return repositoryFactory.createLocalTemplate( context ).getPackageInfo( defaultTemplate );
+        if(checkRepoPermissions( context.getName() , toId(md5, context.getName() ), Permission.Write ))
+        {
+            DefaultTemplate defaultTemplate = new DefaultTemplate();
+            defaultTemplate.setId( context.getName(), md5 );
+            return repositoryFactory.createLocalTemplate( context ).getPackageInfo( defaultTemplate );
+        }
+
+        return null;
     }
 
 
@@ -124,18 +130,22 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     public InputStream getTemplateData( final String repository, final byte[] md5, final boolean isKurjunClient )
             throws IOException
     {
-        DefaultTemplate defaultTemplate = new DefaultTemplate();
-        defaultTemplate.setId( repository, md5 );
+        if(checkRepoPermissions( repository, toId(md5, repository ), Permission.Write ))
+        {
+            DefaultTemplate defaultTemplate = new DefaultTemplate();
+            defaultTemplate.setId( repository, md5 );
 
-        if ( repository.equalsIgnoreCase( "public" ) )
-        {
-            return unifiedTemplateRepository.getPackageStream( defaultTemplate );
+            if ( repository.equalsIgnoreCase( "public" ) )
+            {
+                return unifiedTemplateRepository.getPackageStream( defaultTemplate );
+            }
+            else
+            {
+                return repositoryFactory.createLocalTemplate( new KurjunContext( repository ) )
+                                        .getPackageStream( defaultTemplate );
+            }
         }
-        else
-        {
-            return repositoryFactory.createLocalTemplate( new KurjunContext( repository ) )
-                                    .getPackageStream( defaultTemplate );
-        }
+        return null;
     }
 
 
@@ -157,9 +167,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
                 results = repositoryFactory.createLocalTemplate( new KurjunContext( repository ) ).listPackages();
         }
 
-        if ( !relationManagerService
-                .checkUserPermissions( userSession, repository, RelationObjectType.RepositoryTemplate.getId() )
-                .contains( Permission.Read ) )
+        if ( checkRepoPermissions( repository, null, Permission.Read ))
         {
             return results;
         }
@@ -195,9 +203,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         //**************************************
 
         //***** Check permissions (WRITE) *****************
-        if ( relationManagerService
-                .checkUserPermissions( userSession, repository, RelationObjectType.RepositoryTemplate.getId() )
-                .contains( Permission.Write ) )
+        if ( checkRepoPermissions( repository, null, Permission.Write ) )
         {
             SubutaiTemplateMetadata metadata = ( SubutaiTemplateMetadata ) getRepo( repository )
                     .put( inputStream, CompressionType.GZIP, repository );
@@ -237,9 +243,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         //**************************************
 
         //***** Check permissions (WRITE) *****************
-        if ( relationManagerService
-                .checkUserPermissions( userSession, repository, RelationObjectType.RepositoryTemplate.getId() )
-                .contains( Permission.Write ) )
+        if ( checkRepoPermissions( repository, null, Permission.Write ) )
         {
             SubutaiTemplateMetadata metadata =
                     ( SubutaiTemplateMetadata ) getRepo( repository ).put( file, CompressionType.GZIP, repository );
@@ -267,30 +271,12 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     @Override
     public boolean delete( TemplateId tid ) throws IOException
     {
-        //***** Check permissions (WRITE) *****************
-        boolean access = false;
-
-        if ( relationManagerService
-                .checkUserPermissions( userSession, tid.getOwnerFprint(), RelationObjectType.RepositoryTemplate.getId() )
-                .contains( Permission.Delete ) )
-        {
-            access = true;
-        }
-
-        if ( access == false )
-        {
-            if ( relationManagerService.checkUserPermissions( userSession, tid.get(),
-                    RelationObjectType.RepositoryContent.getId() ).contains( Permission.Delete ) )
-            {
-                access = true;
-            }
-        }
-        //***********************************************************************
-
-
-        if ( access )
+        //************ CheckPermissions ************************************
+        if ( checkRepoPermissions( tid.getOwnerFprint(), tid.get(), Permission.Delete  ) )
         {
             LocalTemplateRepository _repository = ( LocalTemplateRepository ) getRepo( tid.getOwnerFprint() );
+
+            // remove Relation
 
             return _repository.delete( tid.get(), Utils.MD5.toByteArray( tid.getMd5() ) );
         }
@@ -319,27 +305,9 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     public Renderable renderableTemplate( final String repository, String md5, final boolean isKurjunClient )
             throws IOException
     {
-        //***** Check permissions (WRITE) *****************
-        boolean access = false;
 
-        if ( relationManagerService
-                .checkUserPermissions( userSession, repository, RelationObjectType.RepositoryTemplate.getId() )
-                .contains( Permission.Read ) )
-        {
-            access = true;
-        }
-
-        if ( access == false )
-        {
-            if ( relationManagerService.checkUserPermissions( userSession, repository + "." + md5,
-                    RelationObjectType.RepositoryContent.getId() ).contains( Permission.Read ) )
-            {
-                access = true;
-            }
-        }
-        //************************************************
-
-        if ( access == true )
+        //************ CheckPermissions ************************************
+        if ( checkRepoPermissions( repository, repository + "." + md5, Permission.Read  ) )
         {
             DefaultTemplate defaultTemplate = new DefaultTemplate();
 
@@ -378,28 +346,8 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     @Override
     public DefaultTemplate getTemplate( final TemplateId templateId, final String md5, String name, String version )
     {
-
-        //***** Check permissions (WRITE) *****************
-        boolean access = false;
-
-        if ( relationManagerService
-                .checkUserPermissions( userSession, templateId.getOwnerFprint(), RelationObjectType.RepositoryTemplate.getId() )
-                .contains( Permission.Read ) )
-        {
-            access = true;
-        }
-
-        if ( access == false )
-        {
-            if ( relationManagerService.checkUserPermissions( userSession, templateId.get(),
-                    RelationObjectType.RepositoryContent.getId() ).contains( Permission.Read ) )
-            {
-                access = true;
-            }
-        }
-        //************************************************
-
-        if ( access )
+        //************ CheckPermissions ************************************
+        if ( checkRepoPermissions( templateId.getOwnerFprint(), templateId.get(), Permission.Read  ) )
         {
 
             DefaultTemplate defaultTemplate = new DefaultTemplate();
@@ -556,4 +504,15 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     {
         this.userSession = userSession;
     }
+
+
+    //*******************************************************************
+    private boolean checkRepoPermissions( String repoId, String contentId, Permission perm )
+    {
+        return relationManagerService
+                .checkRepoPermissions( userSession, repoId, RelationObjectType.RepositoryTemplate.getId(), contentId,
+                        RelationObjectType.RepositoryContent.getId(), perm );
+
+    }
+    //*******************************************************************
 }

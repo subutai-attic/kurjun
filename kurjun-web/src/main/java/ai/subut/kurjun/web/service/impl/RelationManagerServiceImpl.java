@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 
 import ai.subut.kurjun.identity.DefaultRelationObject;
@@ -47,6 +48,14 @@ public class RelationManagerServiceImpl implements RelationManagerService
     public List<Relation> getAllRelations()
     {
         return relationManager.getAllRelations();
+    }
+
+
+    //*************************************
+    @Override
+    public void removeRelation(Relation relation)
+    {
+        relationManager.removeRelation( relation.getId() );
     }
 
 
@@ -171,7 +180,37 @@ public class RelationManagerServiceImpl implements RelationManagerService
     @Override
     public Set<Permission> checkUserPermissions( UserSession userSession, String objectId, int objectType )
     {
-        return relationManager.getUserPermissions( userSession.getUser() ,objectId ,objectType );
+        if(userSession == null)
+            return null;
+        else
+            return relationManager.getUserPermissions( userSession.getUser() ,objectId ,objectType );
+    }
+
+
+    //*******************************************************************
+    @Override
+    public boolean checkRepoPermissions( UserSession userSession, String repoId, int repoType, String contentId,
+                                         int contentType, Permission perm )
+    {
+        boolean access = false;
+
+        if ( checkUserPermissions( userSession, repoId, repoType ).contains( perm ) )
+        {
+            access = true;
+        }
+
+        if ( !Strings.isNullOrEmpty( contentId ) )
+        {
+
+            if ( access == false )
+            {
+                if ( checkUserPermissions( userSession, contentId, contentType ).contains( perm ) )
+                {
+                    access = true;
+                }
+            }
+        }
+        return access;
     }
 
 

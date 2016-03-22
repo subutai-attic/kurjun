@@ -21,6 +21,8 @@ import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
+import ai.subut.kurjun.model.identity.Permission;
+import ai.subut.kurjun.model.identity.RelationObjectType;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
@@ -36,6 +38,7 @@ import ai.subut.kurjun.repo.util.PackagesProviderFactory;
 import ai.subut.kurjun.repo.util.ReleaseIndexBuilder;
 import ai.subut.kurjun.web.context.ArtifactContext;
 import ai.subut.kurjun.web.service.AptManagerService;
+import ai.subut.kurjun.web.service.RelationManagerService;
 import ai.subut.kurjun.web.utils.Utils;
 import ninja.Renderable;
 import ninja.utils.ResponseStreams;
@@ -56,6 +59,9 @@ public class AptManagerServiceImpl implements AptManagerService
     private KurjunContext kurjunContext;
 
     private UserSession userSession;
+
+    @Inject
+    RelationManagerService relationManagerService;
 
 
     @Inject
@@ -380,8 +386,18 @@ public class AptManagerServiceImpl implements AptManagerService
         this.userSession = userSession;
     }
 
-public UserSession getUserSession()
+    public UserSession getUserSession()
     {
         return this.userSession;
     }
+
+
+    //*******************************************************************
+    private boolean checkRepoPermissions( String repoId, String contentId, Permission perm )
+    {
+        return relationManagerService
+                .checkRepoPermissions( userSession, repoId, RelationObjectType.RepositoryApt.getId(), contentId,
+                        RelationObjectType.RepositoryContent.getId(), perm );
+    }
+    //*******************************************************************
 }

@@ -17,6 +17,9 @@ public interface RelationManagerService extends BaseService {
     //*************************************
     List<Relation> getAllRelations();
 
+    //*************************************
+    void removeRelation( Relation relation );
+
     Relation addTrustRelation(RelationObject source, RelationObject target, RelationObject trustObject,
                               Set<Permission> permissions);
 
@@ -47,6 +50,10 @@ public interface RelationManagerService extends BaseService {
 
     //***************************
     Set<Permission> checkUserPermissions( UserSession userSession, String objectId, int objectType );
+
+    //*******************************************************************
+    boolean checkRepoPermissions( UserSession userSession, String repoId, int repoType, String contentId,
+                                  int contentType, Permission perm );
 
     RelationObject toSourceObject( User user );
 
