@@ -53,7 +53,7 @@ public class RelationManagerServiceImpl implements RelationManagerService
 
     //*************************************
     @Override
-    public void removeRelation(Relation relation)
+    public void removeRelation( Relation relation )
     {
         relationManager.removeRelation( relation.getId() );
     }
@@ -159,7 +159,14 @@ public class RelationManagerServiceImpl implements RelationManagerService
 
         if ( relation == null )
         {
-            if ( objectId.equals( "public" ) )
+            if ( objectId.equals( "vapt" ))
+            {
+                owner = identityManagerService.getSystemOwner();
+                pubus = identityManagerService.getPublicUser();
+
+                buildTrustRelation( owner,pubus , objectId, objectType, buildPermissions( 1 ) );
+            }
+            else if ( objectId.equals( "public" ) || objectId.equals( "raw" ))
             {
                 owner = identityManagerService.getSystemOwner();
                 pubus = identityManagerService.getPublicUser();

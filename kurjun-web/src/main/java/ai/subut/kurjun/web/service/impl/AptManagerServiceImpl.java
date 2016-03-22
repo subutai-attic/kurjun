@@ -59,6 +59,7 @@ public class AptManagerServiceImpl implements AptManagerService
     private KurjunContext kurjunContext;
 
     private UserSession userSession;
+    private String REPO_NAME = "vapt";
 
     @Inject
     RelationManagerService relationManagerService;
@@ -85,7 +86,7 @@ public class AptManagerServiceImpl implements AptManagerService
     //init local repos
     private void _local()
     {
-        this.kurjunContext = new KurjunContext( "vapt" );
+        this.kurjunContext = new KurjunContext( REPO_NAME );
         this.localRepository = repositoryFactory.createLocalApt( kurjunContext );
     }
 
@@ -221,10 +222,19 @@ public class AptManagerServiceImpl implements AptManagerService
     {
         try
         {
-            Metadata meta = localRepository.put( is );
-            if ( meta != null )
+            // *******CheckRepoOwner ***************
+            relationManagerService
+                    .checkRelationOwner( userSession, REPO_NAME, RelationObjectType.RepositoryApt.getId() );
+            //**************************************
+
+            //***** Check permissions (WRITE) *****************
+            if ( checkRepoPermissions( REPO_NAME, null, Permission.Write ) )
             {
-                return new URI( null, null, "/info", "md5=" + Hex.encodeHexString( meta.getMd5Sum() ), null );
+                Metadata meta = localRepository.put( is );
+                if ( meta != null )
+                {
+                    return new URI( null, null, "/info", "md5=" + Hex.encodeHexString( meta.getMd5Sum() ), null );
+                }
             }
         }
         catch ( IOException | URISyntaxException e )
@@ -265,7 +275,10 @@ public class AptManagerServiceImpl implements AptManagerService
     {
         try
         {
-            return localRepository.delete( md5 );
+            if ( checkRepoPermissions( REPO_NAME , null, Permission.Delete ) )
+            {
+                return localRepository.delete( md5 );
+            }
         }
         catch ( IOException ex )
         {

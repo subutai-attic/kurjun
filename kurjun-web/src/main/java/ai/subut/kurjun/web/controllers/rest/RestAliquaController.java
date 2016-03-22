@@ -4,6 +4,9 @@ package ai.subut.kurjun.web.controllers.rest;
 import com.google.inject.Inject;
 
 import ai.subut.kurjun.metadata.common.raw.RawMetadata;
+import ai.subut.kurjun.model.identity.Permission;
+import ai.subut.kurjun.model.identity.RelationObjectType;
+import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.web.controllers.BaseController;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
@@ -43,7 +46,10 @@ public class RestAliquaController extends BaseController
 
         Metadata metadata;
 
+        //********************************************
+        rawManagerService.setUserSession( ( UserSession ) context.getAttribute( "USER_SESSION" ) );
         metadata = rawManagerService.put( kurjunFileItem.getFile(), kurjunFileItem.getFileName(), fingerprint );
+        //********************************************
 
         if ( metadata != null )
         {
@@ -83,7 +89,10 @@ public class RestAliquaController extends BaseController
 
         if ( temp.length == 2 )
         {
+            //********************************************
+            rawManagerService.setUserSession( ( UserSession ) context.getAttribute( "USER_SESSION" ) );
             success = rawManagerService.delete( temp[0], Utils.MD5.toByteArray( temp[1] ) );
+            //********************************************
         }
 
         if ( success )
@@ -133,4 +142,6 @@ public class RestAliquaController extends BaseController
         }
         return Results.notFound().render( "Not found" ).text();
     }
+
+
 }

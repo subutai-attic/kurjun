@@ -69,6 +69,7 @@ public class RawFileController extends BaseController
 
         Metadata metadata;
 
+        rawManagerService.setUserSession( ( UserSession ) context.getAttribute( "USER_SESSION" ) );
         metadata = rawManagerService.put( kurjunFileItem.getFile(), kurjunFileItem.getFileName(), fingerprint );
 
         if ( metadata != null )
@@ -113,6 +114,7 @@ public class RawFileController extends BaseController
 
         if ( temp.length == 2 )
         {
+            rawManagerService.setUserSession( ( UserSession ) context.getAttribute( "USER_SESSION" ) );
             success = rawManagerService.delete( temp[0], Utils.MD5.toByteArray( temp[1] ) );
         }
 

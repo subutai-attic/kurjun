@@ -11,6 +11,8 @@ import ai.subut.kurjun.web.model.KurjunFileItem;
 import ai.subut.kurjun.web.service.RelationManagerService;
 import ai.subut.kurjun.web.service.RepositoryService;
 import ai.subut.kurjun.web.service.TemplateManagerService;
+
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 
 import ninja.Context;
@@ -27,12 +29,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
-public class TemplateController extends BaseController {
+public class TemplateController extends BaseController
+{
 
     private static final Logger LOGGER = LoggerFactory.getLogger( TemplateController.class );
 
@@ -105,11 +106,19 @@ public class TemplateController extends BaseController {
             String id = templateManagerService.upload( repository, fileItem.getInputStream() );
             //*****************************************************
 
-            String[] temp = id.split("\\.");
-            //temp contains [fprint].[md5]
-            if (temp.length == 2) {
-                flashScope.success("Template uploaded successfully");
+            if( Strings.isNullOrEmpty(id))
+            {
+                flashScope.error("Failed to upload template.Access Permission error.");
                 return Results.redirect( "/" );
+            }
+            else
+            {
+                String[] temp = id.split("\\.");
+                //temp contains [fprint].[md5]
+                if (temp.length == 2) {
+                    flashScope.success("Template uploaded successfully");
+                    return Results.redirect( "/" );
+                }
             }
         }
         catch ( IOException e )

@@ -162,7 +162,6 @@ public class RawManagerServiceImpl implements RawManagerService
     @Override
     public Renderable getFile( final byte[] md5, final boolean isKurjun )
     {
-
         return getFile( DEFAULT_RAW_REPO_NAME, md5 );
     }
 
@@ -175,7 +174,11 @@ public class RawManagerServiceImpl implements RawManagerService
         defaultMetadata.setMd5sum( md5 );
         try
         {
-            return localPublicRawRepository.delete( defaultMetadata.getId(), md5 );
+            //***** Check permissions (WRITE) *****************
+            if ( checkRepoPermissions( repository, null, Permission.Delete ) )
+            {
+                return localPublicRawRepository.delete( defaultMetadata.getId(), md5 );
+            }
         }
         catch ( IOException e )
         {
@@ -209,7 +212,11 @@ public class RawManagerServiceImpl implements RawManagerService
         Metadata metadata = null;
         try
         {
-            metadata = localPublicRawRepository.put( file, CompressionType.NONE, DEFAULT_RAW_REPO_NAME );
+            //***** Check permissions (WRITE) *****************
+            if ( checkRepoPermissions( "raw", null, Permission.Write ) )
+            {
+                metadata = localPublicRawRepository.put( file, CompressionType.NONE, DEFAULT_RAW_REPO_NAME );
+            }
         }
         catch ( IOException e )
         {
@@ -225,7 +232,11 @@ public class RawManagerServiceImpl implements RawManagerService
         Metadata metadata = null;
         try
         {
-            metadata = localPublicRawRepository.put( new FileInputStream( file ), CompressionType.NONE, repository );
+            //***** Check permissions (WRITE) *****************
+            if ( checkRepoPermissions( repository, null, Permission.Write ) )
+            {
+                metadata = localPublicRawRepository.put( new FileInputStream( file ), CompressionType.NONE, repository );
+            }
         }
         catch ( IOException e )
         {
@@ -241,8 +252,12 @@ public class RawManagerServiceImpl implements RawManagerService
         Metadata metadata = null;
         try
         {
-            LocalRawRepository localRawRepository = getLocalPublicRawRepository( new KurjunContext( repository ) );
-            metadata = localRawRepository.put( file, filename, repository );
+            //***** Check permissions (WRITE) *****************
+            if ( checkRepoPermissions( repository, null, Permission.Write ) )
+            {
+                LocalRawRepository localRawRepository = getLocalPublicRawRepository( new KurjunContext( repository ) );
+                metadata = localRawRepository.put( file, filename, repository );
+            }
         }
         catch ( IOException e )
         {
@@ -254,6 +269,11 @@ public class RawManagerServiceImpl implements RawManagerService
 
     public LocalRawRepository getLocalPublicRawRepository( KurjunContext context )
     {
+        // *******CheckRepoOwner ***************
+        relationManagerService
+                .checkRelationOwner( userSession, context.getName(), RelationObjectType.RepositoryApt.getId() );
+        //**************************************
+
         return repositoryFactory.createLocalRaw( context );
     }
 
@@ -294,7 +314,7 @@ public class RawManagerServiceImpl implements RawManagerService
     private boolean checkRepoPermissions( String repoId, String contentId, Permission perm )
     {
         return relationManagerService
-                .checkRepoPermissions( userSession, repoId, RelationObjectType.RepositoryTemplate.getId(), contentId,
+                .checkRepoPermissions( userSession, repoId, RelationObjectType.RepositoryRaw.getId(), contentId,
                         RelationObjectType.RepositoryContent.getId(), perm );
 
     }
