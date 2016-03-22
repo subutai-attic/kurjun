@@ -78,15 +78,18 @@ public class RelationController extends BaseController {
         RelationObject owner = relationManagerService.toSourceObject( userSession.getUser() );
         RelationObject target = relationManagerService.toTargetObject( targetFprint );
         RelationObject trustObject = null;
-        if ( trustObjType.equals("template")) {
+
+        if ( trustObjType.equals("template"))
+        {
             trustObject = new DefaultRelationObject();
             trustObject.setId(templateId);
-            trustObject.setType(RelationObjectType.RepositoryTemplate.getId());
+            trustObject.setType(RelationObjectType.RepositoryContent.getId());
         }
-        else {
+        else
+        {
             trustObject = new DefaultRelationObject();
             trustObject.setId(repo);
-            trustObject.setType(RelationObjectType.RepositoryContent.getId());
+            trustObject.setType(RelationObjectType.RepositoryTemplate.getId());
         }
         //trustObject = relationManagerService.toTrustObject( templateId, null, null, null );
         Set<Permission> objectPermissions = new HashSet<>();
