@@ -197,6 +197,9 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     public String upload( final String repository, final InputStream inputStream ) throws IOException
     {
 
+        if(userSession.getUser().equals( identityManagerService.getPublicUser() ))
+            return null;
+
         // *******CheckRepoOwner ***************
         relationManagerService
                 .checkRelationOwner( userSession, repository, RelationObjectType.RepositoryTemplate.getId() );
@@ -237,6 +240,10 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     @Override
     public String upload( final String repository, final File file ) throws IOException
     {
+
+        if(userSession.getUser().equals( identityManagerService.getPublicUser() ))
+            return null;
+
         // *******CheckRepoOwner ***************
         relationManagerService
                 .checkRelationOwner( userSession, repository, RelationObjectType.RepositoryTemplate.getId() );

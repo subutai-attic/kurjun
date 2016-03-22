@@ -25,7 +25,54 @@
 
   <build>
     <finalName>kurjun</finalName>
+
     <plugins>
+     <!--
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <executions>
+          <execution>
+            <id>bundle-manifest</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>manifest</goal>
+            </goals>
+            <configuration>
+              <instructions>
+                <Bundle-SymbolicName>Kurjun-Web</Bundle-SymbolicName>
+                <Export-Package/>
+                <Import-Package>ninja.*,ninja.servlet.*,com.google.*</Import-Package>
+                <DynamicImport-Package>javax.*</DynamicImport-Package>
+                <Bundle-ClassPath>.,WEB-INF/classes</Bundle-ClassPath>
+                <Embed-Directory>WEB-INF/lib</Embed-Directory>
+                <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+                <Embed-Transitive>true</Embed-Transitive>
+                <Web-ContextPath>kurjun</Web-ContextPath>
+                <Webapp-Context>kurjun</Webapp-Context>
+              </instructions>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <supportedProjectTypes>
+            <supportedProjectType>jar</supportedProjectType>
+            <supportedProjectType>bundle</supportedProjectType>
+            <supportedProjectType>war</supportedProjectType>
+          </supportedProjectTypes>
+          <instructions>
+          </instructions>
+        </configuration>
+      </plugin> -->
 
       <!-- Ninja SuperDevMode -->
       <plugin>
@@ -136,12 +183,15 @@
   <!-- ============================================================================================================= -->
 
   <dependencies>
-    <!--<dependency>-->
-      <!--<groupId>org.ninjaframework</groupId>-->
-      <!--<artifactId>ninja-standalone</artifactId>-->
-      <!--<version>${ninja.version}</version>-->
-    <!--</dependency>-->
 
+    <!--
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <version>5.0.0</version>
+    </dependency>
+     -->
+    
     <dependency>
       <groupId>ai.subut.kurjun</groupId>
       <artifactId>model</artifactId>
@@ -187,20 +237,6 @@
     </dependency>
     <!-- ***************************************** -->
 
-    <!-- ************* Jetty ********************* -->
-    <!--<dependency>-->
-      <!--<groupId>org.eclipse.jetty</groupId>-->
-      <!--<artifactId>jetty-server</artifactId>-->
-      <!--<version>${jetty.version}</version>-->
-    <!--</dependency>-->
-
-    <!--<dependency>-->
-      <!--<groupId>org.eclipse.jetty</groupId>-->
-      <!--<artifactId>jetty-servlet</artifactId>-->
-      <!--<version>${jetty.version}</version>-->
-    <!--</dependency>-->
-    <!-- ***************************************** -->
-
     <!-- ************* Ninja ********************* -->
 
     <dependency>
@@ -219,12 +255,6 @@
       </exclusions>
     </dependency>
 
-    <dependency>
-      <groupId>org.ninjaframework</groupId>
-      <artifactId>ninja-test-utilities</artifactId>
-      <version>${ninja.version}</version>
-      <scope>test</scope>
-    </dependency>
     <!-- *************************************** -->
 
     <!-- *************************************** -->
@@ -241,8 +271,8 @@
     </dependency>
 
     <!--<dependency>-->
-      <!--<groupId>org.slf4j</groupId>-->
-      <!--<artifactId>slf4j-log4j12</artifactId>-->
+    <!--<groupId>org.slf4j</groupId>-->
+    <!--<artifactId>slf4j-log4j12</artifactId>-->
     <!--</dependency>-->
     <!-- *************************************** -->
   </dependencies>

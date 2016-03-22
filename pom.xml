@@ -100,16 +100,8 @@
     <jetty.version>9.3.2.v20150730</jetty.version>
 
     <!-- default OSGi properties - set values in child pom files -->
-    <osgi.classpath></osgi.classpath>
-    <osgi.export-package></osgi.export-package>
     <osgi.import-package>*</osgi.import-package>
-    <osgi.embed-dependency></osgi.embed-dependency>
     <osgi.embed-transitive>false</osgi.embed-transitive>
-    <osgi.bundle-directives></osgi.bundle-directives>
-    <osgi.bundle-activator></osgi.bundle-activator>
-    <osgi.bundle-activationpolicy></osgi.bundle-activationpolicy>
-    <osgi.require-bundle></osgi.require-bundle>
-    <osgi.service-component></osgi.service-component>
 
   </properties>
 
@@ -238,6 +230,7 @@
             <useReleaseProfile>false</useReleaseProfile>
             <arguments>-Psafehaus.release -Psonatype-oss-release</arguments>
           </configuration>
+          <!--
           <dependencies>
             <dependency>
               <groupId>org.apache.maven.scm</groupId>
@@ -250,6 +243,7 @@
               <version>1.8.1</version>
             </dependency>
           </dependencies>
+          -->
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -274,6 +268,7 @@
           <value>true</value>
         </property>
       </activation>
+      <!--
       <build>
         <plugins>
           <plugin>
@@ -292,6 +287,7 @@
           </plugin>
         </plugins>
       </build>
+      -->
     </profile>
   </profiles>
 
@@ -471,18 +467,6 @@
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-rs-client</artifactId>
         <version>${cxf-rt-rs-client.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-server</artifactId>
-        <version>${jetty.version}</version>
-      </dependency>
-      
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-servlet</artifactId>
-        <version>${jetty.version}</version>
       </dependency>
 
       <!-- ===== begin Test scope dependencies ===== -->
