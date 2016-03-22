@@ -17,15 +17,15 @@
             <div>
                 <div class="b-form__wrapper">
                     <label><input type="radio" name="trust_obj_type" value="template" checked /> Template</label>
+                    <label><input type="radio" name="trust_obj_type" value="repo" /> Repository</label>
+
                     <div id="trust_obj_template">
                         <label class="b-form-label">Template ID</label>
                         <input type="text" name="template_id" id="template_id" />
                     </div>
-
-                    <label><input type="radio" name="trust_obj_type" value="repo" /> Repository</label>
-                    <div id="trust_obj_repo" style="">
-                        <label class="b-form-label">Repo URL</label>
-                        <input type="text" name="repo_url" id="repo_url" />
+                    <div id="trust_obj_repo" style="display:none">
+                        <label class="b-form-label">Repo</label>
+                        <input type="text" name="repo" id="repo_url" />
                     </div>
                 </div>
             </div>
@@ -48,3 +48,17 @@
     </div>
 </div>
 </div>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('input[name=trust_obj_type][type=radio]').change(function(e){
+            if (e.target.value=="template") {
+                $('#trust_obj_template').show();
+                $('#trust_obj_repo').hide();
+            }
+            else {
+                $('#trust_obj_template').hide();
+                $('#trust_obj_repo').show();
+            }
+        });
+    });
+</script>
