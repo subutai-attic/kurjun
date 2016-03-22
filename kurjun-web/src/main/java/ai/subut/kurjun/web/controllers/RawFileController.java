@@ -81,7 +81,7 @@ public class RawFileController extends BaseController
             flashScope.error("Failed to upload.");
         }
 
-        return Results.redirect("/raw-files");
+        return Results.redirect(context.getContextPath()+"/raw-files");
     }
 
 
