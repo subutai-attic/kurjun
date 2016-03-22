@@ -39,6 +39,7 @@
           <excludes>
             <exclude>(.*)html$</exclude>
           </excludes>
+          <context>/kurjun</context>
         </configuration>
       </plugin>
       <plugin>

@@ -3,11 +3,11 @@
     <div class="b-popup__header">
         <span>Add repo</span>
         <span onclick="$.colorbox.close();">
-            <img src="/assets/img/icons/b-icon-close.svg" class="b-icon g-right">
+            <img src="${contextPath}/assets/img/icons/b-icon-close.svg" class="b-icon g-right">
         </span>
     </div>
     <div class="b-form__wrapper g-margin-bottom-half">
-        <form method="post" action="/repositories/add">
+        <form method="post" action="${contextPath}/repositories/add">
             <div class="b-workspace__content">
                 <div class="b-form__wrapper g-margin-bottom-half">
                     <label class="b-form-label">Repo name</label>

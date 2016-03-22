@@ -15,14 +15,14 @@
     <title>Kurjun</title>
 
     <!-- CSS styles -->
-    <link rel="stylesheet" href="/assets/css/libs/datatables.css">
-    <link rel="stylesheet" href="/assets/css/colorbox.css">
-    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="${contextPath}/assets/css/libs/datatables.css">
+    <link rel="stylesheet" href="${contextPath}/assets/css/colorbox.css">
+    <link rel="stylesheet" href="${contextPath}/assets/css/style.css">
 
     <!-- JavaScript -->
-    <script src="/assets/js/jquery-2.1.1.min.js"></script>
-    <script src="/assets/js/datatables.min.js"></script>
-    <script src="/assets/js/jquery.colorbox-min.js"></script>
+    <script src="${contextPath}/assets/js/jquery-2.1.1.min.js"></script>
+    <script src="${contextPath}/assets/js/datatables.min.js"></script>
+    <script src="${contextPath}/assets/js/jquery.colorbox-min.js"></script>
 
     <@parentHead/>
 </head>

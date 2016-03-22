@@ -3,11 +3,11 @@
     <div class="b-popup__header">
         <span>Add trust relation</span>
         <span onclick="$.colorbox.close();">
-            <img src="/assets/img/icons/b-icon-close.svg" class="b-icon g-right">
+            <img src="${contextPath}/assets/img/icons/b-icon-close.svg" class="b-icon g-right">
         </span>
     </div>
     <div class="b-form__wrapper g-margin-bottom-half">
-        <form method="POST" action="/relations/trust">
+        <form method="POST" action="${contextPath}/relations/trust">
             <div>
                 <div class="b-form__wrapper">
                     <label for="target_fprint" class="b-form-label">Target fingerprint</label>

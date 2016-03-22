@@ -30,7 +30,6 @@ import ninja.uploads.FileProvider;
 /**
  * REST Controller for Apt Management
  */
-@Singleton
 public class RestAptController extends BaseController
 {
 

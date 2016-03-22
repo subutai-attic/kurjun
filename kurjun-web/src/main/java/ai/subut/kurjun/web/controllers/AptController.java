@@ -57,11 +57,13 @@ public class AptController extends BaseController
         List<SerializableMetadata> serializableMetadataList = aptManagerService.list( repository );
 
         serializableMetadataList.stream().forEach(m -> {
+            LOGGER.info(m.getId().toString()+" = "+Utils.MD5.toString(m.getMd5Sum()));
             md5Sums.put( m.getId().toString(), Utils.MD5.toString(m.getMd5Sum()) );
         });
         //********************************************
 
-        return Results.html().template("views/apts.ftl").render( "apts", serializableMetadataList ).render( "md5sums", md5Sums );
+        return Results.html().template("views/apts.ftl").render( "apts", serializableMetadataList )
+                .render( "md5sums", md5Sums ).render("util", new Utils());
     }
 
 

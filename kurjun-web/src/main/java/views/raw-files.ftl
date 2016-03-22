@@ -13,7 +13,7 @@
 
 <div class="b-workspace__content">
     <div class="b-workspace-content__row">
-        <a href="/raw-files/upload" class="b-btn b-btn_green b-btn_search-field-level js-colorbox">
+        <a href="${contextPath}/raw-files/upload" class="b-btn b-btn_green b-btn_search-field-level js-colorbox">
             <i class="fa fa-plus"></i> Upload file
         </a>
         <table id="raw_files_tbl" class="b-data-table">
@@ -28,10 +28,10 @@
             <#if files?? && files?has_content >
             <#list files as f >
             <tr>
-                <td><a href="/raw-files/info" class="js-colorbox">${f.name}</a></td>
+                <td><a href="${contextPath}/raw-files/info" class="js-colorbox">${f.name}</a></td>
                 <td>${f.size}</td>
                 <td>${f.fingerprint}</td>
-                <td><a href="/raw-file/${f.id}/download" target="_blank">download</a>  |  <a href="#" onclick="removeTemplate('${f.id}')">remove</a></td>
+                <td><a href="${contextPath}/raw-file/${f.id}/download" target="_blank">download</a>  |  <a href="#" onclick="removeTemplate('${f.id}')">remove</a></td>
             </tr>
             </#list>
             </#if>
@@ -46,7 +46,7 @@
     {
         var confirmed = confirm("Are you sure want to delete it?");
         if (confirmed) {
-            $('#removeRawFileForm').attr('action', '/raw-files/' + fileId + '/delete');
+            $('#removeRawFileForm').attr('action', '${contextPath}/raw-files/' + fileId + '/delete');
             $('#removeRawFileForm').submit();
         }
     }

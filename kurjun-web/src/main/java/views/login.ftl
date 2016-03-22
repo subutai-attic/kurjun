@@ -9,7 +9,7 @@
 
     <title>Kurjun</title>
 
-    <link rel="stylesheet" href="/assets/css/style.css"/>
+    <link rel="stylesheet" href="${contextPath}/assets/css/style.css"/>
 
     <!-- DIRS -->
     <!-- END DIRS -->
@@ -22,7 +22,7 @@
 <div class="b-login">
     <div class="b-login__form b-login__form_center" style="width: 400px">
         <div class="b-login-form-header">
-            <a class="kurjun_login_ico" href="#"><img src="/assets/img/icons/kurjun.png" height="65px" alt=""></a>
+            <a class="kurjun_login_ico" href="#"><img src="${contextPath}/assets/img/icons/kurjun.png" height="65px" alt=""></a>
             <div class="kurjun_login_text">Kurjun</div>
         </div>
         <div class="b-workspace b-workspace_login">
@@ -38,7 +38,7 @@
                         ${flash.error}
                     </div>
                     </#if>
-                    <form method="POST" action="/login">
+                    <form method="POST" action="${contextPath}/login">
                         <div class="b-form__wrapper g-margin-bottom-half">
                             <label class="b-form-label">Fingerprint</label>
                             <input
