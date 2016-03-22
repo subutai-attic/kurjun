@@ -43,6 +43,7 @@ public class DefaultUser implements User, Serializable
     {
         this.date = new Date(System.currentTimeMillis());
         this.setUserToken( null );
+        this.emailAddress = "public@subuta.ai";
     }
 
 

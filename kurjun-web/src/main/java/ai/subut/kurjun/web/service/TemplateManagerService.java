@@ -74,12 +74,6 @@ public interface TemplateManagerService extends BaseService
 
 
     /**
-     * Checks whether current active user session can do upload to the given repository.
-     */
-    boolean isUploadAllowed( String repository );
-
-
-    /**
      * Uploads package data from supplied input stream to the repository defined by supplied repository.
      *
      * @param repository repository

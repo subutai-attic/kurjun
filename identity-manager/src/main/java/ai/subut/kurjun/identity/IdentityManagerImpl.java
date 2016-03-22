@@ -326,6 +326,7 @@ public class IdentityManagerImpl implements IdentityManager
                 user.setKeyId( publicKeyASCII );
                 user.setKeyFingerprint( publicKeyASCII );
                 user.setType( UserType.System.getId() );
+
             }
             else
             {
