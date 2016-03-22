@@ -16,6 +16,7 @@ import ninja.Renderable;
 import ninja.Result;
 import ninja.Results;
 import ninja.params.Param;
+import ninja.params.PathParam;
 import ninja.session.FlashScope;
 import ninja.uploads.FileItem;
 import ninja.uploads.FileProvider;
@@ -43,12 +44,6 @@ public class RawFileController extends BaseController
         }
 
         return Results.html().template("views/raw-files.ftl").render( "files", rawManagerService.list( repository ) );
-    }
-
-
-    public Result getUploadForm()
-    {
-        return Results.html().template("views/_popup-upload-raw.ftl");
     }
 
 
@@ -84,7 +79,7 @@ public class RawFileController extends BaseController
     }
 
 
-    public Result download( Context context, @Param( "id" ) String id )
+    public Result download( Context context, @PathParam( "id" ) String id )
     {
         checkNotNull( id, "ID cannot be null" );
 
@@ -100,11 +95,11 @@ public class RawFileController extends BaseController
         {
             return Results.ok().render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
         }
-        return Results.notFound().render( "File not found" ).text();
+        return Results.text().render( "File not found" );
     }
 
 
-    public Result delete( Context context, @Param( "id" ) String id )
+    public Result delete( Context context, @PathParam( "id" ) String id, FlashScope flashScope )
     {
         checkNotNull( id, "ID cannot be null" );
         String[] temp = id.split( "\\." );
@@ -119,10 +114,12 @@ public class RawFileController extends BaseController
 
         if ( success )
         {
-            return Results.ok().render( id + " deleted" ).text();
+            flashScope.success("Deleted successfully");
+            return Results.redirect(context.getContextPath()+"/raw-files");
         }
 
-        return Results.notFound().render( "Not found" ).text();
+        flashScope.error("Failed to delete.");
+        return Results.redirect( context.getContextPath()+"/raw-files" );
     }
 
 

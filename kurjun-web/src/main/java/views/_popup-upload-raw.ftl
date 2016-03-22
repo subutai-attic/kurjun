@@ -1,4 +1,5 @@
-<div id="js-upload-apt">
+<div style="display: none">
+<div id="js-upload-raw">
     <div class="b-popup__header">
         <span>Upload</span>
         <span onclick="$.colorbox.close();">
@@ -34,4 +35,5 @@
                 </div>
             </form>
         </div>
+</div>
 </div>

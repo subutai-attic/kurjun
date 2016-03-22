@@ -60,11 +60,6 @@ public class AptController extends BaseController
     }
 
 
-    public Result getUploadForm()
-    {
-        return Results.html().template("views/_popup-upload-apt.ftl");
-    }
-
     @FileProvider( SubutaiFileHandler.class )
     public Result upload(Context context, @Param( "file" ) FileItem file, FlashScope flashScope ) throws IOException
     {

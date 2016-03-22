@@ -13,7 +13,7 @@
 
 <div class="b-workspace__content">
     <div class="b-workspace-content__row">
-        <a href="${contextPath}/raw-files/upload" class="b-btn b-btn_green b-btn_search-field-level js-colorbox">
+        <a href="#js-upload-raw" class="b-btn b-btn_green b-btn_search-field-level js-colorbox-inline">
             <i class="fa fa-plus"></i> Upload file
         </a>
         <table id="raw_files_tbl" class="b-data-table">
@@ -32,7 +32,7 @@
                 <td><#--a href="${contextPath}/raw-files/info" class="js-colorbox"></a-->${f.name}</td>
                 <td>${f.size}</td>
                 <td>${f.fingerprint}</td>
-                <td><a href="${contextPath}/raw-file/${f.id}/download" target="_blank">download</a>  |  <a href="#" onclick="removeTemplate('${f.id}')">remove</a></td>
+                <td><a href="${contextPath}/raw-files/${f.id}/download" target="_blank">download</a>  |  <a href="#" onclick="removeFile('${f.id}')">remove</a></td>
             </tr>
             </#list>
             </#if>
@@ -43,7 +43,7 @@
 </div>
 
 <script>
-    function removeTemplate(fileId)
+    function removeFile(fileId)
     {
         var confirmed = confirm("Are you sure want to delete it?");
         if (confirmed) {
@@ -56,14 +56,13 @@
 
         $('li#hdr_raw_tab').addClass("b-tabs-menu__item_active");
 
-        //$('#add_tpl_btn').colorbox({href:"#js-add-tpl", inline: true});
-
         $('#raw_files_tbl').DataTable();
     } );
 
 
 </script>
 
+<#include "_popup-upload-raw.ftl"/>
 <#include "flashscope.ftl"/>
 
 </@layout.parentLayout>
