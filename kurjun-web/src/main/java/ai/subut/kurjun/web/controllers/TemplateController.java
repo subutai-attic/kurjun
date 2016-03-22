@@ -64,6 +64,8 @@ public class TemplateController extends BaseController
             LOGGER.error( "Failed to get list of templates: " + e.getMessage() );
         }
         List<String> repos = repositoryService.getRepositories();
+        repos.remove( "vapt" );
+        repos.remove( "raw" );
 
         return Results.html().template("views/templates.ftl").render( "templates", defaultTemplateList )
                 .render("repos", repos).render("sel_repo", repo);
@@ -73,6 +75,9 @@ public class TemplateController extends BaseController
     public Result getUploadTemplateForm()
     {
         List<String> repos = repositoryService.getRepositories();
+        repos.remove( "vapt" );
+        repos.remove( "raw" );
+
         return Results.html().template("views/_popup-upload-templ.ftl").render("repos", repos);
     }
 

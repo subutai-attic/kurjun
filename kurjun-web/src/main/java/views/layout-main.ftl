@@ -43,6 +43,7 @@
             });
 
             $('.js-colorbox').colorbox({});
+            $('.js-colorbox-inline').colorbox({inline: true});
         });
     </script>
 

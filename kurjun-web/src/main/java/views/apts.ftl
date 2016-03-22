@@ -13,19 +13,16 @@
 
 <div class="b-workspace__content">
     <div class="b-workspace-content__row">
-        <a href="${contextPath}/apt/upload" class="b-btn b-btn_green b-btn_search-field-level js-colorbox">
+        <a href="#js-upload-apt" class="b-btn b-btn_green b-btn_search-field-level js-colorbox-inline">
             <i class="fa fa-plus"></i> Upload
         </a>
         <table id="apt_tbl" class="b-data-table">
             <thead>
             <tr>
-                <th>id</th>
-                <th>md5</th>
                 <th>Name</th>
                 <th>Context</th>
                 <th>Arch</th>
                 <th>Version</th>
-                <th>size</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -33,28 +30,22 @@
             <#if apts?? && apts?has_content >
             <#list apts as a >
             <tr>
-                <td>${a.id}</td>
-                <td></td>
-                <td><a href="${contextPath}/apt/${a.id}/info" class="js-colorbox">${a.name}</a></td>
-                <td>${a.id?split(".")[0]}</td>
+                <td><#--a href="${contextPath}/apt/${a.id}/info" class="js-colorbox"></a-->${a.name}</td>
+                <td><#if a.id?contains(".") >${a.id?split(".")[0]}</#if></td>
                 <td>${a.architecture}</td>
                 <td>${a.version}</td>
-                <td>${a.installedSize}</td>
-                <td><a href="${contextPath}/apt/${md5sums[a.id]}/download" target="_blank">download</a>  |  <a href="#" onclick="remove('${md5sums[a.id]}')">remove</a></td>
+                <td><a href="${contextPath}/apt/${a.id}/download" target="_blank">download</a>  |  <a href="#" onclick="removeApt('${a.id}')">remove</a></td>
             </tr>
             </#list>
             </#if>
             </tbody>
         </table>
-        <#list md5sums?keys as key>
-            <li>${key} val = ${md5sums[key]}</li>
-        </#list>
         <form id="removeAptForm" method="post" action></form>
     </div>
 </div>
 
 <script>
-    function remove(md5sum)
+    function removeApt(md5sum)
     {
         var confirmed = confirm("Are you sure want to delete it?");
         if (confirmed) {
@@ -73,6 +64,7 @@
 
 </script>
 
+<#include "_popup-upload-apt.ftl"/>
 <#include "flashscope.ftl"/>
 
 </@layout.parentLayout>

@@ -28,6 +28,7 @@
             <tr>
                 <th>email</th>
                 <th>fingerprint</th>
+                <th>Auth ID</th>
             </tr>
             </thead>
             <tbody>
@@ -36,6 +37,7 @@
                 <tr>
                     <td><#if u.emailAddress??>${u.emailAddress}</#if></td>
                     <td>${u.keyFingerprint}</td>
+                    <td>${u.signature}</td>
                 </tr>
                 </#list>
             </#if>

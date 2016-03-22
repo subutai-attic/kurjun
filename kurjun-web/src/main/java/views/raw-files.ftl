@@ -21,14 +21,15 @@
             <tr>
                 <th>Name</th>
                 <th>Size</th>
-                <th>Fingerprint</th>
+                <th>Owner</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
             <#if files?? && files?has_content >
             <#list files as f >
             <tr>
-                <td><a href="${contextPath}/raw-files/info" class="js-colorbox">${f.name}</a></td>
+                <td><#--a href="${contextPath}/raw-files/info" class="js-colorbox"></a-->${f.name}</td>
                 <td>${f.size}</td>
                 <td>${f.fingerprint}</td>
                 <td><a href="${contextPath}/raw-file/${f.id}/download" target="_blank">download</a>  |  <a href="#" onclick="removeTemplate('${f.id}')">remove</a></td>
