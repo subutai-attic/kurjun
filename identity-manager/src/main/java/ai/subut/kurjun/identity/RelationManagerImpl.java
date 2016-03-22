@@ -310,7 +310,7 @@ public class RelationManagerImpl implements RelationManager
             FileDb fileDb = fileDbProvider.get();
             Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
 
-            return map.values().parallelStream().filter( r -> r.getTrustObject().equals(trustObject)).collect(Collectors.toList());
+            return map.values().stream().filter( r -> r.getTrustObject().equals(trustObject)).collect(Collectors.toList());
         }
         catch ( Exception ex )
         {
