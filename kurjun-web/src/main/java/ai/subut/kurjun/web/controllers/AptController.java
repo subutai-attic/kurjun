@@ -62,8 +62,7 @@ public class AptController extends BaseController
 
     public Result getUploadForm()
     {
-        List<String> repos = repositoryService.getRepositories();
-        return Results.html().template("views/_popup-upload-apt.ftl").render("repos", repos);
+        return Results.html().template("views/_popup-upload-apt.ftl");
     }
 
     @FileProvider( SubutaiFileHandler.class )

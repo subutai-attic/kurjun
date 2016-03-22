@@ -48,8 +48,7 @@ public class RawFileController extends BaseController
 
     public Result getUploadForm()
     {
-        List<String> repos = repositoryService.getRepositories();
-        return Results.html().template("views/_popup-upload-raw.ftl").render("repos", repos);
+        return Results.html().template("views/_popup-upload-raw.ftl");
     }
 
 
