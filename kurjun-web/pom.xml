@@ -27,7 +27,7 @@
     <finalName>kurjun</finalName>
 
     <plugins>
-
+     <!--
       <plugin>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
@@ -70,10 +70,9 @@
             <supportedProjectType>war</supportedProjectType>
           </supportedProjectTypes>
           <instructions>
-            <!-- ... etc ... -->
           </instructions>
         </configuration>
-      </plugin>
+      </plugin> -->
 
       <!-- Ninja SuperDevMode -->
       <plugin>
@@ -184,18 +183,15 @@
   <!-- ============================================================================================================= -->
 
   <dependencies>
-    <!--<dependency>-->
-    <!--<groupId>org.ninjaframework</groupId>-->
-    <!--<artifactId>ninja-standalone</artifactId>-->
-    <!--<version>${ninja.version}</version>-->
-    <!--</dependency>-->
 
+    <!--
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.core</artifactId>
       <version>5.0.0</version>
     </dependency>
-
+     -->
+    
     <dependency>
       <groupId>ai.subut.kurjun</groupId>
       <artifactId>model</artifactId>
@@ -241,20 +237,6 @@
     </dependency>
     <!-- ***************************************** -->
 
-    <!-- ************* Jetty ********************* -->
-    <!--<dependency>-->
-    <!--<groupId>org.eclipse.jetty</groupId>-->
-    <!--<artifactId>jetty-server</artifactId>-->
-    <!--<version>${jetty.version}</version>-->
-    <!--</dependency>-->
-
-    <!--<dependency>-->
-    <!--<groupId>org.eclipse.jetty</groupId>-->
-    <!--<artifactId>jetty-servlet</artifactId>-->
-    <!--<version>${jetty.version}</version>-->
-    <!--</dependency>-->
-    <!-- ***************************************** -->
-
     <!-- ************* Ninja ********************* -->
 
     <dependency>
@@ -273,12 +255,6 @@
       </exclusions>
     </dependency>
 
-    <dependency>
-      <groupId>org.ninjaframework</groupId>
-      <artifactId>ninja-test-utilities</artifactId>
-      <version>${ninja.version}</version>
-      <scope>test</scope>
-    </dependency>
     <!-- *************************************** -->
 
     <!-- *************************************** -->
