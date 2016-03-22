@@ -60,10 +60,10 @@ public class RawFileController extends BaseController
         String fingerprint = "raw";
 
         //checkNotNull( fileItem, "MD5 cannot be null" );
-        if ( userSession != null && userSession.getUser() != null )
-        {
-            fingerprint = userSession.getUser().getKeyFingerprint();
-        }
+        //if ( userSession != null && userSession.getUser() != null )
+        //{
+          //  fingerprint = userSession.getUser().getKeyFingerprint();
+        //}
 
         KurjunFileItem kurjunFileItem = ( KurjunFileItem ) fileItem;
 

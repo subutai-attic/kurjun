@@ -42,6 +42,7 @@ import ai.subut.kurjun.repo.util.PackagesProviderFactory;
 import ai.subut.kurjun.repo.util.ReleaseIndexBuilder;
 import ai.subut.kurjun.web.context.ArtifactContext;
 import ai.subut.kurjun.web.service.AptManagerService;
+import ai.subut.kurjun.web.service.IdentityManagerService;
 import ai.subut.kurjun.web.service.RelationManagerService;
 import ai.subut.kurjun.web.utils.Utils;
 import ninja.Renderable;
@@ -67,6 +68,8 @@ public class AptManagerServiceImpl implements AptManagerService
     private UserSession userSession;
     private String REPO_NAME = "vapt";
 
+    @Inject
+    IdentityManagerService identityManagerService;
     @Inject
     RelationManagerService relationManagerService;
 
@@ -235,6 +238,10 @@ public class AptManagerServiceImpl implements AptManagerService
     @Override
     public URI upload( final InputStream is )
     {
+
+        if(userSession.getUser().equals( identityManagerService.getPublicUser() ))
+            return null;
+
         try
         {
             // *******CheckRepoOwner ***************

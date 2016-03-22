@@ -24,6 +24,7 @@ import ai.subut.kurjun.model.repository.UnifiedRepository;
 import ai.subut.kurjun.repo.LocalRawRepository;
 import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.web.context.ArtifactContext;
+import ai.subut.kurjun.web.service.IdentityManagerService;
 import ai.subut.kurjun.web.service.RawManagerService;
 import ai.subut.kurjun.web.service.RelationManagerService;
 import ai.subut.kurjun.web.utils.Utils;
@@ -43,6 +44,9 @@ public class RawManagerServiceImpl implements RawManagerService
     private ArtifactContext artifactContext;
 
     private UserSession userSession;
+
+    @Inject
+    IdentityManagerService identityManagerService;
 
     @Inject
     RelationManagerService relationManagerService;
@@ -174,8 +178,8 @@ public class RawManagerServiceImpl implements RawManagerService
         defaultMetadata.setMd5sum( md5 );
         try
         {
-            //***** Check permissions (WRITE) *****************
-            if ( checkRepoPermissions( repository, null, Permission.Delete ) )
+            //***** Check permissions (DELETE) *****************
+            if ( checkRepoPermissions( "raw", null, Permission.Delete ) )
             {
                 return localPublicRawRepository.delete( defaultMetadata.getId(), md5 );
             }
@@ -212,6 +216,11 @@ public class RawManagerServiceImpl implements RawManagerService
         Metadata metadata = null;
         try
         {
+            // *******CheckRepoOwner ***************
+            relationManagerService
+                    .checkRelationOwner( userSession, "raw", RelationObjectType.RepositoryRaw.getId() );
+            //**************************************
+
             //***** Check permissions (WRITE) *****************
             if ( checkRepoPermissions( "raw", null, Permission.Write ) )
             {
@@ -232,8 +241,13 @@ public class RawManagerServiceImpl implements RawManagerService
         Metadata metadata = null;
         try
         {
+            // *******CheckRepoOwner ***************
+            relationManagerService
+                    .checkRelationOwner( userSession, "raw", RelationObjectType.RepositoryRaw.getId() );
+            //**************************************
+
             //***** Check permissions (WRITE) *****************
-            if ( checkRepoPermissions( repository, null, Permission.Write ) )
+            if ( checkRepoPermissions( "raw", null, Permission.Write ) )
             {
                 metadata = localPublicRawRepository.put( new FileInputStream( file ), CompressionType.NONE, repository );
             }
@@ -249,11 +263,20 @@ public class RawManagerServiceImpl implements RawManagerService
     @Override
     public Metadata put( final File file, final String filename, final String repository )
     {
+
+        if(userSession.getUser().equals( identityManagerService.getPublicUser() ))
+            return null;
+
         Metadata metadata = null;
         try
         {
+            // *******CheckRepoOwner ***************
+            relationManagerService
+                    .checkRelationOwner( userSession, "raw", RelationObjectType.RepositoryRaw.getId() );
+            //**************************************
+
             //***** Check permissions (WRITE) *****************
-            if ( checkRepoPermissions( repository, null, Permission.Write ) )
+            if ( checkRepoPermissions( "raw", null, Permission.Write ) )
             {
                 LocalRawRepository localRawRepository = getLocalPublicRawRepository( new KurjunContext( repository ) );
                 metadata = localRawRepository.put( file, filename, repository );
@@ -271,7 +294,7 @@ public class RawManagerServiceImpl implements RawManagerService
     {
         // *******CheckRepoOwner ***************
         relationManagerService
-                .checkRelationOwner( userSession, context.getName(), RelationObjectType.RepositoryApt.getId() );
+                .checkRelationOwner( userSession, context.getName(), RelationObjectType.RepositoryRaw.getId() );
         //**************************************
 
         return repositoryFactory.createLocalRaw( context );
