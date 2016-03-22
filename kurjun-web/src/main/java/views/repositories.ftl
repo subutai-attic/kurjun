@@ -13,9 +13,9 @@
 
 <div class="b-workspace__content">
     <div class="b-workspace-content__row">
-        <button id="add_repo_btn" class="b-btn b-btn_green b-btn_search-field-level">
+        <#--button id="add_repo_btn" class="b-btn b-btn_green b-btn_search-field-level">
             <i class="fa fa-plus"></i> Add repo
-        </button>
+        </button-->
         <table id="repos_tbl" class="b-data-table">
             <thead>
             <tr>
@@ -49,7 +49,7 @@
 
 </script>
 
-<#include "_popup-add-repo.ftl"/>
+<#--include "_popup-add-repo.ftl"/-->
 <#include "flashscope.ftl"/>
 
 </@layout.parentLayout>

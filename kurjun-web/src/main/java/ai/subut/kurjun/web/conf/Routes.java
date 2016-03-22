@@ -91,11 +91,7 @@ public class Routes implements ApplicationRoutes
         // -------------------------------------------------------------------------------------------------------------
         //  Repositories
         // -------------------------------------------------------------------------------------------------------------
-        router.POST().route( "/repositories/add" ).with( RepositoryController.class, "addRepo" );
         router.GET().route( "/repositories" ).with( RepositoryController.class, "getRepoList" );
-        router.GET().route( "/repositories/{id}" ).with( RepositoryController.class, "getRepo" );
-
-
 
     }
 }
