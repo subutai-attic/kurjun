@@ -26,9 +26,19 @@
   <build>
     <finalName>kurjun</finalName>
 
+
     <plugins>
-     <!--
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+
+  <plugin>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
           <archive>
@@ -51,14 +61,13 @@
               <instructions>
                 <Bundle-SymbolicName>Kurjun-Web</Bundle-SymbolicName>
                 <Export-Package/>
-                <Import-Package>ninja.*,ninja.servlet.*,com.google.*</Import-Package>
+                <Import-Package>javax.servlet.http,ninja.*,ninja.servlet.*,com.google.inject.servlet.*;javax.servlet</Import-Package>
                 <DynamicImport-Package>javax.*</DynamicImport-Package>
                 <Bundle-ClassPath>.,WEB-INF/classes</Bundle-ClassPath>
                 <Embed-Directory>WEB-INF/lib</Embed-Directory>
                 <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
                 <Embed-Transitive>true</Embed-Transitive>
                 <Web-ContextPath>kurjun</Web-ContextPath>
-                <Webapp-Context>kurjun</Webapp-Context>
               </instructions>
             </configuration>
           </execution>
@@ -72,9 +81,10 @@
           <instructions>
           </instructions>
         </configuration>
-      </plugin> -->
+      </plugin>
 
       <!-- Ninja SuperDevMode -->
+    <!--
       <plugin>
         <groupId>org.ninjaframework</groupId>
         <artifactId>ninja-maven-plugin</artifactId>
@@ -87,8 +97,9 @@
           <context>/kurjun</context>
         </configuration>
       </plugin>
-
+      -->
       <!-- Needed to debug in SuperDevMode -->
+      <!--
       <plugin>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
@@ -152,7 +163,7 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
+      </plugin> -->
     </plugins>
 
     <!-- Removing this may cause error reading of configuration file -->
@@ -184,14 +195,26 @@
 
   <dependencies>
 
-    <!--
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.core</artifactId>
       <version>5.0.0</version>
     </dependency>
-     -->
-    
+
+    <dependency>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+      <version>4.0</version>
+    </dependency>
+
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+    </dependency>
+
+
     <dependency>
       <groupId>ai.subut.kurjun</groupId>
       <artifactId>model</artifactId>
