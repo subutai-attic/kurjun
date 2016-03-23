@@ -71,8 +71,9 @@ public class IdentityController extends BaseController {
     public Result listUsers()
     {
         List<User> users = identityManagerService.getAllUsers();
+        User sysOwner = identityManagerService.getSystemOwner();
 
-        return Results.html().template("views/users.ftl").render("users", users);
+        return Results.html().template("views/users.ftl").render("users", users).render( "sys_owner", sysOwner );
     }
 
 
