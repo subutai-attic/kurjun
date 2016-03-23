@@ -57,6 +57,13 @@
       <version>${org.bouncycastle.version}</version>
     </dependency>
     <!--************************************-->
+
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-rs-client</artifactId>
+      <version>${cxf-rt-rs-client.version}</version>
+    </dependency>
+
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
