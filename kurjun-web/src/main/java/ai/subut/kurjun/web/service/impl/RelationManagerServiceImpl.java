@@ -5,6 +5,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 
@@ -19,6 +22,7 @@ import ai.subut.kurjun.model.identity.RelationObject;
 import ai.subut.kurjun.model.identity.RelationObjectType;
 import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.identity.UserSession;
+import ai.subut.kurjun.web.controllers.rest.RestIdentityController;
 import ai.subut.kurjun.web.service.IdentityManagerService;
 import ai.subut.kurjun.web.service.RelationManagerService;
 import ai.subut.kurjun.web.service.TemplateManagerService;
@@ -29,6 +33,9 @@ import ai.subut.kurjun.web.service.TemplateManagerService;
  */
 public class RelationManagerServiceImpl implements RelationManagerService
 {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( RestIdentityController.class );
+
 
     private UserSession userSession;
 
