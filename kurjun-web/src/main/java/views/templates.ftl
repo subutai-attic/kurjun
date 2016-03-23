@@ -44,7 +44,7 @@
             <#list templates as t >
             <tr>
                 <td><a href="${contextPath}/templates/${t.id}/info" class="js-colorbox">${t.name}</a></td>
-                <td>${t.ownerFprint}</td>
+                <td>${owners[t.id]}</td>
                 <td>${t.id?split(".")[0]}</td>
                 <td>${t.architecture}</td>
                 <td>${t.parent}</td>

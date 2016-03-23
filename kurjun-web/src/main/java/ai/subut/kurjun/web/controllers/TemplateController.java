@@ -1,9 +1,11 @@
 package ai.subut.kurjun.web.controllers;
 
 
+import ai.subut.kurjun.identity.DefaultRelationObject;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.subutai.TemplateId;
 import ai.subut.kurjun.metadata.common.utils.IdValidators;
+import ai.subut.kurjun.model.identity.RelationObjectType;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
@@ -29,7 +31,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class TemplateController extends BaseController
@@ -67,8 +71,14 @@ public class TemplateController extends BaseController
         repos.remove( "vapt" );
         repos.remove( "raw" );
 
+        Map<String, String> ownerMap = new HashMap<>();
+        relationManagerService.getAllRelations().stream().filter( r ->
+                r.getSource().getId().equals( r.getTarget().getId() )
+                        && r.getTrustObject().getType() == RelationObjectType.RepositoryContent.getId() )
+                .forEach( r -> ownerMap.put( r.getTrustObject().getId(), r.getSource().getId() ));
+
         return Results.html().template("views/templates.ftl").render( "templates", defaultTemplateList )
-                .render("repos", repos).render("sel_repo", repo);
+                .render("repos", repos).render("sel_repo", repo).render( "owners", ownerMap );
     }
 
 
