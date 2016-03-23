@@ -134,7 +134,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
     public Set<ReleaseFile> getDistributions()
     {
 
-        WebClient webClient = webClientFactory.make( this, "/" + DEB_PATH +  RELEASE_PATH, null );
+        WebClient webClient = webClientFactory.makeSecure( this, "/" + DEB_PATH +  RELEASE_PATH, null );
 
         Response resp = doGet( webClient );
         if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
@@ -191,7 +191,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
 
         DefaultPackageMetadata pm = gson.fromJson( m.serialize(), DefaultPackageMetadata.class );
 
-        WebClient webClient = webClientFactory.make( this, "/" + DEB_PATH + "/" + pm.getFilename(), null );
+        WebClient webClient = webClientFactory.makeSecure( this, "/" + DEB_PATH + "/" + pm.getFilename(), null );
 
         Response resp = doGet( webClient );
         if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
@@ -262,7 +262,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
     public String getMd5()
     {
 
-        WebClient webClient = webClientFactory.make( this, "/" + DEB_PATH + MD5_PATH, null );
+        WebClient webClient = webClientFactory.makeSecure( this, "/" + DEB_PATH + MD5_PATH, null );
 
         Response resp = doGet( webClient );
 
@@ -390,7 +390,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
 
     private List<SerializableMetadata> fetchPackagesMetadata( String path, String component )
     {
-        WebClient webClient = webClientFactory.make( this, DEB_PATH + "/" + path, null );
+        WebClient webClient = webClientFactory.makeSecure( this, DEB_PATH + "/" + path, null );
 
         Response resp = doGet( webClient );
         if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() && resp

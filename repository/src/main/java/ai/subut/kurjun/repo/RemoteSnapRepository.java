@@ -109,7 +109,7 @@ class RemoteSnapRepository extends RemoteRepositoryBase
     @Override
     public SerializableMetadata getPackageInfo( Metadata metadata )
     {
-        WebClient webClient = webClientFactory.make( this, INFO_PATH, MetadataUtils.makeParamsMap( metadata ) );
+        WebClient webClient = webClientFactory.makeSecure( this, INFO_PATH, MetadataUtils.makeParamsMap( metadata ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -144,7 +144,7 @@ class RemoteSnapRepository extends RemoteRepositoryBase
             return cachedStream;
         }
 
-        WebClient webClient = webClientFactory.make( this, GET_PATH, MetadataUtils.makeParamsMap( metadata ) );
+        WebClient webClient = webClientFactory.makeSecure( this, GET_PATH, MetadataUtils.makeParamsMap( metadata ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -182,7 +182,7 @@ class RemoteSnapRepository extends RemoteRepositoryBase
     @Override
     public List<SerializableMetadata> listPackages()
     {
-        WebClient webClient = webClientFactory.make( this, INFO_PATH, null );
+        WebClient webClient = webClientFactory.makeSecure( this, INFO_PATH, null );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );

@@ -149,7 +149,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     @Override
     public SerializableMetadata getPackageInfo( Metadata metadata )
     {
-        WebClient webClient = webClientFactory.make( this, TEMPLATE_PATH + "/" + INFO_PATH, makeParamsMap( metadata ) );
+        WebClient webClient = webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + INFO_PATH, makeParamsMap( metadata ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -185,7 +185,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
             return cachedStream;
         }
 
-        WebClient webClient = webClientFactory.make( this, TEMPLATE_PATH + "/" + GET_PATH, makeParamsMap( metadata ) );
+        WebClient webClient = webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + GET_PATH, makeParamsMap( metadata ) );
         webClient.header( "Accept", "application/octet-stream" );
 
         if ( identity != null )
@@ -235,7 +235,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         params.put( "repository", "public" );
 
         //get only public Kurjun local packages
-        WebClient webClient = webClientFactory.make( this, TEMPLATE_PATH + "/" + LIST_PATH, params );
+        WebClient webClient = webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + LIST_PATH, params );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -274,7 +274,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     @Override
     public String getMd5()
     {
-        WebClient webClient = webClientFactory.make( this, TEMPLATE_PATH + "/" + MD5_PATH, null );
+        WebClient webClient = webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + MD5_PATH, null );
 
         Response resp = doGet( webClient );
         if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
