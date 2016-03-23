@@ -26,149 +26,52 @@
   <build>
     <finalName>kurjun</finalName>
 
-
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
+        <!--<version>3.1</version>-->
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
         </configuration>
       </plugin>
-
-  <plugin>
-        <artifactId>maven-war-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-          </archive>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <extensions>true</extensions>
-        <executions>
-          <execution>
-            <id>bundle-manifest</id>
-            <phase>process-classes</phase>
-            <goals>
-              <goal>manifest</goal>
-            </goals>
-            <configuration>
-              <instructions>
-                <Bundle-SymbolicName>Kurjun-Web</Bundle-SymbolicName>
-                <Export-Package/>
-                <Import-Package>javax.servlet.http,ninja.*,ninja.servlet.*,com.google.inject.servlet.*;javax.servlet</Import-Package>
-                <DynamicImport-Package>javax.*</DynamicImport-Package>
-                <Bundle-ClassPath>.,WEB-INF/classes</Bundle-ClassPath>
-                <Embed-Directory>WEB-INF/lib</Embed-Directory>
-                <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
-                <Embed-Transitive>true</Embed-Transitive>
-                <Web-ContextPath>kurjun</Web-ContextPath>
-              </instructions>
-            </configuration>
-          </execution>
-        </executions>
-        <configuration>
-          <supportedProjectTypes>
-            <supportedProjectType>jar</supportedProjectType>
-            <supportedProjectType>bundle</supportedProjectType>
-            <supportedProjectType>war</supportedProjectType>
-          </supportedProjectTypes>
-          <instructions>
-          </instructions>
-        </configuration>
-      </plugin>
-
-      <!-- Ninja SuperDevMode -->
     <!--
+    To create executable Jar execute
+    mvn clean compile assembly:single
+     -->
       <plugin>
-        <groupId>org.ninjaframework</groupId>
-        <artifactId>ninja-maven-plugin</artifactId>
-        <version>${ninja.version}</version>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.4</version>
         <configuration>
-          <useDefaultExcludes>true</useDefaultExcludes>
-          <excludes>
-            <exclude>(.*)html$</exclude>
-          </excludes>
-          <context>/kurjun</context>
-        </configuration>
-      </plugin>
-      -->
-      <!-- Needed to debug in SuperDevMode -->
-      <!--
-      <plugin>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-maven-plugin</artifactId>
-        <version>9.3.0.M2</version>
-        <configuration>
-          <stopKey>stop</stopKey>
-          <stopPort>8889</stopPort>
-          <scanIntervalSeconds>1</scanIntervalSeconds>
-          <reload>automatic</reload>
-          <scanTargetPatterns>
-            <scanTargetPattern>
-              <directory>target/classes</directory>
-              <includes>
-                <include>**/*</include>
-              </includes>
-              <excludes>
-                <exclude>**/*.ftl.html</exclude>
-                <exclude>assets/**</exclude>
-              </excludes>
-            </scanTargetPattern>
-          </scanTargetPatterns>
-          <systemProperties>
-            <systemProperty>
-              <name>ninja.mode</name>
-              <value>dev</value>
-            </systemProperty>
-          </systemProperties>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <archive>
+            <manifest>
+              <mainClass>ninja.standalone.NinjaJetty</mainClass>
+            </manifest>
+          </archive>
         </configuration>
       </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>2.2</version>
-        <configuration>
-          <createDependencyReducedPom>true</createDependencyReducedPom>
-          <filters>
-            <filter>
-              <artifact>*:*</artifact>
-              <excludes>
-                <exclude>META-INF/*.SF</exclude>
-                <exclude>META-INF/*.DSA</exclude>
-                <exclude>META-INF/*.RSA</exclude>
-              </excludes>
-            </filter>
-          </filters>
-        </configuration>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.6</version>
         <executions>
           <execution>
             <phase>package</phase>
             <goals>
-              <goal>shade</goal>
+              <goal>war</goal>
             </goals>
-            <configuration>
-              <transformers>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>ninja.standalone.NinjaJetty</mainClass>
-                </transformer>
-              </transformers>
-            </configuration>
           </execution>
         </executions>
-      </plugin> -->
+      </plugin>
+
     </plugins>
 
-    <!-- Removing this may cause error reading of configuration file -->
     <resources>
-
       <resource>
         <directory>src/main/java</directory>
         <includes>
@@ -178,7 +81,6 @@
           <exclude>**/*.java</exclude>
         </excludes>
       </resource>
-
       <resource>
         <directory>src/main/resources</directory>
         <includes>
@@ -186,7 +88,6 @@
         </includes>
       </resource>
     </resources>
-
   </build>
 
   <!-- ============================================================================================================= -->
@@ -196,24 +97,9 @@
   <dependencies>
 
     <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.core</artifactId>
-      <version>5.0.0</version>
-    </dependency>
-
-    <dependency>
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
-      <version>4.0</version>
     </dependency>
-
-
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
-    </dependency>
-
 
     <dependency>
       <groupId>ai.subut.kurjun</groupId>
@@ -291,6 +177,11 @@
       <groupId>commons-validator</groupId>
       <artifactId>commons-validator</artifactId>
       <version>1.5.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ninjaframework</groupId>
+      <artifactId>ninja-standalone</artifactId>
+      <version>${ninja.version}</version>
     </dependency>
 
     <!--<dependency>-->
