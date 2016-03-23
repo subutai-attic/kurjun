@@ -7,6 +7,8 @@ import ai.subut.kurjun.web.security.AuthorizedUser;
 import ai.subut.kurjun.web.service.IdentityManagerService;
 import ai.subut.kurjun.web.service.RelationManagerService;
 import com.google.inject.Inject;
+
+import ai.subut.kurjun.web.service.RepositoryService;
 import ninja.Context;
 import ninja.Result;
 import ninja.Results;
@@ -20,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -35,6 +38,8 @@ public class RelationController extends BaseController {
     @Inject
     private IdentityManagerService identityManagerService;
 
+    @Inject
+    private RepositoryService repositoryService;
 
     public Result getRelations( /*@AuthorizedUser UserSession userSession,*/ Context context, Session session )
     {
@@ -61,25 +66,34 @@ public class RelationController extends BaseController {
 
     public Result getRelationsByObject( /*@AuthorizedUser UserSession userSession,*/ @PathParam( "id" ) String id,
                                         @Param( "name" ) String name, @Param( "version" ) String version,
-                                        @Param( "md5" ) String md5 )
+                                        @Param( "md5" ) String md5, @Param( "obj_type" ) int objType )
     {
         return Results.html().template("views/relations.ftl").render( "relations",
                 relationManagerService.getTrustRelationsByTarget(
-                        relationManagerService.toTrustObject(id, name, md5, version)));
+                        relationManagerService.toTrustObject(id, name, md5, version, RelationObjectType.valueOf( objType ))));
+    }
+
+    public Result getAddTrustRelationForm()
+    {
+        List<String> repos = repositoryService.getRepositories();
+        repos.remove( "vapt" );
+        repos.remove( "raw" );
+
+        return Results.html().template("views/_popup-add-trust-rel.ftl").render("repos", repos);
     }
 
     public Result addTrustRelation( /*@AuthorizedUser UserSession userSession,*/ @Param( "target_fprint" ) String targetFprint,
-                                   @Param( "template_id" ) String templateId, @Param("repo") String repo,
-                                    @Param("trust_obj_type") String trustObjType,
+                                    @Param("trust_obj_type") int trustObjType,
+                                    @Param( "template_id" ) String templateId, @Param("repo") String repo,
                                     @Params( "permission" ) String[] permissions,
-                                   Context context, FlashScope flashScope )
+                                    Context context, FlashScope flashScope )
     {
         UserSession userSession = (UserSession ) context.getAttribute( "USER_SESSION" );
         RelationObject owner = relationManagerService.toSourceObject( userSession.getUser() );
         RelationObject target = relationManagerService.toTargetObject( targetFprint );
         RelationObject trustObject = null;
 
-        if ( trustObjType.equals("template"))
+        if ( trustObjType == RelationObjectType.RepositoryContent.getId() )
         {
             trustObject = new DefaultRelationObject();
             trustObject.setId(templateId);

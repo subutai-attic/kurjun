@@ -13,9 +13,9 @@
 
 <div class="b-workspace__content">
     <div class="b-workspace-content__row">
-        <button id="add_trust_btn" class="b-btn b-btn_green b-btn_search-field-level">
+        <a href="${contextPath}/relations/trust" id="add_trust_btn" class="b-btn b-btn_green b-btn_search-field-level js-colorbox">
             <i class="fa fa-plus"></i> Add trust relation
-        </button>
+        </a>
         <table id="relations_tbl" class="b-data-table">
             <thead>
             <tr>
@@ -33,9 +33,10 @@
                     <td>${r.target.id}</td>
                     <td>${r.trustObject.id}</td>
                     <td>
-                        <#list r.permissions as p >
-                        ${p.code}
-                        </#list>
+                     ${(r.permissions?seq_contains("Read"))?then("R"," ")}
+                     ${(r.permissions?seq_contains("Write"))?then("W"," ")}
+                     ${(r.permissions?seq_contains("Update"))?then("U"," ")}
+                     ${(r.permissions?seq_contains("Delete"))?then("D"," ")}
                     </td>
                 </tr>
                 </#list>
@@ -50,14 +51,13 @@
     $(document).ready( function () {
 
         $('li#hdr_relations_tab').addClass("b-tabs-menu__item_active");
-        $('#add_trust_btn').colorbox({href:"#js-add-trust-rel", inline: true});
+        //$('#add_trust_btn').colorbox({href:"#js-add-trust-rel", inline: true});
 
         $('#relations_tbl').DataTable();
     } );
 
 </script>
 
-<#include "_popup-add-trust-rel.ftl"/>
 <#include "flashscope.ftl"/>
 
 </@layout.parentLayout>

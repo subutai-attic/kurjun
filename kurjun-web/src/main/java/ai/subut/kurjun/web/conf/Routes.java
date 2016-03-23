@@ -82,6 +82,7 @@ public class Routes implements ApplicationRoutes
         // -------------------------------------------------------------------------------------------------------------
         //  Relations
         // -------------------------------------------------------------------------------------------------------------
+        router.GET().route( "/relations/trust" ).with( RelationController.class, "getAddTrustRelationForm" );
         router.POST().route( "/relations/trust" ).with( RelationController.class, "addTrustRelation" );
         router.GET().route( "/relations" ).with( RelationController.class, "getRelations" );
         router.GET().route( "/relations/source" ).with( RelationController.class, "getRelationsByOwner" );
