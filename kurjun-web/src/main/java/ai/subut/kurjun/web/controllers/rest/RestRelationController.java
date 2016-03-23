@@ -48,25 +48,25 @@ public class RestRelationController extends BaseController
     }
 
 
-    public Result getRelationsByOwner( @AuthorizedUser UserSession userSession, @PathParam( "fingerprint" ) String fingerprint )
+    public Result getRelationsByOwner( @PathParam( "fingerprint" ) String fingerprint )
     {
         return Results.ok().json().render( relationManagerService.getTrustRelationsBySource(
                 relationManagerService.toSourceObject( identityManagerService.getUser( fingerprint ) ) ) );
     }
 
 
-    public Result getRelationsByTarget( @AuthorizedUser UserSession userSession, @PathParam( "fingerprint" ) String fingerprint )
+    public Result getRelationsByTarget( @PathParam( "fingerprint" ) String fingerprint )
     {
         return Results.ok().json().render( relationManagerService.getTrustRelationsByTarget(
                 relationManagerService.toTargetObject(fingerprint) ) );
     }
 
 
-    public Result getRelationsByObject( @AuthorizedUser UserSession userSession, @PathParam( "id" ) String id,
+    public Result getRelationsByObject( @PathParam( "id" ) String id,
                                         @Param( "name" ) String name, @Param( "version" ) String version,
                                         @Param( "md5" ) String md5 )
     {
-        return Results.ok().json().render( relationManagerService.getTrustRelationsByTarget(
+        return Results.ok().json().render( relationManagerService.getTrustRelationsByObject(
                 relationManagerService.toTrustObject(id, name, md5, version)));
     }
 
