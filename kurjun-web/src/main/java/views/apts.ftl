@@ -20,7 +20,6 @@
             <thead>
             <tr>
                 <th>Name</th>
-                <th>Context</th>
                 <th>Arch</th>
                 <th>Version</th>
                 <th>Actions</th>
@@ -31,7 +30,6 @@
             <#list apts as a >
             <tr>
                 <td><#--a href="${contextPath}/apt/${a.id}/info" class="js-colorbox"></a-->${a.name}</td>
-                <td><#if a.id?contains(".") >${a.id?split(".")[0]}</#if></td>
                 <td>${a.architecture}</td>
                 <td>${a.version}</td>
                 <td><a href="${contextPath}/apt/${a.id}/download" target="_blank">download</a>  |  <a href="#" onclick="removeApt('${a.id}')">remove</a></td>

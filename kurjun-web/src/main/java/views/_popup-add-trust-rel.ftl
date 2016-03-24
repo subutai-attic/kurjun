@@ -1,4 +1,3 @@
-<div style="display: none">
 <div id="js-add-trust-rel">
     <div class="b-popup__header">
         <span>Add trust relation</span>
@@ -16,8 +15,8 @@
             </div>
             <div>
                 <div class="b-form__wrapper">
-                    <label><input type="radio" name="trust_obj_type" value="template" checked /> Template</label>
-                    <label><input type="radio" name="trust_obj_type" value="repo" /> Repository</label>
+                    <label><input type="radio" name="trust_obj_type" value="3" checked /> Template</label>
+                    <label><input type="radio" name="trust_obj_type" value="4" /> Repository</label>
 
                     <div id="trust_obj_template">
                         <label class="b-form-label">Template ID</label>
@@ -25,7 +24,13 @@
                     </div>
                     <div id="trust_obj_repo" style="display:none">
                         <label class="b-form-label">Repo</label>
-                        <input type="text" name="repo" id="repo_url" />
+                        <select name="repo" id="repository">
+                        <#if repos?? && repos?has_content >
+                          <#list repos as repo>
+                            <option value="${repo}">${repo}</option>
+                          </#list>
+                        </#if>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -47,11 +52,10 @@
         </form>
     </div>
 </div>
-</div>
 <script type="text/javascript">
     $(document).ready(function(){
         $('input[name=trust_obj_type][type=radio]').change(function(e){
-            if (e.target.value=="template") {
+            if (e.target.value=="3") {
                 $('#trust_obj_template').show();
                 $('#trust_obj_repo').hide();
             }

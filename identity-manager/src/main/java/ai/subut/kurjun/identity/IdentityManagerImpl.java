@@ -333,7 +333,7 @@ public class IdentityManagerImpl implements IdentityManager
                 if ( !Strings.isNullOrEmpty( publicKeyASCII ) )
                 {
                     user = new DefaultUser( securityManager.readPGPKey( publicKeyASCII ) );
-                    user.setType( userType);
+                    user.setType( UserType.Regular.getId() );
                 }
                 else
                 {

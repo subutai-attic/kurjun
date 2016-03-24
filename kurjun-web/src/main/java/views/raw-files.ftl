@@ -21,7 +21,6 @@
             <tr>
                 <th>Name</th>
                 <th>Size</th>
-                <th>Owner</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -31,7 +30,6 @@
             <tr>
                 <td><#--a href="${contextPath}/raw-files/info" class="js-colorbox"></a-->${f.name}</td>
                 <td>${f.size}</td>
-                <td>${f.fingerprint}</td>
                 <td><a href="${contextPath}/raw-files/${f.id}/download" target="_blank">download</a>  |  <a href="#" onclick="removeFile('${f.id}')">remove</a></td>
             </tr>
             </#list>

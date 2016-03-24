@@ -3,6 +3,7 @@ package ai.subut.kurjun.web.service;
 import ai.subut.kurjun.model.identity.Permission;
 import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.model.identity.RelationObject;
+import ai.subut.kurjun.model.identity.RelationObjectType;
 import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.identity.UserSession;
 
@@ -31,6 +32,7 @@ public interface RelationManagerService extends BaseService {
 
     //*************************************
     Relation getRelation( String sourceId, String targetId, String trustObjectId, int trustObjectType );
+    Relation getRelation( String relationId );
 
     //*************************************
     List<Relation> getRelationsByObject( String trustObjectId, int trustObjectType );
@@ -59,6 +61,8 @@ public interface RelationManagerService extends BaseService {
 
     RelationObject toTargetObject( String fingerprint );
 
-    RelationObject toTrustObject( String id, String md5, String name, String version );
+    RelationObject toTrustObject( String id, String md5, String name, String version, RelationObjectType rot );
+
+    void saveRelation( Relation relation );
 
 }

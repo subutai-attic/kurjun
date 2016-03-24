@@ -5,6 +5,7 @@ import ai.subut.kurjun.identity.DefaultRelationObject;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.subutai.TemplateId;
 import ai.subut.kurjun.metadata.common.utils.IdValidators;
+import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.model.identity.RelationObjectType;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
@@ -197,10 +198,17 @@ public class TemplateController extends BaseController
         {
             TemplateId tid = IdValidators.Template.validate(id);
 
+            // get relations list
+            List<Relation> relations = relationManagerService.getTrustRelationsByObject(
+                    relationManagerService.toTrustObject( id, null, null, null, RelationObjectType.RepositoryContent ) );
+
             //*****************************************************
             templateManagerService.setUserSession( (UserSession ) context.getAttribute( "USER_SESSION" ) );
             boolean status = templateManagerService.delete(tid);
             //*****************************************************
+
+            // remove relations
+            relations.forEach( r -> relationManagerService.removeRelation( r ) );
 
             if(status)
                 flashScope.success( "Template removed successfully" );

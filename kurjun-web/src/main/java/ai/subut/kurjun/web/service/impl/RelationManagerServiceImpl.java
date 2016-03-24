@@ -25,6 +25,7 @@ import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.web.controllers.rest.RestIdentityController;
 import ai.subut.kurjun.web.service.IdentityManagerService;
 import ai.subut.kurjun.web.service.RelationManagerService;
+import ai.subut.kurjun.web.service.RepositoryService;
 import ai.subut.kurjun.web.service.TemplateManagerService;
 
 
@@ -47,6 +48,9 @@ public class RelationManagerServiceImpl implements RelationManagerService
 
     @Inject
     private TemplateManagerService templateManagerService;
+
+    @Inject
+    private RepositoryService repositoryService;
 
 
 
@@ -79,12 +83,7 @@ public class RelationManagerServiceImpl implements RelationManagerService
     @Override
     public List<Relation> getTrustRelationsBySource( RelationObject sourceObject )
     {
-        if ( userSession != null && userSession.getUser() != null )
-        {
-            return relationManager.getRelationsBySource( toSourceObject( userSession.getUser() ) );
-        }
-
-        return Collections.emptyList();
+        return relationManager.getRelationsBySource( sourceObject );
     }
 
 
@@ -122,9 +121,17 @@ public class RelationManagerServiceImpl implements RelationManagerService
 
     //*************************************
     @Override
+    public Relation getRelation( String relationId )
+    {
+        return relationManager.getRelation( relationId );
+    }
+
+
+    //*************************************
+    @Override
     public List<Relation> getRelationsByObject( String trustObjectId, int trustObjectType )
     {
-        return getRelationsByObject( trustObjectId, trustObjectType );
+        return relationManager.getRelationsByObject( trustObjectId, trustObjectType );
     }
 
 
@@ -171,21 +178,21 @@ public class RelationManagerServiceImpl implements RelationManagerService
                 owner = identityManagerService.getSystemOwner();
                 pubus = identityManagerService.getPublicUser();
 
-                buildTrustRelation( owner,pubus , objectId, objectType, buildPermissions( 1 ) );
+                buildTrustRelation( owner,pubus , objectId, objectType, buildPermissions( Permission.Read.getId() ) );
             }
             else if ( objectId.equals( "public" ) || objectId.equals( "raw" ))
             {
                 owner = identityManagerService.getSystemOwner();
                 pubus = identityManagerService.getPublicUser();
 
-                buildTrustRelation( owner,pubus , objectId, objectType, buildPermissions( 2 ) );
+                buildTrustRelation( owner,pubus , objectId, objectType, buildPermissions( Permission.Write.getId() ) );
             }
             else
             {
                 owner = userSession.getUser();
             }
 
-            buildTrustRelation( owner, owner, objectId, objectType, buildPermissions( 4 ) );
+            buildTrustRelation( owner, owner, objectId, objectType, buildPermissions( Permission.Delete.getId() ) );
         }
     }
 
@@ -265,31 +272,45 @@ public class RelationManagerServiceImpl implements RelationManagerService
 
 
     @Override
-    public RelationObject toTrustObject( String id, String md5, String name, String version )
+    public RelationObject toTrustObject( String id, String md5, String name, String version, RelationObjectType relObjType )
     {
         TemplateId tid;
         DefaultTemplate defaultTemplate;
         RelationObject trustObject = null;
 
-        if ( id != null )
-        {
-            tid = IdValidators.Template.validate( id );
-            defaultTemplate = templateManagerService.getTemplate( tid, md5, name, version );
+        if ( RelationObjectType.RepositoryContent == relObjType ) {
+            if ( id != null )
+            {
+                tid = IdValidators.Template.validate( id );
+                defaultTemplate = templateManagerService.getTemplate( tid, md5, name, version );
+            }
+            else
+            {
+                defaultTemplate = templateManagerService.getTemplate( null, md5, name, version );
+            }
+            if ( defaultTemplate != null )
+            {
+                trustObject = new DefaultRelationObject();
+                trustObject.setId( defaultTemplate.getId().toString() );
+                trustObject.setType( RelationObjectType.RepositoryContent.getId() );
+            }
+        } else if ( RelationObjectType.RepositoryTemplate == relObjType ) {
+            List<String> repos = repositoryService.getRepositories();
+            if ( repos.contains( id ) ) {
+                trustObject = new DefaultRelationObject();
+                trustObject.setId( id );
+                trustObject.setType( RelationObjectType.RepositoryTemplate.getId() );
+            }
         }
-        else
-        {
-            defaultTemplate = templateManagerService.getTemplate( null, md5, name, version );
-        }
-        if ( defaultTemplate != null )
-        {
-            trustObject = new DefaultRelationObject();
-            trustObject.setId( defaultTemplate.getId().toString() );
-            trustObject.setType( RelationObjectType.RepositoryContent.getId() );
-        }
+
 
         return trustObject;
     }
 
-
+    @Override
+    public void saveRelation( Relation relation )
+    {
+        relationManager.saveTrustRelation( relation );
+    }
 
 }

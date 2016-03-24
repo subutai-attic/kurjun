@@ -430,7 +430,12 @@ table.dataTable td {
 }
 .dataTables_wrapper .dataTables_length,
 .dataTables_wrapper .dataTables_info {
-	display: none;
+	/*display: none;*/
+}
+.dataTables_length {
+	right: 260px;
+	position: absolute;
+	padding: 7px 0 15px 0;
 }
 .dataTables_wrapper .dataTables_scroll {
 	clear: both;
