@@ -108,7 +108,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     public SerializableMetadata getPackageInfo( Metadata metadata )
     {
         WebClient webClient =
-                webClientFactory.make( this, FILE_PATH + INFO_PATH, MetadataUtils.makeParamsMap( metadata ) );
+                webClientFactory.makeSecure( this, FILE_PATH + INFO_PATH, MetadataUtils.makeParamsMap( metadata ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -144,7 +144,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
         }
 
         WebClient webClient =
-                webClientFactory.make( this, FILE_PATH + GET_PATH, MetadataUtils.makeParamsMap( metadata ) );
+                webClientFactory.makeSecure( this, FILE_PATH + GET_PATH, MetadataUtils.makeParamsMap( metadata ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -188,7 +188,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
         Map<String, String> params = makeParamsMap( new RawMetadata() );
         params.put( "repository", "public" );
 
-        WebClient webClient = webClientFactory.make( this, FILE_PATH + LIST_PATH, params );
+        WebClient webClient = webClientFactory.makeSecure( this, FILE_PATH + LIST_PATH, params );
 
         if ( identity != null )
         {
@@ -225,7 +225,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     @Override
     public String getMd5()
     {
-        WebClient webClient = webClientFactory.make( this, FILE_PATH + MD5_PATH, null );
+        WebClient webClient = webClientFactory.makeSecure( this, FILE_PATH + MD5_PATH, null );
 
         Response resp = doGet( webClient );
 

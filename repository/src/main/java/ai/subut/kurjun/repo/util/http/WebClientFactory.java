@@ -41,7 +41,7 @@ public interface WebClientFactory
      */
     WebClient make( RemoteRepository remoteRepository, String path, Map<String, String> queryParams );
 
-
+    WebClient makeSecure( RemoteRepository remoteRepository, String path, Map<String, String> queryParams );
     /**
      * Builds a URL to the supplied remote repository with supplied path and query parameters.
      *

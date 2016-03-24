@@ -12,11 +12,11 @@ import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 
 import ai.subut.kurjun.model.repository.RemoteRepository;
+import ai.subut.kurjun.security.manager.utils.ssl.RestUtils;
 
 
 /**
  * Default implementation of {@link WebClientFactory}. This produces plain web clients without any custom settings.
- *
  */
 class DefaultWebClientFactory implements WebClientFactory
 {
@@ -47,5 +47,24 @@ class DefaultWebClientFactory implements WebClientFactory
         }
     }
 
+
+    @Override
+    public WebClient makeSecure( final RemoteRepository remoteRepository, final String path,
+                                 final Map<String, String> queryParams )
+    {
+        try
+        {
+            URL url = WebClientFactory.buildUrl( remoteRepository, path, queryParams );
+
+            WebClient webClient = RestUtils.createTrustedWebClient( url.toExternalForm() );
+
+            return webClient;
+        }
+        catch ( URISyntaxException | MalformedURLException e )
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
 

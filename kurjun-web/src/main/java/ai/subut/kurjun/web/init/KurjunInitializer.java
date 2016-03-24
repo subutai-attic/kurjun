@@ -1,6 +1,7 @@
 package ai.subut.kurjun.web.init;
 
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -126,20 +127,30 @@ public class KurjunInitializer
         {
             try
             {
-                InputStream inputStream = new FileInputStream( sourceList );
-                properties.load( inputStream );
-                servers = properties.getProperty( KurjunConstants.KURJUN_SERVER_LIST ).split( "," );
-
-                if ( servers.length > 0 )
+                if ( new File( sourceList ).exists() )
                 {
-                    for ( String s : servers )
+                    InputStream inputStream = new FileInputStream( sourceList );
+
+                    properties.load( inputStream );
+                    String serverList = properties.getProperty( KurjunConstants.KURJUN_SERVER_LIST );
+
+                    if ( serverList != null )
                     {
-                        artifactContext.addRemoteTemplateRepository(
-                                repositoryFactory.createNonLocalTemplate( s, null, "public", null ) );
+                        servers = serverList.split( "," );
+                        if ( servers.length > 0 )
+                        {
+                            for ( String s : servers )
+                            {
+                                artifactContext.addRemoteTemplateRepository(
+                                        repositoryFactory.createNonLocalTemplate( s, null, "public", null ) );
 
-                        artifactContext.addRemoteRawRepositories( repositoryFactory.createNonLocalRaw( s, null ) );
+                                artifactContext
+                                        .addRemoteRawRepositories( repositoryFactory.createNonLocalRaw( s, null ) );
 
-                        artifactContext.addRemoteAptRepositories( repositoryFactory.createNonLocalApt( new URL( s ) ) );
+                                artifactContext.addRemoteAptRepositories(
+                                        repositoryFactory.createNonLocalApt( new URL( s ) ) );
+                            }
+                        }
                     }
                 }
 
