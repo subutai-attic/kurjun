@@ -1,6 +1,7 @@
 package ai.subut.kurjun.web.conf;
 
 
+import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.web.conf.routes.rest.RestRoutes;
 import ai.subut.kurjun.web.controllers.*;
 import com.google.inject.Inject;
@@ -85,9 +86,12 @@ public class Routes implements ApplicationRoutes
         router.GET().route( "/relations/trust" ).with( RelationController.class, "getAddTrustRelationForm" );
         router.POST().route( "/relations/trust" ).with( RelationController.class, "addTrustRelation" );
         router.GET().route( "/relations" ).with( RelationController.class, "getRelations" );
-        router.GET().route( "/relations/source" ).with( RelationController.class, "getRelationsByOwner" );
-        router.GET().route( "/relations/target" ).with( RelationController.class, "getRelationsByTarget" );
-        router.GET().route( "/relations/object" ).with( RelationController.class, "getRelationsByObject" );
+        router.GET().route( "/relations/by-source" ).with( RelationController.class, "getRelationsByOwner" );
+        router.GET().route( "/relations/by-target" ).with( RelationController.class, "getRelationsByTarget" );
+        router.GET().route( "/relations/by-object" ).with( RelationController.class, "getRelationsByObject" );
+        router.POST().route( "/relations/{id}/delete" ).with( RelationController.class, "delete" );
+        router.GET().route( "/relations/{id}/change" ).with( RelationController.class, "getChangeForm" );
+        router.POST().route( "/relations/{id}/change" ).with( RelationController.class, "change" );
 
         // -------------------------------------------------------------------------------------------------------------
         //  Repositories

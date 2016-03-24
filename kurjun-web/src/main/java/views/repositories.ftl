@@ -21,6 +21,7 @@
             <tr>
                 <th>Repo name</th>
                 <th>Owner</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -28,7 +29,8 @@
                 <#list repos as r >
                 <tr>
                     <td>${r}</td>
-                    <td></td>
+                    <td>${(owners[r]??)?then(owners[r], "")}</td>
+                    <td><a href="${contextPath}/relations/by-object?id=${r}&obj_type=4" class="js-colorbox">permissions</a>
                 </tr>
                 </#list>
             </#if>

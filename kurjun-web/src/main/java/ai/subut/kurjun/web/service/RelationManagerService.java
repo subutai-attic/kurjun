@@ -32,6 +32,7 @@ public interface RelationManagerService extends BaseService {
 
     //*************************************
     Relation getRelation( String sourceId, String targetId, String trustObjectId, int trustObjectType );
+    Relation getRelation( String relationId );
 
     //*************************************
     List<Relation> getRelationsByObject( String trustObjectId, int trustObjectType );
@@ -61,5 +62,7 @@ public interface RelationManagerService extends BaseService {
     RelationObject toTargetObject( String fingerprint );
 
     RelationObject toTrustObject( String id, String md5, String name, String version, RelationObjectType rot );
+
+    void saveRelation( Relation relation );
 
 }

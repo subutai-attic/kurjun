@@ -23,6 +23,7 @@
                 <th>Target</th>
                 <th>Object</th>
                 <th>Permissions</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -34,19 +35,29 @@
                     <td>${r.trustObject.id}</td>
                     <td>
                      ${(r.permissions?seq_contains("Read"))?then("R"," ")}
-                     ${(r.permissions?seq_contains("Write"))?then("W"," ")}
                      ${(r.permissions?seq_contains("Update"))?then("U"," ")}
+                     ${(r.permissions?seq_contains("Write"))?then("W"," ")}
                      ${(r.permissions?seq_contains("Delete"))?then("D"," ")}
                     </td>
+                    <td><a href="${contextPath}/relations/${r.id}/change" class="js-colorbox">change</a> | <a href="#" onclick="removeRelation('${r.id}')">remove</a></td>
                 </tr>
                 </#list>
             </#if>
             </tbody>
         </table>
+        <form id="removeRelationForm" method="post" action></form>
     </div>
 </div>
 
 <script>
+    function removeRelation(id)
+    {
+        var confirmed = confirm("Are you sure want to delete it?");
+        if (confirmed) {
+            $('#removeRelationForm').attr('action', '${contextPath}/relations/' + id + '/delete');
+            $('#removeRelationForm').submit();
+        }
+    }
 
     $(document).ready( function () {
 

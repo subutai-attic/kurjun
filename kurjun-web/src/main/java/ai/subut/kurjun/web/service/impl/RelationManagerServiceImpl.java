@@ -121,6 +121,14 @@ public class RelationManagerServiceImpl implements RelationManagerService
 
     //*************************************
     @Override
+    public Relation getRelation( String relationId )
+    {
+        return relationManager.getRelation( relationId );
+    }
+
+
+    //*************************************
+    @Override
     public List<Relation> getRelationsByObject( String trustObjectId, int trustObjectType )
     {
         return relationManager.getRelationsByObject( trustObjectId, trustObjectType );
@@ -170,21 +178,21 @@ public class RelationManagerServiceImpl implements RelationManagerService
                 owner = identityManagerService.getSystemOwner();
                 pubus = identityManagerService.getPublicUser();
 
-                buildTrustRelation( owner,pubus , objectId, objectType, buildPermissions( 1 ) );
+                buildTrustRelation( owner,pubus , objectId, objectType, buildPermissions( Permission.Read.getId() ) );
             }
             else if ( objectId.equals( "public" ) || objectId.equals( "raw" ))
             {
                 owner = identityManagerService.getSystemOwner();
                 pubus = identityManagerService.getPublicUser();
 
-                buildTrustRelation( owner,pubus , objectId, objectType, buildPermissions( 2 ) );
+                buildTrustRelation( owner,pubus , objectId, objectType, buildPermissions( Permission.Write.getId() ) );
             }
             else
             {
                 owner = userSession.getUser();
             }
 
-            buildTrustRelation( owner, owner, objectId, objectType, buildPermissions( 4 ) );
+            buildTrustRelation( owner, owner, objectId, objectType, buildPermissions( Permission.Delete.getId() ) );
         }
     }
 
@@ -299,6 +307,10 @@ public class RelationManagerServiceImpl implements RelationManagerService
         return trustObject;
     }
 
-
+    @Override
+    public void saveRelation( Relation relation )
+    {
+        relationManager.saveTrustRelation( relation );
+    }
 
 }

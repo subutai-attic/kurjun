@@ -160,7 +160,7 @@ public class IdentityManagerImpl implements IdentityManager
 
         if ( user != null )
         {
-            if ( 1 == 1 /* securityManager.verifyPGPSignatureAndContent( authMessage, user.getSignature(), user.getKeyData() )*/ )
+            if ( securityManager.verifyPGPSignatureAndContent( authMessage, user.getSignature(), user.getKeyData() ) )
             {
                 UserToken uToken = createUserToken( user, user.getKeyFingerprint(), "", "", null );
                 user.setUserToken( uToken );
@@ -271,7 +271,7 @@ public class IdentityManagerImpl implements IdentityManager
     public User setSystemOwner( String fingerprint, String publicKeyASCII )
     {
 
-        if ( 1 == 1/*getSystemOwner() == null*/ )
+        if ( getSystemOwner() == null )
         {
             User user = null;
 

@@ -24,13 +24,17 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+
 
 /**
  * Web Controller for Trust Relation Management
  */
 public class RelationController extends BaseController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( RestIdentityController.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( RelationController.class );
 
     @Inject
     private RelationManagerService relationManagerService;
@@ -50,27 +54,28 @@ public class RelationController extends BaseController {
 
     public Result getRelationsByOwner( /*@AuthorizedUser UserSession userSession,*/ @Param( "fingerprint" ) String fingerprint )
     {
-
-        return Results.html().template("views/relations.ftl").render( "relations",
+        return Results.html().template("views/_popup-view-permissions.ftl").render( "relations",
                 relationManagerService.getTrustRelationsBySource(
-                        relationManagerService.toSourceObject( identityManagerService.getUser( fingerprint ) )
-                ) );
+                        relationManagerService.toSourceObject( identityManagerService.getUser( fingerprint ) ) ));
     }
 
     public Result getRelationsByTarget( /*@AuthorizedUser UserSession userSession,*/ @Param( "fingerprint" ) String fingerprint )
     {
-        return Results.html().template("views/relations.ftl").render( "relations",
+        return Results.html().template("views/_popup-view-permissions.ftl").render( "relations",
                 relationManagerService.getTrustRelationsByTarget(
                         relationManagerService.toTargetObject(fingerprint) ) );
     }
 
-    public Result getRelationsByObject( /*@AuthorizedUser UserSession userSession,*/ @PathParam( "id" ) String id,
+    public Result getRelationsByObject( /*@AuthorizedUser UserSession userSession,*/ @Param( "id" ) String id,
                                         @Param( "name" ) String name, @Param( "version" ) String version,
                                         @Param( "md5" ) String md5, @Param( "obj_type" ) int objType )
     {
-        return Results.html().template("views/relations.ftl").render( "relations",
-                relationManagerService.getTrustRelationsByTarget(
-                        relationManagerService.toTrustObject(id, name, md5, version, RelationObjectType.valueOf( objType ))));
+        RelationObjectType relObjType = RelationObjectType.valueOf( objType );
+        relObjType = ( relObjType == null? RelationObjectType.RepositoryContent : relObjType );
+        List<Relation> rels = relationManagerService.getTrustRelationsByObject(
+                relationManagerService.toTrustObject( id, null, null, null, relObjType ) );
+        //.stream().filter( r -> !r.getSource().getId().equals( r.getTarget().getId() ) ).collect Collectors.toList() );
+        return Results.html().template("views/_popup-view-permissions.ftl").render( "relations", rels );
     }
 
     public Result getAddTrustRelationForm()
@@ -113,6 +118,64 @@ public class RelationController extends BaseController {
         if ( relation != null )
         {
             flashScope.success("Trust relation added.");
+        }
+
+        return Results.redirect(context.getContextPath()+"/relations");
+    }
+
+    public Result delete( @PathParam("id") String id, @Param("source_id") String sourceId,
+                          @Param("target_id") String targetId, @Param("object_id") String objectId,
+                          Context context, FlashScope flashScope )
+    {
+        boolean deleted = false;
+
+        if ( !StringUtils.isBlank(id) ) {
+            Relation rel = relationManagerService.getRelation( id );
+            if ( rel != null )
+            {
+                relationManagerService.removeRelation( rel );
+                deleted = true;
+            }
+        }
+        else {
+            relationManagerService.getRelation( sourceId, targetId, objectId, 0 );
+            deleted = true;
+        }
+
+        if ( deleted )
+            flashScope.success( "Deleted successfully." );
+        else
+            flashScope.error( "Failed to delete." );
+
+        return Results.redirect( context.getContextPath()+"/relations" );
+    }
+
+    public Result getChangeForm( @PathParam("id") String id, @Param("source_id") String sourceId,
+                                 @Param("target_id") String targetId, @Param("object_id") String objectId,
+                                 Context context, FlashScope flashScope )
+    {
+        Relation rel;
+        if ( !StringUtils.isBlank(id) ) {
+            rel = relationManagerService.getRelation( id );
+        }
+        else {
+            rel = relationManagerService.getRelation( sourceId, targetId, objectId, 0 );
+        }
+
+        return Results.html().template( "views/_popup-change-trust-rel.ftl" ).render( "relation", rel );
+    }
+
+
+    public Result change( @PathParam( "id" ) String id, @Params( "permission" ) String[] permissions,
+                                    Context context, FlashScope flashScope )
+    {
+        Relation rel = relationManagerService.getRelation( id );
+        if ( rel != null ) {
+            Set<Permission> objectPermissions = new HashSet<>();
+            Arrays.asList( permissions ).forEach( p -> objectPermissions.add(Permission.valueOf(p)) );
+            rel.setPermissions( objectPermissions );
+            relationManagerService.saveRelation( rel );
+            flashScope.success( "Saved successfully." );
         }
 
         return Results.redirect(context.getContextPath()+"/relations");
