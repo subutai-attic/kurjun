@@ -1,6 +1,8 @@
 package ai.subut.kurjun.web.controllers.rest;
 
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +26,10 @@ public class RestRepositoryController
     public Result list()
     {
         LOGGER.debug( "Getting list of repositories" );
-        return Results.ok().render( repositoryService.getRepositories() ).json();
+        List<String> repos = repositoryService.getRepositories();
+        repos.remove( "vapt" );
+        repos.remove( "raw" );
+
+        return Results.ok().render( repos ).json();
     }
 }
