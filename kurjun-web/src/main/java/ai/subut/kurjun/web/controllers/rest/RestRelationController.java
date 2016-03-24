@@ -23,6 +23,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+
+
 /**
  * REST Controller for Trust Relation Management
  */
@@ -103,5 +106,45 @@ public class RestRelationController extends BaseController
         {
             return Results.notFound();
         }
+    }
+
+    public Result delete( @PathParam("id") String id, @Param("source_id") String sourceId,
+                          @Param("target_id") String targetId, @Param("object_id") String objectId )
+    {
+        boolean deleted = false;
+
+        if ( !StringUtils.isBlank(id ) ) {
+            Relation rel = relationManagerService.getRelation( id );
+            if ( rel != null )
+            {
+                relationManagerService.removeRelation( rel );
+                deleted = true;
+            }
+        }
+        else {
+            relationManagerService.getRelation( sourceId, targetId, objectId, 0 );
+            deleted = true;
+        }
+
+        if ( deleted )
+            return Results.ok();
+        else
+            return Results.badRequest().text().render( "Failed to delete." );
+
+
+    }
+
+    public Result change( @PathParam( "id" ) String id, @Params( "permission" ) String[] permissions )
+    {
+        Relation rel = relationManagerService.getRelation( id );
+        if ( rel != null ) {
+            Set<Permission> objectPermissions = new HashSet<>();
+            Arrays.asList( permissions ).forEach( p -> objectPermissions.add(Permission.valueOf(p)) );
+            rel.setPermissions( objectPermissions );
+            relationManagerService.saveRelation( rel );
+            return Results.ok();
+        }
+
+        return Results.notFound();
     }
 }

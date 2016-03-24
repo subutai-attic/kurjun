@@ -74,7 +74,7 @@ public class RestAliquaController extends BaseController
         }
         if ( renderable != null )
         {
-            return Results.ok().render( renderable );
+            return Results.ok().render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
         }
         return Results.notFound().render( "File not found" ).text();
     }

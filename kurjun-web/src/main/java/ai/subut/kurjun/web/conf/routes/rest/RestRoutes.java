@@ -73,13 +73,13 @@ public class RestRoutes implements ApplicationRoutes
         router.POST().route( baseIdentityUrl + "user/auth" ).with( RestIdentityController.class, "authorizeUser" );
         router.POST().route( baseIdentityUrl + "system-owner" ).with( RestIdentityController.class, "setSystemOwner" );
         router.GET().route( baseIdentityUrl + "system-owner" ).with( RestIdentityController.class, "getSystemOwner" );
+        router.POST().route( baseRelationsUrl + "owner/set" ).with( RestIdentityController.class, "setSystemOwner" );
+        router.GET().route( baseRelationsUrl + "owner/get" ).with( RestIdentityController.class, "getSystemOwner" );
 
         //REST Repository Controller
         router.GET().route( baseRepositoryUrl + "list" ).with( RestRepositoryController.class, "list" );
 
         //REST Relation Controller
-        router.POST().route( baseRelationsUrl + "owner/set" ).with( RestIdentityController.class, "setSystemOwner" );
-        router.GET().route( baseRelationsUrl + "owner/get" ).with( RestIdentityController.class, "getSystemOwner" );
         router.GET().route( baseRelationsUrl + "list" ).with( RestRelationController.class, "getAllRelations" );
         router.PUT().route( baseRelationsUrl + "trust" ).with( RestRelationController.class, "addTrustRelation" );
         router.GET().route( baseRelationsUrl + "source/{fingerprint}" )
@@ -88,10 +88,8 @@ public class RestRoutes implements ApplicationRoutes
               .with( RestRelationController.class, "getRelationsByTarget" );
         router.GET().route( baseRelationsUrl + "object/{id}" )
               .with( RestRelationController.class, "getRelationsByObject" );
-        //router.GET().route( baseRelationUrl + "target/get" ).with( RestIdentityController.class,
-        // "getRelationsByTargetId" );
-        //router.GET().route( baseRelationUrl + "trust/get" ).with( RestIdentityController.class,
-        // "getRelationsByTrustId" );
+        router.POST().route( baseRelationsUrl + "{id}/delete" ).with( RestRelationController.class, "delete" );
+        router.POST().route( baseRelationsUrl + "{id}/change" ).with( RestRelationController.class, "change" );
 
 
         //REST Security Controller
