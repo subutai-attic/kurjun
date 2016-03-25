@@ -202,7 +202,7 @@ public class RelationManagerServiceImpl implements RelationManagerService
     public Set<Permission> checkUserPermissions( UserSession userSession, String objectId, int objectType )
     {
         if(userSession == null)
-            return null;
+            return Collections.emptySet();
         else
             return relationManager.getUserPermissions( userSession.getUser() ,objectId ,objectType );
     }

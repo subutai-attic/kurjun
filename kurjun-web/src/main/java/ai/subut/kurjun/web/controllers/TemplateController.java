@@ -124,7 +124,7 @@ public class TemplateController extends BaseController
 
             if( Strings.isNullOrEmpty(id))
             {
-                flashScope.error("Failed to upload template.Access Permission error.");
+                flashScope.error("Failed to upload template. Access Permission error.");
                 return Results.redirect( context.getContextPath()+"/" );
             }
             else
