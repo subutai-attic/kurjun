@@ -51,12 +51,10 @@ public class RestIdentityController extends BaseController
 
         if(user != null)
         {
-            LOGGER.info( "est user" );
             return Results.ok().render( user ).json();
         }
         else
         {
-            LOGGER.info( "no user" );
             return Results.notFound().text().render( "User not found" );
         }
 
