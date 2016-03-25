@@ -5,6 +5,8 @@ import java.io.InputStream;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.bouncycastle.openpgp.PGPPublicKeyRing;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ai.subut.kurjun.security.manager.service.SecurityManager;
 import ai.subut.kurjun.security.manager.utils.SecurityUtils;
@@ -19,6 +21,8 @@ import ai.subut.kurjun.security.manager.utils.token.TokenUtils;
  */
 public class SecurityManagerImpl implements SecurityManager
 {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( SecurityManagerImpl.class );
 
     /*******************************************/
     public SecurityManagerImpl()
@@ -135,6 +139,7 @@ public class SecurityManagerImpl implements SecurityManager
         }
         catch ( Exception e )
         {
+            LOGGER.error( " ******* Error in SecurityManager" ,e );
             return false;
         }
     }
@@ -162,6 +167,7 @@ public class SecurityManagerImpl implements SecurityManager
         }
         catch ( Exception e )
         {
+            LOGGER.error( " ******* Error in SecurityManager" ,e );
             return false;
         }
     }
@@ -180,6 +186,7 @@ public class SecurityManagerImpl implements SecurityManager
         }
         catch ( PGPException e )
         {
+            LOGGER.error( " ******* Error in SecurityManager" ,e );
             return false;
         }
     }

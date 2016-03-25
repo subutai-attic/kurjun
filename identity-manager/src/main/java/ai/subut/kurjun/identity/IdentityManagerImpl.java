@@ -109,6 +109,7 @@ public class IdentityManagerImpl implements IdentityManager
         }
         catch ( Exception ex )
         {
+            LOGGER.error( " ******* Error in IdentityManager" ,ex );
             return null;
         }
     }
@@ -147,6 +148,7 @@ public class IdentityManagerImpl implements IdentityManager
         }
         catch ( Exception ex )
         {
+            LOGGER.error( " ******* Error in IdentityManager" ,ex );
             return null;
         }
     }
