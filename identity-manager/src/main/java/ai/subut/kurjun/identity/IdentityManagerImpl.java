@@ -223,7 +223,10 @@ public class IdentityManagerImpl implements IdentityManager
         try
         {
             FileDb fileDb = fileDbProvider.get();
-            return fileDb.get( DefaultUser.MAP_NAME, fingerprint.toLowerCase(), DefaultUser.class );
+            User user = fileDb.get( DefaultUser.MAP_NAME, fingerprint.toLowerCase(), DefaultUser.class );
+            fileDb.close();
+
+            return user;
         }
         catch ( Exception ex )
         {
@@ -366,6 +369,7 @@ public class IdentityManagerImpl implements IdentityManager
         {
             FileDb fileDb = fileDbProvider.get();
             fileDb.put( DefaultUser.MAP_NAME, user.getKeyFingerprint().toLowerCase(), user );
+            fileDb.close();
         }
         catch ( Exception ex )
         {
@@ -385,6 +389,7 @@ public class IdentityManagerImpl implements IdentityManager
         {
             FileDb fileDb = fileDbProvider.get();
             Map<String, User> map = fileDb.get( DefaultUser.MAP_NAME );
+            fileDb.close();
 
             if ( map != null )
             {
