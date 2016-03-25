@@ -46,15 +46,18 @@ public class RestIdentityController extends BaseController
     //*************************
     public Result getUser( @Param( "fingerprint" ) String fingerprint )
     {
+
         User user = identityManagerService.getUser( fingerprint );
 
         if(user != null)
         {
+            LOGGER.info( "est user" );
             return Results.ok().render( user ).json();
         }
         else
         {
-            return Results.notFound();
+            LOGGER.info( "no user" );
+            return Results.notFound().text().render( "User not found" );
         }
 
     }
@@ -69,7 +72,7 @@ public class RestIdentityController extends BaseController
             return Results.ok().json().render(userSession.getUser().getKeyFingerprint());
         }
 
-        return Results.notFound();
+        return Results.notFound().text().render( "Active user not found" );
     }
 
 
