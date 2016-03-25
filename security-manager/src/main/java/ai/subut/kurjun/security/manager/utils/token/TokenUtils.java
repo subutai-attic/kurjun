@@ -30,6 +30,7 @@ import net.minidev.json.JSONObject;
 public class TokenUtils
 {
 
+
     public static String createToken(String headerJson, String claimJson,String sharedKey)
     {
         try
@@ -62,6 +63,7 @@ public class TokenUtils
         }
         catch ( Exception ex )
         {
+
             return false;
         }
 

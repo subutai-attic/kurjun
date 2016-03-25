@@ -117,6 +117,7 @@ public class RelationManagerImpl implements RelationManager
         }
         catch ( Exception ex )
         {
+            LOGGER.error( " ******* Error in RelationManager" ,ex );
             return null;
         }
     }
@@ -202,6 +203,7 @@ public class RelationManagerImpl implements RelationManager
         }
         catch ( Exception ex )
         {
+            LOGGER.error( " ******* Error in RelationManager" ,ex );
             return null;
         }
     }
