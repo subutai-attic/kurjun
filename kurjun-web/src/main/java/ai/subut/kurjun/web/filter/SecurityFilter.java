@@ -31,8 +31,8 @@ public class SecurityFilter implements Filter
     @Override
     public Result filter( final FilterChain filterChain, final Context ctx )
     {
-        //try
-        //{
+        try
+        {
             Session session = ctx.getSession();
             UserSession uSession = null;
             String sptoken = ctx.getParameter( USER_TOKEN );
@@ -43,21 +43,22 @@ public class SecurityFilter implements Filter
                 {
                     uSession = identityManagerService.loginUser ("token", session.get( USER_SESSION ));
                 }
-                else
-                {
-                    uSession = identityManagerService.loginPublicUser();
-                }
             }
             else
             {
                 uSession = identityManagerService.loginUser ("token", sptoken);
             }
 
+            if ( uSession == null )
+            {
+                uSession = identityManagerService.loginPublicUser();
+            }
+
             //******************************
-            if( uSession != null )
+            if ( uSession != null )
             {
                 //--------------------------------------
-                if(!uSession.getUser().getKeyFingerprint().equals( identityManagerService.getPublicUserId()))
+                if(!uSession.getUser().getKeyFingerprint().equals( identityManagerService.getPublicUserId())) // if not public user
                 {
                     session.put( USER_SESSION, uSession.getUserToken().getFullToken() );
                 }
@@ -70,11 +71,11 @@ public class SecurityFilter implements Filter
                 session.remove(  USER_SESSION );
             }
             //******************************
-        /*}
+        }
         catch(Exception ex)
         {
             return Results.forbidden().render( "Not allowed" ).text();
-        }*/
+        }
 
         return filterChain.next( ctx );
     }
