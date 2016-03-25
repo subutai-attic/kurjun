@@ -216,7 +216,7 @@ public class AptManagerServiceImpl implements AptManagerService
             return ( context, result ) -> {
                 result.addHeader( "Content-Disposition", "attachment;filename="
                         + md.getName()+"_"+md.getVersion()+"_"+md.getArchitecture()+".deb" );
-                result.addHeader( "Contenty-Type", "application/octet-stream" );
+                result.addHeader( "Content-Type", "application/octet-stream" );
                 //result.addHeader( "Content-Length", String.valueOf( md.getInstalledSize() ) );
 
                 ResponseStreams responseStreams = context.finalizeHeaders( result );

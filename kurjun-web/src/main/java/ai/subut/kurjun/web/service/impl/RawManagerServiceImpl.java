@@ -96,7 +96,7 @@ public class RawManagerServiceImpl implements RawManagerService
                 return ( context, result ) -> {
 
                     result.addHeader( "Content-Disposition", "attachment;filename=" + meta.getName() );
-                    result.addHeader( "Contenty-Type", "application/octet-stream" );
+                    result.addHeader( "Content-Type", "application/octet-stream" );
                     result.addHeader( "Content-Length", String.valueOf( meta.getSize() ) );
 
                     ResponseStreams responseStreams = context.finalizeHeaders( result );
@@ -142,7 +142,7 @@ public class RawManagerServiceImpl implements RawManagerService
                 return ( context, result ) -> {
 
                     result.addHeader( "Content-Disposition", "attachment;filename=" + meta.getName() );
-                    result.addHeader( "Contenty-Type", "application/octet-stream" );
+                    result.addHeader( "Content-Type", "application/octet-stream" );
                     result.addHeader( "Content-Length", String.valueOf( meta.getSize() ) );
 
                     ResponseStreams responseStreams = context.finalizeHeaders( result );
