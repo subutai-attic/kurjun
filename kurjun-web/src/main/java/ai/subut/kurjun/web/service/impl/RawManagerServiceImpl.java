@@ -51,6 +51,7 @@ public class RawManagerServiceImpl implements RawManagerService
     @Inject
     RelationManagerService relationManagerService;
 
+
     @Inject
     public RawManagerServiceImpl( final RepositoryFactory repositoryFactory, final ArtifactContext artifactContext )
     {
@@ -179,7 +180,7 @@ public class RawManagerServiceImpl implements RawManagerService
         try
         {
             //***** Check permissions (DELETE) *****************
-            if ( checkRepoPermissions( "raw", null, Permission.Delete ) )
+            if ( checkRepoPermissions( "raw", defaultMetadata.getId().toString(), Permission.Delete ) )
             {
                 return localPublicRawRepository.delete( defaultMetadata.getId(), md5 );
             }
@@ -217,14 +218,20 @@ public class RawManagerServiceImpl implements RawManagerService
         try
         {
             // *******CheckRepoOwner ***************
-            relationManagerService
-                    .checkRelationOwner( userSession, "raw", RelationObjectType.RepositoryRaw.getId() );
+            relationManagerService.checkRelationOwner( userSession, "raw", RelationObjectType.RepositoryRaw.getId() );
             //**************************************
 
             //***** Check permissions (WRITE) *****************
             if ( checkRepoPermissions( "raw", null, Permission.Write ) )
             {
                 metadata = localPublicRawRepository.put( file, CompressionType.NONE, DEFAULT_RAW_REPO_NAME );
+
+                //***** Build Relation ****************
+                relationManagerService
+                        .buildTrustRelation( userSession.getUser(), userSession.getUser(), metadata.getId().toString(),
+                                RelationObjectType.RepositoryContent.getId(),
+                                relationManagerService.buildPermissions( 4 ) );
+                //*************************************
             }
         }
         catch ( IOException e )
@@ -242,14 +249,21 @@ public class RawManagerServiceImpl implements RawManagerService
         try
         {
             // *******CheckRepoOwner ***************
-            relationManagerService
-                    .checkRelationOwner( userSession, "raw", RelationObjectType.RepositoryRaw.getId() );
+            relationManagerService.checkRelationOwner( userSession, "raw", RelationObjectType.RepositoryRaw.getId() );
             //**************************************
 
             //***** Check permissions (WRITE) *****************
             if ( checkRepoPermissions( "raw", null, Permission.Write ) )
             {
-                metadata = localPublicRawRepository.put( new FileInputStream( file ), CompressionType.NONE, repository );
+                metadata =
+                        localPublicRawRepository.put( new FileInputStream( file ), CompressionType.NONE, repository );
+
+                //***** Build Relation ****************
+                relationManagerService
+                        .buildTrustRelation( userSession.getUser(), userSession.getUser(), metadata.getId().toString(),
+                                RelationObjectType.RepositoryContent.getId(),
+                                relationManagerService.buildPermissions( 4 ) );
+                //*************************************
             }
         }
         catch ( IOException e )
@@ -264,15 +278,16 @@ public class RawManagerServiceImpl implements RawManagerService
     public Metadata put( final File file, final String filename, final String repository )
     {
 
-        if(userSession.getUser().equals( identityManagerService.getPublicUser() ))
+        if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
+        {
             return null;
+        }
 
         Metadata metadata = null;
         try
         {
             // *******CheckRepoOwner ***************
-            relationManagerService
-                    .checkRelationOwner( userSession, "raw", RelationObjectType.RepositoryRaw.getId() );
+            relationManagerService.checkRelationOwner( userSession, "raw", RelationObjectType.RepositoryRaw.getId() );
             //**************************************
 
             //***** Check permissions (WRITE) *****************
@@ -280,6 +295,13 @@ public class RawManagerServiceImpl implements RawManagerService
             {
                 LocalRawRepository localRawRepository = getLocalPublicRawRepository( new KurjunContext( repository ) );
                 metadata = localRawRepository.put( file, filename, repository );
+
+                //***** Build Relation ****************
+                relationManagerService
+                        .buildTrustRelation( userSession.getUser(), userSession.getUser(), metadata.getId().toString(),
+                                RelationObjectType.RepositoryContent.getId(),
+                                relationManagerService.buildPermissions( 4 ) );
+                //*************************************
             }
         }
         catch ( IOException e )
@@ -332,14 +354,12 @@ public class RawManagerServiceImpl implements RawManagerService
     }
 
 
-
     //*******************************************************************
     private boolean checkRepoPermissions( String repoId, String contentId, Permission perm )
     {
         return relationManagerService
                 .checkRepoPermissions( userSession, repoId, RelationObjectType.RepositoryRaw.getId(), contentId,
                         RelationObjectType.RepositoryContent.getId(), perm );
-
     }
     //*******************************************************************
 }

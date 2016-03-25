@@ -25,62 +25,92 @@
 
   <build>
     <finalName>kurjun</finalName>
-
     <plugins>
+
+      <!-- Ninja SuperDevMode -->
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <!--<version>3.1</version>-->
+        <groupId>org.ninjaframework</groupId>
+        <artifactId>ninja-maven-plugin</artifactId>
+        <version>${ninja.version}</version>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
+          <useDefaultExcludes>true</useDefaultExcludes>
+          <excludes>
+            <exclude>(.*)html$</exclude>
+          </excludes>
+          <context>/kurjun</context>
         </configuration>
       </plugin>
-    <!--
-    To create executable Jar execute
-    mvn clean compile assembly:single
-     -->
+
+      <!-- Needed to debug in SuperDevMode -->
       <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.4</version>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <version>9.3.0.M2</version>
         <configuration>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
-          <archive>
-            <manifest>
-              <mainClass>ninja.standalone.NinjaJetty</mainClass>
-            </manifest>
-          </archive>
+          <stopKey>stop</stopKey>
+          <stopPort>8889</stopPort>
+          <scanIntervalSeconds>1</scanIntervalSeconds>
+          <reload>automatic</reload>
+          <scanTargetPatterns>
+            <scanTargetPattern>
+              <directory>target/classes</directory>
+              <includes>
+                <include>**/*</include>
+              </includes>
+              <excludes>
+                <exclude>**/*.ftl.html</exclude>
+                <exclude>assets/**</exclude>
+              </excludes>
+            </scanTargetPattern>
+          </scanTargetPatterns>
+          <systemProperties>
+            <systemProperty>
+              <name>ninja.mode</name>
+              <value>dev</value>
+            </systemProperty>
+          </systemProperties>
         </configuration>
       </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
-        <version>2.6</version>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+          <createDependencyReducedPom>true</createDependencyReducedPom>
+          <filters>
+            <filter>
+              <artifact>*:*</artifact>
+              <excludes>
+                <exclude>META-INF/*.SF</exclude>
+                <exclude>META-INF/*.DSA</exclude>
+                <exclude>META-INF/*.RSA</exclude>
+              </excludes>
+            </filter>
+          </filters>
+        </configuration>
         <executions>
           <execution>
             <phase>package</phase>
             <goals>
-              <goal>war</goal>
+              <goal>shade</goal>
             </goals>
+            <configuration>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>ninja.standalone.NinjaJetty</mainClass>
+                </transformer>
+              </transformers>
+            </configuration>
           </execution>
         </executions>
       </plugin>
-
-      <plugin>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-maven-plugin</artifactId>
-        <configuration>
-          <webApp>
-            <contextPath>/kurjun</contextPath>
-          </webApp>
-        </configuration>
-      </plugin>
     </plugins>
 
+    <!-- Removing this may cause error reading of configuration file -->
     <resources>
+
       <resource>
         <directory>src/main/java</directory>
         <includes>
@@ -90,6 +120,7 @@
           <exclude>**/*.java</exclude>
         </excludes>
       </resource>
+
       <resource>
         <directory>src/main/resources</directory>
         <includes>
@@ -97,6 +128,7 @@
         </includes>
       </resource>
     </resources>
+
   </build>
 
   <!-- ============================================================================================================= -->
@@ -104,11 +136,11 @@
   <!-- ============================================================================================================= -->
 
   <dependencies>
-
-    <dependency>
-      <groupId>com.google.inject</groupId>
-      <artifactId>guice</artifactId>
-    </dependency>
+    <!--<dependency>-->
+    <!--<groupId>org.ninjaframework</groupId>-->
+    <!--<artifactId>ninja-standalone</artifactId>-->
+    <!--<version>${ninja.version}</version>-->
+    <!--</dependency>-->
 
     <dependency>
       <groupId>ai.subut.kurjun</groupId>
@@ -155,6 +187,20 @@
     </dependency>
     <!-- ***************************************** -->
 
+    <!-- ************* Jetty ********************* -->
+    <!--<dependency>-->
+    <!--<groupId>org.eclipse.jetty</groupId>-->
+    <!--<artifactId>jetty-server</artifactId>-->
+    <!--<version>${jetty.version}</version>-->
+    <!--</dependency>-->
+
+    <!--<dependency>-->
+    <!--<groupId>org.eclipse.jetty</groupId>-->
+    <!--<artifactId>jetty-servlet</artifactId>-->
+    <!--<version>${jetty.version}</version>-->
+    <!--</dependency>-->
+    <!-- ***************************************** -->
+
     <!-- ************* Ninja ********************* -->
 
     <dependency>
@@ -173,6 +219,12 @@
       </exclusions>
     </dependency>
 
+    <dependency>
+      <groupId>org.ninjaframework</groupId>
+      <artifactId>ninja-test-utilities</artifactId>
+      <version>${ninja.version}</version>
+      <scope>test</scope>
+    </dependency>
     <!-- *************************************** -->
 
     <!-- *************************************** -->
@@ -186,11 +238,6 @@
       <groupId>commons-validator</groupId>
       <artifactId>commons-validator</artifactId>
       <version>1.5.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.ninjaframework</groupId>
-      <artifactId>ninja-standalone</artifactId>
-      <version>${ninja.version}</version>
     </dependency>
 
     <!--<dependency>-->

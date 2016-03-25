@@ -255,6 +255,13 @@ public class AptManagerServiceImpl implements AptManagerService
                 Metadata meta = localRepository.put( is );
                 if ( meta != null )
                 {
+                    //***** Build Relation ****************
+                    relationManagerService
+                            .buildTrustRelation( userSession.getUser(), userSession.getUser(), meta.getId().toString(),
+                                    RelationObjectType.RepositoryContent.getId(),
+                                    relationManagerService.buildPermissions( 4 ) );
+                    //*************************************
+
                     return new URI( null, null, "/info", "md5=" + Hex.encodeHexString( meta.getMd5Sum() ), null );
                 }
             }
@@ -292,12 +299,15 @@ public class AptManagerServiceImpl implements AptManagerService
     }
 
 
+
     @Override
     public boolean delete( final byte[] md5 )
     {
         try
         {
-            if ( checkRepoPermissions( REPO_NAME , null, Permission.Delete ) )
+            String id = Hex.encodeHexString( md5 );
+
+            if ( checkRepoPermissions( REPO_NAME , id, Permission.Delete ) )
             {
                 return localRepository.delete( md5 );
             }
