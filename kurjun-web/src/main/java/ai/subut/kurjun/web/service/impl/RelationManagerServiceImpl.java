@@ -173,14 +173,7 @@ public class RelationManagerServiceImpl implements RelationManagerService
 
         if ( relation == null )
         {
-            if ( objectId.equals( "vapt" ))
-            {
-                owner = identityManagerService.getSystemOwner();
-                pubus = identityManagerService.getPublicUser();
-
-                buildTrustRelation( owner,pubus , objectId, objectType, buildPermissions( Permission.Read.getId() ) );
-            }
-            else if ( objectId.equals( "public" ) || objectId.equals( "raw" ))
+            if ( objectId.equals( "public" ) || objectId.equals( "raw" ) || objectId.equals( "vapt" ))
             {
                 owner = identityManagerService.getSystemOwner();
                 pubus = identityManagerService.getPublicUser();
@@ -278,7 +271,8 @@ public class RelationManagerServiceImpl implements RelationManagerService
         DefaultTemplate defaultTemplate;
         RelationObject trustObject = null;
 
-        if ( RelationObjectType.RepositoryContent == relObjType ) {
+        if ( RelationObjectType.RepositoryContent == relObjType )
+        {
             if ( id != null )
             {
                 tid = IdValidators.Template.validate( id );
@@ -294,7 +288,9 @@ public class RelationManagerServiceImpl implements RelationManagerService
                 trustObject.setId( defaultTemplate.getId().toString() );
                 trustObject.setType( RelationObjectType.RepositoryContent.getId() );
             }
-        } else if ( RelationObjectType.RepositoryTemplate == relObjType ) {
+        }
+        else if ( RelationObjectType.RepositoryTemplate == relObjType )
+        {
             List<String> repos = repositoryService.getRepositories();
             if ( repos.contains( id ) ) {
                 trustObject = new DefaultRelationObject();

@@ -7,6 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>kurjun-web</artifactId>
+  <packaging>war</packaging>
   <name>Kurjun Web</name>
   <description>Kurjun Web (Global Kurjun)</description>
   <build>
@@ -30,10 +31,44 @@
     <finalName>kurjun</finalName>
     <plugins>
       <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
+        <groupId>org.ninjaframework</groupId>
+        <artifactId>ninja-maven-plugin</artifactId>
+        <version>${ninja.version}</version>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
+          <useDefaultExcludes>true</useDefaultExcludes>
+          <excludes>
+            <exclude>(.*)html$</exclude>
+          </excludes>
+          <context>/kurjun</context>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <version>9.3.0.M2</version>
+        <configuration>
+          <stopKey>stop</stopKey>
+          <stopPort>8889</stopPort>
+          <scanIntervalSeconds>1</scanIntervalSeconds>
+          <reload>automatic</reload>
+          <scanTargetPatterns>
+            <scanTargetPattern>
+              <directory>target/classes</directory>
+              <includes>
+                <include>**/*</include>
+              </includes>
+              <excludes>
+                <exclude>**/*.ftl.html</exclude>
+                <exclude>assets/**</exclude>
+              </excludes>
+            </scanTargetPattern>
+          </scanTargetPatterns>
+          <systemProperties>
+            <systemProperty>
+              <name>ninja.mode</name>
+              <value>dev</value>
+            </systemProperty>
+          </systemProperties>
         </configuration>
       </plugin>
       <plugin>
@@ -69,20 +104,41 @@
           </filters>
         </configuration>
       </plugin>
-      <plugin>
-        <artifactId>maven-war-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>war</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
   <dependencies>
+    <dependency>
+      <groupId>org.ninjaframework</groupId>
+      <artifactId>ninja-test-utilities</artifactId>
+      <version>5.2.2</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>ninja-standalone</artifactId>
+          <groupId>org.ninjaframework</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>mockito-core</artifactId>
+          <groupId>org.mockito</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>fluentlenium-core</artifactId>
+          <groupId>org.fluentlenium</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>httpmime</artifactId>
+          <groupId>org.apache.httpcomponents</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>doctester-core</artifactId>
+          <groupId>org.doctester</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>doctest</artifactId>
+          <groupId>com.devbliss.doctest</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>

@@ -20,8 +20,6 @@ import ai.subut.kurjun.model.identity.RelationObjectType;
 import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.security.manager.service.SecurityManager;
 
-import static ai.subut.kurjun.identity.IdentityManagerImpl.*;
-
 
 /**
  *
@@ -217,6 +215,7 @@ public class RelationManagerImpl implements RelationManager
         {
             FileDb fileDb = fileDbProvider.get();
             fileDb.put( DefaultRelation.MAP_NAME, relation.getId().toLowerCase(), relation );
+            fileDb.close();
 
             return relation;
         }
@@ -235,7 +234,10 @@ public class RelationManagerImpl implements RelationManager
         try
         {
             FileDb fileDb = fileDbProvider.get();
-            return fileDb.get( DefaultRelation.MAP_NAME, relationId.toLowerCase(), DefaultRelation.class );
+            Relation rel = fileDb.get( DefaultRelation.MAP_NAME, relationId.toLowerCase(), DefaultRelation.class );
+            fileDb.close();
+
+            return rel;
         }
         catch ( Exception ex )
         {
@@ -255,6 +257,8 @@ public class RelationManagerImpl implements RelationManager
             if ( map != null )
             {
                 List<Relation> items = new ArrayList<>( map.values() );
+                fileDb.close();
+
                 return items;
             }
             else
@@ -309,6 +313,7 @@ public class RelationManagerImpl implements RelationManager
         {
             FileDb fileDb = fileDbProvider.get();
             Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
+            fileDb.close();
 
             return map.values().stream().filter( r -> r.getTrustObject().equals(trustObject)).collect(Collectors.toList());
         }
@@ -372,6 +377,7 @@ public class RelationManagerImpl implements RelationManager
         {
             FileDb fileDb = fileDbProvider.get();
             Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
+            fileDb.close();
 
             return map.values().parallelStream().filter( r -> r.getSource().equals(sourceObject)).collect(Collectors.toList());
         }
@@ -392,6 +398,7 @@ public class RelationManagerImpl implements RelationManager
         {
             FileDb fileDb = fileDbProvider.get();
             Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
+            fileDb.close();
 
             return map.values().stream().filter( r -> r.getTarget().equals(targetObject)).collect(Collectors.toList());
         }
@@ -412,6 +419,7 @@ public class RelationManagerImpl implements RelationManager
         {
             FileDb fileDb = fileDbProvider.get();
             fileDb.remove( DefaultRelation.MAP_NAME, relationId );
+            fileDb.close();
         }
         catch ( Exception ex )
         {
