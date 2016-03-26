@@ -92,7 +92,7 @@ public class RestIdentityController extends BaseController
 
     //*************************
     public Result authorizeUser(@Param( "fingerprint" ) String fingerprint, @Param( "message" ) String message,
-                                FlashScope flashScope )
+                                Context context, FlashScope flashScope )
     {
         try
         {
@@ -100,6 +100,7 @@ public class RestIdentityController extends BaseController
 
             if ( user != null )
             {
+                context.getSession().put( SecurityFilter.USER_SESSION, user.getUserToken().getFullToken() );
                 return Results.ok().render( user.getUserToken().getFullToken() ).text();
             }
             else

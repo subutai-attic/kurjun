@@ -41,8 +41,6 @@ public class IdentityController extends BaseController {
         if (user != null)
         {
             context.getSession().put( SecurityFilter.USER_SESSION, user.getUserToken().getFullToken() );
-            //return Results.redirect(context.getContextPath()+"/");
-            //return Results.redirect(context.getContextPath());
             return Results.redirect(context.getContextPath()+"/");
         }
         else
