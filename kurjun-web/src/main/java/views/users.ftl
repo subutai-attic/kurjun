@@ -63,6 +63,5 @@
 
 <#include "_popup-add-user.ftl"/>
 <#include "_popup-set-system-owner.ftl"/>
-<#include "flashscope.ftl"/>
 
 </@layout.parentLayout>

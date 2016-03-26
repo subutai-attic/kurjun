@@ -61,6 +61,5 @@
 </script>
 
 <#include "_popup-upload-raw.ftl"/>
-<#include "flashscope.ftl"/>
 
 </@layout.parentLayout>
