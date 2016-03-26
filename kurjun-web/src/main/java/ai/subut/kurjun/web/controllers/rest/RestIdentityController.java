@@ -8,7 +8,6 @@ import ai.subut.kurjun.web.controllers.BaseController;
 import ai.subut.kurjun.web.filter.SecurityFilter;
 import ninja.Context;
 import ninja.session.FlashScope;
-import ninja.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,15 +76,23 @@ public class RestIdentityController extends BaseController
     //*************************
     public Result addUser( @Param( "key" ) String publicKey )
     {
-        User user = identityManagerService.addUser( publicKey );
+        try
+        {
+            User user = identityManagerService.addUser( publicKey );
 
-        if(user != null)
-        {
-            return Results.ok().render( user.getSignature() ).text();
+            if ( user != null )
+            {
+                return Results.ok().render( user.getSignature() ).text();
+            }
+            else
+            {
+                return Results.badRequest().text().render( "Failed to add user's key" );
+            }
         }
-        else
+        catch ( Exception e )
         {
-            return Results.internalServerError();
+            LOGGER.error( "Failed to add user: "+e.getMessage() );
+            return Results.internalServerError().text().render( e.getMessage() );
         }
     }
 
@@ -110,6 +117,7 @@ public class RestIdentityController extends BaseController
         }
         catch ( Exception e )
         {
+            LOGGER.error( "Failed to authorize user: "+e.getMessage() );
             return Results.badRequest().text().render( e.getMessage() );
         }
     }
