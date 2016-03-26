@@ -52,6 +52,7 @@ public class RelationController extends BaseController {
                 relationManagerService.getAllRelations());
     }
 
+
     public Result getRelationsByOwner( /*@AuthorizedUser UserSession userSession,*/ @Param( "fingerprint" ) String fingerprint )
     {
         return Results.html().template("views/_popup-view-permissions.ftl").render( "relations",
@@ -59,12 +60,14 @@ public class RelationController extends BaseController {
                         relationManagerService.toSourceObject( identityManagerService.getUser( fingerprint ) ) ));
     }
 
+
     public Result getRelationsByTarget( /*@AuthorizedUser UserSession userSession,*/ @Param( "fingerprint" ) String fingerprint )
     {
         return Results.html().template("views/_popup-view-permissions.ftl").render( "relations",
                 relationManagerService.getTrustRelationsByTarget(
                         relationManagerService.toTargetObject(fingerprint) ) );
     }
+
 
     public Result getRelationsByObject( /*@AuthorizedUser UserSession userSession,*/ @Param( "id" ) String id,
                                         @Param( "name" ) String name, @Param( "version" ) String version,
@@ -78,6 +81,7 @@ public class RelationController extends BaseController {
         return Results.html().template("views/_popup-view-permissions.ftl").render( "relations", rels );
     }
 
+
     public Result getAddTrustRelationForm()
     {
         List<String> repos = repositoryService.getRepositories();
@@ -87,7 +91,8 @@ public class RelationController extends BaseController {
         return Results.html().template("views/_popup-add-trust-rel.ftl").render("repos", repos);
     }
 
-    public Result addTrustRelation( /*@AuthorizedUser UserSession userSession,*/ @Param( "target_fprint" ) String targetFprint,
+
+    public Result addTrustRelation( @Param( "target_fprint" ) String targetFprint,
                                     @Param("trust_obj_type") int trustObjType,
                                     @Param( "template_id" ) String templateId, @Param("repo") String repo,
                                     @Params( "permission" ) String[] permissions,
@@ -114,6 +119,7 @@ public class RelationController extends BaseController {
         Set<Permission> objectPermissions = new HashSet<>();
         Arrays.asList( permissions ).forEach( p -> objectPermissions.add(Permission.valueOf(p)) );
 
+
         Relation relation = relationManagerService.addTrustRelation(owner, target, trustObject, objectPermissions);
         if ( relation != null )
         {
@@ -123,21 +129,32 @@ public class RelationController extends BaseController {
         return Results.redirect(context.getContextPath()+"/relations");
     }
 
+
     public Result delete( @PathParam("id") String id, @Param("source_id") String sourceId,
                           @Param("target_id") String targetId, @Param("object_id") String objectId,
                           Context context, FlashScope flashScope )
     {
+        //*****************************************************
+        UserSession userSession = (UserSession ) context.getAttribute( "USER_SESSION" );
+        relationManagerService.setUserSession( userSession );
+        //*****************************************************
+
         boolean deleted = false;
 
-        if ( !StringUtils.isBlank(id) ) {
+        if ( !StringUtils.isBlank(id) )
+        {
             Relation rel = relationManagerService.getRelation( id );
             if ( rel != null )
             {
-                relationManagerService.removeRelation( rel );
-                deleted = true;
+                if(rel.getTarget().getId().equals( userSession.getUser().getKeyFingerprint() ))
+                {
+                    relationManagerService.removeRelation( rel );
+                    deleted = true;
+                }
             }
         }
-        else {
+        else
+        {
             relationManagerService.getRelation( sourceId, targetId, objectId, 0 );
             deleted = true;
         }
@@ -149,6 +166,7 @@ public class RelationController extends BaseController {
 
         return Results.redirect( context.getContextPath()+"/relations" );
     }
+
 
     public Result getChangeForm( @PathParam("id") String id, @Param("source_id") String sourceId,
                                  @Param("target_id") String targetId, @Param("object_id") String objectId,
@@ -170,7 +188,9 @@ public class RelationController extends BaseController {
                                     Context context, FlashScope flashScope )
     {
         Relation rel = relationManagerService.getRelation( id );
-        if ( rel != null ) {
+
+        if ( rel != null )
+        {
             Set<Permission> objectPermissions = new HashSet<>();
             Arrays.asList( permissions ).forEach( p -> objectPermissions.add(Permission.valueOf(p)) );
             rel.setPermissions( objectPermissions );

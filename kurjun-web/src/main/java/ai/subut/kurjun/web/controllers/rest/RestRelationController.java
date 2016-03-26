@@ -6,6 +6,7 @@ import ai.subut.kurjun.identity.DefaultRelationObject;
 import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.web.controllers.BaseController;
 import ai.subut.kurjun.web.service.IdentityManagerService;
+import ninja.Context;
 import ninja.Result;
 import ninja.Results;
 
@@ -79,10 +80,17 @@ public class RestRelationController extends BaseController
     }
 
 
-    public Result addTrustRelation( @AuthorizedUser UserSession userSession, @Param( "fingerprint" ) String fingerprint,
+    public Result addTrustRelation( Context context, @Param( "fingerprint" ) String fingerprint,
                                     @Param( "id" ) String id, @Params( "permission" ) String[] permissions,
                                     @Param("trust_obj_type") int trustObjType )
     {
+
+
+        //*****************************************************
+        UserSession userSession = (UserSession ) context.getAttribute( "USER_SESSION" );
+        relationManagerService.setUserSession( userSession );
+        //*****************************************************
+
         RelationObject owner = relationManagerService.toSourceObject( userSession.getUser() );
         RelationObject target = relationManagerService.toTargetObject( fingerprint );
 
@@ -108,20 +116,31 @@ public class RestRelationController extends BaseController
         }
     }
 
-    public Result delete( @PathParam("id") String id, @Param("source_id") String sourceId,
+    public Result delete( Context context, @PathParam("id") String id, @Param("source_id") String sourceId,
                           @Param("target_id") String targetId, @Param("object_id") String objectId )
     {
+
+        //*****************************************************
+        UserSession userSession = (UserSession ) context.getAttribute( "USER_SESSION" );
+        relationManagerService.setUserSession( userSession );
+        //*****************************************************
+
         boolean deleted = false;
 
-        if ( !StringUtils.isBlank(id ) ) {
+        if ( !StringUtils.isBlank(id ) )
+        {
             Relation rel = relationManagerService.getRelation( id );
             if ( rel != null )
             {
-                relationManagerService.removeRelation( rel );
-                deleted = true;
+                if(rel.getTarget().getId().equals( userSession.getUser().getKeyFingerprint() ))
+                {
+                    relationManagerService.removeRelation( rel );
+                    deleted = true;
+                }
             }
         }
-        else {
+        else
+        {
             relationManagerService.getRelation( sourceId, targetId, objectId, 0 );
             deleted = true;
         }

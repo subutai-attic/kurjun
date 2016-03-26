@@ -188,18 +188,26 @@ public class RelationManagerImpl implements RelationManager
     {
         try
         {
-            Relation relation = new DefaultRelation();
+            if(source != null && target != null && trustObject != null)
+            {
 
-            relation.setSource( source );
-            relation.setTarget( target );
-            relation.setTrustObject( trustObject );
-            relation.setPermissions( permissions );
+                Relation relation = new DefaultRelation();
 
-            //**************************
-            saveTrustRelation( relation );
-            //**************************
+                relation.setSource( source );
+                relation.setTarget( target );
+                relation.setTrustObject( trustObject );
+                relation.setPermissions( permissions );
 
-            return relation;
+                //**************************
+                saveTrustRelation( relation );
+                //**************************
+
+                return relation;
+            }
+            else
+            {
+                return null;
+            }
         }
         catch ( Exception ex )
         {
@@ -215,9 +223,12 @@ public class RelationManagerImpl implements RelationManager
     {
         try
         {
-            FileDb fileDb = fileDbProvider.get();
-            fileDb.put( DefaultRelation.MAP_NAME, relation.getId().toLowerCase(), relation );
-            fileDb.close();
+            if(relation != null)
+            {
+                FileDb fileDb = fileDbProvider.get();
+                fileDb.put( DefaultRelation.MAP_NAME, relation.getId().toLowerCase(), relation );
+                fileDb.close();
+            }
 
             return relation;
         }
@@ -460,4 +471,23 @@ public class RelationManagerImpl implements RelationManager
         return perms;
     }
 
+
+    //***************************
+    @Override
+    public void removeRelationsByTrustObject( String trustObjectId, int trustObjectType )
+    {
+        try
+        {
+            List<Relation> relations = getRelationsByObject( createRelationObject( trustObjectId, trustObjectType ) );
+
+            for(Relation relation: relations)
+            {
+                removeRelation( relation.getId() );
+            }
+        }
+        catch ( Exception ex )
+        {
+            LOGGER.error( " ***** Failed to remove trustedObjects: " + trustObjectId, ex );
+        }
+    }
 }

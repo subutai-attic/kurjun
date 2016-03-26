@@ -47,7 +47,9 @@
         <artifactId>jetty-maven-plugin</artifactId>
         <version>9.3.0.M2</version>
         <configuration>
-          <stopKey>stop</stopKey>
+          <webApp>
+            <contextPath>/kurjun</contextPath>
+          </webApp>          <stopKey>stop</stopKey>
           <stopPort>8889</stopPort>
           <scanIntervalSeconds>1</scanIntervalSeconds>
           <reload>automatic</reload>

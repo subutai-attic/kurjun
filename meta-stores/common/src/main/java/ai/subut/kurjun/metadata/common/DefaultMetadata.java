@@ -20,6 +20,7 @@ public class DefaultMetadata implements SerializableMetadata
     private String version;
     private String serialized;
     private String fingerprint;
+    //private String objectOwner;
 
 
     public String getFingerprint()

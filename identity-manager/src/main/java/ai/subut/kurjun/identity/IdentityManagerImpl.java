@@ -105,6 +105,7 @@ public class IdentityManagerImpl implements IdentityManager
             UserSession userSession = new DefaultUserSession();
             userSession.setUser( user );
 
+
             return userSession;
         }
         catch ( Exception ex )
@@ -139,6 +140,10 @@ public class IdentityManagerImpl implements IdentityManager
                 userSession.setUser( user );
                 userSession.setUserToken( user.getUserToken() );
 
+                //*****************************************
+                LOGGER.info( " ******* Successfully logged user:" ,user.getKeyFingerprint() );
+                //*****************************************
+
                 return userSession;
             }
             else
@@ -170,6 +175,11 @@ public class IdentityManagerImpl implements IdentityManager
                 //*************
                 saveUser( user );
                 //*************
+
+                //*****************************************
+                LOGGER.info( " ******* Successfully authenticated user:" ,user.getKeyFingerprint() );
+                //*****************************************
+
 
                 return user;
             }
