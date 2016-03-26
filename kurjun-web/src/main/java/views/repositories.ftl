@@ -51,7 +51,4 @@
 
 </script>
 
-<#--include "_popup-add-repo.ftl"/-->
-<#include "flashscope.ftl"/>
-
 </@layout.parentLayout>

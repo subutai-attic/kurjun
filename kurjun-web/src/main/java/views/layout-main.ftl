@@ -49,6 +49,9 @@
 
     <@parentScripts/>
 </body>
+
+<#include "flashscope.ftl"/>
+
 </html>
 
 </#macro>

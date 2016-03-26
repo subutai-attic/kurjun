@@ -63,6 +63,5 @@
 </script>
 
 <#include "_popup-upload-apt.ftl"/>
-<#include "flashscope.ftl"/>
 
 </@layout.parentLayout>

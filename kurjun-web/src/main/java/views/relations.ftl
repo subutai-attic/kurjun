@@ -69,6 +69,4 @@
 
 </script>
 
-<#include "flashscope.ftl"/>
-
 </@layout.parentLayout>
