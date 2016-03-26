@@ -104,7 +104,7 @@ public class RestIdentityController extends BaseController
             }
             else
             {
-                return Results.internalServerError();
+                return Results.notFound().text().render( "User not found" );
             }
         }
         catch ( Exception e )
