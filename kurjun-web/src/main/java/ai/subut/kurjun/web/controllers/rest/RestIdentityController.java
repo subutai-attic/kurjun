@@ -94,21 +94,28 @@ public class RestIdentityController extends BaseController
     public Result authorizeUser(@Param( "fingerprint" ) String fingerprint, @Param( "message" ) String message,
                                 FlashScope flashScope )
     {
-        User user = identityManagerService.authenticateUser(fingerprint, message);
+        try
+        {
+            User user = identityManagerService.authenticateUser( fingerprint, message );
 
-        if (user != null)
-        {
-            return Results.ok().render( user.getUserToken().getFullToken() ).text();
+            if ( user != null )
+            {
+                return Results.ok().render( user.getUserToken().getFullToken() ).text();
+            }
+            else
+            {
+                return Results.internalServerError();
+            }
         }
-        else
+        catch ( Exception e )
         {
-            return Results.internalServerError();
+            return Results.badRequest().text().render( e.getMessage() );
         }
     }
 
 
     //*************************
-    public Result setSystemOwner(@Param( "fingerprint" ) String fingerprint, @Param( "key" ) String key, FlashScope flashScope )
+    public Result setSystemOwner(@Param( "fingerprint" ) String fingerprint, @Param( "key" ) String key )
     {
         User user = identityManagerService.setSystemOwner(fingerprint,key);
 

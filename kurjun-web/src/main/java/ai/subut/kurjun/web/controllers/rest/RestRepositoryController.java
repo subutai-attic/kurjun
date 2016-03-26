@@ -27,8 +27,6 @@ public class RestRepositoryController
     {
         LOGGER.debug( "Getting list of repositories" );
         List<String> repos = repositoryService.getRepositories();
-        repos.remove( "vapt" );
-        repos.remove( "raw" );
 
         return Results.ok().render( repos ).json();
     }

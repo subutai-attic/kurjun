@@ -45,31 +45,34 @@ public class RelationController extends BaseController {
     @Inject
     private RepositoryService repositoryService;
 
-    public Result getRelations( /*@AuthorizedUser UserSession userSession,*/ Context context, Session session )
+    public Result getRelations( @AuthorizedUser UserSession userSession, Context context, Session session )
     {
-        UserSession userSession = (UserSession ) context.getAttribute( "USER_SESSION" );
+        //UserSession userSession = (UserSession ) context.getAttribute( "USER_SESSION" );
         return Results.html().template("views/relations.ftl").render( "relations",
                 relationManagerService.getAllRelations());
     }
 
-    public Result getRelationsByOwner( /*@AuthorizedUser UserSession userSession,*/ @Param( "fingerprint" ) String fingerprint )
+    public Result getRelationsByOwner( @AuthorizedUser UserSession userSession, @Param( "fingerprint" ) String fingerprint )
     {
+        relationManagerService.setUserSession( userSession );
         return Results.html().template("views/_popup-view-permissions.ftl").render( "relations",
                 relationManagerService.getTrustRelationsBySource(
                         relationManagerService.toSourceObject( identityManagerService.getUser( fingerprint ) ) ));
     }
 
-    public Result getRelationsByTarget( /*@AuthorizedUser UserSession userSession,*/ @Param( "fingerprint" ) String fingerprint )
+    public Result getRelationsByTarget( @AuthorizedUser UserSession userSession, @Param( "fingerprint" ) String fingerprint )
     {
+        relationManagerService.setUserSession( userSession );
         return Results.html().template("views/_popup-view-permissions.ftl").render( "relations",
                 relationManagerService.getTrustRelationsByTarget(
                         relationManagerService.toTargetObject(fingerprint) ) );
     }
 
-    public Result getRelationsByObject( /*@AuthorizedUser UserSession userSession,*/ @Param( "id" ) String id,
+    public Result getRelationsByObject( @AuthorizedUser UserSession userSession, @Param( "id" ) String id,
                                         @Param( "name" ) String name, @Param( "version" ) String version,
                                         @Param( "md5" ) String md5, @Param( "obj_type" ) int objType )
     {
+        relationManagerService.setUserSession( userSession );
         RelationObjectType relObjType = RelationObjectType.valueOf( objType );
         relObjType = ( relObjType == null? RelationObjectType.RepositoryContent : relObjType );
         List<Relation> rels = relationManagerService.getTrustRelationsByObject(
@@ -78,22 +81,21 @@ public class RelationController extends BaseController {
         return Results.html().template("views/_popup-view-permissions.ftl").render( "relations", rels );
     }
 
-    public Result getAddTrustRelationForm()
+    public Result getAddTrustRelationForm( @AuthorizedUser UserSession userSession )
     {
+        repositoryService.setUserSession( userSession );
         List<String> repos = repositoryService.getRepositories();
-        repos.remove( "vapt" );
-        repos.remove( "raw" );
 
         return Results.html().template("views/_popup-add-trust-rel.ftl").render("repos", repos);
     }
 
-    public Result addTrustRelation( /*@AuthorizedUser UserSession userSession,*/ @Param( "target_fprint" ) String targetFprint,
+    public Result addTrustRelation( @AuthorizedUser UserSession userSession, @Param( "target_fprint" ) String targetFprint,
                                     @Param("trust_obj_type") int trustObjType,
                                     @Param( "template_id" ) String templateId, @Param("repo") String repo,
                                     @Params( "permission" ) String[] permissions,
                                     Context context, FlashScope flashScope )
     {
-        UserSession userSession = (UserSession ) context.getAttribute( "USER_SESSION" );
+        //UserSession userSession = (UserSession ) context.getAttribute( "USER_SESSION" );
         RelationObject owner = relationManagerService.toSourceObject( userSession.getUser() );
         RelationObject target = relationManagerService.toTargetObject( targetFprint );
         RelationObject trustObject = null;
@@ -127,25 +129,31 @@ public class RelationController extends BaseController {
                           @Param("target_id") String targetId, @Param("object_id") String objectId,
                           Context context, FlashScope flashScope )
     {
-        boolean deleted = false;
+        UserSession userSession = (UserSession ) context.getAttribute( "USER_SESSION" );
+        Relation rel;
 
         if ( !StringUtils.isBlank(id) ) {
-            Relation rel = relationManagerService.getRelation( id );
-            if ( rel != null )
+            rel = relationManagerService.getRelation( id );
+        }
+        else {
+            rel = relationManagerService.getRelation( sourceId, targetId, objectId, 0 );
+        }
+
+        if ( rel != null )
+        {
+            if (relationManagerService.checkUserPermissions( userSession, rel.getTrustObject().getId(),
+                    rel.getTrustObject().getType() ).contains( Permission.Delete ))
             {
                 relationManagerService.removeRelation( rel );
-                deleted = true;
+                flashScope.success( "Deleted successfully." );
+            }
+            else {
+                flashScope.error( "Access denied." );
             }
         }
         else {
-            relationManagerService.getRelation( sourceId, targetId, objectId, 0 );
-            deleted = true;
+            flashScope.error( "Relation not found." );
         }
-
-        if ( deleted )
-            flashScope.success( "Deleted successfully." );
-        else
-            flashScope.error( "Failed to delete." );
 
         return Results.redirect( context.getContextPath()+"/relations" );
     }
@@ -169,13 +177,25 @@ public class RelationController extends BaseController {
     public Result change( @PathParam( "id" ) String id, @Params( "permission" ) String[] permissions,
                                     Context context, FlashScope flashScope )
     {
+        UserSession userSession = (UserSession ) context.getAttribute( "USER_SESSION" );
         Relation rel = relationManagerService.getRelation( id );
         if ( rel != null ) {
-            Set<Permission> objectPermissions = new HashSet<>();
-            Arrays.asList( permissions ).forEach( p -> objectPermissions.add(Permission.valueOf(p)) );
-            rel.setPermissions( objectPermissions );
-            relationManagerService.saveRelation( rel );
-            flashScope.success( "Saved successfully." );
+            if ( relationManagerService.checkUserPermissions( userSession, rel.getTrustObject().getId(),
+                    rel.getTrustObject().getType() ).contains( Permission.Update ) )
+
+            {
+                Set<Permission> objectPermissions = new HashSet<>();
+                Arrays.asList( permissions ).forEach( p -> objectPermissions.add( Permission.valueOf( p ) ) );
+                rel.setPermissions( objectPermissions );
+                relationManagerService.saveRelation( rel );
+                flashScope.success( "Saved successfully." );
+            }
+            else {
+                flashScope.error( "Access denied." );
+            }
+        }
+        else {
+            flashScope.error( "Relation not found." );
         }
 
         return Results.redirect(context.getContextPath()+"/relations");

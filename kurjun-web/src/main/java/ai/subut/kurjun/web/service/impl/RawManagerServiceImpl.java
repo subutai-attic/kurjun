@@ -36,7 +36,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class RawManagerServiceImpl implements RawManagerService
 {
-    private static final String DEFAULT_RAW_REPO_NAME = "raw";
+    public static final String DEFAULT_RAW_REPO_NAME = "raw";
 
     private RepositoryFactory repositoryFactory;
     private LocalRawRepository localPublicRawRepository;

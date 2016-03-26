@@ -66,7 +66,7 @@ public class AptManagerServiceImpl implements AptManagerService
     private KurjunContext kurjunContext;
 
     private UserSession userSession;
-    private String REPO_NAME = "vapt";
+    public static final String REPO_NAME = "vapt";
 
     @Inject
     IdentityManagerService identityManagerService;
