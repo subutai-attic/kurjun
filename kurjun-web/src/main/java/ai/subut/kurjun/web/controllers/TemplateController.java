@@ -72,6 +72,7 @@ public class TemplateController extends BaseController
         repos.remove( "vapt" );
         repos.remove( "raw" );
 
+
         Map<String, String> ownerMap = new HashMap<>();
         relationManagerService.getAllRelations().stream().filter( r ->
                 r.getSource().getId().equals( r.getTarget().getId() )

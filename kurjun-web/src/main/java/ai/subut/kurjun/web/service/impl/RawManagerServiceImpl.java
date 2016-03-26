@@ -179,9 +179,14 @@ public class RawManagerServiceImpl implements RawManagerService
         defaultMetadata.setMd5sum( md5 );
         try
         {
+            String objectId = defaultMetadata.getId().toString();
+
             //***** Check permissions (DELETE) *****************
-            if ( checkRepoPermissions( "raw", defaultMetadata.getId().toString(), Permission.Delete ) )
+            if ( checkRepoPermissions( "raw", objectId, Permission.Delete ) )
             {
+                relationManagerService
+                        .removeRelationsByTrustObject( objectId, RelationObjectType.RepositoryContent.getId() );
+
                 return localPublicRawRepository.delete( defaultMetadata.getId(), md5 );
             }
         }
