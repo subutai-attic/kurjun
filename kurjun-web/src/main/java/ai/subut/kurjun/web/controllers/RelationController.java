@@ -116,6 +116,7 @@ public class RelationController extends BaseController {
         Set<Permission> objectPermissions = new HashSet<>();
         Arrays.asList( permissions ).forEach( p -> objectPermissions.add(Permission.valueOf(p)) );
 
+
         Relation relation = relationManagerService.addTrustRelation(owner, target, trustObject, objectPermissions);
         if ( relation != null )
         {
@@ -124,6 +125,7 @@ public class RelationController extends BaseController {
 
         return Results.redirect(context.getContextPath()+"/relations");
     }
+
 
     public Result delete( @PathParam("id") String id, @Param("source_id") String sourceId,
                           @Param("target_id") String targetId, @Param("object_id") String objectId,
@@ -158,6 +160,7 @@ public class RelationController extends BaseController {
         return Results.redirect( context.getContextPath()+"/relations" );
     }
 
+
     public Result getChangeForm( @PathParam("id") String id, @Param("source_id") String sourceId,
                                  @Param("target_id") String targetId, @Param("object_id") String objectId,
                                  Context context, FlashScope flashScope )
@@ -179,6 +182,7 @@ public class RelationController extends BaseController {
     {
         UserSession userSession = (UserSession ) context.getAttribute( "USER_SESSION" );
         Relation rel = relationManagerService.getRelation( id );
+
         if ( rel != null ) {
             if ( relationManagerService.checkUserPermissions( userSession, rel.getTrustObject().getId(),
                     rel.getTrustObject().getType() ).contains( Permission.Update ) )

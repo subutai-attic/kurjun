@@ -84,6 +84,7 @@ public interface RelationManager
     //***************************
     Relation getObjectOwner( String trustObjectId, int trustObjectType );
 
+
     //***************************
     List<Relation> getRelationsBySource( RelationObject sourceObject );
 
@@ -95,6 +96,11 @@ public interface RelationManager
     //***************************
     void removeRelation( String relationId );
 
+
     //***************************
     Set<Permission> getUserPermissions( User target, String trustObjectId, int trustObjectType );
+
+
+    //***************************
+    void removeRelationsByTrustObject( String trustObjectId, int trustObjectType );
 }

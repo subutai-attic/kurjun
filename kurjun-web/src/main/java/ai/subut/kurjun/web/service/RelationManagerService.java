@@ -21,6 +21,10 @@ public interface RelationManagerService extends BaseService {
     //*************************************
     void removeRelation( Relation relation );
 
+
+    //*************************************
+    void removeRelationsByTrustObject( String trustObjectId, int trustObjectType );
+
     Relation addTrustRelation(RelationObject source, RelationObject target, RelationObject trustObject,
                               Set<Permission> permissions);
 

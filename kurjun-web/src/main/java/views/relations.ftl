@@ -30,9 +30,9 @@
             <#if relations?? && relations?has_content >
                 <#list relations as r >
                 <tr>
-                    <td>${r.source.id}</td>
-                    <td>${r.target.id}</td>
-                    <td>${r.trustObject.id}</td>
+                    <td><#if r.source??>${r.source.id}</#if></td>
+                    <td><#if r.target??>${r.target.id}</#if></td>
+                    <td><#if r.trustObject??>${r.trustObject.id}</#if></td>
                     <td>
                      ${(r.permissions?seq_contains("Read"))?then("R"," ")}
                      ${(r.permissions?seq_contains("Update"))?then("U"," ")}

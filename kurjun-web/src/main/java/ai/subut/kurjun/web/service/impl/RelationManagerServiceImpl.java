@@ -72,6 +72,14 @@ public class RelationManagerServiceImpl implements RelationManagerService
 
     //*************************************
     @Override
+    public void removeRelationsByTrustObject( String trustObjectId, int trustObjectType)
+    {
+        relationManager.removeRelationsByTrustObject( trustObjectId, trustObjectType );
+    }
+
+
+    //*************************************
+    @Override
     public Relation addTrustRelation( RelationObject source, RelationObject target, RelationObject trustObject,
                                       Set<Permission> permissions )
     {

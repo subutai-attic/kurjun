@@ -70,6 +70,7 @@ public class TemplateController extends BaseController
         }
         List<String> repos = repositoryService.getRepositories();
 
+
         Map<String, String> ownerMap = new HashMap<>();
         relationManagerService.getAllRelations().stream().filter( r ->
                 r.getSource().getId().equals( r.getTarget().getId() )

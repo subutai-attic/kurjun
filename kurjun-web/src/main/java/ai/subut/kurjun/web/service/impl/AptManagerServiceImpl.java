@@ -214,8 +214,9 @@ public class AptManagerServiceImpl implements AptManagerService
         if ( inputStream != null )
         {
             return ( context, result ) -> {
-                result.addHeader( "Content-Disposition", "attachment;filename="
-                        + md.getName()+"_"+md.getVersion()+"_"+md.getArchitecture()+".deb" );
+                result.addHeader( "Content-Disposition",
+                        "attachment;filename=" + md.getName() + "_" + md.getVersion() + "_" + md.getArchitecture()
+                                + ".deb" );
                 result.addHeader( "Content-Type", "application/octet-stream" );
                 //result.addHeader( "Content-Length", String.valueOf( md.getInstalledSize() ) );
 
@@ -239,8 +240,10 @@ public class AptManagerServiceImpl implements AptManagerService
     public URI upload( final InputStream is )
     {
 
-        if(userSession.getUser().equals( identityManagerService.getPublicUser() ))
+        if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
+        {
             return null;
+        }
 
         try
         {
@@ -299,7 +302,6 @@ public class AptManagerServiceImpl implements AptManagerService
     }
 
 
-
     @Override
     public boolean delete( final byte[] md5 )
     {
@@ -307,8 +309,11 @@ public class AptManagerServiceImpl implements AptManagerService
         {
             String id = Hex.encodeHexString( md5 );
 
-            if ( checkRepoPermissions( REPO_NAME , id, Permission.Delete ) )
+            if ( checkRepoPermissions( REPO_NAME, id, Permission.Delete ) )
             {
+                // remove relation
+                relationManagerService.removeRelationsByTrustObject( id, RelationObjectType.RepositoryContent.getId() );
+
                 return localRepository.delete( md5 );
             }
         }
@@ -430,6 +435,7 @@ public class AptManagerServiceImpl implements AptManagerService
     {
         this.userSession = userSession;
     }
+
 
     public UserSession getUserSession()
     {

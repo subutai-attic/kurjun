@@ -16,6 +16,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.commons.codec.binary.Hex;
+
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
 
@@ -241,7 +243,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
                 if ( metadata.getMd5Sum() != null )
                 {
                     artifactContext.store( metadata.getMd5Sum(), new KurjunContext( repository ) );
-                    String templateId = toId( metadata != null ? metadata.getMd5Sum() : new byte[0], repository );
+                    String templateId = repository + "." + Hex.encodeHexString( metadata.getMd5Sum() );
 
                     //***** Build Relation ****************
                     relationManagerService.buildTrustRelation( userSession.getUser(), userSession.getUser(), templateId,
@@ -309,6 +311,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
             LocalTemplateRepository _repository = ( LocalTemplateRepository ) getRepo( tid.getOwnerFprint() );
 
             // remove Relation
+            relationManagerService.removeRelationsByTrustObject( tid.get(), RelationObjectType.RepositoryContent.getId() );
 
             return _repository.delete( tid.get(), Utils.MD5.toByteArray( tid.getMd5() ) );
         }
