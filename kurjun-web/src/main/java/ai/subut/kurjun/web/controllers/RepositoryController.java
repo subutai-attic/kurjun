@@ -31,8 +31,6 @@ public class RepositoryController extends BaseController {
     public Result getRepoList()
     {
         List<String> repos = repositoryService.getRepositories();
-        repos.remove( "vapt" );
-        repos.remove( "raw" );
 
         Map<String, String> ownerMap = new HashMap<>();
         relationManagerService.getAllRelations().stream().filter( r ->

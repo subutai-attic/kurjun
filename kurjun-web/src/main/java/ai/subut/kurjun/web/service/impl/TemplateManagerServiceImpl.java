@@ -7,16 +7,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.commons.codec.binary.Hex;
 
-import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
 
@@ -38,6 +39,7 @@ import ai.subut.kurjun.web.context.ArtifactContext;
 import ai.subut.kurjun.web.model.UserContextImpl;
 import ai.subut.kurjun.web.service.IdentityManagerService;
 import ai.subut.kurjun.web.service.RelationManagerService;
+import ai.subut.kurjun.web.service.RepositoryService;
 import ai.subut.kurjun.web.service.TemplateManagerService;
 import ai.subut.kurjun.web.utils.Utils;
 import ninja.Context;
@@ -50,12 +52,17 @@ import ninja.utils.ResponseStreams;
 
 public class TemplateManagerServiceImpl implements TemplateManagerService
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger( TemplateManagerServiceImpl.class );
 
     //------------------------------
     @Inject
     IdentityManagerService identityManagerService;
+
     @Inject
     RelationManagerService relationManagerService;
+
+    @Inject
+    RepositoryService repositoryService;
     //------------------------------
 
     private RepositoryFactory repositoryFactory;
@@ -154,19 +161,37 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     @Override
     public List<SerializableMetadata> list( final String repository, final boolean isKurjunClient ) throws IOException
     {
-        List<SerializableMetadata> results = new ArrayList<SerializableMetadata>();
+        List<SerializableMetadata> results;
 
         switch ( repository )
         {
             //return local list
             case "public":
                 results = localPublicTemplateRepository.listPackages();
-                //return unified repo list
+                //return personal repository list
+                break;
             case "all":
                 results = unifiedTemplateRepository.listPackages();
-                //return personal repository list
+                //return unified repo list
+                break;
             default:
-                results = repositoryFactory.createLocalTemplate( new KurjunContext( repository ) ).listPackages();
+                results = unifiedTemplateRepository.listPackages();
+                results.addAll( repositoryFactory.createLocalTemplate( new KurjunContext( repository ) ).listPackages() );
+                for ( String repo :  repositoryService.getRepositories() ) {
+                    if ( repo.equals( repository ) )
+                    {
+                        LocalRepository localRepo = repositoryFactory.createLocalTemplate( new KurjunContext( repo ) );
+                        for ( SerializableMetadata sm : localRepo.listPackages() )
+                        {
+                            if ( !results.contains( sm ) )
+                            {
+                                results.add( sm );
+                            }
+                        }
+                    }
+                }
+                //results.addAll( repositoryService.getRepositories() );
+                //results = repositoryFactory.createLocalTemplate( new KurjunContext( repository ) ).listPackages();
         }
 
         if ( checkRepoPermissions( repository, null, Permission.Read ))
@@ -320,10 +345,19 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         if ( checkRepoPermissions( repository, repository + "." + md5, Permission.Read  ) )
         {
             DefaultTemplate defaultTemplate = new DefaultTemplate();
-
             defaultTemplate.setId( repository, Utils.MD5.toByteArray( md5 ) );
 
-            DefaultTemplate metadata = ( DefaultTemplate ) unifiedTemplateRepository.getPackageInfo( defaultTemplate );
+            DefaultTemplate dt = null;
+
+            List<SerializableMetadata> templateList = list( repository, true);
+            for ( SerializableMetadata sm : templateList ) {
+                if ( Utils.MD5.toString( sm.getMd5Sum() ).equals( md5 ) ) {
+                    dt = (DefaultTemplate ) sm;
+                    break;
+                }
+            }
+
+            DefaultTemplate metadata = dt;// ( DefaultTemplate ) unifiedTemplateRepository.getPackageInfo( defaultTemplate );
 
             InputStream inputStream = getTemplateData( repository, Utils.MD5.toByteArray( md5 ), false );
 
@@ -343,7 +377,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
                     }
                     catch ( IOException e )
                     {
-                        //e.printStackTrace();
+                        LOGGER.error( "Failed to get renderable template by md5: " + md5 );
                     }
                 };
             }
@@ -359,7 +393,6 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         //************ CheckPermissions ************************************
         if ( checkRepoPermissions( templateId.getOwnerFprint(), templateId.get(), Permission.Read  ) )
         {
-
             DefaultTemplate defaultTemplate = new DefaultTemplate();
 
             if ( templateId != null )
@@ -369,7 +402,21 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
             defaultTemplate.setName( name );
             defaultTemplate.setVersion( version );
+            String[] repo_and_id = templateId.get().split( "\\." );
 
+            try {
+                List<SerializableMetadata> templList = list( repo_and_id[0], true );
+                Iterator iter = templList.iterator();
+                while ( iter.hasNext() ) {
+                    DefaultTemplate df = (DefaultTemplate) iter.next();
+                    if ( df.equals( defaultTemplate )) {
+                        return df;
+                    }
+                }
+            }
+            catch ( IOException e ) {
+
+            }
             return ( DefaultTemplate ) unifiedTemplateRepository.getPackageInfo( defaultTemplate );
         }
         else

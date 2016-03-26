@@ -278,6 +278,7 @@ public class RelationManagerServiceImpl implements RelationManagerService
         TemplateId tid;
         DefaultTemplate defaultTemplate;
         RelationObject trustObject = null;
+        templateManagerService.setUserSession( userSession );
 
         if ( RelationObjectType.RepositoryContent == relObjType )
         {

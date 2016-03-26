@@ -45,6 +45,9 @@ public class RepositoryServiceImpl implements RepositoryService
             }
         }
 
+        results.remove( AptManagerServiceImpl.REPO_NAME );
+        results.remove( RawManagerServiceImpl.DEFAULT_RAW_REPO_NAME );
+
         return results;
     }
 
