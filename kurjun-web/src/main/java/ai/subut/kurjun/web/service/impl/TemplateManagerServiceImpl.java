@@ -177,6 +177,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
             default:
                 results = unifiedTemplateRepository.listPackages();
                 results.addAll( repositoryFactory.createLocalTemplate( new KurjunContext( repository ) ).listPackages() );
+                /*
                 for ( String repo :  repositoryService.getRepositories() ) {
                     if ( repo.equals( repository ) )
                     {
@@ -189,9 +190,10 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
                             }
                         }
                     }
-                }
+                }*/
                 //results.addAll( repositoryService.getRepositories() );
                 //results = repositoryFactory.createLocalTemplate( new KurjunContext( repository ) ).listPackages();
+                break;
         }
 
         if ( checkRepoPermissions( repository, null, Permission.Read ))
