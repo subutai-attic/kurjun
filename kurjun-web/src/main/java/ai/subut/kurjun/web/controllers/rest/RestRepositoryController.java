@@ -9,13 +9,14 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import ai.subut.kurjun.web.controllers.BaseController;
 import ai.subut.kurjun.web.service.RepositoryService;
 import ninja.Result;
 import ninja.Results;
 
 
 @Singleton
-public class RestRepositoryController
+public class RestRepositoryController extends BaseController
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( RestRepositoryController.class );
 
