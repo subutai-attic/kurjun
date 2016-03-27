@@ -4,8 +4,6 @@ package ai.subut.kurjun.web.controllers.rest;
 import com.google.inject.Inject;
 
 import ai.subut.kurjun.metadata.common.raw.RawMetadata;
-import ai.subut.kurjun.model.identity.Permission;
-import ai.subut.kurjun.model.identity.RelationObjectType;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.web.controllers.BaseController;
@@ -33,8 +31,15 @@ public class RestAliquaController extends BaseController
 
     @FileProvider( SubutaiFileHandler.class )
     public Result upload( Context context, @Param( "file" ) FileItem fileItem,
-                          @Param( "fingerprint" ) String fingerprint )
+                          @Param( "fingerprint" ) String fingerprint,
+                          @Param( "global_kurjun_sptoken" ) String globalKurjunToken )
     {
+        String sptoken = "";
+
+        if ( globalKurjunToken != null )
+        {
+            sptoken = globalKurjunToken;
+        }
 
         //checkNotNull( fileItem, "MD5 cannot be null" );
         if ( fingerprint == null )
@@ -60,9 +65,16 @@ public class RestAliquaController extends BaseController
     }
 
 
-    public Result getFile( Context context, @Param( "id" ) String id )
+    public Result getFile( Context context, @Param( "id" ) String id,
+                           @Param( "global_kurjun_sptoken" ) String globalKurjunToken )
     {
         checkNotNull( id, "ID cannot be null" );
+        String sptoken = "";
+
+        if ( globalKurjunToken != null )
+        {
+            sptoken = globalKurjunToken;
+        }
 
         String[] temp = id.split( "\\." );
 
@@ -80,11 +92,17 @@ public class RestAliquaController extends BaseController
     }
 
 
-    public Result delete( Context context, @Param( "id" ) String id )
+    public Result delete( Context context, @Param( "id" ) String id,
+                          @Param( "global_kurjun_sptoken" ) String globalKurjunToken )
     {
         checkNotNull( id, "ID cannot be null" );
         String[] temp = id.split( "\\." );
+        String sptoken = "";
 
+        if ( globalKurjunToken != null )
+        {
+            sptoken = globalKurjunToken;
+        }
         boolean success = false;
 
         if ( temp.length == 2 )
@@ -110,7 +128,8 @@ public class RestAliquaController extends BaseController
     }
 
 
-    public Result list( @Param( "repository" ) String repository )
+    public Result list( @Param( "repository" ) String repository,
+                        @Param( "global_kurjun_sptoken" ) String globalKurjunToken )
     {
         if ( repository == null )
         {
@@ -122,9 +141,16 @@ public class RestAliquaController extends BaseController
 
 
     public Result info( @Param( "id" ) String id, @Param( "name" ) String name, @Param( "md5" ) String md5,
-                        @Param( "type" ) String type, @Param( "fingerprint" ) String fingerprint )
+                        @Param( "type" ) String type, @Param( "fingerprint" ) String fingerprint,
+                        @Param( "global_kurjun_sptoken" ) String globalKurjunToken )
     {
         RawMetadata rawMetadata = new RawMetadata();
+        String sptoken = "";
+
+        if ( globalKurjunToken != null )
+        {
+            sptoken = globalKurjunToken;
+        }
 
         if ( fingerprint == null && md5 != null )
         {
@@ -142,6 +168,4 @@ public class RestAliquaController extends BaseController
         }
         return Results.notFound().render( "Not found" ).text();
     }
-
-
 }
