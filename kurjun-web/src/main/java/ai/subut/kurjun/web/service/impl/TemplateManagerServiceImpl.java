@@ -418,7 +418,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         if ( defaultTemplate1 != null )
         {
             if ( checkRepoPermissions( defaultTemplate1.getOwnerFprint(),
-                    ( ( TemplateId ) defaultTemplate1.getId() ).get(), Permission.Read ) )
+                    ( ( String ) defaultTemplate1.getId() ), Permission.Read ) )
             {
                 return defaultTemplate1;
             }
