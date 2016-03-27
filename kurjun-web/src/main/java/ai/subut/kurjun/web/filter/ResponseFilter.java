@@ -21,11 +21,10 @@ public class ResponseFilter implements Filter
     public Result filter( FilterChain filterChain, Context context )
     {
         Result result = filterChain.next( context );
-        //result.addHeader( "Access-Control-Allow-Origin", "*" );
-        result.addHeader( "Access-Control-Allow-Origin", "https://peer.noip.me:8339" );
+        result.addHeader( "Access-Control-Allow-Origin", "*" );
         result.addHeader( "Access-Control-Allow-Headers", "origin, content-type, accept, authorization" );
-        result.addHeader( "Access-Control-Allow-Credentials","true");
-        result.addHeader( "Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS, HEAD" );
+        //result.addHeader( "Access-Control-Allow-Credentials","true");
+        result.addHeader( "Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD" );
 
         return result;
     }
