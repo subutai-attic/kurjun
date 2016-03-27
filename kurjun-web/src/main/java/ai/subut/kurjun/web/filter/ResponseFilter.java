@@ -22,8 +22,9 @@ public class ResponseFilter implements Filter
     {
         Result result = filterChain.next( context );
         result.addHeader( "Access-Control-Allow-Origin", "*" );
-        result.addHeader( "Access-Control-Allow-Headers", "Cache-Control, Pragma, Origin, Authorization, Content-Type, X-Requested-With" );
-        result.addHeader( "Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, HEAD" );
+        result.addHeader( "Access-Control-Allow-Headers", "origin, content-type, accept, authorization" );
+        result.addHeader( "Access-Control-Allow-Credentials","true");
+        result.addHeader( "Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS, HEAD" );
 
         return result;
     }

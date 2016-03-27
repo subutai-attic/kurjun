@@ -35,6 +35,8 @@ public class RestRoutes implements ApplicationRoutes
     public void init( Router router )
     {
 
+        router.OPTIONS().route( baseTemplateUrl + "list" ).with( RestTemplateController.class, "list" );
+
         // REST Template Controller
 
         router.GET().route( baseTemplateUrl + "list" ).with( RestTemplateController.class, "list" );
