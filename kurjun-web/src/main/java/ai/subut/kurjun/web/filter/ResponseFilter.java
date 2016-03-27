@@ -22,7 +22,7 @@ public class ResponseFilter implements Filter
     {
         Result result = filterChain.next( context );
         result.addHeader( "Access-Control-Allow-Origin", "*" );
-        result.addHeader( "Access-Control-Allow-Headers", "origin, content-type, accept, authorization" );
+        result.addHeader( "Access-Control-Allow-Headers", "origin, content-type, accept, authorization, sptoken" );
         //result.addHeader( "Access-Control-Allow-Credentials","true");
         result.addHeader( "Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD" );
 
