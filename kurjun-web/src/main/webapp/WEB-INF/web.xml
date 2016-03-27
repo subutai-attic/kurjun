@@ -44,11 +44,11 @@
     </init-param>
     <init-param>
       <param-name>allowedMethods</param-name>
-      <param-value>GET,POST,PUT,DELETE,HEAD</param-value>
+      <param-value>*</param-value>
     </init-param>
     <init-param>
       <param-name>allowedHeaders</param-name>
-      <param-value>X-Requested-With,Content-Type,Accept,Origin</param-value>
+      <param-value>*</param-value>
     </init-param>
   </filter>
   <filter-mapping>
