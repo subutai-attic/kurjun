@@ -149,13 +149,21 @@ public class RelationController extends BaseController
             Set<Permission> objectPermissions = new HashSet<>();
             Arrays.asList( permissions ).forEach( p -> objectPermissions.add( Permission.valueOf( p ) ) );
 
+            Set<Permission> userPermissions = relationManagerService.checkUserPermissions( userSession, trustObject.getId(),
+                    trustObject.getType() );
 
-            Relation relation = relationManagerService.addTrustRelation( owner, target, trustObject, objectPermissions );
-            if ( relation != null )
+            if ( userPermissions.containsAll( objectPermissions ) )
             {
-                flashScope.success( "Trust relation added." );
+                Relation relation = relationManagerService.addTrustRelation( owner, target, trustObject, objectPermissions );
+                if ( relation != null )
+                {
+                    flashScope.success( "Trust relation added." );
+                }
             }
-
+            else {
+                flashScope.error( "Access denied. You don't have permissions to this object." );
+            }
+            
             return Results.redirect( context.getContextPath() + "/relations" );
         }
     }
