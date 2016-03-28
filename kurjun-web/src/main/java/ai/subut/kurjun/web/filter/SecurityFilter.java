@@ -41,12 +41,12 @@ public class SecurityFilter implements Filter
             {
                 if ( session != null && session.get( USER_SESSION ) != null )
                 {
-                    uSession = identityManagerService.loginUser ("token", session.get( USER_SESSION ));
+                    uSession = identityManagerService.loginUser("token", session.get( USER_SESSION ));
                 }
             }
             else
             {
-                uSession = identityManagerService.loginUser ("token", sptoken);
+                uSession = identityManagerService.loginUser("token", sptoken);
             }
 
             if ( uSession == null )

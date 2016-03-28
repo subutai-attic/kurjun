@@ -1,10 +1,10 @@
 <div class="b-workspace__header b-workspace__header_tabs">
     <img src="${contextPath}/assets/img/icons/kurjun.png" height="50px" alt="">
     <div class="b-nav-menu__add">
-        <#if userInfo?? && userInfo.emailAddress?? && userInfo.emailAddress?length gt 0 >
-        Hello ${userInfo.emailAddress} | <a href="#" id="js-logout">Logout</a>
+        <#if isPublic?? && isPublic >
+          Hello anonymous | <a href="${contextPath}/login" id="js-login">Login</a>
         <#else>
-        Hello anonymous | <a href="${contextPath}/login" id="js-login">Login</a>
+          Hello ${userInfo.emailAddress!userInfo.keyFingerprint} | <a href="#" id="js-logout">Logout</a>
         </#if>
     </div>
     <form id="logoutForm" method="post" action="${contextPath}/logout" ></form>

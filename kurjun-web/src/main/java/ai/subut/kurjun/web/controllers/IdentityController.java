@@ -89,11 +89,21 @@ public class IdentityController extends BaseController {
     public Result setSystemOwner( @Param( "key" ) String key, @Param( "fingerprint" ) String fingerprint,
                                   Context context, FlashScope flashScope )
     {
-        User user = identityManagerService.setSystemOwner(fingerprint, key);
-
-        if (user != null)
+        if ( identityManagerService.getSystemOwner() == null )
         {
-            flashScope.success("System owner set successfully. MessageId:"+user.getSignature());
+            User user = identityManagerService.setSystemOwner( fingerprint, key );
+
+            if ( user != null )
+            {
+                flashScope.success( "System owner set successfully. MessageId:" + user.getSignature() );
+            }
+            else {
+                flashScope.error( "Couldn't find user by fingerprint." );
+            }
+        }
+        else
+        {
+            flashScope.error( "System owner has been set already." );
         }
 
         return Results.redirect(context.getContextPath()+"/users");
