@@ -1,7 +1,21 @@
 package ai.subut.kurjun.web.controllers;
 
 
-import ai.subut.kurjun.identity.DefaultRelationObject;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.base.Strings;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.subutai.TemplateId;
 import ai.subut.kurjun.metadata.common.utils.IdValidators;
@@ -14,11 +28,6 @@ import ai.subut.kurjun.web.model.KurjunFileItem;
 import ai.subut.kurjun.web.service.RelationManagerService;
 import ai.subut.kurjun.web.service.RepositoryService;
 import ai.subut.kurjun.web.service.TemplateManagerService;
-
-import com.google.common.base.Strings;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
 import ninja.Context;
 import ninja.Renderable;
 import ninja.Result;
@@ -28,14 +37,6 @@ import ninja.params.PathParam;
 import ninja.session.FlashScope;
 import ninja.uploads.FileItem;
 import ninja.uploads.FileProvider;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
 @Singleton
@@ -59,7 +60,7 @@ public class TemplateController extends BaseController
         List<SerializableMetadata> defaultTemplateList = new ArrayList<>();
         try
         {
-            repo = StringUtils.isBlank(repo)? "public":repo;
+            repo = StringUtils.isBlank(repo)? "all":repo;
             //*****************************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
             defaultTemplateList = templateManagerService.list(uSession, repo, false );
