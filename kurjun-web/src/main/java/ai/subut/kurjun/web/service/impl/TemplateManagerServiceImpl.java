@@ -71,7 +71,6 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     private LocalTemplateRepository localPublicTemplateRepository;
     private UnifiedRepository unifiedTemplateRepository;
 
-    private UserSession userSession;
 
 
     @Inject
@@ -121,7 +120,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public SerializableMetadata getTemplate( final byte[] md5 ) throws IOException
+    public SerializableMetadata getTemplate(UserSession userSession, final byte[] md5 ) throws IOException
     {
 //        KurjunContext context = artifactContext.getRepository( new BigInteger( 1, md5 ).toString( 16 ) );
 
@@ -137,10 +136,10 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public InputStream getTemplateData( final String repository, final byte[] md5, final boolean isKurjunClient )
+    public InputStream getTemplateData(UserSession userSession, final String repository, final byte[] md5, final boolean isKurjunClient )
             throws IOException
     {
-        if ( checkRepoPermissions( repository, toId( md5, repository ), Permission.Write ) )
+        if ( checkRepoPermissions( userSession, repository, toId( md5, repository ), Permission.Write ) )
         {
             DefaultTemplate defaultTemplate = new DefaultTemplate();
             defaultTemplate.setId( repository, md5 );
@@ -160,7 +159,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public List<SerializableMetadata> list( final String repository, final boolean isKurjunClient ) throws IOException
+    public List<SerializableMetadata> list( UserSession userSession, final String repository, final boolean isKurjunClient ) throws IOException
     {
         List<SerializableMetadata> results;
 
@@ -198,7 +197,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
                 break;
         }
 
-        if ( checkRepoPermissions( repository, null, Permission.Read ) )
+        if ( checkRepoPermissions( userSession, repository, null, Permission.Read ) )
         {
             return results;
         }
@@ -225,7 +224,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public String upload( final String repository, final InputStream inputStream ) throws IOException
+    public String upload(UserSession userSession, final String repository, final InputStream inputStream ) throws IOException
     {
 
         if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
@@ -239,7 +238,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         //**************************************
 
         //***** Check permissions (WRITE) *****************
-        if ( checkRepoPermissions( repository, null, Permission.Write ) )
+        if ( checkRepoPermissions( userSession,repository, null, Permission.Write ) )
         {
             SubutaiTemplateMetadata metadata = ( SubutaiTemplateMetadata ) getRepo( repository )
                     .put( inputStream, CompressionType.GZIP, repository );
@@ -271,7 +270,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public String upload( final String repository, final File file ) throws IOException
+    public String upload(UserSession userSession, final String repository, final File file ) throws IOException
     {
 
         if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
@@ -285,7 +284,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         //**************************************
 
         //***** Check permissions (WRITE) *****************
-        if ( checkRepoPermissions( repository, null, Permission.Write ) )
+        if ( checkRepoPermissions(userSession, repository, null, Permission.Write ) )
         {
             SubutaiTemplateMetadata metadata =
                     ( SubutaiTemplateMetadata ) getRepo( repository ).put( file, CompressionType.GZIP, repository );
@@ -310,10 +309,10 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public boolean delete( TemplateId tid ) throws IOException
+    public boolean delete(UserSession userSession, TemplateId tid ) throws IOException
     {
         //************ CheckPermissions ************************************
-        if ( checkRepoPermissions( tid.getOwnerFprint(), tid.get(), Permission.Delete ) )
+        if ( checkRepoPermissions(userSession, tid.getOwnerFprint(), tid.get(), Permission.Delete ) )
         {
             LocalTemplateRepository _repository = ( LocalTemplateRepository ) getRepo( tid.getOwnerFprint() );
 
@@ -337,27 +336,21 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     }
 
 
-    @Override
-    public void shareTemplate( final String templateId, final String targetUserName )
-    {
-
-    }
-
 
     @Override
-    public Renderable renderableTemplate( final String repository, String md5, final boolean isKurjunClient )
+    public Renderable renderableTemplate(UserSession userSession, final String repository, String md5, final boolean isKurjunClient )
             throws IOException
     {
 
         //************ CheckPermissions ************************************
-        if ( checkRepoPermissions( repository, repository + "." + md5, Permission.Read ) )
+        if ( checkRepoPermissions( userSession, repository, repository + "." + md5, Permission.Read ) )
         {
             DefaultTemplate defaultTemplate = new DefaultTemplate();
             defaultTemplate.setId( repository, Utils.MD5.toByteArray( md5 ) );
 
             DefaultTemplate dt = null;
 
-            List<SerializableMetadata> templateList = list( repository, true );
+            List<SerializableMetadata> templateList = list( userSession, repository, true );
             for ( SerializableMetadata sm : templateList )
             {
                 if ( Utils.MD5.toString( sm.getMd5Sum() ).equals( md5 ) )
@@ -370,7 +363,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
             DefaultTemplate metadata =
                     dt;// ( DefaultTemplate ) unifiedTemplateRepository.getPackageInfo( defaultTemplate );
 
-            InputStream inputStream = getTemplateData( repository, Utils.MD5.toByteArray( md5 ), false );
+            InputStream inputStream = getTemplateData(  userSession,repository, Utils.MD5.toByteArray( md5 ), false );
 
             if ( inputStream != null )
             {
@@ -399,7 +392,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public DefaultTemplate getTemplate( final TemplateId templateId, final String md5, String name, String version )
+    public DefaultTemplate getTemplate( UserSession userSession, final TemplateId templateId, final String md5, String name, String version )
     {
         //************ CheckPermissions ************************************
 
@@ -417,7 +410,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
         if ( defaultTemplate1 != null )
         {
-            if ( checkRepoPermissions( defaultTemplate1.getOwnerFprint(),
+            if ( checkRepoPermissions( userSession,defaultTemplate1.getOwnerFprint(),
                     ( ( String ) defaultTemplate1.getId() ), Permission.Read ) )
             {
                 return defaultTemplate1;
@@ -504,27 +497,6 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public void addRemoteRepository( final URL url, final String token )
-    {
-
-    }
-
-
-    @Override
-    public void removeRemoteRepository( final URL url )
-    {
-
-    }
-
-
-    @Override
-    public void unshareTemplate( final String templateId, final String targetUserName )
-    {
-
-    }
-
-
-    @Override
     public Set<String> getRepositories()
     {
         return null;
@@ -557,15 +529,9 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     }
 
 
-    @Override
-    public void setUserSession( UserSession userSession )
-    {
-        this.userSession = userSession;
-    }
-
 
     //*******************************************************************
-    private boolean checkRepoPermissions( String repoId, String contentId, Permission perm )
+    private boolean checkRepoPermissions(UserSession userSession, String repoId, String contentId, Permission perm )
     {
         return relationManagerService
                 .checkRepoPermissions( userSession, repoId, RelationObjectType.RepositoryTemplate.getId(), contentId,

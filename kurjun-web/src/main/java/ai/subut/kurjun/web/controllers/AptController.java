@@ -44,7 +44,7 @@ public class AptController extends BaseController
     private RepositoryService repositoryService;
 
 
-    public Result list( Context context, @Param( "type" ) String type, @Param( "repository" ) String repository )
+    public Result list( @Param( "type" ) String type, @Param( "repository" ) String repository )
     {
         if ( repository == null )
         {
@@ -52,7 +52,7 @@ public class AptController extends BaseController
         }
 
         //********************************************
-        aptManagerService.setUserSession( ( UserSession) context.getAttribute( "USER_SESSION" ) );
+        //aptManagerService.setUserSession( ( UserSession) context.getAttribute( "USER_SESSION" ) );
         List<SerializableMetadata> serializableMetadataList = aptManagerService.list( repository );
         //********************************************
 
@@ -66,8 +66,8 @@ public class AptController extends BaseController
         try ( InputStream inputStream = new FileInputStream( file.getFile() ) )
         {
             //********************************************
-            aptManagerService.setUserSession( ( UserSession) context.getAttribute( "USER_SESSION" ) );
-            URI uri = aptManagerService.upload( inputStream );
+            UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+            URI uri = aptManagerService.upload(uSession, inputStream );
             //********************************************
 
             if ( uri != null ) {
@@ -85,12 +85,11 @@ public class AptController extends BaseController
     }
 
 
-    public Result release( Context context, @PathParam( "release" ) String release )
+    public Result release( @PathParam( "release" ) String release )
     {
 //        checkNotNull( release, "Release cannot be null" );
 
         //********************************************
-        aptManagerService.setUserSession( ( UserSession) context.getAttribute( "USER_SESSION" ) );
         String rel = aptManagerService.getRelease( release, null, null );
         //********************************************
 
@@ -103,7 +102,7 @@ public class AptController extends BaseController
     }
 
 
-    public Result packageIndexes( Context context, @PathParam( "release" ) String release,
+    public Result packageIndexes( @PathParam( "release" ) String release,
                                   @PathParam( "component" ) String component, @PathParam( "arch" ) String arch,
                                   @PathParam( "packages" ) String packagesIndex )
     {
@@ -113,7 +112,6 @@ public class AptController extends BaseController
 //        checkNotNull( packagesIndex, "Package Index cannot be null" );
 
         //********************************************
-        aptManagerService.setUserSession( ( UserSession) context.getAttribute( "USER_SESSION" ) );
         Renderable renderable = aptManagerService.getPackagesIndex( release, component, arch, packagesIndex );
         //********************************************
 
@@ -126,7 +124,6 @@ public class AptController extends BaseController
 //        checkNotNull( filename, "File name cannot be null" );
 
         //********************************************
-        aptManagerService.setUserSession( ( UserSession) context.getAttribute( "USER_SESSION" ) );
         Renderable renderable = aptManagerService.getPackageByFilename( filename );
         //********************************************
 
@@ -134,7 +131,7 @@ public class AptController extends BaseController
     }
 
 
-    public Result info( Context context, @Param( "md5" ) String md5, @Param( "name" ) String name,
+    public Result info( @Param( "md5" ) String md5, @Param( "name" ) String name,
                         @Param( "version" ) String version )
 
     {
@@ -143,7 +140,6 @@ public class AptController extends BaseController
         //        checkNotNull( version, "Version not found" );
 
         //********************************************
-        aptManagerService.setUserSession( ( UserSession) context.getAttribute( "USER_SESSION" ) );
         String metadata = aptManagerService.getPackageInfo( Utils.MD5.toByteArray( md5 ), name, version );
         //********************************************
 
@@ -155,12 +151,11 @@ public class AptController extends BaseController
     }
 
 
-    public Result download( Context context, @PathParam( "id" ) String md5, FlashScope flashScope )
+    public Result download( @PathParam( "id" ) String md5, FlashScope flashScope )
     {
 //        checkNotNull( md5, "MD5 cannot be null" );
 
         //********************************************
-        aptManagerService.setUserSession( ( UserSession) context.getAttribute( "USER_SESSION" ) );
         Renderable renderable = aptManagerService.getPackage( Utils.MD5.toByteArray( md5 ) );
         //********************************************
 
@@ -177,8 +172,8 @@ public class AptController extends BaseController
 //        checkNotNull( md5, "MD5 cannot be null" );
 
         //********************************************
-        aptManagerService.setUserSession( ( UserSession) context.getAttribute( "USER_SESSION" ) );
-        boolean success = aptManagerService.delete( Utils.MD5.toByteArray( md5 ) );
+        UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+        boolean success = aptManagerService.delete(uSession, Utils.MD5.toByteArray( md5 ) );
         //********************************************
 
         if ( success )

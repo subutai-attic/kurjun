@@ -45,8 +45,6 @@ public class RawManagerServiceImpl implements RawManagerService
     private UnifiedRepository unifiedRepository;
     private ArtifactContext artifactContext;
 
-    private UserSession userSession;
-
     @Inject
     IdentityManagerService identityManagerService;
 
@@ -174,7 +172,7 @@ public class RawManagerServiceImpl implements RawManagerService
 
 
     @Override
-    public boolean delete( String repository, final byte[] md5 )
+    public boolean delete(UserSession userSession, String repository, final byte[] md5 )
     {
         DefaultMetadata defaultMetadata = new DefaultMetadata();
         defaultMetadata.setFingerprint( repository );
@@ -184,7 +182,7 @@ public class RawManagerServiceImpl implements RawManagerService
             String objectId = defaultMetadata.getId().toString();
 
             //***** Check permissions (DELETE) *****************
-            if ( checkRepoPermissions( "raw", objectId, Permission.Delete ) )
+            if ( checkRepoPermissions(userSession, "raw", objectId, Permission.Delete ) )
             {
                 relationManagerService
                         .removeRelationsByTrustObject( objectId, RelationObjectType.RepositoryContent.getId() );
@@ -219,7 +217,7 @@ public class RawManagerServiceImpl implements RawManagerService
 
 
     @Override
-    public Metadata put( final File file )
+    public Metadata put(UserSession userSession, final File file )
     {
         Metadata metadata = null;
         try
@@ -229,7 +227,7 @@ public class RawManagerServiceImpl implements RawManagerService
             //**************************************
 
             //***** Check permissions (WRITE) *****************
-            if ( checkRepoPermissions( "raw", null, Permission.Write ) )
+            if ( checkRepoPermissions(userSession, "raw", null, Permission.Write ) )
             {
                 metadata = localPublicRawRepository.put( file, CompressionType.NONE, DEFAULT_RAW_REPO_NAME );
 
@@ -250,7 +248,7 @@ public class RawManagerServiceImpl implements RawManagerService
 
 
     @Override
-    public Metadata put( final File file, final String repository )
+    public Metadata put(UserSession userSession, final File file, final String repository )
     {
         Metadata metadata = null;
         try
@@ -260,7 +258,7 @@ public class RawManagerServiceImpl implements RawManagerService
             //**************************************
 
             //***** Check permissions (WRITE) *****************
-            if ( checkRepoPermissions( "raw", null, Permission.Write ) )
+            if ( checkRepoPermissions(userSession, "raw", null, Permission.Write ) )
             {
                 metadata =
                         localPublicRawRepository.put( new FileInputStream( file ), CompressionType.NONE, repository );
@@ -282,7 +280,7 @@ public class RawManagerServiceImpl implements RawManagerService
 
 
     @Override
-    public Metadata put( final File file, final String filename, final String repository )
+    public Metadata put(UserSession userSession, final File file, final String filename, final String repository )
     {
 
         if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
@@ -298,9 +296,9 @@ public class RawManagerServiceImpl implements RawManagerService
             //**************************************
 
             //***** Check permissions (WRITE) *****************
-            if ( checkRepoPermissions( "raw", null, Permission.Write ) )
+            if ( checkRepoPermissions(userSession, "raw", null, Permission.Write ) )
             {
-                LocalRawRepository localRawRepository = getLocalPublicRawRepository( new KurjunContext( repository ) );
+                LocalRawRepository localRawRepository = getLocalPublicRawRepository(userSession, new KurjunContext( repository ) );
                 metadata = localRawRepository.put( file, filename, repository );
 
                 //***** Build Relation ****************
@@ -319,7 +317,7 @@ public class RawManagerServiceImpl implements RawManagerService
     }
 
 
-    public LocalRawRepository getLocalPublicRawRepository( KurjunContext context )
+    public LocalRawRepository getLocalPublicRawRepository(UserSession userSession, KurjunContext context )
     {
         // *******CheckRepoOwner ***************
         relationManagerService
@@ -348,21 +346,9 @@ public class RawManagerServiceImpl implements RawManagerService
     }
 
 
-    @Override
-    public void setUserSession( UserSession userSession )
-    {
-        this.userSession = userSession;
-    }
-
-
-    public UserSession getUserSession()
-    {
-        return this.userSession;
-    }
-
 
     //*******************************************************************
-    private boolean checkRepoPermissions( String repoId, String contentId, Permission perm )
+    private boolean checkRepoPermissions(UserSession userSession, String repoId, String contentId, Permission perm )
     {
         return relationManagerService
                 .checkRepoPermissions( userSession, repoId, RelationObjectType.RepositoryRaw.getId(), contentId,

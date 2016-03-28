@@ -66,7 +66,6 @@ public class AptManagerServiceImpl implements AptManagerService
 
     private KurjunContext kurjunContext;
 
-    private UserSession userSession;
     public static final String REPO_NAME = "vapt";
 
     @Inject
@@ -238,7 +237,7 @@ public class AptManagerServiceImpl implements AptManagerService
 
 
     @Override
-    public URI upload( final InputStream is )
+    public URI upload(UserSession userSession,  final InputStream is )
     {
 
         if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
@@ -254,7 +253,7 @@ public class AptManagerServiceImpl implements AptManagerService
             //**************************************
 
             //***** Check permissions (WRITE) *****************
-            if ( checkRepoPermissions( REPO_NAME, null, Permission.Write ) )
+            if ( checkRepoPermissions(userSession, REPO_NAME, null, Permission.Write ) )
             {
                 Metadata meta = localRepository.put( is );
                 if ( meta != null )
@@ -304,13 +303,13 @@ public class AptManagerServiceImpl implements AptManagerService
 
 
     @Override
-    public boolean delete( final byte[] md5 )
+    public boolean delete(UserSession userSession, final byte[] md5 )
     {
         try
         {
             String id = Hex.encodeHexString( md5 );
 
-            if ( checkRepoPermissions( REPO_NAME, id, Permission.Delete ) )
+            if ( checkRepoPermissions( userSession, REPO_NAME, id, Permission.Delete ) )
             {
                 // remove relation
                 relationManagerService.removeRelationsByTrustObject( id, RelationObjectType.RepositoryContent.getId() );
@@ -431,21 +430,9 @@ public class AptManagerServiceImpl implements AptManagerService
     }
 
 
-    @Override
-    public void setUserSession( UserSession userSession )
-    {
-        this.userSession = userSession;
-    }
-
-
-    public UserSession getUserSession()
-    {
-        return this.userSession;
-    }
-
 
     //*******************************************************************
-    private boolean checkRepoPermissions( String repoId, String contentId, Permission perm )
+    private boolean checkRepoPermissions(UserSession userSession, String repoId, String contentId, Permission perm )
     {
         return relationManagerService
                 .checkRepoPermissions( userSession, repoId, RelationObjectType.RepositoryApt.getId(), contentId,

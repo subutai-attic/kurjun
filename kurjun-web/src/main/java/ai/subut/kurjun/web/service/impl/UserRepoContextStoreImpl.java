@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
-import ai.subut.kurjun.model.identity.UserSession;
+
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -25,7 +25,6 @@ public class UserRepoContextStoreImpl implements UserRepoContextStore
 
     private String repoFile;
 
-    private UserSession userSession;
 
 
     @Inject
@@ -105,9 +104,5 @@ public class UserRepoContextStoreImpl implements UserRepoContextStore
         return userRepoContext.getFingerprint();
     }
 
-    @Override
-    public void setUserSession( UserSession userSession ) {
-        this.userSession = userSession;
-    }
 
 }

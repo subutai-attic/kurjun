@@ -25,34 +25,46 @@ public interface RelationManagerService extends BaseService {
     //*************************************
     void removeRelationsByTrustObject( String trustObjectId, int trustObjectType );
 
+
     Relation addTrustRelation(RelationObject source, RelationObject target, RelationObject trustObject,
                               Set<Permission> permissions);
 
     List<Relation> getTrustRelationsBySource(RelationObject sourceObject );
 
+
     List<Relation> getTrustRelationsByTarget(RelationObject targetObject );
+
 
     List<Relation> getTrustRelationsByObject(RelationObject trustObject );
 
+
     //*************************************
     Relation getRelation( String sourceId, String targetId, String trustObjectId, int trustObjectType );
+
+
     Relation getRelation( String relationId );
+
 
     //*************************************
     List<Relation> getRelationsByObject( String trustObjectId, int trustObjectType );
 
+
     //***************************
     Relation getObjectOwner( String trustObjectId, int trustObjectType );
+
 
     //***************************
     Relation buildTrustRelation( User sourceUser, User targetUser, String trustObjectId, int trustObjectType,
                                  Set<Permission> permissions );
 
+
     //***************************
     Set<Permission> buildPermissions( int permLevel );
 
+
     //***************************
     void checkRelationOwner( UserSession userSession, String objectId, int objectType );
+
 
     //***************************
     Set<Permission> checkUserPermissions( UserSession userSession, String objectId, int objectType );
@@ -63,9 +75,12 @@ public interface RelationManagerService extends BaseService {
 
     RelationObject toSourceObject( User user );
 
+
     RelationObject toTargetObject( String fingerprint );
 
-    RelationObject toTrustObject( String id, String md5, String name, String version, RelationObjectType rot );
+
+    RelationObject toTrustObject(UserSession userSession, String id, String md5, String name, String version, RelationObjectType rot );
+
 
     void saveRelation( Relation relation );
 

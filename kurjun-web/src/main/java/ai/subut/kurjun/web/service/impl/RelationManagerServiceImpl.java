@@ -39,9 +39,6 @@ public class RelationManagerServiceImpl implements RelationManagerService
 
     private static final Logger LOGGER = LoggerFactory.getLogger( RestIdentityController.class );
 
-
-    private UserSession userSession;
-
     @Inject
     private RelationManager relationManager;
 
@@ -120,14 +117,6 @@ public class RelationManagerServiceImpl implements RelationManagerService
     public List<Relation> getTrustRelationsByObject( RelationObject trustObject )
     {
         return relationManager.getRelationsByObject( trustObject );
-    }
-
-
-    //*************************************
-    @Override
-    public void setUserSession( UserSession userSession )
-    {
-        this.userSession = userSession;
     }
 
 
@@ -285,23 +274,23 @@ public class RelationManagerServiceImpl implements RelationManagerService
 
 
     @Override
-    public RelationObject toTrustObject( String id, String md5, String name, String version, RelationObjectType relObjType )
+    public RelationObject toTrustObject(UserSession userSession, String id, String md5, String name, String version, RelationObjectType relObjType )
     {
         TemplateId tid;
         DefaultTemplate defaultTemplate;
         RelationObject trustObject = null;
-        templateManagerService.setUserSession( userSession );
+
 
         if ( RelationObjectType.RepositoryContent == relObjType )
         {
             if ( id != null )
             {
                 tid = IdValidators.Template.validate( id );
-                defaultTemplate = templateManagerService.getTemplate( tid, md5, name, version );
+                defaultTemplate = templateManagerService.getTemplate(userSession, tid, md5, name, version );
             }
             else
             {
-                defaultTemplate = templateManagerService.getTemplate( null, md5, name, version );
+                defaultTemplate = templateManagerService.getTemplate(userSession, null, md5, name, version );
             }
             if ( defaultTemplate != null )
             {

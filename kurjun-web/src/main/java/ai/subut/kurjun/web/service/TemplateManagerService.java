@@ -12,6 +12,7 @@ import java.util.Set;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.subutai.TemplateId;
+import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ninja.Renderable;
@@ -26,7 +27,7 @@ public interface TemplateManagerService extends BaseService
      *
      * @return JSON encoded meta data
      */
-    SerializableMetadata getTemplate( byte[] md5 ) throws IOException;
+    SerializableMetadata getTemplate(UserSession userSession, byte[] md5 ) throws IOException;
 
     /**
      * Gets the list of remote repo urls
@@ -45,7 +46,7 @@ public interface TemplateManagerService extends BaseService
      *
      * @return input stream to read package data
      */
-    InputStream getTemplateData( String repository, byte[] md5, boolean isKurjunClient ) throws IOException;
+    InputStream getTemplateData(UserSession userSession, String repository, byte[] md5, boolean isKurjunClient ) throws IOException;
 
 
     /**
@@ -56,7 +57,7 @@ public interface TemplateManagerService extends BaseService
      *
      * @return list of JSON encoded meta data
      */
-    List<SerializableMetadata> list( String repository, boolean isKurjunClient ) throws IOException;
+    List<SerializableMetadata> list(UserSession userSession, String repository, boolean isKurjunClient ) throws IOException;
 
 
     List<Map<String, Object>> getSharedTemplateInfos( byte[] md5, String templateOwner ) throws IOException;
@@ -81,7 +82,7 @@ public interface TemplateManagerService extends BaseService
      *
      * @return template id of uploaded package upload succeeds; {@code null} otherwise
      */
-    String upload( String repository, InputStream inputStream ) throws IOException;
+    String upload(UserSession userSession, String repository, InputStream inputStream ) throws IOException;
 
     /**
      * Uploads package data from supplied input stream to the repository defined by supplied repository.
@@ -91,7 +92,7 @@ public interface TemplateManagerService extends BaseService
      *
      * @return template id of uploaded package upload succeeds; {@code null} otherwise
      */
-    String upload( String repository, File file ) throws IOException;
+    String upload(UserSession userSession, String repository, File file ) throws IOException;
 
     /**
      * Deletes package from the repository defined by supplied repository.
@@ -100,25 +101,7 @@ public interface TemplateManagerService extends BaseService
      *
      * @return {@code true} if package successfully deleted; {@code false} otherwise
      */
-    boolean delete( TemplateId templateId ) throws IOException;
-
-
-    /**
-     * Adds remote repository located at supplied URL. Repositories added with this method will be used to fulfill
-     * requests in case the local repository can not handle requests.
-     *
-     * @param url URL of the remote repository
-     * @param token access token to be used for the given remote repo url
-     */
-    void addRemoteRepository( URL url, String token );
-
-
-    /**
-     * Removes remote repository located at supplied URL.
-     *
-     * @param url URL of the remote repository
-     */
-    void removeRemoteRepository( URL url );
+    boolean delete(UserSession userSession, TemplateId templateId ) throws IOException;
 
 
     /**
@@ -133,31 +116,14 @@ public interface TemplateManagerService extends BaseService
     LocalRepository createUserRepository( KurjunContext userName );
 
 
-    /**
-     * Shares given template to given target user by current active user
-     *
-     * @param templateId template id
-     * @param targetUserName target username
-     */
-    void shareTemplate( String templateId, String targetUserName );
+    Renderable renderableTemplate(UserSession userSession, String repository, String md5, boolean isKurjunClient ) throws IOException;
 
-
-    /**
-     * Deletes the share for given template to given target user by current active user
-     *
-     * @param templateId template id
-     * @param targetUserName target username
-     */
-    void unshareTemplate( String templateId, String targetUserName );
-
-    /*
-    *
-    * */
-    Renderable renderableTemplate( String repository, String md5, boolean isKurjunClient ) throws IOException;
 
     String md5();
 
-    DefaultTemplate getTemplate( TemplateId templateId, String md5, String name, String version );
+
+    DefaultTemplate getTemplate(UserSession userSession, TemplateId templateId, String md5, String name, String version );
+
 
     boolean downloadTemplates();
 }
