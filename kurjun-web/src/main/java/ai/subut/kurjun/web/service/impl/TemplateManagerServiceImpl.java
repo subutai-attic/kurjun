@@ -37,7 +37,6 @@ import ai.subut.kurjun.model.repository.UnifiedRepository;
 import ai.subut.kurjun.repo.LocalTemplateRepository;
 import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.web.context.ArtifactContext;
-import ai.subut.kurjun.web.model.UserContextImpl;
 import ai.subut.kurjun.web.service.IdentityManagerService;
 import ai.subut.kurjun.web.service.RelationManagerService;
 import ai.subut.kurjun.web.service.RepositoryService;
@@ -123,14 +122,14 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     @Override
     public SerializableMetadata getTemplate(UserSession userSession, final byte[] md5 ) throws IOException
     {
-        KurjunContext context = artifactContext.getRepository( new BigInteger( 1, md5 ).toString( 16 ) );
+//        KurjunContext context = artifactContext.getRepository( new BigInteger( 1, md5 ).toString( 16 ) );
 
-        if ( checkRepoPermissions(userSession, context.getName(), toId( md5, context.getName() ), Permission.Write ) )
-        {
-            DefaultTemplate defaultTemplate = new DefaultTemplate();
-            defaultTemplate.setId( context.getName(), md5 );
-            return repositoryFactory.createLocalTemplate( context ).getPackageInfo( defaultTemplate );
-        }
+//        if ( checkRepoPermissions( context.getName(), toId( md5, context.getName() ), Permission.Write ) )
+//        {
+//            DefaultTemplate defaultTemplate = new DefaultTemplate();
+//            defaultTemplate.setId( context.getName(), md5 );
+//            return repositoryFactory.createLocalTemplate( context ).getPackageInfo( defaultTemplate );
+//        }
 
         return null;
     }
@@ -248,7 +247,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
             {
                 if ( metadata.getMd5Sum() != null )
                 {
-                    artifactContext.store( metadata.getMd5Sum(), new KurjunContext( repository ) );
+
                     String templateId = repository + "." + Hex.encodeHexString( metadata.getMd5Sum() );
 
                     //***** Build Relation ****************
@@ -295,7 +294,6 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
                 if ( metadata.getMd5Sum() != null )
                 {
                     String templateId = toId( metadata != null ? metadata.getMd5Sum() : new byte[0], repository );
-                    artifactContext.store( metadata.getMd5Sum(), new UserContextImpl( repository ) );
 
                     //***** Build Relation ****************
                     relationManagerService.buildTrustRelation( userSession.getUser(), userSession.getUser(), templateId,
