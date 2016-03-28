@@ -421,7 +421,8 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
                     DefaultTemplate df = ( DefaultTemplate ) iter.next();
                     if ( df.equals( defaultTemplate ) )
                     {
-                        return df;
+                        defaultTemplate1 = df;
+                        break;
                     }
                 }
             }
