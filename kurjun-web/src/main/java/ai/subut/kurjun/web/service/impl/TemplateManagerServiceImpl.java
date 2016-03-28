@@ -136,16 +136,18 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     public InputStream getTemplateData( UserSession userSession, final String repository, final byte[] md5,
                                         final boolean isKurjunClient ) throws IOException
     {
-        if ( checkRepoPermissions( userSession, repository, toId( md5, repository ), Permission.Write ) )
-        {
-            DefaultTemplate defaultTemplate = new DefaultTemplate();
-            defaultTemplate.setId( repository, md5 );
 
-            if ( repository.equalsIgnoreCase( "public" ) )
-            {
-                return unifiedTemplateRepository.getPackageStream( defaultTemplate );
-            }
-            else
+
+        DefaultTemplate defaultTemplate = new DefaultTemplate();
+        defaultTemplate.setId( repository, md5 );
+
+        if ( repository.equalsIgnoreCase( "public" ) )
+        {
+            return unifiedTemplateRepository.getPackageStream( defaultTemplate );
+        }
+        else
+        {
+            if ( checkRepoPermissions( userSession, repository, toId( md5, repository ), Permission.Read ) )
             {
                 return repositoryFactory.createLocalTemplate( new KurjunContext( repository ) )
                                         .getPackageStream( defaultTemplate );
@@ -176,46 +178,8 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
                 results = unifiedTemplateRepository.listPackages();
                 results.addAll(
                         repositoryFactory.createLocalTemplate( new KurjunContext( repository ) ).listPackages() );
-                /*
-                for ( String repo :  repositoryService.getRepositories() ) {
-                    if ( repo.equals( repository ) )
-                    {
-                        LocalRepository localRepo = repositoryFactory.createLocalTemplate( new KurjunContext( repo ) );
-                        for ( SerializableMetadata sm : localRepo.listPackages() )
-                        {
-                            if ( !results.contains( sm ) )
-                            {
-                                results.add( sm );
-                            }
-                        }
-                    }
-                }*/
-                //results.addAll( repositoryService.getRepositories() );
-                //results = repositoryFactory.createLocalTemplate( new KurjunContext( repository ) ).listPackages();
                 break;
         }
-
-        //        if ( checkRepoPermissions( userSession, repository, null, Permission.Read ) )
-        //        {
-        //            return results;
-        //        }
-        //        else
-        //        {
-        //            //****CheckPermissions *************
-        //            for ( Iterator<SerializableMetadata> iterator = results.iterator(); iterator.hasNext(); )
-        //            {
-        //                final SerializableMetadata mdata = iterator.next();
-        //
-        //                //***** Check permissions (WRITE) *****************
-        //                if ( !relationManagerService.checkUserPermissions( userSession, mdata.getId().toString(),
-        //                        RelationObjectType.RepositoryContent.getId() ).contains( Permission.Read ) )
-        //                {
-        //                    iterator.remove();
-        //                }
-        //            }
-        //        }
-
-        //**********************************
 
         return results;
     }
