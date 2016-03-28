@@ -111,7 +111,7 @@ public class RestTemplateController extends BaseController
                 case "text":
                     return Results.ok().render( defaultTemplate.getId() ).text();
                 default:
-                    return Results.ok().render( defaultTemplate ).json();
+                    return Results.ok().render( defaultTemplate.getId() ).json();
             }
         }
         
