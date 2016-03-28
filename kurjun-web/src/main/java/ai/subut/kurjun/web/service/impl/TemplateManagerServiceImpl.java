@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -353,20 +352,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
             DefaultTemplate defaultTemplate = new DefaultTemplate();
             defaultTemplate.setId( repository, Utils.MD5.toByteArray( md5 ) );
 
-            DefaultTemplate dt = null;
-
-            List<SerializableMetadata> templateList = list( userSession, repository, true );
-            for ( SerializableMetadata sm : templateList )
-            {
-                if ( Utils.MD5.toString( sm.getMd5Sum() ).equals( md5 ) )
-                {
-                    dt = ( DefaultTemplate ) sm;
-                    break;
-                }
-            }
-
-            DefaultTemplate metadata =
-                    dt;// ( DefaultTemplate ) unifiedTemplateRepository.getPackageInfo( defaultTemplate );
+            DefaultTemplate metadata = ( DefaultTemplate ) unifiedTemplateRepository.getPackageInfo( defaultTemplate );
 
             InputStream inputStream = getTemplateData( userSession, repository, Utils.MD5.toByteArray( md5 ), false );
 
@@ -413,29 +399,6 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         defaultTemplate.setVersion( version );
         DefaultTemplate defaultTemplate1 =
                 ( DefaultTemplate ) unifiedTemplateRepository.getPackageInfo( defaultTemplate );
-
-        if ( defaultTemplate1 == null )
-        {
-            String[] repo_and_id = templateId.get().split( "\\." );
-
-            try
-            {
-                List<SerializableMetadata> templList = list( userSession, repo_and_id[0], true );
-                Iterator iter = templList.iterator();
-                while ( iter.hasNext() )
-                {
-                    DefaultTemplate df = ( DefaultTemplate ) iter.next();
-                    if ( df.equals( defaultTemplate ) )
-                    {
-                        defaultTemplate1 = df;
-                        break;
-                    }
-                }
-            }
-            catch ( Exception e )
-            {
-            }
-        }
 
         if ( defaultTemplate1 != null )
         {
