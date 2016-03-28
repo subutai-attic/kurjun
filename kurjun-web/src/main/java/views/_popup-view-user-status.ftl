@@ -11,7 +11,7 @@
             <#if user??>
                 <table>
                   <tr><td>Status</td><td>User created successfully !!!</td></tr>
-                  <tr><td>Email</td><td>${user.emailAddress}</td></tr>
+                  <tr><td>Email</td><td><#if user.emailAddress??>${user.emailAddress}</#if></td></tr>
                   <tr><td>Fingerprint</td><td>${user.keyFingerprint}</td></tr>
                   <tr><td>AuthID</td><td>${user.signature}</td></tr>
                 </table>

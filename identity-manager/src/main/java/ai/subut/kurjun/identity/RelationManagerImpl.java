@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.identity.service.FileDbProvider;
@@ -24,6 +25,7 @@ import ai.subut.kurjun.security.manager.service.SecurityManager;
 /**
  *
  */
+@Singleton
 public class RelationManagerImpl implements RelationManager
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( RelationManagerImpl.class );

@@ -39,7 +39,7 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
      * created or there should be a binding of {@link String} instance annotated with name {@link
      * DbFilePackageMetadataStoreModule#DB_FILE_LOCATION_NAME}.
      *
-     * @param location parent directory
+     * @param fileDbPath parent directory
      */
     public DbFilePackageMetadataStore( String fileDbPath )
     {
@@ -62,9 +62,17 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
     @Override
     public boolean contains( Object id ) throws IOException
     {
-        try ( FileDb fileDb = new FileDb( fileDbPath.toString() ) )
+        try
         {
-            return fileDb.contains( MAP_NAME, id );
+            FileDb fileDb = new FileDb( fileDbPath.toString());
+            boolean contains = fileDb.contains( MAP_NAME, id );
+            fileDb.close();
+
+            return contains;
+        }
+        catch(Exception ex)
+        {
+             return false;
         }
     }
 
@@ -72,9 +80,17 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
     @Override
     public SerializableMetadata get( Object id ) throws IOException
     {
-        try ( FileDb fileDb = new FileDb( fileDbPath.toString() ) )
+        FileDb fileDb = null;
+
+        try
         {
+            fileDb = new FileDb( fileDbPath.toString() );
             return fileDb.get( MAP_NAME, id, SerializableMetadata.class );
+        }
+        finally
+        {
+            if(fileDb != null)
+                fileDb.close();
         }
     }
 
@@ -88,11 +104,21 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
         }
 
         Collection<SerializableMetadata> items;
-        try ( FileDb fileDb = new FileDb( fileDbPath.toString() ) )
+
+        FileDb fileDb = null;
+
+        try
         {
+            fileDb = new FileDb( fileDbPath.toString() );
             Map<String, SerializableMetadata> map = fileDb.get( MAP_NAME );
             items = map.values();
         }
+        finally
+        {
+            if(fileDb != null)
+                fileDb.close();
+        }
+
 
         List<SerializableMetadata> result = new LinkedList<>();
         for ( SerializableMetadata item : items )
@@ -111,10 +137,19 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
     {
         if ( !contains( meta.getId() ) )
         {
-            try ( FileDb fileDb = new FileDb( fileDbPath.toString() ) )
+            FileDb fileDb = null;
+
+            try
             {
+                fileDb = new FileDb( fileDbPath.toString() );
                 fileDb.put( MAP_NAME, meta.getId(), meta );
             }
+            finally
+            {
+                if(fileDb != null)
+                    fileDb.close();
+            }
+
             return true;
         }
         return false;
@@ -124,9 +159,22 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
     @Override
     public boolean remove( Object id ) throws IOException
     {
-        try ( FileDb fileDb = new FileDb( fileDbPath.toString() ) )
+        FileDb fileDb = null;
+
+        try
         {
+            fileDb = new FileDb( fileDbPath.toString() );
+
             return fileDb.remove( MAP_NAME, id ) != null;
+        }
+        catch(Exception ex)
+        {
+            return false;
+        }
+        finally
+        {
+            if(fileDb != null)
+                fileDb.close();
         }
     }
 
@@ -152,10 +200,19 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
     private MetadataListing listPackageMetadata( final String marker ) throws IOException
     {
         Map<String, SerializableMetadata> map;
-        try ( FileDb fileDb = new FileDb( fileDbPath.toString() ) )
+        FileDb fileDb = null;
+
+        try
         {
+            fileDb = new FileDb( fileDbPath.toString());
             map = fileDb.get( MAP_NAME );
         }
+        finally
+        {
+            if(fileDb != null)
+                fileDb.close();
+        }
+
         Collection<SerializableMetadata> items = map.values();
 
         // sort items by names
