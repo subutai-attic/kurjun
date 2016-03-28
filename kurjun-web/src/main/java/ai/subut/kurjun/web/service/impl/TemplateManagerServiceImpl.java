@@ -6,9 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
-import java.net.URL;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -197,25 +195,25 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
                 break;
         }
 
-        if ( checkRepoPermissions( userSession, repository, null, Permission.Read ) )
-        {
-            return results;
-        }
-        else
-        {
-            //****CheckPermissions *************
-            for ( Iterator<SerializableMetadata> iterator = results.iterator(); iterator.hasNext(); )
-            {
-                final SerializableMetadata mdata = iterator.next();
-
-                //***** Check permissions (WRITE) *****************
-                if ( !relationManagerService.checkUserPermissions( userSession, mdata.getId().toString(),
-                        RelationObjectType.RepositoryContent.getId() ).contains( Permission.Read ) )
-                {
-                    iterator.remove();
-                }
-            }
-        }
+//        if ( checkRepoPermissions( userSession, repository, null, Permission.Read ) )
+//        {
+//            return results;
+//        }
+//        else
+//        {
+//            //****CheckPermissions *************
+//            for ( Iterator<SerializableMetadata> iterator = results.iterator(); iterator.hasNext(); )
+//            {
+//                final SerializableMetadata mdata = iterator.next();
+//
+//                //***** Check permissions (WRITE) *****************
+//                if ( !relationManagerService.checkUserPermissions( userSession, mdata.getId().toString(),
+//                        RelationObjectType.RepositoryContent.getId() ).contains( Permission.Read ) )
+//                {
+//                    iterator.remove();
+//                }
+//            }
+//        }
 
         //**********************************
 
