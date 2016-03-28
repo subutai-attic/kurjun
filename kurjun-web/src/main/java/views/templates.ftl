@@ -52,8 +52,10 @@
                 <td>${t.size}</td>
                 <td><a href="${contextPath}/templates/${t.id}/download" target="_blank">download</a>
                     |  <a href="${contextPath}/relations/by-object?id=${t.id}&obj_type=3" class="js-colorbox">permissions</a>
+                    <#if !( isPublic?? && isPublic ) >
                     |  <a href="#" onclick="removeTemplate('${t.id}')">remove</a>
                     |  <a href="#js-add-trust-rel" onclick="$('#template_id').val('${t.id}')" class="js-colorbox-inline">share</a>
+                    </#if>
                 </td>
             </tr>
             </#list>

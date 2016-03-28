@@ -13,17 +13,20 @@
 
 <div class="b-workspace__content">
     <div class="b-workspace-content__row">
-        <button id="set-sys-owner" class="b-btn b-btn_green b-btn_search-field-level g-left">
-            <i class="fa fa-plus"></i> Set system owner
-        </button>
-      <div style="float: right" class="b-form-hint">
-      <span class="g-text-red">System owner: </span>
-        <span><#if sys_owner??>${sys_owner.emailAddress}<br/><strong>${sys_owner.keyFingerprint}</strong><#else>not set</#if></span>
-      </div>
-        <br/><br/>
         <button id="add_user_btn" class="b-btn b-btn_green b-btn_search-field-level">
             <i class="fa fa-plus"></i> Add User
         </button>
+        <#if sys_owner??>
+            <div style="float: right" class="b-form-hint">
+                <span class="g-text-red">System owner: </span>
+                <span><#if sys_owner??>${sys_owner.emailAddress}<br/><strong>${sys_owner.keyFingerprint}</strong><#else>not set</#if></span>
+            </div><br/>
+        <#else>
+            <button id="set-sys-owner" style="" class="b-btn b-btn_green b-btn_search-field-level">
+                <i class="fa fa-plus"></i> Set system owner
+            </button><br/>
+        </#if>
+
         <table id="users_tbl" class="b-data-table">
             <thead>
             <tr>

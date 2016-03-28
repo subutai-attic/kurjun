@@ -141,7 +141,7 @@ public class IdentityManagerImpl implements IdentityManager
                 userSession.setUserToken( user.getUserToken() );
 
                 //*****************************************
-                LOGGER.info( " ******* Successfully logged user:" ,user.getKeyFingerprint() );
+                LOGGER.debug( " ******* Successfully logged user:" ,user.getKeyFingerprint() );
                 //*****************************************
 
                 return userSession;

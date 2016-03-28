@@ -3,6 +3,7 @@ package ai.subut.kurjun.web.filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ai.subut.kurjun.identity.IdentityManagerImpl;
 import ai.subut.kurjun.model.identity.UserSession;
 import ninja.Context;
 import ninja.Filter;
@@ -29,6 +30,7 @@ public class AuthorizedFilter implements Filter {
                     && Result.TEXT_HTML.equals( result.getContentType() ) /* handle only html content types */ )
             {
                 result.render( "userInfo", us.getUser() );
+                result.render( "isPublic", us.getUser().getKeyFingerprint().equals( IdentityManagerImpl.PUBLIC_USER_ID ) );
             }
         }
         catch ( Exception e )
