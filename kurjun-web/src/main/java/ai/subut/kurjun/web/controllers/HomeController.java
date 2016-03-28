@@ -10,7 +10,10 @@ import ninja.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Singleton;
 
+
+@Singleton
 public class HomeController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger( IdentityController.class );

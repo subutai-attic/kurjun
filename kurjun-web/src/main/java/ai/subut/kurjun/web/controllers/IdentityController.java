@@ -5,6 +5,8 @@ import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.web.filter.SecurityFilter;
 import ai.subut.kurjun.web.service.IdentityManagerService;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import ninja.Context;
 import ninja.Result;
 import ninja.Results;
@@ -15,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-
+@Singleton
 public class IdentityController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger( IdentityController.class );

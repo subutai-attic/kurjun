@@ -2,6 +2,7 @@ package ai.subut.kurjun.web.controllers.rest;
 
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import ai.subut.kurjun.metadata.common.raw.RawMetadata;
 import ai.subut.kurjun.model.identity.UserSession;
@@ -22,6 +23,7 @@ import ninja.uploads.FileProvider;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 
+@Singleton
 public class RestAliquaController extends BaseController
 {
 

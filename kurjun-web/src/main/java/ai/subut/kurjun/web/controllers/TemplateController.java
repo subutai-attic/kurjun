@@ -17,6 +17,7 @@ import ai.subut.kurjun.web.service.TemplateManagerService;
 
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import ninja.Context;
 import ninja.Renderable;
@@ -37,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Singleton
 public class TemplateController extends BaseController
 {
 
