@@ -8,6 +8,7 @@ import ai.subut.kurjun.model.identity.RelationObjectType;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.web.service.RelationManagerService;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.metadata.storage.file.DbFilePackageMetadataStoreModule;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+@Singleton
 public class RepositoryServiceImpl implements RepositoryService
 {
     private UserSession userSession;

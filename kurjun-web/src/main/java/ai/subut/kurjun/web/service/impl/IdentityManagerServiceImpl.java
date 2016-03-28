@@ -4,6 +4,7 @@ package ai.subut.kurjun.web.service.impl;
 import java.util.List;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import ai.subut.kurjun.identity.service.IdentityManager;
 import ai.subut.kurjun.model.identity.User;
@@ -14,6 +15,7 @@ import ai.subut.kurjun.web.service.IdentityManagerService;
 /**
  *
  */
+@Singleton
 public class IdentityManagerServiceImpl implements IdentityManagerService
 {
     private IdentityManager identityManager;

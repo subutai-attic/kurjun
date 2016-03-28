@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
@@ -34,6 +35,7 @@ import ninja.utils.ResponseStreams;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 
+@Singleton
 public class RawManagerServiceImpl implements RawManagerService
 {
     public static final String DEFAULT_RAW_REPO_NAME = "raw";
