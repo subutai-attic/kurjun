@@ -21,8 +21,6 @@ import ninja.session.FlashScope;
 import ninja.uploads.FileItem;
 import ninja.uploads.FileProvider;
 
-import java.util.List;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 
 
@@ -63,8 +61,8 @@ public class RawFileController extends BaseController
 
         Metadata metadata;
 
-        rawManagerService.setUserSession( ( UserSession ) context.getAttribute( "USER_SESSION" ) );
-        metadata = rawManagerService.put( kurjunFileItem.getFile(), kurjunFileItem.getFileName(), fingerprint );
+        UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+        metadata = rawManagerService.put(userSession, kurjunFileItem.getFile(), kurjunFileItem.getFileName(), fingerprint );
 
         if ( metadata != null )
         {
@@ -79,7 +77,7 @@ public class RawFileController extends BaseController
     }
 
 
-    public Result download( Context context, @PathParam( "id" ) String id )
+    public Result download( @PathParam( "id" ) String id )
     {
         checkNotNull( id, "ID cannot be null" );
 
@@ -108,8 +106,8 @@ public class RawFileController extends BaseController
 
         if ( temp.length == 2 )
         {
-            rawManagerService.setUserSession( ( UserSession ) context.getAttribute( "USER_SESSION" ) );
-            success = rawManagerService.delete( temp[0], Utils.MD5.toByteArray( temp[1] ) );
+            UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+            success = rawManagerService.delete(uSession, temp[0], Utils.MD5.toByteArray( temp[1] ) );
         }
 
         if ( success )

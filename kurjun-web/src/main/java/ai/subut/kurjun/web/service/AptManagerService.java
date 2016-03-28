@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 
+import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ninja.Renderable;
 
@@ -19,11 +20,11 @@ public interface AptManagerService extends BaseService
 
     String getPackageInfo( byte[] md5, String name, String version );
 
-    URI upload( InputStream is );
+    URI upload(UserSession userSession, InputStream is );
 
     List<SerializableMetadata> list(String repository);
 
-    boolean delete( byte[] md5 ) throws IOException;
+    boolean delete(UserSession userSession, byte[] md5 ) throws IOException;
 
     boolean isCompressionTypeSupported( String packagesIndex );
 

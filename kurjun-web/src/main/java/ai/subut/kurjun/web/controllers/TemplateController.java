@@ -59,8 +59,8 @@ public class TemplateController extends BaseController
         {
             repo = StringUtils.isBlank(repo)? "public":repo;
             //*****************************************************
-            templateManagerService.setUserSession( (UserSession ) context.getAttribute( "USER_SESSION" ) );
-            defaultTemplateList = templateManagerService.list( repo, false );
+            UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+            defaultTemplateList = templateManagerService.list(uSession, repo, false );
             //*****************************************************
         }
         catch ( IOException e )
@@ -115,8 +115,8 @@ public class TemplateController extends BaseController
             }
             */
             //*****************************************************
-            templateManagerService.setUserSession( (UserSession ) context.getAttribute( "USER_SESSION" ) );
-            String id = templateManagerService.upload( repository, fileItem.getInputStream() );
+            UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+            String id = templateManagerService.upload(uSession, repository, fileItem.getInputStream() );
             //*****************************************************
 
             if( Strings.isNullOrEmpty(id))
@@ -153,8 +153,8 @@ public class TemplateController extends BaseController
             TemplateId tid = IdValidators.Template.validate( id );
 
             //*****************************************************
-            templateManagerService.setUserSession( (UserSession ) context.getAttribute( "USER_SESSION" ) );
-            DefaultTemplate defaultTemplate = templateManagerService.getTemplate( tid, md5, name, version );
+            UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+            DefaultTemplate defaultTemplate = templateManagerService.getTemplate(uSession, tid, md5, name, version );
             //*****************************************************
 
             if ( defaultTemplate != null )
@@ -174,8 +174,8 @@ public class TemplateController extends BaseController
             TemplateId tid = IdValidators.Template.validate( id );
 
             //*****************************************************
-            templateManagerService.setUserSession( (UserSession ) context.getAttribute( "USER_SESSION" ) );
-            Renderable renderable = templateManagerService.renderableTemplate( tid.getOwnerFprint(), tid.getMd5(), false );
+            UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+            Renderable renderable = templateManagerService.renderableTemplate(uSession, tid.getOwnerFprint(), tid.getMd5(), false );
             //*****************************************************
 
             return Results.ok().render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
@@ -188,20 +188,20 @@ public class TemplateController extends BaseController
     }
 
 
-    public Result deleteTemplate( Context context,@PathParam( "id" ) String id,
+    public Result deleteTemplate( Context context, @PathParam( "id" ) String id,
                                   FlashScope flashScope )
     {
         try
         {
+            UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
             TemplateId tid = IdValidators.Template.validate(id);
 
             // get relations list
             List<Relation> relations = relationManagerService.getTrustRelationsByObject(
-                    relationManagerService.toTrustObject( id, null, null, null, RelationObjectType.RepositoryContent ) );
+                    relationManagerService.toTrustObject(uSession, id, null, null, null, RelationObjectType.RepositoryContent ) );
 
             //*****************************************************
-            templateManagerService.setUserSession( (UserSession ) context.getAttribute( "USER_SESSION" ) );
-            boolean status = templateManagerService.delete(tid);
+            boolean status = templateManagerService.delete(uSession, tid);
             //*****************************************************
 
             // remove relations

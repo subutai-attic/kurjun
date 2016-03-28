@@ -109,11 +109,4 @@ public class IdentityManagerServiceImpl implements IdentityManagerService
         return identityManager.getSystemOwner();
     }
 
-
-    //*************************************
-    @Override
-    public void setUserSession( final UserSession userSession )
-    {
-
-    }
 }

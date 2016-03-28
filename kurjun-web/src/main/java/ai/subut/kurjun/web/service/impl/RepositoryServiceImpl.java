@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class RepositoryServiceImpl implements RepositoryService
 {
-    private UserSession userSession;
+
 
     @Inject KurjunProperties kurjunProperties;
 
@@ -64,9 +64,6 @@ public class RepositoryServiceImpl implements RepositoryService
         return repoList;
     }
 
-    @Override
-    public void setUserSession(UserSession userSession) {
-        this.userSession = userSession;
-    }
+
 
 }

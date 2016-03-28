@@ -49,7 +49,6 @@ public class RestRelationController extends BaseController
     {
         //************************************
         UserSession userSession = (UserSession ) context.getAttribute( "USER_SESSION" );
-        relationManagerService.setUserSession( userSession );
         //************************************
 
         if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
@@ -78,16 +77,19 @@ public class RestRelationController extends BaseController
     }
 
 
-    public Result getRelationsByObject( @PathParam( "id" ) String id,
+    public Result getRelationsByObject( Context context, @PathParam( "id" ) String id,
                                         @Param( "name" ) String name, @Param( "version" ) String version,
                                         @Param( "md5" ) String md5, @Param( "rel_obj_type" ) int relObjType )
     {
+        UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+
+
         RelationObjectType objType = RelationObjectType.valueOf( relObjType );
         if ( objType == null ) {
             objType = RelationObjectType.RepositoryContent;
         }
         return Results.ok().json().render( relationManagerService.getTrustRelationsByObject(
-                relationManagerService.toTrustObject(id, name, md5, version, objType)));
+                relationManagerService.toTrustObject(uSession, id, name, md5, version, objType)));
     }
 
 
@@ -99,7 +101,6 @@ public class RestRelationController extends BaseController
 
         //*****************************************************
         UserSession userSession = (UserSession ) context.getAttribute( "USER_SESSION" );
-        relationManagerService.setUserSession( userSession );
         //*****************************************************
 
         if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
@@ -116,7 +117,7 @@ public class RestRelationController extends BaseController
             {
                 relObjType = RelationObjectType.RepositoryTemplate;
             }
-            RelationObject trustObject = relationManagerService.toTrustObject( id, null, null, null, relObjType );
+            RelationObject trustObject = relationManagerService.toTrustObject(userSession, id, null, null, null, relObjType );
 
             Set<Permission> objectPermissions = new HashSet<>();
             Arrays.asList( permissions ).forEach( p -> objectPermissions.add( Permission.valueOf( p ) ) );
@@ -139,7 +140,6 @@ public class RestRelationController extends BaseController
 
         //*****************************************************
         UserSession userSession = (UserSession ) context.getAttribute( "USER_SESSION" );
-        relationManagerService.setUserSession( userSession );
         //*****************************************************
 
         boolean deleted = false;

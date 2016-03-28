@@ -66,8 +66,8 @@ public class RestTemplateController extends BaseController
         }
 
         //*****************************************************
-        templateManagerService.setUserSession( (UserSession ) context.getAttribute( "USER_SESSION" ) );
-        String id = templateManagerService.upload( repository, fileItem.getInputStream() );
+        UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+        String id = templateManagerService.upload(uSession, repository, fileItem.getInputStream() );
         //*****************************************************
 
         String[] temp = id.split( "\\." );
@@ -88,17 +88,17 @@ public class RestTemplateController extends BaseController
         DefaultTemplate defaultTemplate = null;
 
         //*****************************************************
-        templateManagerService.setUserSession( (UserSession ) context.getAttribute( "USER_SESSION" ) );
+        UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
         //*****************************************************
 
         if ( id != null )
         {
             tid = IdValidators.Template.validate( id );
-            defaultTemplate = templateManagerService.getTemplate( tid, md5, name, version );
+            defaultTemplate = templateManagerService.getTemplate(uSession, tid, md5, name, version );
         }
         else
         {
-            defaultTemplate = templateManagerService.getTemplate( null, md5, name, version );
+            defaultTemplate = templateManagerService.getTemplate(uSession, null, md5, name, version );
         }
         if ( defaultTemplate == null )
         {
@@ -129,8 +129,8 @@ public class RestTemplateController extends BaseController
         try
         {
             //*****************************************************
-            templateManagerService.setUserSession( (UserSession ) context.getAttribute( "USER_SESSION" ) );
-            renderable = templateManagerService.renderableTemplate( tid.getOwnerFprint(), tid.getMd5(), false );
+            UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+            renderable = templateManagerService.renderableTemplate(uSession, tid.getOwnerFprint(), tid.getMd5(), false );
             //*****************************************************
         }
         catch ( IOException e )
@@ -155,8 +155,8 @@ public class RestTemplateController extends BaseController
         try
         {
             //*****************************************************
-            templateManagerService.setUserSession( (UserSession ) context.getAttribute( "USER_SESSION" ) );
-            success = templateManagerService.delete( tid );
+            UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+            success = templateManagerService.delete(uSession, tid );
             //*****************************************************
         }
         catch ( IOException e )
@@ -183,8 +183,8 @@ public class RestTemplateController extends BaseController
             }
 
             //*****************************************************
-            templateManagerService.setUserSession( (UserSession ) context.getAttribute( "USER_SESSION" ) );
-            List<SerializableMetadata> defaultTemplateList = templateManagerService.list( repository, false );
+            UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+            List<SerializableMetadata> defaultTemplateList = templateManagerService.list(uSession, repository, false );
             //*****************************************************
 
             return Results.ok().render( defaultTemplateList ).json();

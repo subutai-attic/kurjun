@@ -54,7 +54,6 @@ public class RelationController extends BaseController
     {
         //************************************
         UserSession userSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-        relationManagerService.setUserSession( userSession );
         //************************************
 
         if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
@@ -74,7 +73,6 @@ public class RelationController extends BaseController
     public Result getRelationsByOwner( @AuthorizedUser UserSession userSession,
                                        @Param( "fingerprint" ) String fingerprint )
     {
-        relationManagerService.setUserSession( userSession );
         return Results.html().template( "views/_popup-view-permissions.ftl" ).render( "relations",
                 relationManagerService.getTrustRelationsBySource(
                         relationManagerService.toSourceObject( identityManagerService.getUser( fingerprint ) ) ) );
@@ -84,7 +82,6 @@ public class RelationController extends BaseController
     public Result getRelationsByTarget( @AuthorizedUser UserSession userSession,
                                         @Param( "fingerprint" ) String fingerprint )
     {
-        relationManagerService.setUserSession( userSession );
         return Results.html().template( "views/_popup-view-permissions.ftl" ).render( "relations",
                 relationManagerService
                         .getTrustRelationsByTarget( relationManagerService.toTargetObject( fingerprint ) ) );
@@ -95,11 +92,10 @@ public class RelationController extends BaseController
                                         @Param( "name" ) String name, @Param( "version" ) String version,
                                         @Param( "md5" ) String md5, @Param( "obj_type" ) int objType )
     {
-        relationManagerService.setUserSession( userSession );
         RelationObjectType relObjType = RelationObjectType.valueOf( objType );
         relObjType = ( relObjType == null ? RelationObjectType.RepositoryContent : relObjType );
         List<Relation> rels = relationManagerService
-                .getTrustRelationsByObject( relationManagerService.toTrustObject( id, null, null, null, relObjType ) );
+                .getTrustRelationsByObject( relationManagerService.toTrustObject(userSession, id, null, null, null, relObjType ) );
         //.stream().filter( r -> !r.getSource().getId().equals( r.getTarget().getId() ) ).collect Collectors.toList() );
         return Results.html().template( "views/_popup-view-permissions.ftl" ).render( "relations", rels );
     }
@@ -107,7 +103,6 @@ public class RelationController extends BaseController
 
     public Result getAddTrustRelationForm( @AuthorizedUser UserSession userSession )
     {
-        repositoryService.setUserSession( userSession );
         List<String> repos = repositoryService.getRepositories();
 
         return Results.html().template( "views/_popup-add-trust-rel.ftl" ).render( "repos", repos );
