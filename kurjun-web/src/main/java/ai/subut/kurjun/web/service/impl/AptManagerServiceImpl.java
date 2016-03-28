@@ -19,12 +19,12 @@ import org.apache.commons.codec.binary.Hex;
 
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
-import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.model.identity.Permission;
 import ai.subut.kurjun.model.identity.RelationObjectType;
 import ai.subut.kurjun.model.identity.UserSession;
@@ -49,6 +49,7 @@ import ninja.Renderable;
 import ninja.utils.ResponseStreams;
 
 
+@Singleton
 public class AptManagerServiceImpl implements AptManagerService
 {
 

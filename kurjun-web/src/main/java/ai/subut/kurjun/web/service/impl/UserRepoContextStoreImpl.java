@@ -8,6 +8,7 @@ import java.util.Set;
 import ai.subut.kurjun.model.identity.UserSession;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import ai.subut.kurjun.common.service.KurjunProperties;
 import ai.subut.kurjun.db.file.FileDb;
@@ -15,6 +16,7 @@ import ai.subut.kurjun.web.model.UserContext;
 import ai.subut.kurjun.web.service.UserRepoContextStore;
 
 
+@Singleton
 public class UserRepoContextStoreImpl implements UserRepoContextStore
 {
     private static final String MAP_NAME_USER_REPO = "user_repo_contexts";

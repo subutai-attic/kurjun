@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import ai.subut.kurjun.identity.DefaultRelationObject;
 import ai.subut.kurjun.identity.service.RelationManager;
@@ -32,6 +33,7 @@ import ai.subut.kurjun.web.service.TemplateManagerService;
 /**
  * Service for managing trust relations
  */
+@Singleton
 public class RelationManagerServiceImpl implements RelationManagerService
 {
 
@@ -58,7 +60,14 @@ public class RelationManagerServiceImpl implements RelationManagerService
     @Override
     public List<Relation> getAllRelations()
     {
-        return relationManager.getAllRelations();
+        //if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
+        //{
+         //return null;
+        //}
+        //else
+        //{
+            return relationManager.getAllRelations();
+        //}
     }
 
 
@@ -66,7 +75,10 @@ public class RelationManagerServiceImpl implements RelationManagerService
     @Override
     public void removeRelation( Relation relation )
     {
-        relationManager.removeRelation( relation.getId() );
+        //if ( !userSession.getUser().equals( identityManagerService.getPublicUser() ) )
+        {
+            relationManager.removeRelation( relation.getId() );
+        }
     }
 
 

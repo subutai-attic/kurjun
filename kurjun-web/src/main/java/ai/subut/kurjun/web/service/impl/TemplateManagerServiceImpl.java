@@ -20,6 +20,7 @@ import org.apache.commons.codec.binary.Hex;
 
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
@@ -50,6 +51,7 @@ import ninja.lifecycle.Start;
 import ninja.utils.ResponseStreams;
 
 
+@Singleton
 public class TemplateManagerServiceImpl implements TemplateManagerService
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( TemplateManagerServiceImpl.class );

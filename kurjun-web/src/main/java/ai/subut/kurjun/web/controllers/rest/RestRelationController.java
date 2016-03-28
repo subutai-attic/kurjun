@@ -45,11 +45,22 @@ public class RestRelationController extends BaseController
     private IdentityManagerService identityManagerService;
 
 
-    public Result getAllRelations()
+    public Result getAllRelations(Context context)
     {
-        List<Relation> relations = relationManagerService.getAllRelations();
+        //************************************
+        UserSession userSession = (UserSession ) context.getAttribute( "USER_SESSION" );
+        relationManagerService.setUserSession( userSession );
+        //************************************
 
-        return Results.ok().render( relations ).json();
+        if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
+        {
+            return null;
+        }
+        else
+        {
+            List<Relation> relations = relationManagerService.getAllRelations();
+            return Results.ok().render( relations ).json();
+        }
     }
 
 
@@ -91,28 +102,34 @@ public class RestRelationController extends BaseController
         relationManagerService.setUserSession( userSession );
         //*****************************************************
 
-        RelationObject owner = relationManagerService.toSourceObject( userSession.getUser() );
-        RelationObject target = relationManagerService.toTargetObject( fingerprint );
-
-        RelationObjectType relObjType = RelationObjectType.RepositoryContent;
-        if ( trustObjType == RelationObjectType.RepositoryTemplate.getId() ) // repository
+        if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
         {
-            relObjType = RelationObjectType.RepositoryTemplate;
-        }
-        RelationObject trustObject = relationManagerService
-                    .toTrustObject( id, null, null, null, relObjType );
-
-        Set<Permission> objectPermissions = new HashSet<>();
-        Arrays.asList( permissions ).forEach( p -> objectPermissions.add(Permission.valueOf(p)) );
-
-        Relation relation = relationManagerService.addTrustRelation(owner, target, trustObject, objectPermissions);
-        if ( relation != null )
-        {
-            return Results.ok();
+            return Results.notFound();
         }
         else
         {
-            return Results.notFound();
+            RelationObject owner = relationManagerService.toSourceObject( userSession.getUser() );
+            RelationObject target = relationManagerService.toTargetObject( fingerprint );
+
+            RelationObjectType relObjType = RelationObjectType.RepositoryContent;
+            if ( trustObjType == RelationObjectType.RepositoryTemplate.getId() ) // repository
+            {
+                relObjType = RelationObjectType.RepositoryTemplate;
+            }
+            RelationObject trustObject = relationManagerService.toTrustObject( id, null, null, null, relObjType );
+
+            Set<Permission> objectPermissions = new HashSet<>();
+            Arrays.asList( permissions ).forEach( p -> objectPermissions.add( Permission.valueOf( p ) ) );
+
+            Relation relation = relationManagerService.addTrustRelation( owner, target, trustObject, objectPermissions );
+            if ( relation != null )
+            {
+                return Results.ok();
+            }
+            else
+            {
+                return Results.notFound();
+            }
         }
     }
 
