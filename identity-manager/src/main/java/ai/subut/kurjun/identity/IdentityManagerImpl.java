@@ -6,19 +6,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import org.bouncycastle.openpgp.PGPPublicKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.apache.commons.lang.time.DateUtils;
-
 import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.identity.service.FileDbProvider;
 import ai.subut.kurjun.identity.service.IdentityManager;
 
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import ai.subut.kurjun.identity.service.RelationManager;
 import ai.subut.kurjun.model.identity.Permission;
@@ -34,6 +31,7 @@ import ai.subut.kurjun.security.manager.utils.token.TokenUtils;
 /**
  *
  */
+@Singleton
 public class IdentityManagerImpl implements IdentityManager
 {
 

@@ -19,7 +19,7 @@
         <#if sys_owner??>
             <div style="float: right" class="b-form-hint">
                 <span class="g-text-red">System owner: </span>
-                <span><#if sys_owner??>${sys_owner.emailAddress}<br/><strong>${sys_owner.keyFingerprint}</strong><#else>not set</#if></span>
+                <span><#if sys_owner??><#if sys_owner.emailAddress??>${sys_owner.emailAddress}</#if><br/><strong>${sys_owner.keyFingerprint}</strong><#else>not set</#if></span>
             </div><br/>
         <#else>
             <button id="set-sys-owner" style="" class="b-btn b-btn_green b-btn_search-field-level">

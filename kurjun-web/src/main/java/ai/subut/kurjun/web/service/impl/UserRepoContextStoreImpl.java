@@ -45,32 +45,57 @@ public class UserRepoContextStoreImpl implements UserRepoContextStore
 
     public void addUserRepoContext( UserContext userRepoContext ) throws IOException
     {
-        try ( FileDb fileDb = new FileDb( repoFile ) )
+        FileDb fileDb = null;
+
+        try
         {
+            fileDb = new FileDb( repoFile );
             fileDb.put( MAP_NAME_USER_REPO, makeKey( userRepoContext ), userRepoContext );
         }
+        finally
+        {
+            if(fileDb != null)
+                fileDb.close();
+        }
+
     }
 
 
     public UserContext removeUserRepoContext( UserContext userRepoContext ) throws IOException
     {
         UserContext removed;
+        FileDb fileDb = null;
 
-        try ( FileDb fileDb = new FileDb( repoFile ) )
+        try
         {
+            fileDb = new FileDb( repoFile );
             removed = fileDb.remove( MAP_NAME_USER_REPO, makeKey( userRepoContext ) );
         }
+        finally
+        {
+            if(fileDb != null)
+                fileDb.close();
+        }
+
         return removed;
     }
 
 
     public Set<UserContext> getUserRepoContexts() throws IOException
     {
-        try ( FileDb fileDb = new FileDb( repoFile ) )
+        FileDb fileDb = null;
+
+        try
         {
+            fileDb = new FileDb( repoFile );
             Map<String, UserContext> map = fileDb.get( MAP_NAME_USER_REPO );
 
             return Sets.newConcurrentHashSet( map.values() );
+        }
+        finally
+        {
+            if(fileDb != null)
+                fileDb.close();
         }
     }
 

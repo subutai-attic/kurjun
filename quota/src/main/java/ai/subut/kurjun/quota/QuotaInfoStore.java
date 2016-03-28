@@ -69,13 +69,21 @@ public class QuotaInfoStore
      */
     public DiskQuota getDiskQuota( KurjunContext context ) throws IOException
     {
+        FileDb fileDb = null;
+
         if ( inMemory )
         {
             return diskQuotas.get( makeKey( context ) );
         }
-        try ( FileDb fileDb = fileDbProvider.get() )
+        try
         {
+            fileDb = fileDbProvider.get();
             return fileDb.get( DISK_QUOTA_MAP, makeKey( context ), DiskQuota.class );
+        }
+        finally
+        {
+            if(fileDb != null)
+                fileDb.close();
         }
     }
 
@@ -89,13 +97,21 @@ public class QuotaInfoStore
      */
     public TransferQuota getTransferQuota( KurjunContext context ) throws IOException
     {
+        FileDb fileDb = null;
+
         if ( inMemory )
         {
             return transferQuotas.get( makeKey( context ) );
         }
-        try ( FileDb fileDb = fileDbProvider.get() )
+        try
         {
+            fileDb = fileDbProvider.get();
             return fileDb.get( TRANSFER_QUOTA_MAP, makeKey( context ), TransferQuota.class );
+        }
+        finally
+        {
+            if(fileDb != null)
+                fileDb.close();
         }
     }
 
@@ -110,14 +126,22 @@ public class QuotaInfoStore
      */
     public void saveDiskQuota( DiskQuota diskQuota, KurjunContext context ) throws IOException
     {
+        FileDb fileDb = null;
+
         if ( inMemory )
         {
             diskQuotas.put( makeKey( context ), diskQuota );
             return;
         }
-        try ( FileDb fileDb = fileDbProvider.get() )
+        try
         {
+            fileDb = fileDbProvider.get();
             fileDb.put( DISK_QUOTA_MAP, makeKey( context ), diskQuota );
+        }
+        finally
+        {
+            if(fileDb != null)
+                fileDb.close();
         }
     }
 
@@ -132,14 +156,22 @@ public class QuotaInfoStore
      */
     public void saveTransferQuota( TransferQuota transferQuota, KurjunContext context ) throws IOException
     {
+        FileDb fileDb = null;
+
         if ( inMemory )
         {
             transferQuotas.put( makeKey( context ), transferQuota );
             return;
         }
-        try ( FileDb fileDb = fileDbProvider.get() )
+        try
         {
+            fileDb = fileDbProvider.get();
             fileDb.put( TRANSFER_QUOTA_MAP, makeKey( context ), transferQuota );
+        }
+        finally
+        {
+            if(fileDb != null)
+                fileDb.close();
         }
     }
 
@@ -152,14 +184,22 @@ public class QuotaInfoStore
      */
     public void removeDiskQuota( KurjunContext context ) throws IOException
     {
+        FileDb fileDb = null;
+
         if ( inMemory )
         {
             diskQuotas.remove( makeKey( context ) );
             return;
         }
-        try ( FileDb fileDb = fileDbProvider.get() )
+        try
         {
+            fileDb = fileDbProvider.get();
             fileDb.remove( DISK_QUOTA_MAP, makeKey( context ) );
+        }
+        finally
+        {
+            if(fileDb != null)
+                fileDb.close();
         }
     }
 
@@ -172,14 +212,22 @@ public class QuotaInfoStore
      */
     public void removeTransferQuota( KurjunContext context ) throws IOException
     {
+        FileDb fileDb = null;
+
         if ( inMemory )
         {
             transferQuotas.remove( makeKey( context ) );
             return;
         }
-        try ( FileDb fileDb = fileDbProvider.get() )
+        try
         {
+            fileDb = fileDbProvider.get();
             fileDb.remove( TRANSFER_QUOTA_MAP, makeKey( context ) );
+        }
+        finally
+        {
+            if(fileDb != null)
+                fileDb.close();
         }
     }
 
