@@ -406,6 +406,29 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         DefaultTemplate defaultTemplate1 =
                 ( DefaultTemplate ) unifiedTemplateRepository.getPackageInfo( defaultTemplate );
 
+        if ( defaultTemplate1 == null )
+        {
+            String[] repo_and_id = templateId.get().split( "\\." );
+
+            try
+            {
+                List<SerializableMetadata> templList = list( userSession, repo_and_id[0], true );
+                Iterator iter = templList.iterator();
+                while ( iter.hasNext() )
+                {
+                    DefaultTemplate df = ( DefaultTemplate ) iter.next();
+                    if ( df.equals( defaultTemplate ) )
+                    {
+                        defaultTemplate1 = df;
+                        break;
+                    }
+                }
+            }
+            catch ( Exception e )
+            {
+            }
+        }
+
         if ( defaultTemplate1 != null )
         {
             if ( checkRepoPermissions( userSession,defaultTemplate1.getOwnerFprint(),

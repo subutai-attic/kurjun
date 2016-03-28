@@ -11,6 +11,8 @@ import ai.subut.kurjun.web.service.RawManagerService;
 import ai.subut.kurjun.web.service.RepositoryService;
 import ai.subut.kurjun.web.utils.Utils;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import ninja.Context;
 import ninja.Renderable;
 import ninja.Result;
@@ -24,6 +26,7 @@ import ninja.uploads.FileProvider;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 
+@Singleton
 public class RawFileController extends BaseController
 {
 

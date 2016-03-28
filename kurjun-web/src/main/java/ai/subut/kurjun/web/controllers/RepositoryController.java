@@ -10,6 +10,8 @@ import ai.subut.kurjun.model.identity.RelationObjectType;
 import ai.subut.kurjun.web.service.RelationManagerService;
 import ai.subut.kurjun.web.service.RepositoryService;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import ninja.Result;
 import ninja.Results;
 import org.slf4j.Logger;
@@ -18,6 +20,7 @@ import org.slf4j.LoggerFactory;
 /**
  *
  */
+@Singleton
 public class RepositoryController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger( RepositoryController.class );

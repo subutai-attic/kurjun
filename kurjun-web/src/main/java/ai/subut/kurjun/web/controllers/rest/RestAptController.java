@@ -9,6 +9,7 @@ import java.net.URI;
 import java.util.List;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
@@ -29,6 +30,7 @@ import ninja.uploads.FileProvider;
 /**
  * REST Controller for Apt Management
  */
+@Singleton
 public class RestAptController extends BaseController
 {
 

@@ -8,6 +8,8 @@ import ai.subut.kurjun.web.service.RepositoryService;
 import ai.subut.kurjun.web.service.impl.AptManagerServiceImpl;
 import ai.subut.kurjun.web.utils.Utils;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import ninja.Context;
 import ninja.Renderable;
 import ninja.Result;
@@ -33,6 +35,7 @@ import java.util.Map;
 /**
  * Controller for Apt Management
  */
+@Singleton
 public class AptController extends BaseController
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( AptController.class );

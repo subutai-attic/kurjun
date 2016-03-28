@@ -9,6 +9,7 @@ import ai.subut.kurjun.web.service.IdentityManagerService;
 import ai.subut.kurjun.web.service.RelationManagerService;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import ai.subut.kurjun.web.service.RepositoryService;
 import ninja.Context;
@@ -35,6 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Web Controller for Trust Relation Management
  */
+@Singleton
 public class RelationController extends BaseController
 {
 
