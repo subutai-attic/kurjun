@@ -51,6 +51,12 @@ public class TokenUtils
     }
 
 
+    public static boolean verifyToken(String token, String sharedKey)
+    {
+        return verifySignatureAndDate(token, sharedKey);
+    }
+
+
     public static boolean verifySignature(String token, String sharedKey)
     {
         boolean verifiedSignature = false;
@@ -71,12 +77,59 @@ public class TokenUtils
     }
 
 
+    public static boolean verifySignatureAndDate(String token, String sharedKey)
+    {
+        try
+        {
+            JWSObject jwsObject  = JWSObject.parse( token );
+            JWSVerifier verifier = new MACVerifier( sharedKey.getBytes() );
+            
+            if(jwsObject.verify( verifier ))
+            {
+                long date = getDate(token,jwsObject);
+                return System.currentTimeMillis() <= date;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        catch ( Exception ex )
+        {
+            return false;
+        }
+    }
+
+
+    public static boolean isDateValid(String token)
+    {
+        long date = getDate(token);
+
+        return System.currentTimeMillis() <= date;
+    }
+
+
     public static Payload parseToken(String token)
     {
         Payload payload = null;
         try
         {
             JWSObject jwsObject = JWSObject.parse( token );
+            payload = jwsObject.getPayload();
+        }
+        catch ( Exception ex )
+        {
+            return null;
+        }
+
+        return payload;
+    }
+
+    public static Payload parseToken(String token, JWSObject jwsObject)
+    {
+        Payload payload = null;
+        try
+        {
             payload = jwsObject.getPayload();
         }
         catch ( Exception ex )
@@ -99,6 +152,34 @@ public class TokenUtils
         catch ( Exception ex )
         {
             return null;
+        }
+    }
+
+    public static long getDate(String token)
+    {
+        try
+        {
+            Payload payload   = parseToken(token);
+            JSONObject obj = payload.toJSONObject();
+            return (long)obj.get( "exp" );
+        }
+        catch ( Exception ex )
+        {
+            return 0;
+        }
+    }
+
+    public static long getDate(String token, JWSObject jwsObject)
+    {
+        try
+        {
+            Payload payload   = parseToken(token, jwsObject);
+            JSONObject obj = payload.toJSONObject();
+            return (long)obj.get( "exp" );
+        }
+        catch ( Exception ex )
+        {
+            return 0;
         }
     }
 

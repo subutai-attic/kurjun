@@ -22,7 +22,7 @@ public class DefaultUserToken implements UserToken, Serializable
 
     private String issuer;
 
-    private Date validDate;
+    private Date validDate = null;
 
 
     //***********************************
@@ -45,6 +45,12 @@ public class DefaultUserToken implements UserToken, Serializable
         String str = "";
 
         str += "{\"iss\":\"" + issuer + "\",";
+
+        if(validDate == null)
+            str += "\"exp\":0,";
+        else
+            str += "\"exp\":" + validDate.getTime() + ",";
+
         str += "\"sub\":\"" + token + "\"}";
 
         return str;
