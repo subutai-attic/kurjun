@@ -97,6 +97,14 @@ public class SecurityManagerImpl implements SecurityManager
 
     /*******************************************/
     @Override
+    public boolean verifyJWT(String token, String sharedKey)
+    {
+        return TokenUtils.verifyToken( token,sharedKey );
+    }
+
+
+    /*******************************************/
+    @Override
     public String getJWTSubject(String token)
     {
         return TokenUtils.getSubject( token);
