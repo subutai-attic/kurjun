@@ -301,7 +301,7 @@ public class AptManagerServiceImpl implements AptManagerService
         switch ( repository )
         {
             //return local list
-            case "public":
+            case "local":
                 list = localRepository.listPackages();
                 break;
             //return unified repo list
@@ -310,7 +310,7 @@ public class AptManagerServiceImpl implements AptManagerService
                 break;
             //return personal repository list
             default:
-                list = repositoryFactory.createLocalTemplate( new KurjunContext( repository ) ).listPackages();
+                list = repositoryFactory.createLocalApt( new KurjunContext( repository ) ).listPackages();
                 break;
         }
 

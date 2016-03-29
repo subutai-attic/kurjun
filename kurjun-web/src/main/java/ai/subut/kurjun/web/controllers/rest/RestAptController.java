@@ -56,7 +56,8 @@ public class RestAptController extends BaseController
     }
 
 
-    public Result release( Context context, @PathParam( "release" ) String release,
+    public Result release( Context context, @PathParam( "release" ) String release, @PathParam( "repository" ) String repository,
+
                            @Param( "global_kurjun_sptoken" ) String globalKurjunToken )
     {
         //        checkNotNull( release, "Release cannot be null" );
@@ -144,7 +145,7 @@ public class RestAptController extends BaseController
     {
         if ( repository == null )
         {
-            repository = "all";
+            repository = "local";
         }
 
         //********************************************

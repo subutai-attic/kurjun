@@ -186,7 +186,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
             return this.remoteIndexChache;
         }
         Map<String, String> params = makeParamsMap( new RawMetadata() );
-        params.put( "repository", "public" );
+        params.put( "repository", "local" );
 
         WebClient webClient = webClientFactory.makeSecure( this, FILE_PATH + LIST_PATH, params );
 

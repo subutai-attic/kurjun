@@ -135,7 +135,7 @@ public class RestAliquaController extends BaseController
     {
         if ( repository == null )
         {
-            repository = "all";
+            repository = "local";
         }
 
         return Results.ok().render( rawManagerService.list( repository ) ).json();

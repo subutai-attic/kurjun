@@ -232,7 +232,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
             return this.remoteIndexChache;
         }
         Map<String, String> params = makeParamsMap( new DefaultMetadata() );
-        params.put( "repository", "public" );
+        params.put( "repository", "local" );
 
         //get only public Kurjun local packages
         WebClient webClient = webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + LIST_PATH, params );

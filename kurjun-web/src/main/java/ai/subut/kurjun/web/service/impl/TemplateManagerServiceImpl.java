@@ -166,7 +166,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         switch ( repository )
         {
             //return local list
-            case "public":
+            case "local":
                 results = localPublicTemplateRepository.listPackages();
                 //return personal repository list
                 break;

@@ -350,7 +350,7 @@ public class RawManagerServiceImpl implements RawManagerService
         switch ( repository )
         {
             //return local list
-            case "public":
+            case "local":
                 return localPublicRawRepository.listPackages();
             //return unified repo list
             case "all":

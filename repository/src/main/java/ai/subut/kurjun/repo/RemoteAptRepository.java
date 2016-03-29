@@ -223,10 +223,10 @@ class RemoteAptRepository extends RemoteRepositoryBase
     @Override
     public List<SerializableMetadata> listPackages()
     {
-//        if ( this.md5Sum.equalsIgnoreCase( getMd5() ) )
-//        {
-//            return this.remoteIndexChache;
-//        }
+        if ( this.md5Sum.equalsIgnoreCase( getMd5() ) )
+        {
+            return this.remoteIndexChache;
+        }
 
         List<SerializableMetadata> result = new LinkedList<>();
         Set<ReleaseFile> distributions = getDistributions();
