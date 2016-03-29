@@ -37,6 +37,7 @@ public class IdentityManagerImpl implements IdentityManager
 
     private static final Logger LOGGER = LoggerFactory.getLogger( IdentityManagerImpl.class );
     public  static final String PUBLIC_USER_ID = "public-user";
+    public  static final int TOKEN_TTL = 180; // minutes
 
 
     private FileDbProvider fileDbProvider;
@@ -205,7 +206,7 @@ public class IdentityManagerImpl implements IdentityManager
         {
             if(user.getUserToken() != null)
             {
-                if ( securityManager.verifyJWTSignature( token, user.getUserToken().getSecret() ) )
+                if ( securityManager.verifyJWT( token, user.getUserToken().getSecret() ) )
                 {
                     return user;
                 }
@@ -440,7 +441,7 @@ public class IdentityManagerImpl implements IdentityManager
         }
         if ( validDate == null )
         {
-            validDate = DateUtils.addMinutes( new Date( System.currentTimeMillis() ), 120 );
+            validDate = DateUtils.addMinutes( new Date( System.currentTimeMillis() ), TOKEN_TTL );
         }
 
         userToken.setToken( token );

@@ -43,6 +43,8 @@ public interface SecurityManager
     boolean verifyJWTSignature( String token, String sharedKey );
 
 
+    boolean verifyJWT( String token, String sharedKey );
+
     String getJWTSubject( String token );
 
 
