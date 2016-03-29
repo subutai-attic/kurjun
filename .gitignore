@@ -7,3 +7,5 @@ target
 nbactions.xml
 
 deploy.sh
+kurjun.properties
+.gitignore
