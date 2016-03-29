@@ -46,6 +46,8 @@ import ai.subut.kurjun.web.service.IdentityManagerService;
 import ai.subut.kurjun.web.service.RelationManagerService;
 import ai.subut.kurjun.web.utils.Utils;
 import ninja.Renderable;
+import ninja.lifecycle.Dispose;
+import ninja.lifecycle.Start;
 import ninja.utils.ResponseStreams;
 
 
@@ -86,9 +88,23 @@ public class AptManagerServiceImpl implements AptManagerService
         this.packagesProviderFactory = packagesProviderFactory;
         this.packageFilenameParser = packageFilenameParser;
 
+    }
+
+
+
+    @Start( order = 90 )
+    public void startService()
+    {
         _local();
 
         _unified();
+    }
+
+
+    @Dispose( order = 90 )
+    public void stopService()
+    {
+
     }
 
 

@@ -30,6 +30,8 @@ import ai.subut.kurjun.web.service.RawManagerService;
 import ai.subut.kurjun.web.service.RelationManagerService;
 import ai.subut.kurjun.web.utils.Utils;
 import ninja.Renderable;
+import ninja.lifecycle.Dispose;
+import ninja.lifecycle.Start;
 import ninja.utils.ResponseStreams;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -58,8 +60,6 @@ public class RawManagerServiceImpl implements RawManagerService
         this.repositoryFactory = repositoryFactory;
         this.artifactContext = artifactContext;
 
-        _local();
-        _unified();
     }
 
 
@@ -73,10 +73,25 @@ public class RawManagerServiceImpl implements RawManagerService
     private void _unified()
     {
         this.unifiedRepository = this.repositoryFactory.createUnifiedRepo();
-        unifiedRepository.getRepositories().add( this.localPublicRawRepository );
-        unifiedRepository.getRepositories().addAll( artifactContext.getRemoteRawRepositories() );
+        this.unifiedRepository.getRepositories().add( this.localPublicRawRepository );
+        this.unifiedRepository.getRepositories().addAll( this.artifactContext.getRemoteRawRepositories() );
     }
 
+
+
+    @Start( order = 90 )
+    public void startService()
+    {
+        _local();
+        _unified();
+    }
+
+
+    @Dispose( order = 90 )
+    public void stopService()
+    {
+
+    }
 
     @Override
     public Renderable getFile( final String name )
@@ -172,7 +187,7 @@ public class RawManagerServiceImpl implements RawManagerService
 
 
     @Override
-    public boolean delete(UserSession userSession, String repository, final byte[] md5 )
+    public boolean delete( UserSession userSession, String repository, final byte[] md5 )
     {
         DefaultMetadata defaultMetadata = new DefaultMetadata();
         defaultMetadata.setFingerprint( repository );
@@ -182,7 +197,7 @@ public class RawManagerServiceImpl implements RawManagerService
             String objectId = defaultMetadata.getId().toString();
 
             //***** Check permissions (DELETE) *****************
-            if ( checkRepoPermissions(userSession, "raw", objectId, Permission.Delete ) )
+            if ( checkRepoPermissions( userSession, "raw", objectId, Permission.Delete ) )
             {
                 relationManagerService
                         .removeRelationsByTrustObject( objectId, RelationObjectType.RepositoryContent.getId() );
@@ -217,7 +232,7 @@ public class RawManagerServiceImpl implements RawManagerService
 
 
     @Override
-    public Metadata put(UserSession userSession, final File file )
+    public Metadata put( UserSession userSession, final File file )
     {
         Metadata metadata = null;
         try
@@ -227,7 +242,7 @@ public class RawManagerServiceImpl implements RawManagerService
             //**************************************
 
             //***** Check permissions (WRITE) *****************
-            if ( checkRepoPermissions(userSession, "raw", null, Permission.Write ) )
+            if ( checkRepoPermissions( userSession, "raw", null, Permission.Write ) )
             {
                 metadata = localPublicRawRepository.put( file, CompressionType.NONE, DEFAULT_RAW_REPO_NAME );
 
@@ -248,7 +263,7 @@ public class RawManagerServiceImpl implements RawManagerService
 
 
     @Override
-    public Metadata put(UserSession userSession, final File file, final String repository )
+    public Metadata put( UserSession userSession, final File file, final String repository )
     {
         Metadata metadata = null;
         try
@@ -258,7 +273,7 @@ public class RawManagerServiceImpl implements RawManagerService
             //**************************************
 
             //***** Check permissions (WRITE) *****************
-            if ( checkRepoPermissions(userSession, "raw", null, Permission.Write ) )
+            if ( checkRepoPermissions( userSession, "raw", null, Permission.Write ) )
             {
                 metadata =
                         localPublicRawRepository.put( new FileInputStream( file ), CompressionType.NONE, repository );
@@ -280,7 +295,7 @@ public class RawManagerServiceImpl implements RawManagerService
 
 
     @Override
-    public Metadata put(UserSession userSession, final File file, final String filename, final String repository )
+    public Metadata put( UserSession userSession, final File file, final String filename, final String repository )
     {
 
         if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
@@ -296,9 +311,10 @@ public class RawManagerServiceImpl implements RawManagerService
             //**************************************
 
             //***** Check permissions (WRITE) *****************
-            if ( checkRepoPermissions(userSession, "raw", null, Permission.Write ) )
+            if ( checkRepoPermissions( userSession, "raw", null, Permission.Write ) )
             {
-                LocalRawRepository localRawRepository = getLocalPublicRawRepository(userSession, new KurjunContext( repository ) );
+                LocalRawRepository localRawRepository =
+                        getLocalPublicRawRepository( userSession, new KurjunContext( repository ) );
                 metadata = localRawRepository.put( file, filename, repository );
 
                 //***** Build Relation ****************
@@ -317,7 +333,7 @@ public class RawManagerServiceImpl implements RawManagerService
     }
 
 
-    public LocalRawRepository getLocalPublicRawRepository(UserSession userSession, KurjunContext context )
+    public LocalRawRepository getLocalPublicRawRepository( UserSession userSession, KurjunContext context )
     {
         // *******CheckRepoOwner ***************
         relationManagerService
@@ -346,9 +362,8 @@ public class RawManagerServiceImpl implements RawManagerService
     }
 
 
-
     //*******************************************************************
-    private boolean checkRepoPermissions(UserSession userSession, String repoId, String contentId, Permission perm )
+    private boolean checkRepoPermissions( UserSession userSession, String repoId, String contentId, Permission perm )
     {
         return relationManagerService
                 .checkRepoPermissions( userSession, repoId, RelationObjectType.RepositoryRaw.getId(), contentId,

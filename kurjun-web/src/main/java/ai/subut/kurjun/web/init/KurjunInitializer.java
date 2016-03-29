@@ -83,8 +83,8 @@ public class KurjunInitializer
                                 artifactContext.addRemoteTemplateRepository(
                                         repositoryFactory.createNonLocalTemplate( s, null, "public", null ) );
 
-//                                artifactContext
-//                                        .addRemoteRawRepositories( repositoryFactory.createNonLocalRaw( s, null ) );
+                                artifactContext
+                                        .addRemoteRawRepositories( repositoryFactory.createNonLocalRaw( s, null ) );
 
                                 artifactContext.addRemoteAptRepositories(
                                         repositoryFactory.createNonLocalApt( new URL( s ) ) );
