@@ -22,6 +22,7 @@ public class ProtocolFilter implements Filter
     {
         LOGGER.info( "***** ProtocolFilter called " );
 
+        //if(!context.getScheme().equals( "" ))
         if(context.getScheme().equals( "https" ))
         {
             return filterChain.next( context );
