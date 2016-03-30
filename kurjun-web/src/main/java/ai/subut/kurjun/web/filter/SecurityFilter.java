@@ -12,7 +12,6 @@ import ninja.FilterChain;
 import ninja.Result;
 import ninja.Results;
 import ninja.session.Session;
-import ninja.utils.NoHttpBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +30,8 @@ public class SecurityFilter implements Filter
     @Override
     public Result filter( final FilterChain filterChain, final Context ctx )
     {
+        LOGGER.info( "***** SecurityFilter called " );
+
         try
         {
             Session session = ctx.getSession();
