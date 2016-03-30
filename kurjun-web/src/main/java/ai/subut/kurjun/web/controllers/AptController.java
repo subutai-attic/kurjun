@@ -22,21 +22,18 @@ import ninja.uploads.FileProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 /**
  * Controller for Apt Management
  */
 @Singleton
-public class AptController extends BaseController
+public class AptController extends BaseAptController
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( AptController.class );
 

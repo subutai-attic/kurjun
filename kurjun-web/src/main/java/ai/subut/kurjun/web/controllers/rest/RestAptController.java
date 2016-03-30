@@ -13,7 +13,7 @@ import com.google.inject.Singleton;
 
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
-import ai.subut.kurjun.web.controllers.BaseController;
+import ai.subut.kurjun.web.controllers.BaseAptController;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
 import ai.subut.kurjun.web.service.impl.AptManagerServiceImpl;
 import ai.subut.kurjun.web.utils.Utils;
@@ -31,7 +31,7 @@ import ninja.uploads.FileProvider;
  * REST Controller for Apt Management
  */
 @Singleton
-public class RestAptController extends BaseController
+public class RestAptController extends BaseAptController
 {
 
     @Inject
