@@ -55,33 +55,33 @@ public class TemplateController extends BaseController
     private RelationManagerService relationManagerService;
 
 
-    public Result listTemplates( Context context, FlashScope flashScope, @Param("repo") String repo )
+    public Result listTemplates( Context context, FlashScope flashScope, @Param( "repo" ) String repo )
     {
         List<SerializableMetadata> defaultTemplateList = new ArrayList<>();
         try
         {
-            repo = StringUtils.isBlank(repo)? "all":repo;
+            repo = StringUtils.isBlank( repo ) ? "all" : repo;
             //*****************************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            defaultTemplateList = templateManagerService.list(uSession, repo, false );
+            defaultTemplateList = templateManagerService.list( uSession, repo, false );
             //*****************************************************
         }
         catch ( IOException e )
         {
-            flashScope.error( "Failed to get list of templates.");
+            flashScope.error( "Failed to get list of templates." );
             LOGGER.error( "Failed to get list of templates: " + e.getMessage() );
         }
         List<String> repos = repositoryService.getRepositories();
 
 
         Map<String, String> ownerMap = new HashMap<>();
-        relationManagerService.getAllRelations().stream().filter( r ->
-                r.getSource().getId().equals( r.getTarget().getId() )
+        relationManagerService.getAllRelations().stream().filter(
+                r -> r.getSource().getId().equals( r.getTarget().getId() )
                         && r.getTrustObject().getType() == RelationObjectType.RepositoryContent.getId() )
-                .forEach( r -> ownerMap.put( r.getTrustObject().getId(), r.getSource().getId() ));
+                              .forEach( r -> ownerMap.put( r.getTrustObject().getId(), r.getSource().getId() ) );
 
-        return Results.html().template("views/templates.ftl").render( "templates", defaultTemplateList )
-                .render("repos", repos).render("sel_repo", repo).render( "owners", ownerMap );
+        return Results.html().template( "views/templates.ftl" ).render( "templates", defaultTemplateList )
+                      .render( "repos", repos ).render( "sel_repo", repo ).render( "owners", ownerMap );
     }
 
 
@@ -89,25 +89,28 @@ public class TemplateController extends BaseController
     {
         List<String> repos = repositoryService.getRepositories();
 
-        return Results.html().template("views/_popup-upload-templ.ftl").render("repos", repos);
+        return Results.html().template( "views/_popup-upload-templ.ftl" ).render( "repos", repos );
     }
 
 
     @FileProvider( SubutaiFileHandler.class )
     public Result uploadTemplate( Context context, @Param( "repository" ) String repository,
-                                  @Param("repo_name") String repoName, @Param("repo_type") String repoType,
+                                  @Param( "repo_name" ) String repoName, @Param( "repo_type" ) String repoType,
                                   @Param( "file" ) FileItem file, FlashScope flashScope )
     {
-        try {
-            if ( repoType.equals("new")) {
+        try
+        {
+            if ( repoType.equals( "new" ) )
+            {
                 repository = repoName;
             }
 
-            if ( StringUtils.isBlank( repository ) ) {
+            if ( StringUtils.isBlank( repository ) )
+            {
                 repository = "public";
             }
 
-            KurjunFileItem fileItem = (KurjunFileItem) file;
+            KurjunFileItem fileItem = ( KurjunFileItem ) file;
             /*
             if (md5 != null && !md5.isEmpty()) {
                 if (!fileItem.md5().equals(md5)) {
@@ -119,21 +122,22 @@ public class TemplateController extends BaseController
             */
             //*****************************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            String id = templateManagerService.upload(uSession, repository, fileItem.getInputStream() );
+            String id = templateManagerService.upload( uSession, repository, fileItem.getInputStream() );
             //*****************************************************
 
-            if( Strings.isNullOrEmpty(id))
+            if ( Strings.isNullOrEmpty( id ) )
             {
-                flashScope.error("Failed to upload template. Access Permission error.");
-                return Results.redirect( context.getContextPath()+"/" );
+                flashScope.error( "Failed to upload template. Access Permission error." );
+                return Results.redirect( context.getContextPath() + "/" );
             }
             else
             {
-                String[] temp = id.split("\\.");
+                String[] temp = id.split( "\\." );
                 //temp contains [fprint].[md5]
-                if (temp.length == 2) {
-                    flashScope.success("Template uploaded successfully");
-                    return Results.redirect( context.getContextPath()+"/" );
+                if ( temp.length == 2 )
+                {
+                    flashScope.success( "Template uploaded successfully" );
+                    return Results.redirect( context.getContextPath() + "/" );
                 }
             }
         }
@@ -142,31 +146,31 @@ public class TemplateController extends BaseController
             LOGGER.error( "Failed to upload template: {}", e.getMessage() );
         }
 
-        flashScope.error("Failed to upload template");
-        return Results.redirect( context.getContextPath()+"/" );
+        flashScope.error( "Failed to upload template" );
+        return Results.redirect( context.getContextPath() + "/" );
     }
 
 
-    public Result getTemplateInfo( Context context,@PathParam( "id" ) String id,
-                                   @Param( "name" ) String name, @Param( "version" ) String version,
-                                   @Param( "md5" ) String md5, @Param( "type" ) String type )
+    public Result getTemplateInfo( Context context, @PathParam( "id" ) String id, @Param( "name" ) String name,
+                                   @Param( "version" ) String version, @Param( "md5" ) String md5,
+                                   @Param( "type" ) String type )
     {
-        if ( !StringUtils.isBlank(id) )
+        if ( !StringUtils.isBlank( id ) )
         {
             TemplateId tid = IdValidators.Template.validate( id );
 
             //*****************************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            DefaultTemplate defaultTemplate = templateManagerService.getTemplate(uSession, tid, md5, name, version );
+            DefaultTemplate defaultTemplate = templateManagerService.getTemplate( uSession, tid, md5, name, version );
             //*****************************************************
 
             if ( defaultTemplate != null )
             {
-                return Results.html().template("views/_popup-view-tpl.ftl").render( "templ_info", defaultTemplate );
+                return Results.html().template( "views/_popup-view-tpl.ftl" ).render( "templ_info", defaultTemplate );
             }
         }
 
-        return Results.html().template("views/_popup-view-tpl.ftl");
+        return Results.html().template( "views/_popup-view-tpl.ftl" );
     }
 
 
@@ -178,7 +182,8 @@ public class TemplateController extends BaseController
 
             //*****************************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            Renderable renderable = templateManagerService.renderableTemplate(uSession, tid.getOwnerFprint(), tid.getMd5(), false );
+            Renderable renderable =
+                    templateManagerService.renderableTemplate( uSession, tid.getOwnerFprint(), tid.getMd5(), false );
             //*****************************************************
 
             return Results.ok().render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
@@ -186,42 +191,49 @@ public class TemplateController extends BaseController
         catch ( IOException e )
         {
             LOGGER.error( "Failed to download template: " + e.getMessage() );
-            return Results.internalServerError().text().render("Failed to download template");
+            return Results.internalServerError().text().render( "Failed to download template" );
         }
     }
 
 
-    public Result deleteTemplate( Context context, @PathParam( "id" ) String id,
-                                  FlashScope flashScope )
+    public Result deleteTemplate( Context context, @PathParam( "id" ) String id, FlashScope flashScope )
     {
         try
         {
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            TemplateId tid = IdValidators.Template.validate(id);
+            TemplateId tid = IdValidators.Template.validate( id );
 
             // get relations list
-            List<Relation> relations = relationManagerService.getTrustRelationsByObject(
-                    relationManagerService.toTrustObject(uSession, id, null, null, null, RelationObjectType.RepositoryContent ) );
+            List<Relation> relations = relationManagerService.getTrustRelationsByObject( relationManagerService
+                    .toTrustObject( uSession, id, null, null, null, RelationObjectType.RepositoryContent ) );
 
             //*****************************************************
-            boolean status = templateManagerService.delete(uSession, tid);
+            Integer status = templateManagerService.delete( uSession, tid );
             //*****************************************************
 
             // remove relations
             relations.forEach( r -> relationManagerService.removeRelation( r ) );
-
-            if(status)
-                flashScope.success( "Template removed successfully" );
-            else
-                flashScope.error( "Access permission error. Template not removed !!!" );
-
+            switch ( status )
+            {
+                case 0:
+                    flashScope.success( "Template removed successfully" );
+                    break;
+                case 1:
+                    flashScope.success( "Template was not found " );
+                case 2:
+                    flashScope.success( "Permission denied " );
+                    break;
+                default:
+                    flashScope.success( "Internal Server error " );
+                    break;
+            }
         }
-        catch (Exception e)
+        catch ( Exception e )
         {
             LOGGER.error( "Failed to remove template: " + e.getMessage() );
-            flashScope.error("Failed to remove template.");
+            flashScope.error( "Failed to remove template." );
         }
 
-        return Results.redirect(context.getContextPath()+"/");
+        return Results.redirect( context.getContextPath() + "/" );
     }
 }
