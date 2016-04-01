@@ -4,7 +4,6 @@ package ai.subut.kurjun.web.service;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -101,7 +100,7 @@ public interface TemplateManagerService extends BaseService
      *
      * @return {@code true} if package successfully deleted; {@code false} otherwise
      */
-    boolean delete(UserSession userSession, TemplateId templateId ) throws IOException;
+    int delete(UserSession userSession, TemplateId templateId ) throws IOException;
 
 
     /**
@@ -125,5 +124,5 @@ public interface TemplateManagerService extends BaseService
     DefaultTemplate getTemplate(UserSession userSession, TemplateId templateId, String md5, String name, String version );
 
 
-    boolean downloadTemplates();
+    int downloadTemplates();
 }

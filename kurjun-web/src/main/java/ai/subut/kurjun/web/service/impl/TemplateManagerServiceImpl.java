@@ -272,7 +272,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public boolean delete( UserSession userSession, TemplateId tid ) throws IOException
+    public int delete( UserSession userSession, TemplateId tid ) throws IOException
     {
         //************ CheckPermissions ************************************
         if ( checkRepoPermissions( userSession, tid.getOwnerFprint(), tid.get(), Permission.Delete ) )
@@ -283,11 +283,20 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
             relationManagerService
                     .removeRelationsByTrustObject( tid.get(), RelationObjectType.RepositoryContent.getId() );
 
-            return _repository.delete( tid.get(), Utils.MD5.toByteArray( tid.getMd5() ) );
+            boolean success = _repository.delete( tid.get(), Utils.MD5.toByteArray( tid.getMd5() ) );
+
+            if ( success )
+            {
+                //succeed
+                return 0;
+            }
+            //not found
+            return 1;
         }
         else
         {
-            return false;
+            //no permission
+            return 2;
         }
     }
 
@@ -384,7 +393,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public boolean downloadTemplates()
+    public int downloadTemplates()
     {
         DefaultTemplate defaultTemplate = new DefaultTemplate();
         defaultTemplate.setName( "master" );
@@ -415,10 +424,10 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
             if ( loaded[0] instanceof DefaultTemplate )
             {
-                return true;
+                return 0;
             }
         }
-        return false;
+        return 1;
     }
 
 
