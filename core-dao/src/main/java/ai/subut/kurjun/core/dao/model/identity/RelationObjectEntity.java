@@ -1,8 +1,13 @@
-package ai.subut.kurjun.identity;
+package ai.subut.kurjun.core.dao.model.identity;
 
 
 import java.io.Serializable;
 import java.util.Objects;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 import ai.subut.kurjun.model.identity.RelationObject;
 import ai.subut.kurjun.model.identity.RelationObjectType;
@@ -11,10 +16,13 @@ import ai.subut.kurjun.model.identity.RelationObjectType;
 /**
  *
  */
-public class DefaultRelationObject implements RelationObject,Serializable
+@Entity
+@Table( name = RelationObjectEntity.TABLE_NAME )
+@Access( AccessType.FIELD )
+public class RelationObjectEntity implements RelationObject,Serializable
 {
     //*********************
-    public static final String MAP_NAME = "relation-objects";
+    public static final String TABLE_NAME = "relation_objects";
     //*********************
 
     private String id;
@@ -56,26 +64,12 @@ public class DefaultRelationObject implements RelationObject,Serializable
 
     //*************************
     @Override
-    public boolean equals( Object obj )
-    {
-        if ( obj instanceof DefaultRelationObject )
-        {
-            DefaultRelationObject other = ( DefaultRelationObject ) obj;
-            return Objects.equals( this.getUniqId(), other.getUniqId() );
-        }
-        return false;
-    }
-
-
-    //*************************
-    @Override
     public int hashCode()
     {
         int hash = 5;
         hash = 19 * hash + Objects.hashCode( this.getUniqId() );
         return hash;
     }
-
 
 
 }

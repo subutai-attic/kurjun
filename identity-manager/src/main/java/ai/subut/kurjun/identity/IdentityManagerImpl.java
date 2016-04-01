@@ -6,11 +6,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import org.bouncycastle.openpgp.PGPPublicKey;
+import org.bouncycastle.openpgp.PGPPublicKeyRing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.commons.lang.time.DateUtils;
+
+import ai.subut.kurjun.core.dao.model.identity.UserEntity;
+import ai.subut.kurjun.core.dao.model.identity.UserTokenEntity;
 import ai.subut.kurjun.db.file.FileDb;
-import ai.subut.kurjun.identity.service.FileDbProvider;
+import ai.subut.kurjun.identity.service.IdentityDataService;
 import ai.subut.kurjun.identity.service.IdentityManager;
 
 import com.google.common.base.Strings;
@@ -25,6 +31,7 @@ import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.identity.UserToken;
 import ai.subut.kurjun.model.identity.UserType;
 import ai.subut.kurjun.security.manager.service.SecurityManager;
+import ai.subut.kurjun.security.manager.utils.pgp.PGPKeyUtil;
 import ai.subut.kurjun.security.manager.utils.token.TokenUtils;
 
 
@@ -40,8 +47,10 @@ public class IdentityManagerImpl implements IdentityManager
     public  static final int TOKEN_TTL = 180; // minutes
 
 
-    private FileDbProvider fileDbProvider;
     //***************************
+    @Inject
+    private IdentityDataService identityDataService;
+
     @Inject
     private SecurityManager securityManager;
 
@@ -51,11 +60,8 @@ public class IdentityManagerImpl implements IdentityManager
 
 
     //***************************
-    @Inject
-    public IdentityManagerImpl( FileDbProvider fileDbProvider )
+    public IdentityManagerImpl( )
     {
-        this.fileDbProvider = fileDbProvider;
-
         createDefaultUsers();
     }
 
@@ -172,7 +178,7 @@ public class IdentityManagerImpl implements IdentityManager
                 user.setUserToken( uToken );
 
                 //*************
-                saveUser( user );
+                //saveUser( user );
                 //*************
 
                 //*****************************************
@@ -233,17 +239,19 @@ public class IdentityManagerImpl implements IdentityManager
     {
         try
         {
-            FileDb fileDb = fileDbProvider.get();
-            User user = fileDb.get( DefaultUser.MAP_NAME, fingerprint.toLowerCase(), DefaultUser.class );
-            fileDb.close();
+            //FileDb fileDb = fileDbProvider.get();
+            //User user = fileDb.get( DefaultUser.MAP_NAME, fingerprint.toLowerCase(), DefaultUser.class );
+            //fileDb.close();
 
-            return user;
+            //return user;
         }
         catch ( Exception ex )
         {
             LOGGER.error( " ***** Error getting user with fingerprint:" + fingerprint );
             return null;
         }
+
+        return null;
     }
 
 
@@ -300,7 +308,7 @@ public class IdentityManagerImpl implements IdentityManager
                 if ( user != null )
                 {
                     user.setType( UserType.RegularOwner.getId() );
-                    saveUser( user );
+                    //saveUser( user );
                 }
                 else
                 {
@@ -336,17 +344,21 @@ public class IdentityManagerImpl implements IdentityManager
         {
             if ( userType == UserType.System.getId() )
             {
-                user = new DefaultUser();
-                user.setKeyId( publicKeyASCII );
+                user = new UserEntity();
                 user.setKeyFingerprint( publicKeyASCII );
                 user.setType( UserType.System.getId() );
-
             }
             else
             {
                 if ( !Strings.isNullOrEmpty( publicKeyASCII ) )
                 {
-                    user = new DefaultUser( securityManager.readPGPKey( publicKeyASCII ) );
+                    PGPPublicKey pubKey = securityManager.readPGPKey( publicKeyASCII );
+
+                    user = new UserEntity(  );
+                    user.setKeyFingerprint( PGPKeyUtil.getFingerprint( pubKey.getFingerprint()) );
+                    user.setKeyData( publicKeyASCII );
+                    user.setEmailAddress( securityManager.parseEmailAddress( pubKey ) );
+
                     user.setType( UserType.Regular.getId() );
                 }
                 else
@@ -358,7 +370,7 @@ public class IdentityManagerImpl implements IdentityManager
             //****************
             if ( user != null )
             {
-                saveUser( user );
+                //saveUser( user );
             }
             //****************
         }
@@ -372,25 +384,6 @@ public class IdentityManagerImpl implements IdentityManager
     }
 
 
-    //********************************************
-    @Override
-    public User saveUser( User user )
-    {
-        try
-        {
-            FileDb fileDb = fileDbProvider.get();
-            fileDb.put( DefaultUser.MAP_NAME, user.getKeyFingerprint().toLowerCase(), user );
-            fileDb.close();
-        }
-        catch ( Exception ex )
-        {
-            LOGGER.error( " ***** Error saving user:", ex );
-            return null;
-        }
-
-        return user;
-    }
-
 
     //********************************************
     @Override
@@ -398,17 +391,17 @@ public class IdentityManagerImpl implements IdentityManager
     {
         try
         {
-            FileDb fileDb = fileDbProvider.get();
-            Map<String, User> map = fileDb.get( DefaultUser.MAP_NAME );
-            fileDb.close();
+            //FileDb fileDb = fileDbProvider.get();
+            //Map<String, User> map = fileDb.get( DefaultUser.MAP_NAME );
+            //fileDb.close();
 
-            if ( map != null )
+            //if ( map != null )
             {
-                List<User> items = new ArrayList<>( map.values() );
+                //List<User> items = new ArrayList<>( map.values() );
 
-                return items;
+                //return items;
             }
-            else
+            //else
             {
                 return null;
             }
@@ -425,7 +418,7 @@ public class IdentityManagerImpl implements IdentityManager
     @Override
     public UserToken createUserToken( User user, String token, String secret, String issuer, Date validDate )
     {
-        UserToken userToken = new DefaultUserToken();
+        UserToken userToken = new UserTokenEntity();
 
         if ( Strings.isNullOrEmpty( token ) )
         {

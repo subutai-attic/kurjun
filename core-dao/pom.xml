@@ -10,16 +10,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>ai.subut.kurjun</groupId>
-  <artifactId>identity-manager</artifactId>
-  <name>Kurjun Identity Manager</name>
+  <artifactId>core-dao</artifactId>
   <version>1.0</version>
 
   <dependencies>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>model</artifactId>
-      <version>${project.version}</version>
-    </dependency>
 
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -29,13 +23,7 @@
 
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>core-dao</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>db-file</artifactId>
+      <artifactId>model</artifactId>
       <version>${project.version}</version>
     </dependency>
 
@@ -44,6 +32,32 @@
       <artifactId>security-manager</artifactId>
       <version>${project.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>com.google.inject.extensions</groupId>
+      <artifactId>guice-persist</artifactId>
+      <version>${guice.version}</version>
+    </dependency>
+
+
+    <!-- Derby Database -->
+    <dependency>
+      <groupId>org.apache.openjpa</groupId>
+      <artifactId>openjpa-all</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.openjpa</groupId>
+      <artifactId>openjpa</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
+    </dependency>
+    <!-- ******************** -->
+
+
   </dependencies>
 
 </project>

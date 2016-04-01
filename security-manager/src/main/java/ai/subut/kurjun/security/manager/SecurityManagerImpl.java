@@ -56,6 +56,14 @@ public class SecurityManagerImpl implements SecurityManager
 
     /********** PGP Utils ************/
 
+
+    /*******************************************/
+    @Override
+    public String parseEmailAddress( PGPPublicKey pubKey) throws PGPException
+    {
+        return PGPKeyUtil.parseEmailAddress(pubKey);
+    }
+
     /*******************************************/
     @Override
     public PGPPublicKey readPGPKey( InputStream input ) throws PGPException

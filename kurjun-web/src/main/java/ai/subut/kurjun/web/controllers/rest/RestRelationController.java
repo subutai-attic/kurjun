@@ -13,7 +13,6 @@ import ninja.Results;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import ai.subut.kurjun.model.identity.*;
-import ai.subut.kurjun.web.security.AuthorizedUser;
 import ai.subut.kurjun.web.service.RelationManagerService;
 import ninja.params.Param;
 import ninja.params.Params;

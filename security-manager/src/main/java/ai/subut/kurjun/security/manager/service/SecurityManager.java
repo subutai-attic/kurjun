@@ -28,6 +28,8 @@ public interface SecurityManager
     String generateSecurePassword( String passwordToHash, String salt );
 
 
+    String parseEmailAddress( PGPPublicKey pubKey ) throws PGPException;
+
     PGPPublicKey readPGPKey( InputStream input ) throws PGPException;
 
 

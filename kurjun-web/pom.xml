@@ -49,7 +49,8 @@
         <configuration>
           <webApp>
             <contextPath>/kurjun</contextPath>
-          </webApp>          <stopKey>stop</stopKey>
+          </webApp>
+          <stopKey>stop</stopKey>
           <stopPort>8889</stopPort>
           <scanIntervalSeconds>1</scanIntervalSeconds>
           <reload>automatic</reload>
@@ -146,9 +147,10 @@
 
     <dependency>
       <groupId>ai.subut.kurjun</groupId>
-      <artifactId>model</artifactId>
+      <artifactId>core-dao</artifactId>
       <version>${ai.subut.kurjun.version}</version>
     </dependency>
+
     <dependency>
       <groupId>ai.subut.kurjun</groupId>
       <artifactId>security-manager</artifactId>

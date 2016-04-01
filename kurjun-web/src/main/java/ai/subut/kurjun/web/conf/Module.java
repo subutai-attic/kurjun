@@ -7,15 +7,15 @@ import javax.inject.Singleton;
 
 import ai.subut.kurjun.web.service.*;
 import ai.subut.kurjun.web.service.impl.*;
+
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.persist.jpa.JpaPersistModule;
 
 import ai.subut.kurjun.cfparser.ControlFileParserModule;
 import ai.subut.kurjun.common.KurjunPropertiesModule;
-import ai.subut.kurjun.identity.FileDbProviderImpl;
 import ai.subut.kurjun.identity.IdentityManagerImpl;
 import ai.subut.kurjun.identity.RelationManagerImpl;
-import ai.subut.kurjun.identity.service.FileDbProvider;
 import ai.subut.kurjun.identity.service.IdentityManager;
 import ai.subut.kurjun.identity.service.RelationManager;
 import ai.subut.kurjun.index.PackagesIndexParserModule;
@@ -40,6 +40,10 @@ public class Module extends AbstractModule
     @Override
     protected void configure()
     {
+        //****************
+        install( new JpaPersistModule( "PU-KURJUN" ) );
+        //****************
+
         install( new KurjunPropertiesModule() );
         install( new ControlFileParserModule() );
         install( new ReleaseIndexParserModule() );
@@ -64,8 +68,6 @@ public class Module extends AbstractModule
 
         bind( FileItemProvider.class ).to( SubutaiFileHandler.class );
 
-        bind( FileDbProvider.class ).to( FileDbProviderImpl.class );
-
         bind( RepositoryService.class ).to( RepositoryServiceImpl.class );
 
         bind( RelationManager.class ).to( RelationManagerImpl.class );
@@ -76,15 +78,16 @@ public class Module extends AbstractModule
 
         bind( IdentityManagerService.class ).to( IdentityManagerServiceImpl.class );
 
-        bind( RelationManagerService.class ).to(RelationManagerServiceImpl.class );
+        bind( RelationManagerService.class ).to( RelationManagerServiceImpl.class );
     }
+
 
     /**
      * The application config goes as properties into the service module.
      */
     @Provides
     @Singleton
-    public Properties provideProperties(NinjaProperties ninjaProperties )
+    public Properties provideProperties( NinjaProperties ninjaProperties )
     {
         Properties props = new Properties( ninjaProperties.getAllCurrentNinjaProperties() );
 
