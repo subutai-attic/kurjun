@@ -1,6 +1,9 @@
 package ai.subut.kurjun.identity;
 
 
+import java.util.Collections;
+import java.util.List;
+
 import com.google.inject.Inject;
 
 import ai.subut.kurjun.core.dao.api.DAOException;
@@ -33,6 +36,36 @@ public class IdentityDataServiceImpl implements IdentityDataService
         catch ( DAOException e )
         {
 
+        }
+    }
+
+
+    //*****************************
+    @Override
+    public User getUser(String fingerprint)
+    {
+        try
+        {
+            return userDAO.find( fingerprint );
+        }
+        catch ( DAOException e )
+        {
+            return null;
+        }
+    }
+
+
+    //*****************************
+    @Override
+    public List<User> getAllUsers()
+    {
+        try
+        {
+            return userDAO.findAll( User.class );
+        }
+        catch ( DAOException e )
+        {
+            return Collections.emptyList();
         }
     }
 

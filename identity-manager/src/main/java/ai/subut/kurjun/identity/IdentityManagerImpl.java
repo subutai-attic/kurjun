@@ -2,6 +2,7 @@ package ai.subut.kurjun.identity;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -391,25 +392,12 @@ public class IdentityManagerImpl implements IdentityManager
     {
         try
         {
-            //FileDb fileDb = fileDbProvider.get();
-            //Map<String, User> map = fileDb.get( DefaultUser.MAP_NAME );
-            //fileDb.close();
-
-            //if ( map != null )
-            {
-                //List<User> items = new ArrayList<>( map.values() );
-
-                //return items;
-            }
-            //else
-            {
-                return null;
-            }
+            return identityDataService.getAllUsers();
         }
         catch ( Exception ex )
         {
-            LOGGER.error( " ***** Error adding user:", ex );
-            return null;
+            LOGGER.error( " ***** Error getting user list:", ex );
+            return Collections.emptyList();
         }
     }
 

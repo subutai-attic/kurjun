@@ -2,7 +2,6 @@ package ai.subut.kurjun.web.controllers.rest;
 
 import java.util.List;
 
-import ai.subut.kurjun.identity.DefaultRelationObject;
 import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.web.controllers.BaseController;
 import ai.subut.kurjun.web.service.IdentityManagerService;
@@ -61,7 +60,7 @@ public class RestRelationController extends BaseController
         }
     }
 
-
+    /*
     public Result getRelationsByOwner( @PathParam( "fingerprint" ) String fingerprint )
     {
         return Results.ok().json().render( relationManagerService.getTrustRelationsBySource(
@@ -181,5 +180,5 @@ public class RestRelationController extends BaseController
         }
 
         return Results.notFound();
-    }
+    }*/
 }

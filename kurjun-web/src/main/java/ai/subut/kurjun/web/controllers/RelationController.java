@@ -1,7 +1,6 @@
 package ai.subut.kurjun.web.controllers;
 
 
-import ai.subut.kurjun.identity.DefaultRelationObject;
 import ai.subut.kurjun.model.identity.*;
 import ai.subut.kurjun.web.security.AuthorizedUser;
 import ai.subut.kurjun.web.service.IdentityManagerService;
@@ -69,6 +68,7 @@ public class RelationController extends BaseController
     }
 
 
+    /*
     public Result getRelationsByOwner( @AuthorizedUser UserSession userSession,
                                        @Param( "fingerprint" ) String fingerprint )
     {
@@ -250,5 +250,5 @@ public class RelationController extends BaseController
         }
 
         return Results.redirect( context.getContextPath() + "/relations" );
-    }
+    }*/
 }

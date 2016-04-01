@@ -168,10 +168,10 @@ class RemoteSnapRepository extends RemoteRepositoryBase
                 {
                     deleteCache( md5Calculated );
 
-                    LOGGER.error(
-                            "Md5 checksum mismatch after getting the package from remote host. "
-                            + "Requested with md5={}, name={}, version={}",
-                            Hex.toHexString( metadata.getMd5Sum() ), metadata.getName(), metadata.getVersion() );
+                    //LOGGER.error(
+                           // "Md5 checksum mismatch after getting the package from remote host. "
+                           // + "Requested with md5={}, name={}, version={}",
+                            //Hex.toHexString( metadata.getMd5Sum() ), metadata.getName(), metadata.getVersion() );
                 }
             }
         }

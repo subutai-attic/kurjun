@@ -204,15 +204,15 @@ public class TemplateController extends BaseController
             TemplateId tid = IdValidators.Template.validate( id );
 
             // get relations list
-            List<Relation> relations = relationManagerService.getTrustRelationsByObject( relationManagerService
-                    .toTrustObject( uSession, id, null, null, null, RelationObjectType.RepositoryContent ) );
+            //List<Relation> relations = relationManagerService.getTrustRelationsByObject( relationManagerService
+                   // .toTrustObject( uSession, id, null, null, null, RelationObjectType.RepositoryContent ) );
 
             //*****************************************************
             Integer status = templateManagerService.delete( uSession, tid );
             //*****************************************************
 
             // remove relations
-            relations.forEach( r -> relationManagerService.removeRelation( r ) );
+           // relations.forEach( r -> relationManagerService.removeRelation( r ) );
             switch ( status )
             {
                 case 0:

@@ -5,15 +5,19 @@ import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import ai.subut.kurjun.model.identity.Relation;
@@ -40,19 +44,25 @@ public class RelationEntity implements Relation, Serializable
     @Column( name = "id" )
     private long id;
 
-    @Column( name = "id" )
+    @Column( name = "source_object" )
+    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER , targetEntity = RelationObjectEntity.class)
     private RelationObject source;
 
-    @Column( name = "id" )
+    @Column( name = "target_object" )
+    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER , targetEntity = RelationObjectEntity.class)
     private RelationObject target;
 
-    @Column( name = "id" )
+    @Column( name = "trust_object" )
+    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER , targetEntity = RelationObjectEntity.class)
     private RelationObject trustObject;
 
     @Column( name = "type" )
     private int type = RelationType.Owner.getId();
 
+    @Column( name = "permissions" )
+    @Enumerated( EnumType.STRING )
     private Set<Permission> permissions = EnumSet.noneOf( Permission.class );
+
 
 
     public RelationEntity()

@@ -7,11 +7,14 @@ import java.util.Objects;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import ai.subut.kurjun.model.identity.User;
@@ -44,7 +47,7 @@ public class UserEntity implements User, Serializable
     @Column( name = "email")
     private String emailAddress = "";
 
-    @Column( name = "email")
+    @Column( name = "signature")
     private String signature = "";
 
     @Column( name = "key_data")
@@ -57,6 +60,8 @@ public class UserEntity implements User, Serializable
     private int trustLevel = 3;
 
 
+    @Column( name = "user_token" )
+    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER,targetEntity = UserTokenEntity.class)
     private UserToken userToken = null;
 
 

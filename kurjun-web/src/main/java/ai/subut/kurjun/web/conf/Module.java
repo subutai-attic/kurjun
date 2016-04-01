@@ -5,25 +5,20 @@ import java.util.Properties;
 
 import javax.inject.Singleton;
 
+import ai.subut.kurjun.core.dao.api.KurjunDAOModule;
+import ai.subut.kurjun.identity.KurjunIdentityModule;
 import ai.subut.kurjun.web.service.*;
 import ai.subut.kurjun.web.service.impl.*;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.google.inject.persist.jpa.JpaPersistModule;
 
 import ai.subut.kurjun.cfparser.ControlFileParserModule;
 import ai.subut.kurjun.common.KurjunPropertiesModule;
-import ai.subut.kurjun.identity.IdentityManagerImpl;
-import ai.subut.kurjun.identity.RelationManagerImpl;
-import ai.subut.kurjun.identity.service.IdentityManager;
-import ai.subut.kurjun.identity.service.RelationManager;
 import ai.subut.kurjun.index.PackagesIndexParserModule;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreModule;
 import ai.subut.kurjun.repo.RepositoryModule;
 import ai.subut.kurjun.riparser.ReleaseIndexParserModule;
-import ai.subut.kurjun.security.manager.SecurityManagerImpl;
-import ai.subut.kurjun.security.manager.service.SecurityManager;
 import ai.subut.kurjun.snap.SnapMetadataParserModule;
 import ai.subut.kurjun.storage.factory.FileStoreModule;
 import ai.subut.kurjun.subutai.SubutaiTemplateParserModule;
@@ -40,11 +35,10 @@ public class Module extends AbstractModule
     @Override
     protected void configure()
     {
-        //****************
-        install( new JpaPersistModule( "PU-KURJUN" ) );
-        //****************
 
         install( new KurjunPropertiesModule() );
+        install( new KurjunDAOModule() );
+        install( new KurjunIdentityModule() );
         install( new ControlFileParserModule() );
         install( new ReleaseIndexParserModule() );
         install( new PackagesIndexParserModule() );
@@ -70,15 +64,10 @@ public class Module extends AbstractModule
 
         bind( RepositoryService.class ).to( RepositoryServiceImpl.class );
 
-        bind( RelationManager.class ).to( RelationManagerImpl.class );
-
-        bind( IdentityManager.class ).to( IdentityManagerImpl.class );
-
-        bind( SecurityManager.class ).to( SecurityManagerImpl.class );
-
         bind( IdentityManagerService.class ).to( IdentityManagerServiceImpl.class );
 
         bind( RelationManagerService.class ).to( RelationManagerServiceImpl.class );
+
     }
 
 

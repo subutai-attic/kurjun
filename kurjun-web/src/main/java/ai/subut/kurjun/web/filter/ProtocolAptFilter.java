@@ -17,17 +17,18 @@ import ninja.Results;
 /**
  *
  */
-public class ProtocolFilter implements Filter
+public class ProtocolAptFilter implements Filter
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( AuthorizedFilter.class );
 
     @Inject
     KurjunProperties props;
 
+
     @Override
     public Result filter( FilterChain filterChain, Context context )
     {
-        //LOGGER.info( "***** ProtocolFilter called " );
+        //LOGGER.info( "***** ProtocolAptFilter called " );
 
 
         if(context.getScheme().equals( "https" ))
@@ -37,12 +38,17 @@ public class ProtocolFilter implements Filter
             else
                 return Results.forbidden().render( "Not allowed" ).text();
         }
-        else if(context.getScheme().equals( "http" ))
+        else if ( context.getScheme().equals( "http" ) )
         {
-            if(props.get( "security.http.enabled" ).equals( "true" ))
+            if ( props.get( "security.http.enabled" ).equals( "true" ) || props.get( "security.apt.http.enabled" )
+                                                                               .equals( "true" ) )
+            {
                 return filterChain.next( context );
+            }
             else
+            {
                 return Results.forbidden().render( "Not allowed" ).text();
+            }
         }
         else
         {
