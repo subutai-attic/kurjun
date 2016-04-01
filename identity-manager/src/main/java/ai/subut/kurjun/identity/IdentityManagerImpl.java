@@ -1,22 +1,18 @@
 package ai.subut.kurjun.identity;
 
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.bouncycastle.openpgp.PGPPublicKey;
-import org.bouncycastle.openpgp.PGPPublicKeyRing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.commons.lang.time.DateUtils;
 
 import ai.subut.kurjun.core.dao.model.identity.UserEntity;
 import ai.subut.kurjun.core.dao.model.identity.UserTokenEntity;
-import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.identity.service.IdentityDataService;
 import ai.subut.kurjun.identity.service.IdentityManager;
 
@@ -63,7 +59,7 @@ public class IdentityManagerImpl implements IdentityManager
     //***************************
     public IdentityManagerImpl( )
     {
-        createDefaultUsers();
+        //createDefaultUsers();
     }
 
 
@@ -179,7 +175,7 @@ public class IdentityManagerImpl implements IdentityManager
                 user.setUserToken( uToken );
 
                 //*************
-                //saveUser( user );
+                //identityDataService.persistUser( user );
                 //*************
 
                 //*****************************************
@@ -240,19 +236,13 @@ public class IdentityManagerImpl implements IdentityManager
     {
         try
         {
-            //FileDb fileDb = fileDbProvider.get();
-            //User user = fileDb.get( DefaultUser.MAP_NAME, fingerprint.toLowerCase(), DefaultUser.class );
-            //fileDb.close();
-
-            //return user;
+            return identityDataService.getUser( fingerprint );
         }
         catch ( Exception ex )
         {
             LOGGER.error( " ***** Error getting user with fingerprint:" + fingerprint );
             return null;
         }
-
-        return null;
     }
 
 
@@ -309,7 +299,10 @@ public class IdentityManagerImpl implements IdentityManager
                 if ( user != null )
                 {
                     user.setType( UserType.RegularOwner.getId() );
-                    //saveUser( user );
+
+                    //***************************
+                    identityDataService.persistUser( user );
+                    //***************************
                 }
                 else
                 {
@@ -368,12 +361,12 @@ public class IdentityManagerImpl implements IdentityManager
                 }
             }
 
-            //****************
+            //******************************
             if ( user != null )
             {
-                //saveUser( user );
+                identityDataService.persistUser( user );
             }
-            //****************
+            //******************************
         }
         catch ( Exception ex )
         {
@@ -406,6 +399,7 @@ public class IdentityManagerImpl implements IdentityManager
     @Override
     public UserToken createUserToken( User user, String token, String secret, String issuer, Date validDate )
     {
+
         UserToken userToken = new UserTokenEntity();
 
         if ( Strings.isNullOrEmpty( token ) )

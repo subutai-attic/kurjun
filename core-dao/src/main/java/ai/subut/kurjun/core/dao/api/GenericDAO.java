@@ -32,7 +32,7 @@ public interface GenericDAO<T>
     /**
      *
      */
-    List<T> findAll( Class<T>  clazz) throws DAOException;
+    List<T> findAll(Class<T> clazz) throws DAOException;
 
 
     /**

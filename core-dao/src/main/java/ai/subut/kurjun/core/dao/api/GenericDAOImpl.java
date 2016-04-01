@@ -17,13 +17,17 @@ public abstract class GenericDAOImpl<T> implements GenericDAO<T>
 {
 
     //**********************************
-    protected Provider<EntityManager> entityManagerProvider;
-
+    //@Inject
+    //protected Provider<EntityManager> entityManagerProvider;
 
     @Inject
-    public GenericDAOImpl( Provider<EntityManager> entityManagerProvider )
+    private EntityManager em;
+
+
+
+    public GenericDAOImpl()
     {
-        this.entityManagerProvider = entityManagerProvider;
+        System.currentTimeMillis();
     }
 
 
@@ -33,7 +37,8 @@ public abstract class GenericDAOImpl<T> implements GenericDAO<T>
     {
         try
         {
-            entityManagerProvider.get().persist( entity );
+            //entityManagerProvider.get().persist( entity );
+            em.persist( entity );
         }
         catch ( Exception e )
         {
@@ -48,7 +53,8 @@ public abstract class GenericDAOImpl<T> implements GenericDAO<T>
     {
         try
         {
-            return entityManagerProvider.get().merge( entity );
+            //return entityManagerProvider.get().merge( entity );
+            return em.merge( entity );
         }
         catch ( Exception e )
         {
@@ -63,7 +69,8 @@ public abstract class GenericDAOImpl<T> implements GenericDAO<T>
     {
         try
         {
-            entityManagerProvider.get().remove( entity );
+            //entityManagerProvider.get().remove( entity );
+            em.remove( entity );
         }
         catch ( Exception e )
         {
@@ -78,7 +85,9 @@ public abstract class GenericDAOImpl<T> implements GenericDAO<T>
     {
         try
         {
-            return entityManagerProvider.get().createQuery( "Select t from " + clazz.getClass().getName() + " t" )
+            //return entityManagerProvider.get().createQuery( "Select t from " + clazz.getClass().getName() + " t" )
+              //                          .getResultList();
+            return em.createQuery( "Select t from " + clazz.getClass().getName() + " t" )
                                         .getResultList();
         }
         catch ( Exception e )
@@ -107,7 +116,8 @@ public abstract class GenericDAOImpl<T> implements GenericDAO<T>
     {
         try
         {
-            return entityManagerProvider.get();
+            //return entityManagerProvider.get();
+            return em;
         }
         catch ( Exception e )
         {

@@ -1,8 +1,6 @@
 package ai.subut.kurjun.core.dao.api.identity;
 
 
-import java.util.List;
-
 import javax.persistence.EntityManager;
 
 import com.google.inject.Inject;
@@ -13,32 +11,36 @@ import ai.subut.kurjun.core.dao.api.DAOException;
 import ai.subut.kurjun.core.dao.api.GenericDAOImpl;
 import ai.subut.kurjun.core.dao.model.identity.UserEntity;
 import ai.subut.kurjun.model.identity.User;
+import ai.subut.kurjun.model.identity.UserToken;
 
 
 /**
  *
  */
-public class UserDAO extends GenericDAOImpl<User>
+public class UserTokenDAO  extends GenericDAOImpl<UserToken>
 {
+    //@Inject
+    //public UserTokenDAO( final Provider<EntityManager> entityManagerProvider )
+    //{
+      //  super( entityManagerProvider );
+    //}
 
-    public UserDAO()
+    public UserTokenDAO()
     {
         super();
     }
 
-
     @Transactional
-    public User find(String fingerprint) throws DAOException
+    public User find(String token) throws DAOException
     {
         try
         {
-            EntityManager em = getEntityManager();
-            return em.find( UserEntity.class, fingerprint );
+            //return entityManagerProvider.get().find( UserEntity.class, token );
+            return getEntityManager().find( UserEntity.class, token );
         }
         catch ( Exception e )
         {
             throw new DAOException( e );
         }
     }
-
 }

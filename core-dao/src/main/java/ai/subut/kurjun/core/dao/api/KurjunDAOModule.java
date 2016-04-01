@@ -1,15 +1,16 @@
 package ai.subut.kurjun.core.dao.api;
 
 
-
-
 import com.google.inject.AbstractModule;
+import com.google.inject.TypeLiteral;
 import com.google.inject.persist.jpa.JpaPersistModule;
+
+import ai.subut.kurjun.core.dao.api.identity.UserDAO;
+import ai.subut.kurjun.model.identity.User;
 
 
 /**
  * Guice module to initialize Kurjun DAO bindings.
- *
  */
 public class KurjunDAOModule extends AbstractModule
 {
@@ -20,7 +21,10 @@ public class KurjunDAOModule extends AbstractModule
         //****************
         install( new JpaPersistModule( "PU-KURJUN" ) );
         //****************
-    }
 
+        bind(KurjunJPAInitializer.class).asEagerSingleton();
+
+
+    }
 }
 
