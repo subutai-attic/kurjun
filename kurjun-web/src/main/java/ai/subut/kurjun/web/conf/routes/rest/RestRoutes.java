@@ -90,8 +90,8 @@ public class RestRoutes implements ApplicationRoutes
               .with( RestRelationController.class, "getRelationsByTarget" );
         router.GET().route( baseRelationsUrl + "object/{id}" )
               .with( RestRelationController.class, "getRelationsByObject" );
-        router.POST().route( baseRelationsUrl + "{id}/delete" ).with( RestRelationController.class, "delete" );
-        router.POST().route( baseRelationsUrl + "{id}/change" ).with( RestRelationController.class, "change" );
+        router.DELETE().route( baseRelationsUrl + "{id}" ).with( RestRelationController.class, "delete" );
+        router.POST().route( baseRelationsUrl + "{id}" ).with( RestRelationController.class, "change" );
 
 
         //REST Security Controller
