@@ -1,6 +1,10 @@
 package ai.subut.kurjun.model.identity;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
+
 /**
  *
  */
@@ -47,5 +51,16 @@ public enum RelationObjectType
             case 6: return RepositoryRaw;
             default: return null;
         }
+    }
+
+    public static Map<String, String> getMap()
+    {
+        RelationObjectType[] values = RelationObjectType.values();
+        Map<String, String> map = new HashMap<>(  );
+        for ( RelationObjectType r : values ) {
+            map.put( String.valueOf(r.getId()), r.getName() );
+        }
+
+        return map;
     }
 }

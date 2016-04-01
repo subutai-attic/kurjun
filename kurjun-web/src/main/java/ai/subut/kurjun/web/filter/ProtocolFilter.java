@@ -20,8 +20,6 @@ public class ProtocolFilter implements Filter
     @Override
     public Result filter( FilterChain filterChain, Context context )
     {
-        LOGGER.info( "***** ProtocolFilter called " );
-
         //if(!context.getScheme().equals( "" ))
         if(context.getScheme().equals( "https" ))
         {
