@@ -30,8 +30,6 @@ public class SecurityFilter implements Filter
     @Override
     public Result filter( final FilterChain filterChain, final Context ctx )
     {
-        LOGGER.info( "***** SecurityFilter called " );
-
         try
         {
             Session session = ctx.getSession();

@@ -83,16 +83,17 @@ public class RestRoutes implements ApplicationRoutes
 
         //REST Relation Controller
         router.GET().route( baseRelationsUrl + "list" ).with( RestRelationController.class, "getAllRelations" );
-        //router.PUT().route( baseRelationsUrl + "trust" ).with( RestRelationController.class, "addTrustRelation" );
-        //router.GET().route( baseRelationsUrl + "source/{fingerprint}" )
-        //      .with( RestRelationController.class, "getRelationsByOwner" );
-        //router.GET().route( baseRelationsUrl + "target/{fingerprint}" )
-        //      .with( RestRelationController.class, "getRelationsByTarget" );
-        //router.GET().route( baseRelationsUrl + "object/{id}" )
-        //      .with( RestRelationController.class, "getRelationsByObject" );
-        //router.POST().route( baseRelationsUrl + "{id}/delete" ).with( RestRelationController.class, "delete" );
-        //router.POST().route( baseRelationsUrl + "{id}/change" ).with( RestRelationController.class, "change" );
-
+        /*
+        router.PUT().route( baseRelationsUrl + "trust" ).with( RestRelationController.class, "addTrustRelation" );
+        router.GET().route( baseRelationsUrl + "source/{fingerprint}" )
+              .with( RestRelationController.class, "getRelationsByOwner" );
+        router.GET().route( baseRelationsUrl + "target/{fingerprint}" )
+              .with( RestRelationController.class, "getRelationsByTarget" );
+        router.GET().route( baseRelationsUrl + "object/{id}" )
+              .with( RestRelationController.class, "getRelationsByObject" );
+        router.DELETE().route( baseRelationsUrl + "{id}" ).with( RestRelationController.class, "delete" );
+        router.POST().route( baseRelationsUrl + "{id}" ).with( RestRelationController.class, "change" );
+        */
 
         //REST Security Controller
         //router.GET().route( baseSecurityUrl + "keyman" ).with( RestIdentityController.class, "getUsers" );

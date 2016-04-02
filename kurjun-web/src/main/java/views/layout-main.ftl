@@ -37,6 +37,10 @@
     <#nested/>
 
     <script>
+        function recreateColorboxes() {
+          $('.js-colorbox').colorbox({});
+          $('.js-colorbox-inline').colorbox({inline: true});
+        }
         $(document).ready(function(){
             $('#js-logout').click(function(){
                 $('#logoutForm').submit();

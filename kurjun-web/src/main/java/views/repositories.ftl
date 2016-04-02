@@ -47,6 +47,14 @@
         $('#add_repo_btn').colorbox({href:"#js-add-repo", inline: true});
 
         $('#repos_tbl').DataTable();
+
+      $('table.dataTable').on( 'page.dt', function () {
+        setTimeout( function () { recreateColorboxes(); }, 1000 );
+      } );
+      $('table.dataTable').on( 'length.dt', function ( e, settings, len ) {
+        setTimeout( function () { recreateColorboxes(); }, 1000 );
+      } );
+
     } );
 
 </script>

@@ -22,8 +22,9 @@
                 <th>Source</th>
                 <th>Target</th>
                 <th>Object</th>
+                <th>Type</th>
                 <th>Permissions</th>
-                <th>Actions</th>
+                <th style="min-width: 100px">Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -33,6 +34,7 @@
                     <td><#if r.source??>${r.source.id}</#if></td>
                     <td><#if r.target??>${r.target.id}</#if></td>
                     <td><#if r.trustObject??>${r.trustObject.id}</#if></td>
+                    <td title="${r.trustObject.type}">${relObjTypes[r.trustObject.type?string]}</td>
                     <td>
                      ${(r.permissions?seq_contains("Read"))?then("R"," ")}
                      ${(r.permissions?seq_contains("Update"))?then("U"," ")}
@@ -65,6 +67,14 @@
         //$('#add_trust_btn').colorbox({href:"#js-add-trust-rel", inline: true});
 
         $('#relations_tbl').DataTable();
+
+      $('table.dataTable').on( 'page.dt', function () {
+        setTimeout( function () { recreateColorboxes(); }, 1000 );
+      } );
+      $('table.dataTable').on( 'length.dt', function ( e, settings, len ) {
+        setTimeout( function () { recreateColorboxes(); }, 1000 );
+      } );
+
     } );
 
 </script>

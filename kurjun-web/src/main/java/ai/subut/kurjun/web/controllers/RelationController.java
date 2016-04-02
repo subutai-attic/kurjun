@@ -3,7 +3,6 @@ package ai.subut.kurjun.web.controllers;
 
 import ai.subut.kurjun.model.identity.*;
 import ai.subut.kurjun.web.security.AuthorizedUser;
-import ai.subut.kurjun.web.service.IdentityManagerService;
 import ai.subut.kurjun.web.service.RelationManagerService;
 
 import com.google.inject.Inject;
@@ -41,8 +40,6 @@ public class RelationController extends BaseController
     @Inject
     private RelationManagerService relationManagerService;
 
-    @Inject
-    private IdentityManagerService identityManagerService;
 
     @Inject
     private RepositoryService repositoryService;
