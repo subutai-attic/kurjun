@@ -1,14 +1,15 @@
-package ai.subut.kurjun.identity;
+package ai.subut.kurjun.core.dao.api.identity;
 
 
-import ai.subut.kurjun.db.file.FileDb;
-import ai.subut.kurjun.identity.service.RelationDataService;
+import com.google.inject.Singleton;
+
 import ai.subut.kurjun.model.identity.Relation;
 
 
 /**
  *
  */
+@Singleton
 public class RelationDataServiceImpl implements RelationDataService
 {
 

@@ -13,7 +13,7 @@ import org.apache.commons.lang.time.DateUtils;
 
 import ai.subut.kurjun.core.dao.model.identity.UserEntity;
 import ai.subut.kurjun.core.dao.model.identity.UserTokenEntity;
-import ai.subut.kurjun.identity.service.IdentityDataService;
+import ai.subut.kurjun.core.dao.api.identity.IdentityDataService;
 import ai.subut.kurjun.identity.service.IdentityManager;
 
 import com.google.common.base.Strings;
@@ -43,23 +43,22 @@ public class IdentityManagerImpl implements IdentityManager
     public  static final String PUBLIC_USER_ID = "public-user";
     public  static final int TOKEN_TTL = 180; // minutes
 
+    //***************************
+    private IdentityDataService identityDataService = null;
+    private SecurityManager securityManager = null;
+    private RelationManager relationManager = null;
 
     //***************************
     @Inject
-    private IdentityDataService identityDataService;
-
-    @Inject
-    private SecurityManager securityManager;
-
-    @Inject
-    private RelationManager relationManager;
-
-
-
-    //***************************
-    public IdentityManagerImpl( )
+    public IdentityManagerImpl( IdentityDataService identityDataService,
+                                SecurityManager securityManager,
+                                RelationManager relationManager)
     {
-        //createDefaultUsers();
+        this.identityDataService = identityDataService;
+        this.securityManager = securityManager;
+        this.relationManager = relationManager;
+
+        createDefaultUsers();
     }
 
 

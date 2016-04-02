@@ -6,11 +6,10 @@
     <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
 
     <class>ai.subut.kurjun.core.dao.model.identity.UserEntity</class>
-    <!--
     <class>ai.subut.kurjun.core.dao.model.identity.UserTokenEntity</class>
     <class>ai.subut.kurjun.core.dao.model.identity.RelationEntity</class>
     <class>ai.subut.kurjun.core.dao.model.identity.RelationObjectEntity</class>
-     -->
+
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
     <properties>

@@ -12,7 +12,7 @@ import com.google.inject.Singleton;
 
 import ai.subut.kurjun.core.dao.model.identity.RelationEntity;
 import ai.subut.kurjun.core.dao.model.identity.RelationObjectEntity;
-import ai.subut.kurjun.identity.service.RelationDataService;
+import ai.subut.kurjun.core.dao.api.identity.RelationDataService;
 import ai.subut.kurjun.identity.service.RelationManager;
 import ai.subut.kurjun.model.identity.Permission;
 import ai.subut.kurjun.model.identity.Relation;
@@ -30,17 +30,16 @@ public class RelationManagerImpl implements RelationManager
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( RelationManagerImpl.class );
 
-    @Inject
-    SecurityManager securityManager;
-
-    @Inject
-    RelationDataService relationDataService;
+    private SecurityManager securityManager = null;
+    private RelationDataService relationDataService = null;
 
 
     //***************************
-    public RelationManagerImpl()
+    @Inject
+    public RelationManagerImpl(RelationDataService relationDataService, SecurityManager securityManager)
     {
-
+        this.relationDataService = relationDataService;
+        this.securityManager = securityManager;
     }
 
 
