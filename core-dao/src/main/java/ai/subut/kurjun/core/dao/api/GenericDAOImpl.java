@@ -5,6 +5,9 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
@@ -13,8 +16,11 @@ import com.google.inject.persist.Transactional;
 /**
  *
  */
-public abstract class GenericDAOImpl<T>
+public abstract class GenericDAOImpl<T> implements GenericDAO<T>
 {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( GenericDAOImpl.class );
+
 
     //**********************************
     @Inject
@@ -36,6 +42,7 @@ public abstract class GenericDAOImpl<T>
         }
         catch ( Exception e )
         {
+            LOGGER.error( " ***** GenericDAOImpl Error" + e,e );
             throw new DAOException( e );
         }
     }
@@ -50,6 +57,7 @@ public abstract class GenericDAOImpl<T>
         }
         catch ( Exception e )
         {
+            LOGGER.error( " ***** GenericDAOImpl Error" + e,e );
             throw new DAOException( e );
         }
     }
@@ -64,6 +72,7 @@ public abstract class GenericDAOImpl<T>
         }
         catch ( Exception e )
         {
+            LOGGER.error( " ***** GenericDAOImpl Error" + e,e );
             throw new DAOException( e );
         }
     }
@@ -79,6 +88,7 @@ public abstract class GenericDAOImpl<T>
         }
         catch ( Exception e )
         {
+            LOGGER.error( " ***** GenericDAOImpl Error" + e,e );
             throw new DAOException( e );
         }
     }
@@ -106,6 +116,7 @@ public abstract class GenericDAOImpl<T>
         }
         catch ( Exception e )
         {
+            LOGGER.error( " ***** GenericDAOImpl Error" + e,e );
             throw new DAOException( e );
         }
     }
