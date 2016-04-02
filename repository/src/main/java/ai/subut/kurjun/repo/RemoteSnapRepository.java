@@ -40,7 +40,6 @@ import ai.subut.kurjun.repo.util.http.WebClientFactory;
 
 /**
  * Non-local snap repository implementation.
- *
  */
 class RemoteSnapRepository extends RemoteRepositoryBase
 {
@@ -138,6 +137,7 @@ class RemoteSnapRepository extends RemoteRepositoryBase
     @Override
     public InputStream getPackageStream( Metadata metadata )
     {
+
         InputStream cachedStream = checkCache( metadata );
         if ( cachedStream != null )
         {
@@ -168,10 +168,10 @@ class RemoteSnapRepository extends RemoteRepositoryBase
                 {
                     deleteCache( md5Calculated );
 
-                    LOGGER.error(
-                            "Md5 checksum mismatch after getting the package from remote host. "
-                            + "Requested with md5={}, name={}, version={}",
-                            Hex.toHexString( metadata.getMd5Sum() ), metadata.getName(), metadata.getVersion() );
+                    LOGGER.error( "Md5 checksum mismatch after getting the package from remote host. "
+                                    + "Requested with md5={}, name={}, version={}", Hex.toHexString( metadata
+                            .getMd5Sum() ),
+                            metadata.getName(), metadata.getVersion() );
                 }
             }
         }

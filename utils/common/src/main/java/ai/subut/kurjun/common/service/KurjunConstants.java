@@ -28,6 +28,11 @@ public final class KurjunConstants
 
     public static final String KURJUN_SOURCE_LIST = "kurjun.source";
 
+    public static final String KURJUN_TORRENT_TRACKER_DIR = "kurjun.torrent.tracker.dir";
+
+    public static final String KURJUN_TORRENT_OUTPUT_DIR = "kurjun.torrent.output.di";
+
+    public static final String KURJUN_TORRENT_PORT = "kurjun.torrent.port";
 
     public static final String KURJUN_SERVER_LIST = "kurjun.server.list";
     /**

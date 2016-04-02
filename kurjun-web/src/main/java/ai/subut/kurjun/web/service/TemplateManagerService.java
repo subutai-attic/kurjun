@@ -65,13 +65,6 @@ public interface TemplateManagerService extends BaseService
     List<Map<String, Object>> listAsSimple( String repository ) throws IOException;
 
 
-    /**
-     * Lists packages in public repository. The request treated as not kurjun client.
-     *
-     * @return list of JSON encoded meta data
-     */
-    List<SerializableMetadata> list();
-
 
     /**
      * Uploads package data from supplied input stream to the repository defined by supplied repository.

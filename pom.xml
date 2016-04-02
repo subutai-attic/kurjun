@@ -354,7 +354,11 @@
         <artifactId>snakeyaml</artifactId>
         <version>${snakeyaml.version}</version>
       </dependency>
-
+      <dependency>
+        <groupId>com.turn</groupId>
+        <artifactId>ttorrent-core</artifactId>
+        <version>1.5</version>
+      </dependency>
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>

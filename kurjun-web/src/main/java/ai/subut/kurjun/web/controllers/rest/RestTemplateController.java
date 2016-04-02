@@ -184,7 +184,7 @@ public class RestTemplateController extends BaseController
     {
         try
         {
-            if ( repository == null )
+                if ( repository == null )
             {
                 repository = "local";
             }

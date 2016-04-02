@@ -16,7 +16,9 @@ public interface FileStore
      * Checks to see if a file with the specified md5 sum exists.
      *
      * @param md5 the md5 sum of the file
+     *
      * @return true if a file having the same md5sum exists, false otherwise
+     *
      * @throws IOException if there are problems accessing the store
      */
     boolean contains( byte[] md5 ) throws IOException;
@@ -26,7 +28,9 @@ public interface FileStore
      * Gets the contents of a file from the store as a stream.
      *
      * @param md5 the md5 sum of the file
+     *
      * @return null if the file does not exist, otherwise returns a stream containing the contents of the file
+     *
      * @throws IOException if there are problems access the store
      */
     InputStream get( byte[] md5 ) throws IOException;
@@ -37,7 +41,9 @@ public interface FileStore
      *
      * @param md5 the md5 sum of the file to retrieve
      * @param target the file into which the contents should be dumped
+     *
      * @return true if the contents were successfully dumped, false otherwise
+     *
      * @throws IOException if there are problems accessing the store or writing to the target file
      */
     boolean get( byte[] md5, File target ) throws IOException;
@@ -47,17 +53,31 @@ public interface FileStore
      * Puts a source file into the store.
      *
      * @param source the source file
+     *
      * @return the md5 sum of the file
+     *
      * @throws IOException if there are problems accessing the store or the source file
      */
     byte[] put( File source ) throws IOException;
+
+    /**
+     * Puts a source file into the store.
+     *
+     * @param source the source file
+     * @return the md5 sum of the file
+     *
+     * @throws IOException if there are problems accessing the store or the source file
+     */
+    byte[] put( InputStream source ) throws IOException;
 
 
     /**
      * Puts a source file specified by a URL into the store.
      *
      * @param source the source file URL
+     *
      * @return the md5 sum of the file
+     *
      * @throws IOException if there are problems accessing the store or the source file
      */
     byte[] put( URL source ) throws IOException;
@@ -68,7 +88,9 @@ public interface FileStore
      *
      * @param filename the name of the file
      * @param source the source content stream
+     *
      * @return the md5 sum of the file
+     *
      * @throws IOException if there are problems accessing the store or the source content
      */
     byte[] put( String filename, InputStream source ) throws IOException;
@@ -78,7 +100,9 @@ public interface FileStore
      * Removes a file from the store.
      *
      * @param md5 the md5 sum of the file to remove
+     *
      * @return true if the file was removed, false if no such file exists
+     *
      * @throws IOException if there are problems accessing the store
      */
     boolean remove( byte[] md5 ) throws IOException;
@@ -88,7 +112,6 @@ public interface FileStore
      * Returns total size (in bytes) of the files stored in this store.
      *
      * @return total size of the store (in bytes)
-     * @throws IOException
      */
     long size() throws IOException;
 
@@ -97,10 +120,23 @@ public interface FileStore
      * Returns size (in bytes) of the package file that corresponds to the supplied digest value.
      *
      * @param md5 md5 digest to look file for
+     *
      * @return size of the package file in bytes if found; otherwise - 0L
-     * @throws IOException
      */
     long sizeOf( byte[] md5 ) throws IOException;
 
+//    /**
+//     * Returns UUID based filename
+//     *
+//     * @return uuid without - chars
+//     */
+//    String filename();
+//
+//    /**
+//     * Creates Path from given filename
+//     *
+//     * @return absolute path
+//     */
+//    Path createPath( String filename );
 }
 

@@ -2,12 +2,9 @@ package ai.subut.kurjun.repo;
 
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 
@@ -45,7 +42,7 @@ abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepo
 
     protected abstract Logger getLogger();
 
-    
+
     /**
      * Checks if there is a cached package file for the supplied meta data.
      *
@@ -88,39 +85,7 @@ abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepo
      */
     protected byte[] cacheStream( InputStream is )
     {
-        Path target = null;
-        try
-        {
-            target = Files.createTempFile( null, null );
-            Files.copy( is, target, StandardCopyOption.REPLACE_EXISTING );
-            return packageCache.put( target.toFile() );
-        }
-        catch ( IOException ex )
-        {
-            getLogger().error( "Failed to cache package", ex );
-        }
-        finally
-        {
-            if ( target != null )
-            {
-                target.toFile().delete();
-            }
-        }
-        return null;
-    }
-
-    protected File getTempFile()
-    {
-        try
-        {
-            Path target = Files.createTempFile( null, null );
-            return target.toFile();
-        }
-        catch ( IOException e )
-        {
-            e.printStackTrace();
-        }
-        return null;
+        return packageCache.put( is );
     }
 
 
@@ -138,7 +103,9 @@ abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepo
         return !md5.equalsIgnoreCase( getMd5() );
     }
 
-    public abstract  List<SerializableMetadata> getCachedData();
+
+    public abstract List<SerializableMetadata> getCachedData();
+
 
     protected void deleteCache( byte[] md5 )
     {
@@ -151,6 +118,12 @@ abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepo
         {
             getLogger().debug( "Package with md5 {} cannot be found in the cache", Hex.encodeHexString( md5 ) );
         }
+    }
+
+
+    public String filename()
+    {
+        return UUID.randomUUID().toString().replace( "-", "" );
     }
 }
 

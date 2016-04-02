@@ -98,7 +98,7 @@ class FileSystemFileStore implements FileStore
 
             if ( path != null )
             {
-                return new FileInputStream(path);
+                return new FileInputStream( path );
             }
             else
             {
@@ -155,6 +155,57 @@ class FileSystemFileStore implements FileStore
         Files.createDirectories( subDir );
 
         Path target = Files.createTempFile( subDir, filename, "" );
+        byte[] md5 = copyStream( source, target );
+
+        try ( FileDb fileDb = new FileDb( makeDbFilePath() ) )
+        {
+            // check if we already have a file with the calculated md5 checksum, if so just replace the old file
+            String existingPath = fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), String.class );
+            if ( existingPath != null )
+            {
+                Files.move( target, Paths.get( existingPath ), StandardCopyOption.REPLACE_EXISTING );
+                // clean up
+                deleteDirIfEmpty( subDir );
+            }
+            else
+            {
+                fileDb.put( MAP_NAME, Hex.encodeHexString( md5 ), target.toAbsolutePath().toString() );
+            }
+        }
+        return md5;
+    }
+
+
+    public String filename()
+    {
+        return UUID.randomUUID().toString().replace( "-", "" );
+    }
+
+
+    public Path createPath( final String filename )
+    {
+        Path subDir = rootLocation.resolve( filename.substring( 0, 2 ) );
+
+        try
+        {
+            Files.createDirectories( subDir );
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace();
+        }
+        return subDir;
+    }
+
+
+    @Override
+    public byte[] put( final InputStream source ) throws IOException
+    {
+        String filename = filename();
+        Path subDir = createPath( filename );
+        
+        Path target = Files.createTempFile( subDir, filename, "" );
+
         byte[] md5 = copyStream( source, target );
 
         try ( FileDb fileDb = new FileDb( makeDbFilePath() ) )

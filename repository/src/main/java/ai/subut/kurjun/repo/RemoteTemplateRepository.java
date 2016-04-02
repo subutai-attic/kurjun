@@ -74,12 +74,12 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
 
     private String token = null;
 
-    private String md5Sum = "";
+    private String md5Sum = "-1";
     private List<SerializableMetadata> remoteIndexChache = new LinkedList<>();
 
 
     private static final int CONN_TIMEOUT = 3000;
-    private static final int READ_TIMEOUT = 3000;
+    private static final int READ_TIMEOUT = 10000;
     private static final int CONN_TIMEOUT_FOR_URL_CHECK = 200;
 
     private String context;
@@ -114,7 +114,6 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     private void _initCache()
     {
         this.remoteIndexChache = listPackages();
-        this.md5Sum = getMd5();
     }
 
 
@@ -149,7 +148,8 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     @Override
     public SerializableMetadata getPackageInfo( Metadata metadata )
     {
-        WebClient webClient = webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + INFO_PATH, makeParamsMap( metadata ) );
+        WebClient webClient =
+                webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + INFO_PATH, makeParamsMap( metadata ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -179,13 +179,17 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     @Override
     public InputStream getPackageStream( Metadata metadata )
     {
+
         InputStream cachedStream = checkCache( metadata );
+
         if ( cachedStream != null )
         {
             return cachedStream;
         }
 
-        WebClient webClient = webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + GET_PATH, makeParamsMap( metadata ) );
+
+        WebClient webClient =
+                webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + GET_PATH, makeParamsMap( metadata ) );
         webClient.header( "Accept", "application/octet-stream" );
 
         if ( identity != null )
@@ -226,11 +230,14 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     @Override
     public List<SerializableMetadata> listPackages()
     {
+        String newMd5 = getMd5();
 
-        if ( this.md5Sum.equalsIgnoreCase( getMd5() ) )
+        if ( this.md5Sum.equalsIgnoreCase( newMd5 ) && !this.md5Sum.equalsIgnoreCase( "0" ) )
         {
             return this.remoteIndexChache;
         }
+
+
         Map<String, String> params = makeParamsMap( new DefaultMetadata() );
         params.put( "repository", "local" );
 
@@ -251,7 +258,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
                     List<String> items = IOUtils.readLines( ( InputStream ) resp.getEntity() );
 
                     this.remoteIndexChache = toObjectList( items.get( 0 ) );
-
+                    this.md5Sum = newMd5;
                     return this.remoteIndexChache;
                 }
                 catch ( IOException ex )
@@ -260,6 +267,9 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
                 }
             }
         }
+
+        LOGGER.warn( "Response status code: {}, returning empty list", resp != null ? resp.getStatus() : 0 );
+
         return Collections.emptyList();
     }
 
@@ -363,7 +373,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         objectMapper.configure( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false );
         try
         {
-            return objectMapper.readValue( items, new TypeReference<List<DefaultTemplate>>()
+            return objectMapper.readValue( items, new TypeReference<LinkedList<DefaultTemplate>>()
             {
             } );
         }

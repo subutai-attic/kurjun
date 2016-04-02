@@ -16,6 +16,7 @@ import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.LocalRepository;
+import ai.subut.kurjun.model.repository.RemoteRepository;
 import ai.subut.kurjun.model.repository.Repository;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
 
@@ -140,7 +141,7 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
         {
             // local repo shall go first so it shall have lesser value
             int i1 = r1 instanceof LocalRepository ? 0 : 1;
-            int i2 = r2 instanceof LocalRepository ? 0 : 1;
+            int i2 = r2 instanceof RemoteRepository ? 0 : 1;
             return Integer.compare( i1, i2 );
         };
     }

@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +63,8 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
     @Inject
     RepositoryService repositoryService;
+
+    private Map<String, Metadata> filesCached = new ConcurrentHashMap<>();
     //------------------------------
 
     private RepositoryFactory repositoryFactory;
@@ -141,14 +144,36 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         DefaultTemplate defaultTemplate = new DefaultTemplate();
         defaultTemplate.setId( repository, md5 );
 
+        //sleep until ready file is being downloaded
+        while ( get( ( String ) defaultTemplate.getId() ) != null )
+        {
+            try
+            {
+                Thread.sleep( 5000 );
+            }
+            catch ( InterruptedException e )
+            {
+                e.printStackTrace();
+            }
+        }
+
+        //register file as being downloaded
+        put( defaultTemplate );
+
         if ( repository.equalsIgnoreCase( "public" ) )
         {
-            return unifiedTemplateRepository.getPackageStream( defaultTemplate );
+            InputStream inputStream = unifiedTemplateRepository.getPackageStream( defaultTemplate );
+            //file is ready to be served
+            delete( ( String ) defaultTemplate.getId() );
+
+            return inputStream;
         }
         else
         {
             if ( checkRepoPermissions( userSession, repository, toId( md5, repository ), Permission.Read ) )
             {
+                //file is ready to be served
+                delete( ( String ) defaultTemplate.getId() );
                 return repositoryFactory.createLocalTemplate( new KurjunContext( repository ) )
                                         .getPackageStream( defaultTemplate );
             }
@@ -454,11 +479,11 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     }
 
 
-    @Override
-    public List<SerializableMetadata> list()
-    {
-        return null;
-    }
+//    @Override
+//    public List<SerializableMetadata> list()
+//    {
+//        return null;
+//    }
 
 
     @Override
@@ -509,4 +534,22 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
                         RelationObjectType.RepositoryContent.getId(), perm );
     }
     //*******************************************************************
+
+
+    protected void put( DefaultTemplate defaultTemplate )
+    {
+        filesCached.put( ( String ) defaultTemplate.getId(), defaultTemplate );
+    }
+
+
+    protected Metadata get( String id )
+    {
+        return filesCached.get( id );
+    }
+
+
+    protected void delete( String id )
+    {
+        filesCached.remove( id );
+    }
 }

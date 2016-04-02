@@ -74,7 +74,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
     private static final String MD5_PATH = "/md5";
     private static final String DEB_PATH = "deb";
     private static final int CONN_TIMEOUT = 3000;
-    private static final int READ_TIMEOUT = 3000;
+    private static final int READ_TIMEOUT = 10000;
 
     private static final int CONN_TIMEOUT_FOR_URL_CHECK = 200;
     private List<SerializableMetadata> remoteIndexChache = new LinkedList<>();
@@ -134,7 +134,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
     public Set<ReleaseFile> getDistributions()
     {
 
-        WebClient webClient = webClientFactory.makeSecure( this, "/" + DEB_PATH +  RELEASE_PATH, null );
+        WebClient webClient = webClientFactory.makeSecure( this, "/" + DEB_PATH + RELEASE_PATH, null );
 
         Response resp = doGet( webClient );
         if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
@@ -223,7 +223,10 @@ class RemoteAptRepository extends RemoteRepositoryBase
     @Override
     public List<SerializableMetadata> listPackages()
     {
-        if ( this.md5Sum.equalsIgnoreCase( getMd5() ) )
+
+        String newMd5 = getMd5();
+
+        if ( this.md5Sum.equalsIgnoreCase( newMd5 ) )
         {
             return this.remoteIndexChache;
         }
@@ -247,6 +250,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
                 }
             }
         }
+        this.md5Sum = newMd5;
         return result;
     }
 

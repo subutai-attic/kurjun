@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -86,8 +85,8 @@ public class KurjunInitializer
                                 artifactContext
                                         .addRemoteRawRepositories( repositoryFactory.createNonLocalRaw( s, null ) );
 
-                                artifactContext.addRemoteAptRepositories(
-                                        repositoryFactory.createNonLocalApt( new URL( s ) ) );
+//                                artifactContext.addRemoteAptRepositories(
+//                                        repositoryFactory.createNonLocalApt( new URL( s ) ) );
                             }
                         }
                     }

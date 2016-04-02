@@ -72,7 +72,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     private List<SerializableMetadata> remoteIndexChache = new LinkedList<>();
 
     private static final int CONN_TIMEOUT = 3000;
-    private static final int READ_TIMEOUT = 3000;
+    private static final int READ_TIMEOUT = 10000;
     private static final int CONN_TIMEOUT_FOR_URL_CHECK = 200;
 
 
@@ -122,7 +122,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
                 try
                 {
                     String json = IOUtils.toString( ( InputStream ) resp.getEntity() );
-                    return toObject(json);
+                    return toObject( json );
                 }
                 catch ( IOException ex )
                 {
@@ -137,6 +137,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     @Override
     public InputStream getPackageStream( Metadata metadata )
     {
+
         InputStream cachedStream = checkCache( metadata );
         if ( cachedStream != null )
         {
@@ -181,7 +182,10 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     @Override
     public List<SerializableMetadata> listPackages()
     {
-        if ( this.md5Sum.equalsIgnoreCase( getMd5() ) )
+
+        String newMd5 = getMd5();
+
+        if ( this.md5Sum.equalsIgnoreCase( newMd5 ) )
         {
             return this.remoteIndexChache;
         }
@@ -203,6 +207,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
                 try
                 {
                     List<String> items = IOUtils.readLines( ( InputStream ) resp.getEntity() );
+                    this.md5Sum = newMd5;
                     return toObjectList( items.get( 0 ) );
                 }
                 catch ( IOException ex )

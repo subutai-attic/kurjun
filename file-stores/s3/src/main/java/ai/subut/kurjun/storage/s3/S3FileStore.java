@@ -203,6 +203,13 @@ class S3FileStore implements FileStore
 
 
     @Override
+    public byte[] put( final InputStream source ) throws IOException
+    {
+        return new byte[0];
+    }
+
+
+    @Override
     public byte[] put( URL source ) throws IOException
     {
         Objects.requireNonNull( source, "Source URL" );
