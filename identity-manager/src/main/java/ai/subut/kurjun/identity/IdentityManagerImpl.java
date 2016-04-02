@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import org.bouncycastle.openpgp.PGPPublicKey;
+import org.bouncycastle.openpgp.PGPPublicKeyRing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.commons.lang.time.DateUtils;
@@ -41,6 +41,9 @@ public class IdentityManagerImpl implements IdentityManager
 
     private static final Logger LOGGER = LoggerFactory.getLogger( IdentityManagerImpl.class );
     public  static final String PUBLIC_USER_ID = "public-user";
+    public  static final String PUBLIC_USER_NAME = "public";
+    public  static final String SYSTEM_USER_NAME = "subutai";
+
     public  static final int TOKEN_TTL = 180; // minutes
 
     //***************************
@@ -67,7 +70,7 @@ public class IdentityManagerImpl implements IdentityManager
     {
         if ( getUser( PUBLIC_USER_ID ) == null )
         {
-            User publicUser = addUser( PUBLIC_USER_ID, UserType.System.getId() );
+            User publicUser = addUser("public", PUBLIC_USER_ID, UserType.System.getId() );
         }
     }
 
@@ -88,7 +91,7 @@ public class IdentityManagerImpl implements IdentityManager
 
         if(user == null)
         {
-            user = addUser( PUBLIC_USER_ID, UserType.System.getId() );
+            user = addUser("public", PUBLIC_USER_ID, UserType.System.getId() );
         }
 
         return user;
@@ -109,7 +112,7 @@ public class IdentityManagerImpl implements IdentityManager
     {
         try
         {
-            User user = getUser( PUBLIC_USER_ID );
+            User user = getPublicUser();
             UserSession userSession = new DefaultUserSession();
             userSession.setUser( user );
 
@@ -296,7 +299,7 @@ public class IdentityManagerImpl implements IdentityManager
 
             if ( Strings.isNullOrEmpty( fingerprint ) )
             {
-                user = addUser( publicKeyASCII, UserType.RegularOwner.getId() );
+                user = addUser(SYSTEM_USER_NAME, publicKeyASCII, UserType.RegularOwner.getId() );
             }
             else
             {
@@ -307,7 +310,7 @@ public class IdentityManagerImpl implements IdentityManager
                     user.setType( UserType.RegularOwner.getId() );
 
                     //***************************
-                    identityDataService.persistUser( user );
+                    identityDataService.mergeUser( user );
                     //***************************
                 }
                 else
@@ -328,15 +331,15 @@ public class IdentityManagerImpl implements IdentityManager
 
     //********************************************
     @Override
-    public User addUser( String publicKeyASCII )
+    public User addUser( String userName, String publicKeyASCII )
     {
-        return addUser( publicKeyASCII, UserType.Regular.getId() );
+        return addUser(userName, publicKeyASCII, UserType.Regular.getId() );
     }
 
 
     //********************************************
     @Override
-    public User addUser( String publicKeyASCII, int userType )
+    public User addUser( String userName, String publicKeyASCII, int userType )
     {
         User user = null;
 
@@ -345,19 +348,25 @@ public class IdentityManagerImpl implements IdentityManager
             if ( userType == UserType.System.getId() )
             {
                 user = new UserEntity();
+
+                user.setUserName( "public" );
                 user.setKeyFingerprint( publicKeyASCII );
                 user.setType( UserType.System.getId() );
             }
             else
             {
-                if ( !Strings.isNullOrEmpty( publicKeyASCII ) )
+                //*************************
+                if ( checkUserName( userName ) == 0 && !Strings.isNullOrEmpty( publicKeyASCII ) )
                 {
-                    PGPPublicKey pubKey = securityManager.readPGPKey( publicKeyASCII );
+                    PGPPublicKeyRing pubKeyRing = securityManager.readPGPKeyRing( publicKeyASCII );
 
                     user = new UserEntity(  );
-                    user.setKeyFingerprint( PGPKeyUtil.getFingerprint( pubKey.getFingerprint()) );
-                    user.setKeyData( publicKeyASCII );
-                    user.setEmailAddress( securityManager.parseEmailAddress( pubKey ) );
+
+                    user.setUserName( userName );
+                    user.setKeyFingerprint( PGPKeyUtil.getFingerprint( pubKeyRing.getPublicKey().getFingerprint() ) );
+                    user.setKeyData( pubKeyRing.getEncoded() );
+                    user.setEmailAddress( securityManager.parseEmailAddress( pubKeyRing.getPublicKey() ) );
+                    user.setSignature( UUID.randomUUID().toString() );
 
                     user.setType( UserType.Regular.getId() );
                 }
@@ -440,6 +449,26 @@ public class IdentityManagerImpl implements IdentityManager
     public boolean hasPermmission( User user, RelationObject relationObject, Permission permission )
     {
         return true;
+    }
+    //********************************************
+
+
+    //********************************************
+    @Override
+    public int checkUserName( String userName )
+    {
+        if(Strings.isNullOrEmpty( userName ))
+            return 1;
+        else
+        {
+            if(userName.length()<3)
+                return 2;
+            else if(userName.toLowerCase().equals( "public" ) || userName.toLowerCase().equals( "admin" ))
+                return 3;
+            else
+                return 0;
+
+        }
     }
     //********************************************
 }

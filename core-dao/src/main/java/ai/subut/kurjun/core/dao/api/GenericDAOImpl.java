@@ -79,11 +79,11 @@ public abstract class GenericDAOImpl<T> implements GenericDAO<T>
 
 
     @Transactional
-    public List<T> findAll( Class<T>  clazz) throws DAOException
+    public List<T> findAll( String entityName) throws DAOException
     {
         try
         {
-            return entityManagerProvider.get().createQuery( "Select t from " + clazz.getClass().getName() + " t" )
+            return entityManagerProvider.get().createQuery( "Select t from " + entityName + " t" )
                                       .getResultList();
         }
         catch ( Exception e )

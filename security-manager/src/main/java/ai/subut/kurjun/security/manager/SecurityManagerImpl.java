@@ -64,6 +64,7 @@ public class SecurityManagerImpl implements SecurityManager
         return PGPKeyUtil.parseEmailAddress(pubKey);
     }
 
+
     /*******************************************/
     @Override
     public PGPPublicKey readPGPKey( InputStream input ) throws PGPException
@@ -79,12 +80,22 @@ public class SecurityManagerImpl implements SecurityManager
         return PGPKeyUtil.readPublicKey ( key );
     }
 
+
+    /*******************************************/
+    @Override
+    public PGPPublicKeyRing readPGPKeyRing( String key ) throws PGPException
+    {
+        return PGPKeyUtil.readPublicKeyRing( key );
+    }
+
+
     /*******************************************/
     @Override
     public String exportPGPKeyAsASCII( PGPPublicKey key ) throws PGPException
     {
         return PGPKeyUtil.exportAscii( key );
     }
+
 
     /********** JWT Utils ************/
     /*******************************************/
@@ -142,6 +153,33 @@ public class SecurityManagerImpl implements SecurityManager
     {
         try
         {
+            byte[] exractedContent = PGPEncryptionUtil.extractContentFromClearSign( content.getBytes() );
+
+            if(!content.getBytes().equals( exractedContent ))
+            {
+                return false;
+            }
+
+            signedMessage = signedMessage.trim();
+
+            return PGPEncryptionUtil.verifyClearSign( signedMessage.getBytes(), pubKeyRing );
+        }
+        catch ( Exception e )
+        {
+            LOGGER.error( " ******* Error in SecurityManager" ,e );
+            return false;
+        }
+    }
+
+
+    /*******************************************/
+    @Override
+    public boolean verifyPGPSignatureAndContent( String signedMessage,String content, byte [] keyData )
+    {
+        try
+        {
+            PGPPublicKeyRing pubKeyRing = PGPKeyUtil.readPublicKeyRing( keyData );
+
             byte[] exractedContent = PGPEncryptionUtil.extractContentFromClearSign( content.getBytes() );
 
             if(!content.getBytes().equals( exractedContent ))

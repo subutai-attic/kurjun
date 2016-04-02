@@ -9,6 +9,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.core.dao.api.DAOException;
+import ai.subut.kurjun.core.dao.model.identity.UserEntity;
 import ai.subut.kurjun.model.identity.User;
 
 
@@ -26,6 +27,7 @@ public class IdentityDataServiceImpl implements IdentityDataService
         this.userDAO = userDAO;
     }
 
+
     //*****************************
     @Override
     public void persistUser( User user )
@@ -34,6 +36,22 @@ public class IdentityDataServiceImpl implements IdentityDataService
         {
             if(user != null)
                 userDAO.persist( user );
+        }
+        catch ( DAOException e )
+        {
+
+        }
+    }
+
+
+    //*****************************
+    @Override
+    public void mergeUser( User user )
+    {
+        try
+        {
+            if(user != null)
+                userDAO.merge( user );
         }
         catch ( DAOException e )
         {
@@ -66,7 +84,7 @@ public class IdentityDataServiceImpl implements IdentityDataService
     {
         try
         {
-            return userDAO.findAll( User.class );
+            return userDAO.findAll( "UserEntity");
         }
         catch ( DAOException e )
         {

@@ -31,6 +31,7 @@
             <thead>
             <tr>
                 <th>email</th>
+                <th>UserName</th>
                 <th>fingerprint</th>
                 <th>Auth ID</th>
             </tr>
@@ -40,6 +41,7 @@
                 <#list users as u >
                 <tr>
                     <td><#if u.emailAddress??>${u.emailAddress}</#if></td>
+                    <td>${u.userName}</td>
                     <td>${u.keyFingerprint}</td>
                     <td>${u.signature}</td>
                 </tr>

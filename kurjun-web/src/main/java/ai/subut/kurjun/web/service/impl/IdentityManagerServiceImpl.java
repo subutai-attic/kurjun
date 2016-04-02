@@ -64,9 +64,9 @@ public class IdentityManagerServiceImpl implements IdentityManagerService
 
     //*************************************
     @Override
-    public User addUser( String publicKeyASCII )
+    public User addUser(String userName, String publicKeyASCII )
     {
-        return identityManager.addUser( publicKeyASCII );
+        return identityManager.addUser(userName, publicKeyASCII );
     }
 
 

@@ -14,6 +14,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -50,8 +51,9 @@ public class UserEntity implements User, Serializable
     @Column( name = "signature")
     private String signature = "";
 
-    @Column( name = "key_data")
-    private String keyData = "";
+    @Lob
+    @Column( name = "key_data" )
+    private byte[] keyData;
 
     @Column( name = "type")
     private int type = 2;
@@ -154,7 +156,7 @@ public class UserEntity implements User, Serializable
 
     //*************************
     @Override
-    public String getKeyData()
+    public byte[] getKeyData()
     {
         return keyData;
     }
@@ -162,7 +164,7 @@ public class UserEntity implements User, Serializable
 
     //*************************
     @Override
-    public void setKeyData( final String keyData )
+    public void setKeyData( final byte[] keyData )
     {
         this.keyData = keyData;
     }

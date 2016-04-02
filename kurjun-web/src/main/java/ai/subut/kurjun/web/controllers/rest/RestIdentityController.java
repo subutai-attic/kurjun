@@ -74,11 +74,11 @@ public class RestIdentityController extends BaseController
 
 
     //*************************
-    public Result addUser( @Param( "key" ) String publicKey )
+    public Result addUser( @Param( "username" ) String userName, @Param( "key" ) String publicKey )
     {
         try
         {
-            User user = identityManagerService.addUser( publicKey );
+            User user = identityManagerService.addUser( userName,publicKey );
 
             if ( user != null )
             {
