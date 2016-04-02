@@ -1,6 +1,7 @@
 package ai.subut.kurjun.core.dao.model.metadata;
 
 
+import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -8,13 +9,18 @@ import java.util.Objects;
 /**
  * Wrapper class of composite template id for convenience
  */
-public class TemplateId
+public class TemplateId implements Serializable
 {
     private String md5;
     private String ownerFprint;
     private boolean certified;
 
     private static final String SEPARATOR = ".";
+
+
+    public TemplateId()
+    {
+    }
 
 
     public TemplateId( String ownerFprint, String md5 )

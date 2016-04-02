@@ -1,4 +1,4 @@
-package ai.subut.kurjun.core.dao.api;
+package ai.subut.kurjun.core.dao.service;
 
 
 import com.google.inject.Inject;

@@ -5,13 +5,11 @@ import java.util.Properties;
 
 import javax.inject.Singleton;
 
-import ai.subut.kurjun.core.dao.api.GenericDAO;
-import ai.subut.kurjun.core.dao.api.GenericDAOImpl;
-import ai.subut.kurjun.core.dao.api.KurjunDAOModule;
-import ai.subut.kurjun.core.dao.api.identity.IdentityDataService;
-import ai.subut.kurjun.core.dao.api.identity.IdentityDataServiceImpl;
-import ai.subut.kurjun.core.dao.api.identity.RelationDataService;
-import ai.subut.kurjun.core.dao.api.identity.RelationDataServiceImpl;
+import ai.subut.kurjun.core.dao.service.KurjunDAOModule;
+import ai.subut.kurjun.core.dao.service.identity.IdentityDataService;
+import ai.subut.kurjun.core.dao.service.identity.IdentityDataServiceImpl;
+import ai.subut.kurjun.core.dao.service.identity.RelationDataService;
+import ai.subut.kurjun.core.dao.service.identity.RelationDataServiceImpl;
 import ai.subut.kurjun.identity.KurjunIdentityModule;
 import ai.subut.kurjun.web.service.*;
 import ai.subut.kurjun.web.service.impl.*;

@@ -42,7 +42,7 @@ public class RelationEntity implements Relation, Serializable
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY )
     @Column( name = "id" )
-    private long id;
+    private Long id;
 
     @Column( name = "source_object" )
     @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER , targetEntity = RelationObjectEntity.class)
@@ -71,14 +71,14 @@ public class RelationEntity implements Relation, Serializable
 
 
     @Override
-    public long getId()
+    public Long getId()
     {
         return id;
     }
 
 
     @Override
-    public void setId( final long id )
+    public void setId( final Long id )
     {
         this.id = id;
     }

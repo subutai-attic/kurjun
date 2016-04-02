@@ -24,8 +24,6 @@ public class RepositoryServiceImpl implements RepositoryService
 
     @Inject KurjunProperties kurjunProperties;
 
-    @Inject
-    private RelationManagerService relationManagerService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger( RepositoryService.class );
 
@@ -57,9 +55,6 @@ public class RepositoryServiceImpl implements RepositoryService
     public List<String> getRepositoryList()
     {
         List<String> repoList = new ArrayList<>();
-        relationManagerService.getAllRelations().parallelStream().filter(
-                r -> RelationObjectType.RepositoryContent.getId() == r.getTrustObject().getType()
-        ).forEach( r -> repoList.add( r.getTrustObject().getId() ));
 
         return repoList;
     }

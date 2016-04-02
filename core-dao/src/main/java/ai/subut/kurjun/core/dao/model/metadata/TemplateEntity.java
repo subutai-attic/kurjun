@@ -5,8 +5,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 
 import org.apache.commons.codec.binary.Hex;
@@ -20,9 +23,11 @@ import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 
 @Entity
 @Table( name = TemplateEntity.TABLE_NAME )
+@Access( AccessType.FIELD )
+//@IdClass(TemplatePk.class)
 public class TemplateEntity implements SerializableMetadata, SubutaiTemplateMetadata
 {
-    public static final String TABLE_NAME = "";
+    public static final String TABLE_NAME = "template";
 
 
     @Column( name = "md5Sum" )

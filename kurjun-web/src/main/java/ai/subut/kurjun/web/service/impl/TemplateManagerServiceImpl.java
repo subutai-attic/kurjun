@@ -22,6 +22,7 @@ import com.google.inject.Singleton;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
+import ai.subut.kurjun.identity.service.RelationManager;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.subutai.TemplateId;
 import ai.subut.kurjun.model.identity.Permission;
@@ -36,7 +37,6 @@ import ai.subut.kurjun.repo.LocalTemplateRepository;
 import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.web.context.ArtifactContext;
 import ai.subut.kurjun.web.service.IdentityManagerService;
-import ai.subut.kurjun.web.service.RelationManagerService;
 import ai.subut.kurjun.web.service.RepositoryService;
 import ai.subut.kurjun.web.service.TemplateManagerService;
 import ai.subut.kurjun.web.utils.Utils;
@@ -58,10 +58,8 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     IdentityManagerService identityManagerService;
 
     @Inject
-    RelationManagerService relationManagerService;
+    RelationManager relationManager;
 
-    @Inject
-    RepositoryService repositoryService;
     //------------------------------
 
     private RepositoryFactory repositoryFactory;
@@ -196,8 +194,8 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         }
 
         // *******CheckRepoOwner ***************
-        relationManagerService
-                .checkRelationOwner( userSession, repository, RelationObjectType.RepositoryTemplate.getId() );
+        relationManager.setObjectOwner( userSession.getUser(), repository,
+                RelationObjectType.RepositoryTemplate.getId() );
         //**************************************
 
         //***** Check permissions (WRITE) *****************
@@ -214,9 +212,9 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
                     String templateId = repository + "." + Hex.encodeHexString( metadata.getMd5Sum() );
 
                     //***** Build Relation ****************
-                    relationManagerService.buildTrustRelation( userSession.getUser(), userSession.getUser(), templateId,
+                    relationManager.buildTrustRelation( userSession.getUser(), userSession.getUser(), templateId,
                             RelationObjectType.RepositoryContent.getId(),
-                            relationManagerService.buildPermissions( 4 ) );
+                            relationManager.buildPermissions( 4 ) );
                     //*************************************
 
                     return templateId;
@@ -242,8 +240,8 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         }
 
         // *******CheckRepoOwner ***************
-        relationManagerService
-                .checkRelationOwner( userSession, repository, RelationObjectType.RepositoryTemplate.getId() );
+        relationManager
+                .setObjectOwner( userSession.getUser(), repository, RelationObjectType.RepositoryTemplate.getId() );
         //**************************************
 
         //***** Check permissions (WRITE) *****************
@@ -259,9 +257,9 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
                     String templateId = toId( metadata != null ? metadata.getMd5Sum() : new byte[0], repository );
 
                     //***** Build Relation ****************
-                    relationManagerService.buildTrustRelation( userSession.getUser(), userSession.getUser(), templateId,
+                    relationManager.buildTrustRelation( userSession.getUser(), userSession.getUser(), templateId,
                             RelationObjectType.RepositoryContent.getId(),
-                            relationManagerService.buildPermissions( 4 ) );
+                            relationManager.buildPermissions( 4 ) );
                     //*************************************
                     return templateId;
                 }
@@ -280,8 +278,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
             LocalTemplateRepository _repository = ( LocalTemplateRepository ) getRepo( tid.getOwnerFprint() );
 
             // remove Relation
-            relationManagerService
-                    .removeRelationsByTrustObject( tid.get(), RelationObjectType.RepositoryContent.getId() );
+            relationManager.removeRelationsByTrustObject( tid.get(), RelationObjectType.RepositoryContent.getId() );
 
             boolean success = _repository.delete( tid.get(), Utils.MD5.toByteArray( tid.getMd5() ) );
 
@@ -504,8 +501,8 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     //*******************************************************************
     private boolean checkRepoPermissions( UserSession userSession, String repoId, String contentId, Permission perm )
     {
-        return relationManagerService
-                .checkRepoPermissions( userSession, repoId, RelationObjectType.RepositoryTemplate.getId(), contentId,
+        return relationManager
+                .checkObjectPermissions( userSession.getUser(), repoId, RelationObjectType.RepositoryTemplate.getId(), contentId,
                         RelationObjectType.RepositoryContent.getId(), perm );
     }
     //*******************************************************************

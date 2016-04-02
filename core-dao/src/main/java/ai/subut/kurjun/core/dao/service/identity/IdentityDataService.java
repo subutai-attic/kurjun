@@ -1,4 +1,4 @@
-package ai.subut.kurjun.core.dao.api.identity;
+package ai.subut.kurjun.core.dao.service.identity;
 
 
 import java.util.List;
@@ -16,10 +16,12 @@ public interface IdentityDataService
 
 
     //*****************************
-    void mergeUser( User user );
+    User mergeUser( User user );
+
 
     //*****************************
     User getUser( String fingerprint );
+
 
     //*****************************
     List<User> getAllUsers();

@@ -19,55 +19,59 @@ public interface RelationManager
     //***************************
     Set<Permission> buildPermissions( int permLevel );
 
+
     //***************************
     Set<Permission> buildPermissionsAllowAll();
+
 
     //***************************
     Set<Permission> buildPermissionsAllowReadWrite();
 
+
     //***************************
     Set<Permission> buildPermissionsDenyAll();
 
+
     //***************************
     Set<Permission> buildPermissionsDenyDelete();
+
 
     //***************************
     RelationObject createRelationObject( String objectId, int objectType );
 
 
     //***************************
-    Relation buildTrustRelation( User user, String targetObjectId, int targetObjectType,
-                                 String trustObjectId, int trustObjectType,
-                                 Set<Permission> permissions );
+    Relation buildTrustRelation( User user, String targetObjectId, int targetObjectType, String trustObjectId,
+                                 int trustObjectType, Set<Permission> permissions );
 
     //***************************
-    Relation buildTrustRelation( User sourceUser, User targetUser, String trustObjectId,
-                                 int trustObjectType, Set<Permission> permissions );
+    Relation buildTrustRelation( User sourceUser, User targetUser, String trustObjectId, int trustObjectType,
+                                 Set<Permission> permissions );
 
     //***************************
     Relation buildTrustRelation( User sourceUser, User targetUser, RelationObject trustObject,
                                  Set<Permission> permissions );
 
     //***************************
+    Relation buildTrustRelation( User sourceUser, RelationObject targetObject, RelationObject trustObject,
+                                 Set<Permission> permissions );
+
+    //***************************
     Relation buildTrustRelation( String sourceObjectId, int sourceObjectType, String targetObjectId,
-                                 int targetObjectType, String trustObjectId,
-                                 int trustObjectType, Set<Permission> permissions );
+                                 int targetObjectType, String trustObjectId, int trustObjectType,
+                                 Set<Permission> permissions );
 
     //***************************
     Relation buildTrustRelation( RelationObject source, RelationObject target, RelationObject trustObject,
                                  Set<Permission> permissions );
 
 
-    //***************************
-    Relation getRelation( String relationId );
+    //********************************************
+    Relation getRelation( long relationId );
 
 
     //********************************************
     List<Relation> getAllRelations();
-
-
-    //********************************************
-    Relation getRelation( String sourceObjectId, String targetObjectId, String trustedObjectId, int objectId );
 
 
     //***************************
@@ -76,6 +80,7 @@ public interface RelationManager
 
     //***************************
     List<Relation> getRelationsByObject( String trustObjectId, int trustObjectType );
+
 
     //***************************
     Relation getObjectOwner( String trustObjectId, int trustObjectType );
@@ -90,7 +95,7 @@ public interface RelationManager
 
 
     //***************************
-    void removeRelation( String relationId );
+    void removeRelation( long relationId );
 
 
     //***************************
@@ -99,4 +104,13 @@ public interface RelationManager
 
     //***************************
     void removeRelationsByTrustObject( String trustObjectId, int trustObjectType );
+
+
+    //***************************
+    int setObjectOwner( User owner, String objectId, int objectType );
+
+
+    //*******************************************************************
+    boolean checkObjectPermissions( User user, String parentId, int parentType, String childId, int childType,
+                                    Permission perm );
 }

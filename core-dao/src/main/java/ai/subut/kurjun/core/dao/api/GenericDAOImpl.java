@@ -78,7 +78,6 @@ public abstract class GenericDAOImpl<T> implements GenericDAO<T>
     }
 
 
-    @Transactional
     public List<T> findAll( String entityName) throws DAOException
     {
         try

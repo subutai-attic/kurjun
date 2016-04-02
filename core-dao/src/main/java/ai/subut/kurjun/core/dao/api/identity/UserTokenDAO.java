@@ -3,8 +3,6 @@ package ai.subut.kurjun.core.dao.api.identity;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.inject.persist.Transactional;
-
 import ai.subut.kurjun.core.dao.api.DAOException;
 import ai.subut.kurjun.core.dao.api.GenericDAOImpl;
 import ai.subut.kurjun.core.dao.model.identity.UserEntity;
@@ -24,7 +22,6 @@ public class UserTokenDAO  extends GenericDAOImpl<UserToken>
         super();
     }
 
-    @Transactional
     public User find(String token) throws DAOException
     {
         try

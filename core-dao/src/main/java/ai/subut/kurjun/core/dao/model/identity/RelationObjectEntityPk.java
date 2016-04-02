@@ -18,6 +18,12 @@ public class RelationObjectEntityPk implements Serializable
     {
     }
 
+    public RelationObjectEntityPk(String id, int type)
+    {
+        this.id = id;
+        this.type = type;
+    }
+
 
     private String getUniqId()
     {

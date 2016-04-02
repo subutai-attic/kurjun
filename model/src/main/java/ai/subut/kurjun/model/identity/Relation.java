@@ -9,13 +9,13 @@ import java.util.Set;
  */
 public interface Relation
 {
-    void setId( long id );
+    void setId( Long id );
 
     Set<Permission> getPermissions();
 
     void setPermissions( Set<Permission> permissions );
 
-    long getId();
+    Long getId();
 
     RelationObject getSource();
 

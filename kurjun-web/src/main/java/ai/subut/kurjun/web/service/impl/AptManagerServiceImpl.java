@@ -23,6 +23,7 @@ import com.google.inject.Singleton;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
+import ai.subut.kurjun.identity.service.RelationManager;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
 import ai.subut.kurjun.model.identity.Permission;
@@ -73,7 +74,7 @@ public class AptManagerServiceImpl implements AptManagerService
     @Inject
     IdentityManagerService identityManagerService;
     @Inject
-    RelationManagerService relationManagerService;
+    RelationManager relationManager;
 
 
     @Inject
@@ -264,8 +265,8 @@ public class AptManagerServiceImpl implements AptManagerService
         try
         {
             // *******CheckRepoOwner ***************
-            relationManagerService
-                    .checkRelationOwner( userSession, REPO_NAME, RelationObjectType.RepositoryApt.getId() );
+            relationManager.setObjectOwner( userSession.getUser(), REPO_NAME, RelationObjectType.RepositoryApt.getId
+                    () );
             //**************************************
 
             //***** Check permissions (WRITE) *****************
@@ -275,10 +276,10 @@ public class AptManagerServiceImpl implements AptManagerService
                 if ( meta != null )
                 {
                     //***** Build Relation ****************
-                    relationManagerService
+                    relationManager
                             .buildTrustRelation( userSession.getUser(), userSession.getUser(), meta.getId().toString(),
                                     RelationObjectType.RepositoryContent.getId(),
-                                    relationManagerService.buildPermissions( 4 ) );
+                                    relationManager.buildPermissions( 4 ) );
                     //*************************************
 
                     return new URI( null, null, "/info", "md5=" + Hex.encodeHexString( meta.getMd5Sum() ), null );
@@ -328,7 +329,7 @@ public class AptManagerServiceImpl implements AptManagerService
             if ( checkRepoPermissions( userSession, REPO_NAME, id, Permission.Delete ) )
             {
                 // remove relation
-                relationManagerService.removeRelationsByTrustObject( id, RelationObjectType.RepositoryContent.getId() );
+                relationManager.removeRelationsByTrustObject( id, RelationObjectType.RepositoryContent.getId() );
 
                 return localRepository.delete( md5 );
             }
@@ -450,8 +451,8 @@ public class AptManagerServiceImpl implements AptManagerService
     //*******************************************************************
     private boolean checkRepoPermissions(UserSession userSession, String repoId, String contentId, Permission perm )
     {
-        return relationManagerService
-                .checkRepoPermissions( userSession, repoId, RelationObjectType.RepositoryApt.getId(), contentId,
+        return relationManager
+                .checkObjectPermissions( userSession.getUser(), repoId, RelationObjectType.RepositoryApt.getId(), contentId,
                         RelationObjectType.RepositoryContent.getId(), perm );
     }
     //*******************************************************************
