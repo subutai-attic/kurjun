@@ -1,4 +1,4 @@
-package ai.subut.kurjun.identity;
+package ai.subut.kurjun.core.dao.api.identity;
 
 
 import java.util.Collections;
@@ -6,24 +6,24 @@ import java.util.List;
 
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import ai.subut.kurjun.core.dao.api.DAOException;
-import ai.subut.kurjun.core.dao.api.identity.UserDAO;
-import ai.subut.kurjun.identity.service.IdentityDataService;
 import ai.subut.kurjun.model.identity.User;
 
 
 /**
  *
  */
+@Singleton
 public class IdentityDataServiceImpl implements IdentityDataService
 {
+    private UserDAO userDAO;
+
     @Inject
-    UserDAO userDAO;
-
-
-    public IdentityDataServiceImpl()
+    public IdentityDataServiceImpl(UserDAO userDAO)
     {
+        this.userDAO = userDAO;
     }
 
     //*****************************
@@ -53,7 +53,7 @@ public class IdentityDataServiceImpl implements IdentityDataService
             else
                 return null;
         }
-        catch ( DAOException e )
+        catch ( Exception e )
         {
             return null;
         }

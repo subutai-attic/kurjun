@@ -1,4 +1,4 @@
-package ai.subut.kurjun.identity.service;
+package ai.subut.kurjun.core.dao.api.identity;
 
 
 import java.util.List;

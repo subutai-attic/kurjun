@@ -17,4 +17,5 @@ public class KurjunJPAInitializer
     {
         service.start();
     }
+
 }
