@@ -1,6 +1,7 @@
 package ai.subut.kurjun.core.dao.model.metadata;
 
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,6 +11,8 @@ import javax.persistence.Table;
 
 import org.apache.commons.codec.binary.Hex;
 
+import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
+import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
@@ -79,13 +82,13 @@ public class TemplateEntity implements SerializableMetadata, SubutaiTemplateMeta
     @Override
     public byte[] getMd5Sum()
     {
-        return md5Sum;
+        return md5Sum != null ? Arrays.copyOf( md5Sum, md5Sum.length ) : null;
     }
 
 
     public void setMd5Sum( final byte[] md5Sum )
     {
-        this.md5Sum = md5Sum;
+        this.md5Sum = md5Sum != null ? Arrays.copyOf( md5Sum, md5Sum.length ) : null;
     }
 
 
@@ -121,16 +124,16 @@ public class TemplateEntity implements SerializableMetadata, SubutaiTemplateMeta
     }
 
 
-    @Override
-    public String getPackage()
-    {
-        return null;
-    }
-
-
     public void setParent( final String parent )
     {
         this.parent = parent;
+    }
+
+
+    @Override
+    public String getPackage()
+    {
+        return packageName;
     }
 
 
@@ -157,7 +160,7 @@ public class TemplateEntity implements SerializableMetadata, SubutaiTemplateMeta
         this.architecture = architecture;
     }
 
-
+    @Override
     public String getConfigContents()
     {
         return configContents;
@@ -170,6 +173,7 @@ public class TemplateEntity implements SerializableMetadata, SubutaiTemplateMeta
     }
 
 
+    @Override
     public String getPackagesContents()
     {
         return packagesContents;
@@ -182,6 +186,7 @@ public class TemplateEntity implements SerializableMetadata, SubutaiTemplateMeta
     }
 
 
+    @Override
     public String getOwnerFprint()
     {
         return ownerFprint;
@@ -194,6 +199,7 @@ public class TemplateEntity implements SerializableMetadata, SubutaiTemplateMeta
     }
 
 
+    @Override
     public long getSize()
     {
         return size;
@@ -221,6 +227,26 @@ public class TemplateEntity implements SerializableMetadata, SubutaiTemplateMeta
     @Override
     public String serialize()
     {
-        return null;
+        return MetadataUtils.JSON.toJson( this );
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int hash = 3;
+        hash = 17 * hash + Arrays.hashCode( this.md5Sum );
+        return hash;
+    }
+
+
+    @Override
+    public boolean equals( Object obj )
+    {
+        if ( obj instanceof TemplateEntity )
+        {
+            TemplateEntity other = ( TemplateEntity ) obj;
+            return Arrays.equals( this.md5Sum, other.md5Sum );
+        }
+        return false;
     }
 }
