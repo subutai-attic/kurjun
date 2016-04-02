@@ -15,14 +15,13 @@ import ai.subut.kurjun.model.identity.*;
 import ai.subut.kurjun.web.service.RelationManagerService;
 import ninja.params.Param;
 import ninja.params.Params;
-import ninja.params.PathParam;
+import ninja.session.FlashScope;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.apache.commons.lang.StringUtils;
 
 
 /**
@@ -43,22 +42,52 @@ public class RestRelationController extends BaseController
     private IdentityManagerService identityManagerService;
 
 
+    //*************************************************
     public Result getAllRelations(Context context)
     {
         //************************************
         UserSession userSession = (UserSession ) context.getAttribute( "USER_SESSION" );
         //************************************
 
-        if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
+        List<Relation> relations = relationManagerService.getAllRelations(userSession);
+        return Results.ok().render( relations ).json();
+
+    }
+
+
+    //*************************************************
+    public Result addTrustRelation( @Param( "target_obj_id" ) String sourceObjId,
+                                    @Param( "target_obj_type" ) int sourceObjType,
+                                    @Param( "trust_obj_id" ) String trustObjId,
+                                    @Param( "trust_obj_type" ) int trustObjType,
+                                    @Params( "permission" ) String[] permissions, Context context)
+    {
+        //************************************
+        UserSession userSession = (UserSession ) context.getAttribute( "USER_SESSION" );
+        //************************************
+
+        Set<Permission> objectPermissions = new HashSet<>();
+        Arrays.asList( permissions ).forEach( p -> objectPermissions.add( Permission.valueOf( p ) ) );
+
+        int result = relationManagerService
+                .addTrustRelation( userSession, sourceObjId, sourceObjType, trustObjId, trustObjType,
+                        objectPermissions );
+
+
+        if ( result == 0 )
         {
-            return null;
+            return Results.ok();
+        }
+        else if ( result == 2 )
+        {
+            return Results.forbidden();
         }
         else
         {
-            List<Relation> relations = relationManagerService.getAllRelations();
-            return Results.ok().render( relations ).json();
+            return Results.internalServerError();
         }
     }
+
 
     /*
     public Result getRelationsByOwner( @PathParam( "fingerprint" ) String fingerprint )

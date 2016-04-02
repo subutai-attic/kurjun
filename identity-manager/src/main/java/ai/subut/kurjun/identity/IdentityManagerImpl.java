@@ -13,7 +13,7 @@ import org.apache.commons.lang.time.DateUtils;
 
 import ai.subut.kurjun.core.dao.model.identity.UserEntity;
 import ai.subut.kurjun.core.dao.model.identity.UserTokenEntity;
-import ai.subut.kurjun.core.dao.api.identity.IdentityDataService;
+import ai.subut.kurjun.core.dao.service.identity.IdentityDataService;
 import ai.subut.kurjun.identity.service.IdentityManager;
 
 import com.google.common.base.Strings;
@@ -184,7 +184,7 @@ public class IdentityManagerImpl implements IdentityManager
                 user.setUserToken( uToken );
 
                 //*************
-                //identityDataService.persistUser( user );
+                identityDataService.mergeUser(  user );
                 //*************
 
                 //*****************************************

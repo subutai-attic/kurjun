@@ -8,25 +8,18 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.identity.service.RelationManager;
-import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
-import ai.subut.kurjun.metadata.common.subutai.TemplateId;
-import ai.subut.kurjun.metadata.common.utils.IdValidators;
 import ai.subut.kurjun.model.identity.Permission;
 import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.model.identity.RelationObject;
-import ai.subut.kurjun.model.identity.RelationObjectType;
-import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.web.controllers.rest.RestIdentityController;
 import ai.subut.kurjun.web.service.IdentityManagerService;
 import ai.subut.kurjun.web.service.RelationManagerService;
-import ai.subut.kurjun.web.service.RepositoryService;
-import ai.subut.kurjun.web.service.TemplateManagerService;
+import ai.subut.kurjun.common.ErrorCode;
 
 
 /**
@@ -44,204 +37,73 @@ public class RelationManagerServiceImpl implements RelationManagerService
     @Inject
     private IdentityManagerService identityManagerService;
 
-    @Inject
-    private TemplateManagerService templateManagerService;
-
-    @Inject
-    private RepositoryService repositoryService;
-
-
 
     //*************************************
     @Override
-    public List<Relation> getAllRelations()
+    public List<Relation> getAllRelations( UserSession uSession )
     {
-        //if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
-        //{
-         //return null;
-        //}
-        //else
-        //{
+        if ( !uSession.getUser().equals( identityManagerService.getPublicUser() ) )
+        {
             return relationManager.getAllRelations();
-        //}
+        }
+        else
+        {
+            return Collections.emptyList();
+        }
     }
 
-
     //*************************************
     @Override
-    public void removeRelation( Relation relation )
+    public Relation getRelation( UserSession uSession , long relationId )
     {
-        //if ( !userSession.getUser().equals( identityManagerService.getPublicUser() ) )
+        if ( !uSession.getUser().equals( identityManagerService.getPublicUser() ) )
         {
-            //relationManager.removeRelation( relation.getId() );
+            return relationManager.getRelation( relationId );
+        }
+        else
+        {
+            return null;
         }
     }
 
 
     //*************************************
     @Override
-    public void removeRelationsByTrustObject( String trustObjectId, int trustObjectType)
+    public void removeRelation( UserSession uSession, Relation relation )
     {
-        relationManager.removeRelationsByTrustObject( trustObjectId, trustObjectType );
-    }
-
-
-    //*************************************
-    @Override
-    public Relation addTrustRelation( RelationObject source, RelationObject target, RelationObject trustObject,
-                                      Set<Permission> permissions )
-    {
-        return relationManager.buildTrustRelation( source, target, trustObject, permissions );
-    }
-
-
-    //*************************************
-    @Override
-    public List<Relation> getTrustRelationsBySource( RelationObject sourceObject )
-    {
-        return relationManager.getRelationsBySource( sourceObject );
-    }
-
-
-    //*************************************
-    @Override
-    public List<Relation> getTrustRelationsByTarget( RelationObject targetObject )
-    {
-        return relationManager.getRelationsByTarget( targetObject );
-    }
-
-
-    //*************************************
-    @Override
-    public List<Relation> getTrustRelationsByObject( RelationObject trustObject )
-    {
-        return relationManager.getRelationsByObject( trustObject );
-    }
-
-
-    //*************************************
-    @Override
-    public Relation getRelation( String sourceId, String targetId , String trustObjectId , int trustObjectType)
-    {
-        return relationManager.getRelation( sourceId, targetId, trustObjectId, trustObjectType );
-    }
-
-
-    //*************************************
-    @Override
-    public Relation getRelation( String relationId )
-    {
-        return relationManager.getRelation( relationId );
-    }
-
-
-    //*************************************
-    @Override
-    public List<Relation> getRelationsByObject( String trustObjectId, int trustObjectType )
-    {
-        return relationManager.getRelationsByObject( trustObjectId, trustObjectType );
-    }
-
-
-    //***************************
-    @Override
-    public Relation getObjectOwner( String trustObjectId, int trustObjectType )
-    {
-        return relationManager.getObjectOwner( trustObjectId, trustObjectType );
-    }
-
-
-
-    //***************************
-    @Override
-    public Relation buildTrustRelation( User sourceUser, User targetUser, String trustObjectId, int trustObjectType,
-                                        Set<Permission> permissions )
-    {
-        return relationManager.buildTrustRelation( sourceUser, targetUser, trustObjectId,trustObjectType, permissions );
-    }
-
-
-    //***************************
-    @Override
-    public Set<Permission> buildPermissions( int permLevel )
-    {
-        return relationManager.buildPermissions( permLevel );
-    }
-
-
-    //***************************
-    @Override
-    public void checkRelationOwner( UserSession userSession, String objectId, int objectType )
-    {
-        Relation relation = null;
-        User owner = null;
-        User pubus = null;
-
-        relation = getObjectOwner( objectId, objectType );
-
-        if ( relation == null )
+        if ( !uSession.getUser().equals( identityManagerService.getPublicUser() ) )
         {
-            if ( objectId.equals( "public" ) || objectId.equals( "raw" ) || objectId.equals( "vapt" ))
-            {
-                owner = identityManagerService.getSystemOwner();
-                pubus = identityManagerService.getPublicUser();
+            relationManager.removeRelation( relation.getId() );
+        }
+    }
 
-                buildTrustRelation( owner,pubus , objectId, objectType, buildPermissions( Permission.Write.getId() ) );
+
+    //*************************************
+    @Override
+    public int addTrustRelation( UserSession uSession, String targeObjId, int targetObjType, String trustObjId,
+                                 int trustObjType, Set<Permission> permissions )
+    {
+        if ( !uSession.getUser().equals( identityManagerService.getPublicUser() ) )
+        {
+            RelationObject targetObj = relationManager.createRelationObject( targeObjId ,targetObjType  ) ;
+            RelationObject trustObj  = relationManager.createRelationObject( trustObjId ,trustObjType  ) ;
+
+
+            Relation rel = relationManager.buildTrustRelation( uSession.getUser(), targetObj, trustObj, permissions );
+
+            if(rel == null)
+            {
+                return ErrorCode.SystemError.getId();
             }
             else
             {
-                owner = userSession.getUser();
+                return ErrorCode.Success.getId();
             }
-
-            buildTrustRelation( owner, owner, objectId, objectType, buildPermissions( Permission.Delete.getId() ) );
         }
-    }
-
-
-    //***************************
-    @Override
-    public Set<Permission> checkUserPermissions( UserSession userSession, String objectId, int objectType )
-    {
-        if(userSession == null)
-            return Collections.emptySet();
         else
-            return relationManager.getUserPermissions( userSession.getUser() ,objectId ,objectType );
-    }
-
-
-    //*******************************************************************
-    @Override
-    public boolean checkRepoPermissions( UserSession userSession, String repoId, int repoType, String contentId,
-                                         int contentType, Permission perm )
-    {
-        boolean access = false;
-
-        if ( checkUserPermissions( userSession, repoId, repoType ).contains( perm ) )
         {
-            access = true;
+            return 2; //Permission Denied
         }
-
-        if ( !Strings.isNullOrEmpty( contentId ) )
-        {
-
-            if ( access == false )
-            {
-                if ( checkUserPermissions( userSession, contentId, contentType ).contains( perm ) )
-                {
-                    access = true;
-                }
-            }
-        }
-        return access;
-    }
-
-
-
-
-    @Override
-    public void saveRelation( Relation relation )
-    {
-        //relationManager.saveTrustRelation( relation );
     }
 
 }

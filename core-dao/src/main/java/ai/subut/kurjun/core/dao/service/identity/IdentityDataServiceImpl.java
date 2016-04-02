@@ -1,4 +1,4 @@
-package ai.subut.kurjun.core.dao.api.identity;
+package ai.subut.kurjun.core.dao.service.identity;
 
 
 import java.util.Collections;
@@ -9,7 +9,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.core.dao.api.DAOException;
-import ai.subut.kurjun.core.dao.model.identity.UserEntity;
+import ai.subut.kurjun.core.dao.api.identity.UserDAO;
 import ai.subut.kurjun.model.identity.User;
 
 
@@ -46,17 +46,19 @@ public class IdentityDataServiceImpl implements IdentityDataService
 
     //*****************************
     @Override
-    public void mergeUser( User user )
+    public User mergeUser( User user )
     {
         try
         {
             if(user != null)
-                userDAO.merge( user );
+                return userDAO.merge( user );
         }
         catch ( DAOException e )
         {
-
+            return null;
         }
+
+        return null;
     }
 
 
@@ -67,7 +69,7 @@ public class IdentityDataServiceImpl implements IdentityDataService
         try
         {
             if( !Strings.isNullOrEmpty(fingerprint))
-                return userDAO.find( fingerprint );
+                return userDAO.find( fingerprint.toLowerCase() );
             else
                 return null;
         }
@@ -91,6 +93,5 @@ public class IdentityDataServiceImpl implements IdentityDataService
             return Collections.emptyList();
         }
     }
-
 
 }

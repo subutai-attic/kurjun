@@ -29,7 +29,7 @@ public class RelationObjectEntity implements RelationObject,Serializable
     //*********************
 
     @Id
-    @Column(name = "id")
+    @Column(name = "object_id")
     private String id;
 
     @Id
@@ -68,7 +68,6 @@ public class RelationObjectEntity implements RelationObject,Serializable
     {
         this.type = type;
     }
-
 
 
 }

@@ -118,7 +118,7 @@ public class UserEntity implements User, Serializable
     @Override
     public void setKeyFingerprint(String keyFingerprint)
     {
-        this.keyFingerprint = keyFingerprint;
+        this.keyFingerprint = keyFingerprint.toLowerCase();
     }
 
 

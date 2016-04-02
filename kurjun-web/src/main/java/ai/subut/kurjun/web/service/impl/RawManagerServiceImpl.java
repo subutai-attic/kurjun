@@ -14,6 +14,7 @@ import com.google.inject.Singleton;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
+import ai.subut.kurjun.identity.service.RelationManager;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.raw.RawMetadata;
 import ai.subut.kurjun.model.identity.Permission;
@@ -51,7 +52,7 @@ public class RawManagerServiceImpl implements RawManagerService
     IdentityManagerService identityManagerService;
 
     @Inject
-    RelationManagerService relationManagerService;
+    RelationManager relationManager;
 
 
     @Inject
@@ -199,7 +200,7 @@ public class RawManagerServiceImpl implements RawManagerService
             //***** Check permissions (DELETE) *****************
             if ( checkRepoPermissions( userSession, "raw", objectId, Permission.Delete ) )
             {
-                relationManagerService
+                relationManager
                         .removeRelationsByTrustObject( objectId, RelationObjectType.RepositoryContent.getId() );
 
                 return localPublicRawRepository.delete( defaultMetadata.getId(), md5 );
@@ -238,7 +239,7 @@ public class RawManagerServiceImpl implements RawManagerService
         try
         {
             // *******CheckRepoOwner ***************
-            relationManagerService.checkRelationOwner( userSession, "raw", RelationObjectType.RepositoryRaw.getId() );
+            relationManager.setObjectOwner( userSession.getUser(), "raw", RelationObjectType.RepositoryRaw.getId() );
             //**************************************
 
             //***** Check permissions (WRITE) *****************
@@ -247,10 +248,10 @@ public class RawManagerServiceImpl implements RawManagerService
                 metadata = localPublicRawRepository.put( file, CompressionType.NONE, DEFAULT_RAW_REPO_NAME );
 
                 //***** Build Relation ****************
-                relationManagerService
+                relationManager
                         .buildTrustRelation( userSession.getUser(), userSession.getUser(), metadata.getId().toString(),
                                 RelationObjectType.RepositoryContent.getId(),
-                                relationManagerService.buildPermissions( 4 ) );
+                                relationManager.buildPermissions( 4 ) );
                 //*************************************
             }
         }
@@ -269,7 +270,7 @@ public class RawManagerServiceImpl implements RawManagerService
         try
         {
             // *******CheckRepoOwner ***************
-            relationManagerService.checkRelationOwner( userSession, "raw", RelationObjectType.RepositoryRaw.getId() );
+            relationManager.setObjectOwner( userSession.getUser(), "raw", RelationObjectType.RepositoryRaw.getId() );
             //**************************************
 
             //***** Check permissions (WRITE) *****************
@@ -279,10 +280,10 @@ public class RawManagerServiceImpl implements RawManagerService
                         localPublicRawRepository.put( new FileInputStream( file ), CompressionType.NONE, repository );
 
                 //***** Build Relation ****************
-                relationManagerService
+                relationManager
                         .buildTrustRelation( userSession.getUser(), userSession.getUser(), metadata.getId().toString(),
                                 RelationObjectType.RepositoryContent.getId(),
-                                relationManagerService.buildPermissions( 4 ) );
+                                relationManager.buildPermissions( 4 ) );
                 //*************************************
             }
         }
@@ -307,7 +308,7 @@ public class RawManagerServiceImpl implements RawManagerService
         try
         {
             // *******CheckRepoOwner ***************
-            relationManagerService.checkRelationOwner( userSession, "raw", RelationObjectType.RepositoryRaw.getId() );
+            relationManager.setObjectOwner( userSession.getUser(), "raw", RelationObjectType.RepositoryRaw.getId() );
             //**************************************
 
             //***** Check permissions (WRITE) *****************
@@ -318,10 +319,10 @@ public class RawManagerServiceImpl implements RawManagerService
                 metadata = localRawRepository.put( file, filename, repository );
 
                 //***** Build Relation ****************
-                relationManagerService
+                relationManager
                         .buildTrustRelation( userSession.getUser(), userSession.getUser(), metadata.getId().toString(),
                                 RelationObjectType.RepositoryContent.getId(),
-                                relationManagerService.buildPermissions( 4 ) );
+                                relationManager.buildPermissions( 4 ) );
                 //*************************************
             }
         }
@@ -336,8 +337,8 @@ public class RawManagerServiceImpl implements RawManagerService
     public LocalRawRepository getLocalPublicRawRepository( UserSession userSession, KurjunContext context )
     {
         // *******CheckRepoOwner ***************
-        relationManagerService
-                .checkRelationOwner( userSession, context.getName(), RelationObjectType.RepositoryRaw.getId() );
+        relationManager
+                .setObjectOwner( userSession.getUser(), context.getName(), RelationObjectType.RepositoryRaw.getId() );
         //**************************************
 
         return repositoryFactory.createLocalRaw( context );
@@ -365,8 +366,8 @@ public class RawManagerServiceImpl implements RawManagerService
     //*******************************************************************
     private boolean checkRepoPermissions( UserSession userSession, String repoId, String contentId, Permission perm )
     {
-        return relationManagerService
-                .checkRepoPermissions( userSession, repoId, RelationObjectType.RepositoryRaw.getId(), contentId,
+        return relationManager
+                .checkObjectPermissions( userSession.getUser(), repoId, RelationObjectType.RepositoryRaw.getId(), contentId,
                         RelationObjectType.RepositoryContent.getId(), perm );
     }
     //*******************************************************************
