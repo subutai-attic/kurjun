@@ -37,7 +37,7 @@ public class UserDAO extends GenericDAOImpl<User>
         }
         catch ( Exception e )
         {
-            LOGGER.error( "****** Error in find"+ e, e );
+            LOGGER.error( "****** Error in UserDAO find :"+ e, e );
             throw new DAOException( e );
         }
     }

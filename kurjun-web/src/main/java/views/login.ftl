@@ -40,7 +40,7 @@
                     </#if>
                     <form method="POST" action="${contextPath}/login">
                         <div class="b-form__wrapper g-margin-bottom-half">
-                            <label class="b-form-label">Fingerprint</label>
+                            <label class="b-form-label">Fingerprint or UserName</label>
                             <input
                                     class="b-form-input b-form-input_full"
                                     id="subt-input__login"

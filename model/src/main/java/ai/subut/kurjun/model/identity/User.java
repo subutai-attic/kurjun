@@ -45,11 +45,11 @@ public interface User
 
 
     //*************************
-    String getKeyData();
+    byte[] getKeyData();
 
 
     //*************************
-    void setKeyData( String keyData );
+    void setKeyData( byte[] keyData );
 
 
     //*************************

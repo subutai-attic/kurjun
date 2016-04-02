@@ -16,6 +16,9 @@ public interface IdentityDataService
 
 
     //*****************************
+    void mergeUser( User user );
+
+    //*****************************
     User getUser( String fingerprint );
 
     //*****************************
