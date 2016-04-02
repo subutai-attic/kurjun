@@ -58,7 +58,7 @@ public class IdentityManagerImpl implements IdentityManager
         this.securityManager = securityManager;
         this.relationManager = relationManager;
 
-        createDefaultUsers();
+        //createDefaultUsers();
     }
 
 
@@ -84,7 +84,14 @@ public class IdentityManagerImpl implements IdentityManager
     @Override
     public User getPublicUser()
     {
-        return getUser( PUBLIC_USER_ID );
+        User user = getUser( PUBLIC_USER_ID );
+
+        if(user == null)
+        {
+            user = addUser( PUBLIC_USER_ID, UserType.System.getId() );
+        }
+
+        return user;
     }
 
 

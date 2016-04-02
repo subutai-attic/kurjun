@@ -1,10 +1,8 @@
 package ai.subut.kurjun.core.dao.api.identity;
 
 
-import javax.persistence.EntityManager;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.google.inject.persist.Transactional;
 
 import ai.subut.kurjun.core.dao.api.DAOException;
@@ -19,11 +17,7 @@ import ai.subut.kurjun.model.identity.UserToken;
  */
 public class UserTokenDAO  extends GenericDAOImpl<UserToken>
 {
-    //@Inject
-    //public UserTokenDAO( final Provider<EntityManager> entityManagerProvider )
-    //{
-      //  super( entityManagerProvider );
-    //}
+    private static final Logger LOGGER = LoggerFactory.getLogger( UserTokenDAO.class );
 
     public UserTokenDAO()
     {
@@ -35,7 +29,6 @@ public class UserTokenDAO  extends GenericDAOImpl<UserToken>
     {
         try
         {
-            //return entityManagerProvider.get().find( UserEntity.class, token );
             return getEntityManager().find( UserEntity.class, token );
         }
         catch ( Exception e )

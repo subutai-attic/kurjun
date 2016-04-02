@@ -35,14 +35,14 @@ public class UserEntity implements User, Serializable
     //*********************
 
     @Id
-    @Column( name = "id" )
+    @Column( name = "fingerprint" )
     private String keyFingerprint = "";
 
     @Column( name = "username" ,unique = true)
     private String userName = "";
 
     @Column( name = "register_date" )
-    private Date date = null;
+    private Date date = new Date(System.currentTimeMillis());
 
     @Column( name = "email")
     private String emailAddress = "";
