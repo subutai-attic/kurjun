@@ -1,43 +1,88 @@
-package ai.subut.kurjun.identity;
+package ai.subut.kurjun.core.dao.model.identity;
 
 
 import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.model.identity.Permission;
 import ai.subut.kurjun.model.identity.RelationObject;
-import ai.subut.kurjun.model.identity.RelationObjectType;
 import ai.subut.kurjun.model.identity.RelationType;
 
 
 /**
  *
  */
-public class DefaultRelation implements Relation, Serializable
+@Entity
+@Table( name = RelationObjectEntity.TABLE_NAME )
+@Access( AccessType.FIELD )
+public class RelationEntity implements Relation, Serializable
 {
 
     //*********************
-    public static final String MAP_NAME = "relations";
+    public static final String TABLE_NAME = "relation";
     //*********************
 
-    private String id;
+    @Id
+    @GeneratedValue( strategy = GenerationType.IDENTITY )
+    @Column( name = "id" )
+    private long id;
 
+    @Column( name = "source_object" )
+    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER , targetEntity = RelationObjectEntity.class)
     private RelationObject source;
+
+    @Column( name = "target_object" )
+    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER , targetEntity = RelationObjectEntity.class)
     private RelationObject target;
+
+    @Column( name = "trust_object" )
+    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER , targetEntity = RelationObjectEntity.class)
     private RelationObject trustObject;
+
+    @Column( name = "type" )
     private int type = RelationType.Owner.getId();
 
+    @Column( name = "permissions" )
+    @Enumerated( EnumType.STRING )
     private Set<Permission> permissions = EnumSet.noneOf( Permission.class );
 
 
-    public DefaultRelation()
+
+    public RelationEntity()
     {
-        id  = UUID.randomUUID().toString();
     }
+
+
+    @Override
+    public long getId()
+    {
+        return id;
+    }
+
+
+    @Override
+    public void setId( final long id )
+    {
+        this.id = id;
+    }
+
 
     @Override
     public Set<Permission> getPermissions()
@@ -50,13 +95,6 @@ public class DefaultRelation implements Relation, Serializable
     public void setPermissions( final Set<Permission> permissions )
     {
         this.permissions = permissions;
-    }
-
-
-    @Override
-    public String getId()
-    {
-        return id;
     }
 
 
@@ -115,18 +153,6 @@ public class DefaultRelation implements Relation, Serializable
         this.type = type;
     }
 
-
-    //*************************
-    @Override
-    public boolean equals( Object obj )
-    {
-        if ( obj instanceof DefaultRelation )
-        {
-            DefaultRelation other = ( DefaultRelation ) obj;
-            return Objects.equals( this.id, other.id );
-        }
-        return false;
-    }
 
 
     //*************************

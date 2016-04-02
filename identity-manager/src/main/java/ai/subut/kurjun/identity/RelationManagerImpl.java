@@ -2,7 +2,6 @@ package ai.subut.kurjun.identity;
 
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,8 +10,9 @@ import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import ai.subut.kurjun.db.file.FileDb;
-import ai.subut.kurjun.identity.service.FileDbProvider;
+import ai.subut.kurjun.core.dao.model.identity.RelationEntity;
+import ai.subut.kurjun.core.dao.model.identity.RelationObjectEntity;
+import ai.subut.kurjun.identity.service.RelationDataService;
 import ai.subut.kurjun.identity.service.RelationManager;
 import ai.subut.kurjun.model.identity.Permission;
 import ai.subut.kurjun.model.identity.Relation;
@@ -34,7 +34,7 @@ public class RelationManagerImpl implements RelationManager
     SecurityManager securityManager;
 
     @Inject
-    FileDbProvider fileDbProvider;
+    RelationDataService relationDataService;
 
 
     //***************************
@@ -102,7 +102,7 @@ public class RelationManagerImpl implements RelationManager
     {
         try
         {
-            RelationObject relationObject = new DefaultRelationObject();
+            RelationObject relationObject = new RelationObjectEntity();
 
             if ( Strings.isNullOrEmpty( objectId ) )
             {
@@ -190,10 +190,11 @@ public class RelationManagerImpl implements RelationManager
     {
         try
         {
+
             if(source != null && target != null && trustObject != null)
             {
 
-                Relation relation = new DefaultRelation();
+                Relation relation = new RelationEntity();
 
                 relation.setSource( source );
                 relation.setTarget( target );
@@ -201,7 +202,7 @@ public class RelationManagerImpl implements RelationManager
                 relation.setPermissions( permissions );
 
                 //**************************
-                saveTrustRelation( relation );
+                //saveTrustRelation( relation );
                 //**************************
 
                 return relation;
@@ -219,28 +220,6 @@ public class RelationManagerImpl implements RelationManager
     }
 
 
-    //***************************
-    @Override
-    public Relation saveTrustRelation( Relation relation )
-    {
-        try
-        {
-            if(relation != null)
-            {
-                FileDb fileDb = fileDbProvider.get();
-                fileDb.put( DefaultRelation.MAP_NAME, relation.getId().toLowerCase(), relation );
-                fileDb.close();
-            }
-
-            return relation;
-        }
-        catch ( Exception ex )
-        {
-            LOGGER.error( " ***** Error saving  relation:", ex );
-            return null;
-        }
-    }
-
 
     //********************************************
     @Override
@@ -248,17 +227,19 @@ public class RelationManagerImpl implements RelationManager
     {
         try
         {
-            FileDb fileDb = fileDbProvider.get();
-            Relation rel = fileDb.get( DefaultRelation.MAP_NAME, relationId.toLowerCase(), DefaultRelation.class );
-            fileDb.close();
+            //FileDb fileDb = fileDbProvider.get();
+            //Relation rel = fileDb.get( DefaultRelation.MAP_NAME, relationId.toLowerCase(), DefaultRelation.class );
+            //fileDb.close();
 
-            return rel;
+            //return rel;
         }
         catch ( Exception ex )
         {
             LOGGER.error( " ***** Error getting relation with relationId:" + relationId, ex );
             return null;
         }
+
+        return null;
     }
 
     //********************************************
@@ -267,16 +248,16 @@ public class RelationManagerImpl implements RelationManager
     {
         try
         {
-            FileDb fileDb = fileDbProvider.get();
-            Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
-            if ( map != null )
-            {
-                List<Relation> items = new ArrayList<>( map.values() );
-                fileDb.close();
+            //FileDb fileDb = fileDbProvider.get();
+            //Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
+            //if ( map != null )
+            //{
+                //List<Relation> items = new ArrayList<>( map.values() );
+                //fileDb.close();
 
-                return items;
-            }
-            else
+                //return items;
+            //}
+            //else
             {
                 return null;
             }
@@ -326,11 +307,11 @@ public class RelationManagerImpl implements RelationManager
     {
         try
         {
-            FileDb fileDb = fileDbProvider.get();
-            Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
-            fileDb.close();
+            //FileDb fileDb = fileDbProvider.get();
+            //Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
+            //fileDb.close();
 
-            return map.values().stream().filter( r -> r.getTrustObject().equals(trustObject)).collect(Collectors.toList());
+            //return map.values().stream().filter( r -> r.getTrustObject().equals(trustObject)).collect(Collectors.toList());
         }
         catch ( Exception ex )
         {
@@ -390,11 +371,11 @@ public class RelationManagerImpl implements RelationManager
     {
         try
         {
-            FileDb fileDb = fileDbProvider.get();
-            Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
-            fileDb.close();
+            //FileDb fileDb = fileDbProvider.get();
+            //Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
+            //fileDb.close();
 
-            return map.values().parallelStream().filter( r -> r.getSource().equals(sourceObject)).collect(Collectors.toList());
+            //return map.values().parallelStream().filter( r -> r.getSource().equals(sourceObject)).collect(Collectors.toList());
         }
         catch ( Exception ex )
         {
@@ -411,11 +392,11 @@ public class RelationManagerImpl implements RelationManager
     {
         try
         {
-            FileDb fileDb = fileDbProvider.get();
-            Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
-            fileDb.close();
+           // FileDb fileDb = fileDbProvider.get();
+            //Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
+            //fileDb.close();
 
-            return map.values().stream().filter( r -> r.getTarget().equals(targetObject)).collect(Collectors.toList());
+            //return map.values().stream().filter( r -> r.getTarget().equals(targetObject)).collect(Collectors.toList());
         }
         catch ( Exception ex )
         {
@@ -432,9 +413,9 @@ public class RelationManagerImpl implements RelationManager
     {
         try
         {
-            FileDb fileDb = fileDbProvider.get();
-            fileDb.remove( DefaultRelation.MAP_NAME, relationId );
-            fileDb.close();
+            //FileDb fileDb = fileDbProvider.get();
+            //fileDb.remove( DefaultRelation.MAP_NAME, relationId );
+            //fileDb.close();
         }
         catch ( Exception ex )
         {
@@ -484,7 +465,7 @@ public class RelationManagerImpl implements RelationManager
 
             for(Relation relation: relations)
             {
-                removeRelation( relation.getId() );
+                //removeRelation( relation.getId() );
             }
         }
         catch ( Exception ex )

@@ -12,7 +12,6 @@ import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import ai.subut.kurjun.identity.DefaultRelationObject;
 import ai.subut.kurjun.identity.service.RelationManager;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.subutai.TemplateId;
@@ -74,7 +73,7 @@ public class RelationManagerServiceImpl implements RelationManagerService
     {
         //if ( !userSession.getUser().equals( identityManagerService.getPublicUser() ) )
         {
-            relationManager.removeRelation( relation.getId() );
+            //relationManager.removeRelation( relation.getId() );
         }
     }
 
@@ -237,86 +236,12 @@ public class RelationManagerServiceImpl implements RelationManagerService
     }
 
 
-    //*******************************************************************************
-    @Override
-    public RelationObject toSourceObject( User user )
-    {
-        if ( user != null )
-        {
-            RelationObject owner = new DefaultRelationObject();
-            owner.setId( user.getKeyFingerprint() );
-            owner.setType( RelationObjectType.User.getId() );
 
-            return owner;
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-
-    @Override
-    public RelationObject toTargetObject( String fingerprint )
-    {
-        User targetUser = identityManagerService.getUser( fingerprint );
-        RelationObject targetObject = null;
-
-        if ( targetUser != null )
-        {
-            targetObject = new DefaultRelationObject();
-            targetObject.setId( targetUser.getKeyFingerprint() );
-            targetObject.setType( RelationObjectType.User.getId() );
-        }
-
-        return targetObject;
-    }
-
-
-    @Override
-    public RelationObject toTrustObject(UserSession userSession, String id, String md5, String name, String version, RelationObjectType relObjType )
-    {
-        TemplateId tid;
-        DefaultTemplate defaultTemplate;
-        RelationObject trustObject = null;
-
-
-        if ( RelationObjectType.RepositoryContent == relObjType )
-        {
-            if ( id != null )
-            {
-                tid = IdValidators.Template.validate( id );
-                defaultTemplate = templateManagerService.getTemplate(userSession, tid, md5, name, version );
-            }
-            else
-            {
-                defaultTemplate = templateManagerService.getTemplate(userSession, null, md5, name, version );
-            }
-            if ( defaultTemplate != null )
-            {
-                trustObject = new DefaultRelationObject();
-                trustObject.setId( defaultTemplate.getId().toString() );
-                trustObject.setType( RelationObjectType.RepositoryContent.getId() );
-            }
-        }
-        else if ( RelationObjectType.RepositoryTemplate == relObjType )
-        {
-            List<String> repos = repositoryService.getRepositories();
-            if ( repos.contains( id ) ) {
-                trustObject = new DefaultRelationObject();
-                trustObject.setId( id );
-                trustObject.setType( RelationObjectType.RepositoryTemplate.getId() );
-            }
-        }
-
-
-        return trustObject;
-    }
 
     @Override
     public void saveRelation( Relation relation )
     {
-        relationManager.saveTrustRelation( relation );
+        //relationManager.saveTrustRelation( relation );
     }
 
 }

@@ -49,6 +49,7 @@ public interface RelationManagerService extends BaseService {
     List<Relation> getRelationsByObject( String trustObjectId, int trustObjectType );
 
 
+
     //***************************
     Relation getObjectOwner( String trustObjectId, int trustObjectType );
 
@@ -69,17 +70,10 @@ public interface RelationManagerService extends BaseService {
     //***************************
     Set<Permission> checkUserPermissions( UserSession userSession, String objectId, int objectType );
 
+
     //*******************************************************************
     boolean checkRepoPermissions( UserSession userSession, String repoId, int repoType, String contentId,
                                   int contentType, Permission perm );
-
-    RelationObject toSourceObject( User user );
-
-
-    RelationObject toTargetObject( String fingerprint );
-
-
-    RelationObject toTrustObject(UserSession userSession, String id, String md5, String name, String version, RelationObjectType rot );
 
 
     void saveRelation( Relation relation );

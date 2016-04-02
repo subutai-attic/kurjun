@@ -65,10 +65,6 @@ public interface IdentityManager
 
 
     //********************************************
-    User saveUser( User user );
-
-
-    //********************************************
     List<User> getAllUsers();
 
 

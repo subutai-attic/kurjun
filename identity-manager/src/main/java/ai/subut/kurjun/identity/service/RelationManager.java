@@ -59,10 +59,6 @@ public interface RelationManager
 
 
     //***************************
-    Relation saveTrustRelation( Relation relation );
-
-
-    //***************************
     Relation getRelation( String relationId );
 
 

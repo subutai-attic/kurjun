@@ -84,14 +84,14 @@ public class Routes implements ApplicationRoutes
         //  Relations
         // -------------------------------------------------------------------------------------------------------------
         router.GET().route( "/relations" ).with( RelationController.class, "getRelations" );
-        router.GET().route( "/relations/trust" ).with( RelationController.class, "getAddTrustRelationForm" );
-        router.POST().route( "/relations/trust" ).with( RelationController.class, "addTrustRelation" );
-        router.GET().route( "/relations/by-source" ).with( RelationController.class, "getRelationsByOwner" );
-        router.GET().route( "/relations/by-target" ).with( RelationController.class, "getRelationsByTarget" );
-        router.GET().route( "/relations/by-object" ).with( RelationController.class, "getRelationsByObject" );
-        router.POST().route( "/relations/{id}/delete" ).with( RelationController.class, "delete" );
-        router.GET().route( "/relations/{id}/change" ).with( RelationController.class, "getChangeForm" );
-        router.POST().route( "/relations/{id}/change" ).with( RelationController.class, "change" );
+        //router.GET().route( "/relations/trust" ).with( RelationController.class, "getAddTrustRelationForm" );
+        //router.POST().route( "/relations/trust" ).with( RelationController.class, "addTrustRelation" );
+        //router.GET().route( "/relations/by-source" ).with( RelationController.class, "getRelationsByOwner" );
+        //router.GET().route( "/relations/by-target" ).with( RelationController.class, "getRelationsByTarget" );
+        //router.GET().route( "/relations/by-object" ).with( RelationController.class, "getRelationsByObject" );
+        //router.POST().route( "/relations/{id}/delete" ).with( RelationController.class, "delete" );
+        //router.GET().route( "/relations/{id}/change" ).with( RelationController.class, "getChangeForm" );
+        //router.POST().route( "/relations/{id}/change" ).with( RelationController.class, "change" );
 
         // -------------------------------------------------------------------------------------------------------------
         //  Repositories

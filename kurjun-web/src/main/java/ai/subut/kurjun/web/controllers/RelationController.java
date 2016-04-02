@@ -1,9 +1,7 @@
 package ai.subut.kurjun.web.controllers;
 
 
-import ai.subut.kurjun.identity.DefaultRelationObject;
 import ai.subut.kurjun.model.identity.*;
-import ai.subut.kurjun.web.controllers.rest.RestIdentityController;
 import ai.subut.kurjun.web.security.AuthorizedUser;
 import ai.subut.kurjun.web.service.IdentityManagerService;
 import ai.subut.kurjun.web.service.RelationManagerService;
@@ -19,7 +17,6 @@ import ninja.params.Param;
 import ninja.params.Params;
 import ninja.params.PathParam;
 import ninja.session.FlashScope;
-import ninja.session.Session;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -76,6 +72,7 @@ public class RelationController extends BaseController
     }
 
 
+    /*
     public Result getRelationsByOwner( @AuthorizedUser UserSession userSession,
                                        @Param( "fingerprint" ) String fingerprint )
     {
@@ -150,8 +147,8 @@ public class RelationController extends BaseController
             Set<Permission> objectPermissions = new HashSet<>();
             Arrays.asList( permissions ).forEach( p -> objectPermissions.add( Permission.valueOf( p ) ) );
 
-            Set<Permission> userPermissions = relationManagerService.checkUserPermissions( userSession, trustObject.getId(),
-                    trustObject.getType() );
+            Set<Permission> userPermissions = relationManagerService.checkUserPermissions( userSession,
+                    trustObject.getId(), trustObject.getType() );
 
             if ( userPermissions.containsAll( objectPermissions ) )
             {
@@ -257,5 +254,5 @@ public class RelationController extends BaseController
         }
 
         return Results.redirect( context.getContextPath() + "/relations" );
-    }
+    }*/
 }

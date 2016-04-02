@@ -2,9 +2,9 @@ package ai.subut.kurjun.web.controllers.rest;
 
 import java.util.List;
 
-import ai.subut.kurjun.identity.DefaultRelationObject;
 import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.web.controllers.BaseController;
+import ai.subut.kurjun.web.security.AuthorizedUser;
 import ai.subut.kurjun.web.service.IdentityManagerService;
 import ninja.Context;
 import ninja.Result;
@@ -13,7 +13,6 @@ import ninja.Results;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import ai.subut.kurjun.model.identity.*;
-import ai.subut.kurjun.web.security.AuthorizedUser;
 import ai.subut.kurjun.web.service.RelationManagerService;
 import ninja.params.Param;
 import ninja.params.Params;
@@ -61,8 +60,7 @@ public class RestRelationController extends BaseController
             return Results.ok().render( relations ).json();
         }
     }
-
-
+    /*
     public Result getRelationsByOwner( @PathParam( "fingerprint" ) String fingerprint )
     {
         return Results.ok().json().render( relationManagerService.getTrustRelationsBySource(
@@ -200,4 +198,5 @@ public class RestRelationController extends BaseController
             return Results.notFound().json().render( "Object not found." );
         }
     }
+    */
 }
