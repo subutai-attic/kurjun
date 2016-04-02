@@ -20,11 +20,13 @@ public class KurjunClient
     KurjunProperties kurjunProperties;
 
 
-    public Client createClient( File source, File parent, InetAddress inetAddress )
+    public Client createClient( File source, File output, InetAddress inetAddress )
     {
         try
         {
-            SharedTorrent sharedTorrent = SharedTorrent.fromFile( source, parent );
+
+            SharedTorrent sharedTorrent = SharedTorrent.fromFile( source, output );
+
             return new Client( inetAddress, sharedTorrent );
         }
         catch ( IOException | NoSuchAlgorithmException e )

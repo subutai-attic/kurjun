@@ -24,15 +24,15 @@ public class KurjunTracker
     KurjunProperties kurjunProperties;
 
 
-    public Tracker getTracker() throws Exception
+    public Tracker initTracker() throws Exception
     {
         LOGGER.debug( "Creating new Tracker" );
 
 
         Tracker tracker = null;
-
+        //dir to get all .torrent files
         String torrentFilesDir = kurjunProperties.get( KurjunConstants.KURJUN_TORRENT_TRACKER_DIR );
-
+        //torrent default port
         String torrentPort = kurjunProperties.get( KurjunConstants.KURJUN_TORRENT_PORT );
 
         if ( torrentFilesDir != null )
@@ -47,6 +47,8 @@ public class KurjunTracker
 
                 for ( File file : new File( torrentFilesDir ).listFiles( filter ) )
                 {
+                    LOGGER.debug( "Announcing : {}", file.getAbsolutePath() );
+
                     tracker.announce( TrackedTorrent.load( file ) );
                 }
             }
