@@ -4,6 +4,7 @@ package ai.subut.kurjun.core.dao.service.identity;
 import java.util.List;
 
 import ai.subut.kurjun.model.identity.User;
+import ai.subut.kurjun.model.identity.UserToken;
 
 
 /**
@@ -25,4 +26,11 @@ public interface IdentityDataService
 
     //*****************************
     List<User> getAllUsers();
+
+
+    //*****************************
+    List<UserToken> getAllTokens();
+
+    //*****************************
+    UserToken  mergeToken( UserToken userToken );
 }

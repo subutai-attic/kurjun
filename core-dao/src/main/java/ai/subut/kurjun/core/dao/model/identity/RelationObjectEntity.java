@@ -6,8 +6,9 @@ import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.Table;
 
 import ai.subut.kurjun.model.identity.RelationObject;
@@ -20,8 +21,7 @@ import ai.subut.kurjun.model.identity.RelationObjectType;
 @Entity
 @Table( name = RelationObjectEntity.TABLE_NAME )
 @Access( AccessType.FIELD )
-@IdClass(RelationObjectEntityPk.class)
-
+//@IdClass(RelationObjectEntityPk.class)
 public class RelationObjectEntity implements RelationObject,Serializable
 {
     //*********************
@@ -29,26 +29,44 @@ public class RelationObjectEntity implements RelationObject,Serializable
     //*********************
 
     @Id
-    @Column(name = "object_id")
-    private String id;
+    @GeneratedValue( strategy = GenerationType.IDENTITY )
+    @Column( name = "id" )
+    private long id;
 
-    @Id
-    @Column(name = "type")
+    @Column(name = "object_id")
+    private String uniqID;
+
+    @Column(name = "object_type")
     private int type = RelationObjectType.User.getId();
 
 
     @Override
-    public String getId()
+    public long getId()
     {
         return id;
     }
 
 
     @Override
-    public void setId( final String id )
+    public void setId( final long id )
     {
         this.id = id;
     }
+
+
+    @Override
+    public String getUniqID()
+    {
+        return uniqID;
+    }
+
+
+    @Override
+    public void setUniqID( final String uniqID )
+    {
+        this.uniqID = uniqID;
+    }
+
 
     @Override
     public int getType()

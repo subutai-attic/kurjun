@@ -6,6 +6,8 @@ import javax.persistence.EntityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.persist.Transactional;
+
 import ai.subut.kurjun.core.dao.api.DAOException;
 import ai.subut.kurjun.core.dao.api.GenericDAOImpl;
 import ai.subut.kurjun.core.dao.model.identity.UserEntity;
@@ -24,7 +26,7 @@ public class UserDAO extends GenericDAOImpl<User>
         super();
     }
 
-
+    @Transactional
     public User find(String fingerprint) throws DAOException
     {
         try

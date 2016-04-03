@@ -1,6 +1,8 @@
 package ai.subut.kurjun.core.dao.api.identity;
 
 
+import com.google.inject.persist.Transactional;
+
 import ai.subut.kurjun.core.dao.api.DAOException;
 import ai.subut.kurjun.core.dao.api.GenericDAOImpl;
 import ai.subut.kurjun.core.dao.model.identity.RelationObjectEntity;
@@ -20,6 +22,7 @@ public class RelationObjectDAO   extends GenericDAOImpl<RelationObject>
     }
 
 
+    @Transactional
     public RelationObject find(String objectId, int objectType) throws DAOException
     {
         try

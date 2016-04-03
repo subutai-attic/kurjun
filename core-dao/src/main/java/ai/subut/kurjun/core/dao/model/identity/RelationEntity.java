@@ -1,9 +1,10 @@
 package ai.subut.kurjun.core.dao.model.identity;
 
 
-import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Objects;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Access;
@@ -11,14 +12,16 @@ import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 
 import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.model.identity.Permission;
@@ -30,9 +33,9 @@ import ai.subut.kurjun.model.identity.RelationType;
  *
  */
 @Entity
-@Table( name = RelationObjectEntity.TABLE_NAME )
+@Table( name = RelationEntity.TABLE_NAME )
 @Access( AccessType.FIELD )
-public class RelationEntity implements Relation, Serializable
+public class RelationEntity implements Relation
 {
 
     //*********************
@@ -42,27 +45,35 @@ public class RelationEntity implements Relation, Serializable
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY )
     @Column( name = "id" )
-    private Long id;
+    private long id;
+
 
     @Column( name = "source_object" )
-    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER , targetEntity = RelationObjectEntity.class)
+    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = RelationObjectEntity.class )
     private RelationObject source;
 
+
     @Column( name = "target_object" )
-    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER , targetEntity = RelationObjectEntity.class)
+    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = RelationObjectEntity.class )
     private RelationObject target;
 
+
     @Column( name = "trust_object" )
-    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER , targetEntity = RelationObjectEntity.class)
+    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = RelationObjectEntity.class )
     private RelationObject trustObject;
+
 
     @Column( name = "type" )
     private int type = RelationType.Owner.getId();
 
-    @Column( name = "permissions" )
-    @Enumerated( EnumType.STRING )
-    private Set<Permission> permissions = EnumSet.noneOf( Permission.class );
+    //@Enumerated( EnumType.STRING )
+    //@ElementCollection(targetClass = Permission.class)
+    //@CollectionTable(name = "permission", joinColumns = {@JoinColumn(name="id")})
+    //@Column(name = "object_perms", nullable = false
 
+    @Column( name = "perms" )
+    private String perms = "";
+    //************************
 
 
     public RelationEntity()
@@ -71,30 +82,30 @@ public class RelationEntity implements Relation, Serializable
 
 
     @Override
-    public Long getId()
+    public long getId()
     {
         return id;
     }
 
 
     @Override
-    public void setId( final Long id )
+    public void setId( final long id )
     {
         this.id = id;
     }
 
 
     @Override
-    public Set<Permission> getPermissions()
+    public String getPerms()
     {
-        return permissions;
+        return perms;
     }
 
 
     @Override
-    public void setPermissions( final Set<Permission> permissions )
+    public void setPerms( final String perms )
     {
-        this.permissions = permissions;
+        this.perms = perms;
     }
 
 
@@ -154,14 +165,49 @@ public class RelationEntity implements Relation, Serializable
     }
 
 
-
-    //*************************
+    //**************************************
     @Override
-    public int hashCode()
+    @Transient
+    public Set<Permission> getPermissions()
     {
-        int hash = 5;
-        hash = 19 * hash + Objects.hashCode( this.id );
-        return hash;
+        if ( Strings.isNullOrEmpty( perms ) )
+        {
+            return Collections.emptySet();
+        }
+        else
+        {
+            Set<Permission> perms = new HashSet<>();
+
+            if ( perms.contains( Permission.Read.getName() ) )
+                perms.add( Permission.Read );
+            if ( perms.contains( Permission.Write.getName() ) )
+                perms.add( Permission.Write );
+            if ( perms.contains( Permission.Update.getName() ) )
+                perms.add( Permission.Update );
+            if ( perms.contains( Permission.Delete.getName() ) )
+                perms.add( Permission.Delete );
+
+            return perms;
+        }
     }
 
+
+
+    @Override
+    @Transient
+    public void setPermissions( final Set<Permission> permissions )
+    {
+        perms = "";
+
+        if ( permissions.contains( Permission.Read.getName() ) )
+            perms += Permission.Read.getName() +";";
+        if ( perms.contains( Permission.Write.getName() ) )
+            perms += Permission.Write.getName() +";";
+        if ( perms.contains( Permission.Update.getName() ) )
+            perms += Permission.Update.getName() +";";
+        if ( perms.contains( Permission.Delete.getName() ) )
+            perms += Permission.Delete.getName() +";";
+
+    }
+    //**************************************
 }
