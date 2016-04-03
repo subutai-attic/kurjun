@@ -183,16 +183,9 @@ public class IdentityManagerImpl implements IdentityManager
                 UserToken uToken = createUserToken( user, user.getKeyFingerprint(), "", "", null );
 
                 //*************
-                if(user.getUserToken() == null)
-                {
-                    user.setUserToken( uToken );
-                    identityDataService.mergeUser(  user );
-                }
-                else
-                {
-                    identityDataService.mergeToken( uToken );
-                }
-                //*************
+                user.setUserToken( uToken );
+                identityDataService.mergeUserToken( uToken );
+                //identityDataService.mergeUser(  user );
 
                 //*****************************************
                 LOGGER.info( " ******* Successfully authenticated user:" ,user.getKeyFingerprint() );
@@ -223,21 +216,20 @@ public class IdentityManagerImpl implements IdentityManager
 
         if ( user != null )
         {
-            if(user.getUserToken() != null)
+            UserToken userToken = identityDataService.getUserToken( fingerprint );
+
+            if(userToken != null)
             {
-                if ( securityManager.verifyJWT( token, user.getUserToken().getSecret() ) )
+                if ( securityManager.verifyJWT( token, userToken.getSecret() ) )
                 {
+                    user.setUserToken( userToken );
                     return user;
                 }
                 else
-                {
                     return null;
-                }
             }
             else
-            {
                 return null;
-            }
         }
         else
         {

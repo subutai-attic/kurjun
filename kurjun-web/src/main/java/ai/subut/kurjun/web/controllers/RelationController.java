@@ -138,7 +138,7 @@ public class RelationController extends BaseController
     public Result getRelationsByOwner( @AuthorizedUser UserSession userSession,
                                        @Param( "fingerprint" ) String fingerprint )
     {
-        return Results.html().template( "views/_popup-view-permissions.ftl" ).render( "relations",
+        return Results.html().metadata( "views/_popup-view-permissions.ftl" ).render( "relations",
                 relationManagerService.getTrustRelationsBySource(
                         relationManagerService.toSourceObject( identityManagerService.getUser( fingerprint ) ) ) );
     }
@@ -147,7 +147,7 @@ public class RelationController extends BaseController
     public Result getRelationsByTarget( @AuthorizedUser UserSession userSession,
                                         @Param( "fingerprint" ) String fingerprint )
     {
-        return Results.html().template( "views/_popup-view-permissions.ftl" ).render( "relations",
+        return Results.html().metadata( "views/_popup-view-permissions.ftl" ).render( "relations",
                 relationManagerService
                         .getTrustRelationsByTarget( relationManagerService.toTargetObject( fingerprint ) ) );
     }
@@ -163,7 +163,7 @@ public class RelationController extends BaseController
                 .getTrustRelationsByObject( relationManagerService.toTrustObject(userSession, id, null, null, null,
                 relObjType ) );
         //.stream().filter( r -> !r.getSource().getId().equals( r.getTarget().getId() ) ).collect Collectors.toList() );
-        return Results.html().template( "views/_popup-view-permissions.ftl" ).render( "relations", rels );
+        return Results.html().metadata( "views/_popup-view-permissions.ftl" ).render( "relations", rels );
     }
 
 

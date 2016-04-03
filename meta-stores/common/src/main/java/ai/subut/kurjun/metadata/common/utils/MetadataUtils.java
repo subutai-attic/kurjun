@@ -139,7 +139,7 @@ public class MetadataUtils
 
 
     /**
-     * Converts supplied Subutai template metadata into its serializable form.
+     * Converts supplied Subutai metadata metadata into its serializable form.
      *
      * @param metadata meta data to convert
      *

@@ -46,17 +46,19 @@ public class RelationEntity implements Relation
 
 
     @Column( name = "source_object" )
-    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = RelationObjectEntity.class )
+    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = RelationObjectEntity.class,
+               orphanRemoval = true)
     private RelationObject source;
 
-
     @Column( name = "target_object" )
-    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = RelationObjectEntity.class )
+    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = RelationObjectEntity.class ,
+              orphanRemoval = true)
     private RelationObject target;
 
 
     @Column( name = "trust_object" )
-    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = RelationObjectEntity.class )
+    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = RelationObjectEntity.class ,
+               orphanRemoval = true)
     private RelationObject trustObject;
 
 

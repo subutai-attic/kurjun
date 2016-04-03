@@ -3,6 +3,7 @@ package ai.subut.kurjun.core.dao.model.identity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -154,5 +155,29 @@ public class UserTokenEntity implements UserToken, Serializable
     {
         this.validDate = validDate;
     }
+
+
+    //*************************
+    @Override
+    public boolean equals( Object obj )
+    {
+        if ( obj instanceof UserTokenEntity )
+        {
+            UserTokenEntity other = ( UserTokenEntity ) obj;
+            return Objects.equals( this.token , other.token );
+        }
+        return false;
+    }
+
+
+    //*************************
+    @Override
+    public int hashCode()
+    {
+        int hash = 5;
+        hash = 19 * hash + Objects.hashCode( this.token);
+        return hash;
+    }
+
 
 }

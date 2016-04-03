@@ -64,8 +64,8 @@ public class TemplateEntity implements SerializableMetadata, SubutaiTemplateMeta
     @Column( name = "size" )
     private long size;
 
-    @ElementCollection( fetch = FetchType.LAZY )
     @MapKeyColumn
+    @ElementCollection( fetch = FetchType.LAZY )
     @Column( name = "extra" )
     private Map<String, String> extra = new HashMap<>();
 

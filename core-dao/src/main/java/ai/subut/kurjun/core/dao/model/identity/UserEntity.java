@@ -12,9 +12,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.identity.UserToken;
@@ -60,8 +62,9 @@ public class UserEntity implements User, Serializable
     private int trustLevel = 3;
 
 
-    @Column( name = "user_token" )
-    @OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER,targetEntity = UserTokenEntity.class)
+    //@OneToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = UserTokenEntity.class )
+    //@JoinColumn(name="user_token", referencedColumnName="token")
+    @Transient
     private UserToken userToken = null;
 
 
