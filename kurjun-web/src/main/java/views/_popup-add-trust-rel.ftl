@@ -10,7 +10,8 @@
             <div>
                 <div class="b-form__wrapper">
                     <label for="target_fprint" class="b-form-label">Target fingerprint</label>
-                    <input type="text" name="target_fprint" id="target_fprint" />
+                    <input type="text"   name="target_obj_id" id="target_obj_id" />
+                    <input type="hidden" name="target_obj_type" value="1"/>
                 </div>
             </div>
             <div>
@@ -20,7 +21,7 @@
 
                     <div id="trust_obj_template">
                         <label class="b-form-label">Template ID</label>
-                        <input type="text" name="template_id" id="template_id" />
+                        <input type="text" name="trust_obj_id" id="trust_obj_id" />
                     </div>
                     <div id="trust_obj_repo" style="display:none">
                         <label class="b-form-label">Repo</label>

@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import ai.subut.kurjun.common.service.KurjunContext;
@@ -115,7 +116,7 @@ public class NoSqlPackageMetadataStoreTest
     @Test
     public void testGet() throws Exception
     {
-        Metadata res = store.get( meta.getMd5Sum() );
+        Metadata res = ( Metadata ) store.get( meta.getMd5Sum() );
         Assert.assertEquals( meta, res );
         Assert.assertNull( store.get( otherMd5 ) );
 
@@ -199,7 +200,7 @@ public class NoSqlPackageMetadataStoreTest
         pm.setFilename( pm.getPackage() + "-ver-arch.deb" );
         pm.setInstalledSize( 1234 );
         pm.setMaintainer( "Maintainer" );
-        pm.setMd5( DigestUtils.md5( pm.getFilename() ) );
+        pm.setMd5( Hex.encodeHexString( DigestUtils.md5( pm.getFilename() ) ) );
         pm.setPriority( Priority.important );
 
         DefaultDependency dep = new DefaultDependency();

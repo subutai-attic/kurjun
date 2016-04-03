@@ -1,16 +1,19 @@
 package ai.subut.kurjun.identity;
 
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
+
+import org.bouncycastle.openpgp.PGPPublicKeyRing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.commons.lang.time.DateUtils;
-import ai.subut.kurjun.db.file.FileDb;
-import ai.subut.kurjun.identity.service.FileDbProvider;
+
+import ai.subut.kurjun.core.dao.model.identity.UserEntity;
+import ai.subut.kurjun.core.dao.model.identity.UserTokenEntity;
+import ai.subut.kurjun.core.dao.service.identity.IdentityDataService;
 import ai.subut.kurjun.identity.service.IdentityManager;
 
 import com.google.common.base.Strings;
@@ -25,6 +28,7 @@ import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.identity.UserToken;
 import ai.subut.kurjun.model.identity.UserType;
 import ai.subut.kurjun.security.manager.service.SecurityManager;
+import ai.subut.kurjun.security.manager.utils.pgp.PGPKeyUtil;
 import ai.subut.kurjun.security.manager.utils.token.TokenUtils;
 
 
@@ -37,26 +41,27 @@ public class IdentityManagerImpl implements IdentityManager
 
     private static final Logger LOGGER = LoggerFactory.getLogger( IdentityManagerImpl.class );
     public  static final String PUBLIC_USER_ID = "public-user";
+    public  static final String PUBLIC_USER_NAME = "public";
+    public  static final String SYSTEM_USER_NAME = "subutai";
+
     public  static final int TOKEN_TTL = 180; // minutes
 
-
-    private FileDbProvider fileDbProvider;
     //***************************
-    @Inject
-    private SecurityManager securityManager;
-
-    @Inject
-    private RelationManager relationManager;
-
-
+    private IdentityDataService identityDataService = null;
+    private SecurityManager securityManager = null;
+    private RelationManager relationManager = null;
 
     //***************************
     @Inject
-    public IdentityManagerImpl( FileDbProvider fileDbProvider )
+    public IdentityManagerImpl( IdentityDataService identityDataService,
+                                SecurityManager securityManager,
+                                RelationManager relationManager)
     {
-        this.fileDbProvider = fileDbProvider;
+        this.identityDataService = identityDataService;
+        this.securityManager = securityManager;
+        this.relationManager = relationManager;
 
-        createDefaultUsers();
+        //createDefaultUsers();
     }
 
 
@@ -65,7 +70,7 @@ public class IdentityManagerImpl implements IdentityManager
     {
         if ( getUser( PUBLIC_USER_ID ) == null )
         {
-            User publicUser = addUser( PUBLIC_USER_ID, UserType.System.getId() );
+            User publicUser = addUser("public", PUBLIC_USER_ID, UserType.System.getId() );
         }
     }
 
@@ -82,7 +87,14 @@ public class IdentityManagerImpl implements IdentityManager
     @Override
     public User getPublicUser()
     {
-        return getUser( PUBLIC_USER_ID );
+        User user = getUser( PUBLIC_USER_ID );
+
+        if(user == null)
+        {
+            user = addUser("public", PUBLIC_USER_ID, UserType.System.getId() );
+        }
+
+        return user;
     }
 
 
@@ -100,7 +112,7 @@ public class IdentityManagerImpl implements IdentityManager
     {
         try
         {
-            User user = getUser( PUBLIC_USER_ID );
+            User user = getPublicUser();
             UserSession userSession = new DefaultUserSession();
             userSession.setUser( user );
 
@@ -169,10 +181,17 @@ public class IdentityManagerImpl implements IdentityManager
             if ( securityManager.verifyPGPSignatureAndContent( authMessage, user.getSignature(), user.getKeyData() ) )
             {
                 UserToken uToken = createUserToken( user, user.getKeyFingerprint(), "", "", null );
-                user.setUserToken( uToken );
 
                 //*************
-                saveUser( user );
+                if(user.getUserToken() == null)
+                {
+                    user.setUserToken( uToken );
+                    identityDataService.mergeUser(  user );
+                }
+                else
+                {
+                    identityDataService.mergeToken( uToken );
+                }
                 //*************
 
                 //*****************************************
@@ -233,11 +252,7 @@ public class IdentityManagerImpl implements IdentityManager
     {
         try
         {
-            FileDb fileDb = fileDbProvider.get();
-            User user = fileDb.get( DefaultUser.MAP_NAME, fingerprint.toLowerCase(), DefaultUser.class );
-            fileDb.close();
-
-            return user;
+            return identityDataService.getUser( fingerprint );
         }
         catch ( Exception ex )
         {
@@ -291,7 +306,7 @@ public class IdentityManagerImpl implements IdentityManager
 
             if ( Strings.isNullOrEmpty( fingerprint ) )
             {
-                user = addUser( publicKeyASCII, UserType.RegularOwner.getId() );
+                user = addUser(SYSTEM_USER_NAME, publicKeyASCII, UserType.RegularOwner.getId() );
             }
             else
             {
@@ -300,7 +315,10 @@ public class IdentityManagerImpl implements IdentityManager
                 if ( user != null )
                 {
                     user.setType( UserType.RegularOwner.getId() );
-                    saveUser( user );
+
+                    //***************************
+                    identityDataService.mergeUser( user );
+                    //***************************
                 }
                 else
                 {
@@ -320,15 +338,15 @@ public class IdentityManagerImpl implements IdentityManager
 
     //********************************************
     @Override
-    public User addUser( String publicKeyASCII )
+    public User addUser( String userName, String publicKeyASCII )
     {
-        return addUser( publicKeyASCII, UserType.Regular.getId() );
+        return addUser(userName, publicKeyASCII, UserType.Regular.getId() );
     }
 
 
     //********************************************
     @Override
-    public User addUser( String publicKeyASCII, int userType )
+    public User addUser( String userName, String publicKeyASCII, int userType )
     {
         User user = null;
 
@@ -336,17 +354,27 @@ public class IdentityManagerImpl implements IdentityManager
         {
             if ( userType == UserType.System.getId() )
             {
-                user = new DefaultUser();
-                user.setKeyId( publicKeyASCII );
+                user = new UserEntity();
+
+                user.setUserName( "public" );
                 user.setKeyFingerprint( publicKeyASCII );
                 user.setType( UserType.System.getId() );
-
             }
             else
             {
-                if ( !Strings.isNullOrEmpty( publicKeyASCII ) )
+                //*************************
+                if ( checkUserName( userName ) == 0 && !Strings.isNullOrEmpty( publicKeyASCII ) )
                 {
-                    user = new DefaultUser( securityManager.readPGPKey( publicKeyASCII ) );
+                    PGPPublicKeyRing pubKeyRing = securityManager.readPGPKeyRing( publicKeyASCII );
+
+                    user = new UserEntity(  );
+
+                    user.setUserName( userName );
+                    user.setKeyFingerprint( PGPKeyUtil.getFingerprint( pubKeyRing.getPublicKey().getFingerprint() ) );
+                    user.setKeyData( pubKeyRing.getEncoded() );
+                    user.setEmailAddress( securityManager.parseEmailAddress( pubKeyRing.getPublicKey() ) );
+                    user.setSignature( UUID.randomUUID().toString() );
+
                     user.setType( UserType.Regular.getId() );
                 }
                 else
@@ -355,12 +383,12 @@ public class IdentityManagerImpl implements IdentityManager
                 }
             }
 
-            //****************
+            //******************************
             if ( user != null )
             {
-                saveUser( user );
+                identityDataService.persistUser( user );
             }
-            //****************
+            //******************************
         }
         catch ( Exception ex )
         {
@@ -371,25 +399,6 @@ public class IdentityManagerImpl implements IdentityManager
         return user;
     }
 
-
-    //********************************************
-    @Override
-    public User saveUser( User user )
-    {
-        try
-        {
-            FileDb fileDb = fileDbProvider.get();
-            fileDb.put( DefaultUser.MAP_NAME, user.getKeyFingerprint().toLowerCase(), user );
-            fileDb.close();
-        }
-        catch ( Exception ex )
-        {
-            LOGGER.error( " ***** Error saving user:", ex );
-            return null;
-        }
-
-        return user;
-    }
 
 
     //********************************************
@@ -398,25 +407,12 @@ public class IdentityManagerImpl implements IdentityManager
     {
         try
         {
-            FileDb fileDb = fileDbProvider.get();
-            Map<String, User> map = fileDb.get( DefaultUser.MAP_NAME );
-            fileDb.close();
-
-            if ( map != null )
-            {
-                List<User> items = new ArrayList<>( map.values() );
-
-                return items;
-            }
-            else
-            {
-                return null;
-            }
+            return identityDataService.getAllUsers();
         }
         catch ( Exception ex )
         {
-            LOGGER.error( " ***** Error adding user:", ex );
-            return null;
+            LOGGER.error( " ***** Error getting user list:", ex );
+            return Collections.emptyList();
         }
     }
 
@@ -425,7 +421,8 @@ public class IdentityManagerImpl implements IdentityManager
     @Override
     public UserToken createUserToken( User user, String token, String secret, String issuer, Date validDate )
     {
-        UserToken userToken = new DefaultUserToken();
+
+        UserToken userToken = new UserTokenEntity();
 
         if ( Strings.isNullOrEmpty( token ) )
         {
@@ -459,6 +456,26 @@ public class IdentityManagerImpl implements IdentityManager
     public boolean hasPermmission( User user, RelationObject relationObject, Permission permission )
     {
         return true;
+    }
+    //********************************************
+
+
+    //********************************************
+    @Override
+    public int checkUserName( String userName )
+    {
+        if(Strings.isNullOrEmpty( userName ))
+            return 1;
+        else
+        {
+            if(userName.length()<3)
+                return 2;
+            else if(userName.toLowerCase().equals( "public" ) || userName.toLowerCase().equals( "admin" ))
+                return 3;
+            else
+                return 0;
+
+        }
     }
     //********************************************
 }

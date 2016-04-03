@@ -5,9 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
-
 import ai.subut.kurjun.model.index.Checksum;
 import ai.subut.kurjun.model.index.ChecksummedResource;
 
@@ -53,21 +50,10 @@ public class ReleaseChecksummedResource implements ChecksummedResource
 
 
     @Override
-    public byte[] getChecksum( Checksum type )
+    public String getChecksum( Checksum type )
     {
         String checksum = checksums.get( type );
-        if ( checksum != null )
-        {
-            try
-            {
-                return Hex.decodeHex( checksum.toCharArray() );
-            }
-            catch ( DecoderException ex )
-            {
-                throw new IllegalStateException( "Invalid checksum", ex );
-            }
-        }
-        return null;
+        return checksum;
     }
 
 
@@ -90,7 +76,5 @@ public class ReleaseChecksummedResource implements ChecksummedResource
         hash = 97 * hash + Objects.hashCode( this.path );
         return hash;
     }
-
-
 }
 

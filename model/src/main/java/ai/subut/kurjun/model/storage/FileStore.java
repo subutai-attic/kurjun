@@ -21,7 +21,7 @@ public interface FileStore
      *
      * @throws IOException if there are problems accessing the store
      */
-    boolean contains( byte[] md5 ) throws IOException;
+    boolean contains( String md5 ) throws IOException;
 
 
     /**
@@ -33,7 +33,7 @@ public interface FileStore
      *
      * @throws IOException if there are problems access the store
      */
-    InputStream get( byte[] md5 ) throws IOException;
+    InputStream get( String md5 ) throws IOException;
 
 
     /**
@@ -46,7 +46,7 @@ public interface FileStore
      *
      * @throws IOException if there are problems accessing the store or writing to the target file
      */
-    boolean get( byte[] md5, File target ) throws IOException;
+    boolean get( String md5, File target ) throws IOException;
 
 
     /**
@@ -58,7 +58,7 @@ public interface FileStore
      *
      * @throws IOException if there are problems accessing the store or the source file
      */
-    byte[] put( File source ) throws IOException;
+    String put( File source ) throws IOException;
 
     /**
      * Puts a source file into the store.
@@ -80,7 +80,7 @@ public interface FileStore
      *
      * @throws IOException if there are problems accessing the store or the source file
      */
-    byte[] put( URL source ) throws IOException;
+    String put( URL source ) throws IOException;
 
 
     /**
@@ -93,7 +93,7 @@ public interface FileStore
      *
      * @throws IOException if there are problems accessing the store or the source content
      */
-    byte[] put( String filename, InputStream source ) throws IOException;
+    String put( String filename, InputStream source ) throws IOException;
 
 
     /**
@@ -105,7 +105,7 @@ public interface FileStore
      *
      * @throws IOException if there are problems accessing the store
      */
-    boolean remove( byte[] md5 ) throws IOException;
+    boolean remove( String md5 ) throws IOException;
 
 
     /**
@@ -123,7 +123,7 @@ public interface FileStore
      *
      * @return size of the package file in bytes if found; otherwise - 0L
      */
-    long sizeOf( byte[] md5 ) throws IOException;
+    long sizeOf( String md5 ) throws IOException;
 
 //    /**
 //     * Returns UUID based filename

@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -43,7 +42,6 @@ import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.RemoteRepository;
-
 import ai.subut.kurjun.repo.cache.PackageCache;
 import ai.subut.kurjun.repo.util.PathBuilder;
 import ai.subut.kurjun.repo.util.http.WebClientFactory;
@@ -200,10 +198,10 @@ class RemoteAptRepository extends RemoteRepositoryBase
             {
                 InputStream inputStream = ( InputStream ) resp.getEntity();
 
-                byte[] md5Calculated = cacheStream( inputStream );
+                String md5Calculated = cacheStream( inputStream );
 
                 // compare the requested and received md5 checksums
-                if ( Arrays.equals( pm.getMd5Sum(), md5Calculated ) )
+                if ( pm.getMd5Sum().equalsIgnoreCase( md5Calculated ) )
                 {
                     return cache.get( md5Calculated );
                 }
@@ -325,11 +323,11 @@ class RemoteAptRepository extends RemoteRepositoryBase
     }
 
 
-    private SerializableMetadata findByMd5( byte[] md5Sum, List<SerializableMetadata> items )
+    private SerializableMetadata findByMd5( String md5Sum, List<SerializableMetadata> items )
     {
         for ( SerializableMetadata item : items )
         {
-            if ( Arrays.equals( item.getMd5Sum(), md5Sum ) )
+            if ( item.getMd5Sum().equalsIgnoreCase( md5Sum ) )
             {
                 return item;
             }
@@ -384,7 +382,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
 
 
             @Override
-            public byte[] getChecksum( Checksum type )
+            public String getChecksum( Checksum type )
             {
                 throw new UnsupportedOperationException( "Not to be used." );
             }

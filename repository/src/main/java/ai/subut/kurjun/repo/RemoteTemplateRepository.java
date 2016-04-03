@@ -7,7 +7,6 @@ import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,7 +15,6 @@ import java.util.Set;
 
 import javax.ws.rs.core.Response;
 
-import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +41,6 @@ import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
-
 import ai.subut.kurjun.repo.cache.PackageCache;
 import ai.subut.kurjun.repo.util.http.WebClientFactory;
 
@@ -74,12 +71,12 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
 
     private String token = null;
 
-    private String md5Sum = "-1";
+    private String md5Sum = "";
     private List<SerializableMetadata> remoteIndexChache = new LinkedList<>();
 
 
     private static final int CONN_TIMEOUT = 3000;
-    private static final int READ_TIMEOUT = 10000;
+    private static final int READ_TIMEOUT = 3000;
     private static final int CONN_TIMEOUT_FOR_URL_CHECK = 200;
 
     private String context;
@@ -114,6 +111,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     private void _initCache()
     {
         this.remoteIndexChache = listPackages();
+        this.md5Sum = getMd5();
     }
 
 
@@ -179,14 +177,11 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     @Override
     public InputStream getPackageStream( Metadata metadata )
     {
-
         InputStream cachedStream = checkCache( metadata );
-
         if ( cachedStream != null )
         {
             return cachedStream;
         }
-
 
         WebClient webClient =
                 webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + GET_PATH, makeParamsMap( metadata ) );
@@ -205,10 +200,10 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
             {
                 InputStream inputStream = ( InputStream ) resp.getEntity();
 
-                byte[] md5Calculated = cacheStream( inputStream );
+                String md5Calculated = cacheStream( inputStream );
 
                 // compare the requested and received md5 checksums
-                if ( Arrays.equals( metadata.getMd5Sum(), md5Calculated ) )
+                if ( metadata.getMd5Sum().equalsIgnoreCase( md5Calculated ) )
                 {
                     return cache.get( md5Calculated );
                 }
@@ -216,10 +211,10 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
                 {
                     deleteCache( md5Calculated );
 
-                    LOGGER.error( "Md5 checksum mismatch after getting the package from remote host. "
-                                    + "Requested with md5={}, name={}, version={}", Hex.toHexString( metadata
-                            .getMd5Sum() ),
-                            metadata.getName(), metadata.getVersion() );
+                    //LOGGER.error( "Md5 checksum mismatch after getting the package from remote host. "
+                    // + "Requested with md5={}, name={}, version={}", Hex.toHexString( metadata
+                    // .getMd5Sum() ),
+                    // metadata.getName(), metadata.getVersion() );
                 }
             }
         }
@@ -230,14 +225,11 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     @Override
     public List<SerializableMetadata> listPackages()
     {
-        String newMd5 = getMd5();
 
-        if ( this.md5Sum.equalsIgnoreCase( newMd5 ) && !this.md5Sum.equalsIgnoreCase( "0" ) )
+        if ( this.md5Sum.equalsIgnoreCase( getMd5() ) )
         {
             return this.remoteIndexChache;
         }
-
-
         Map<String, String> params = makeParamsMap( new DefaultMetadata() );
         params.put( "repository", "local" );
 
@@ -258,7 +250,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
                     List<String> items = IOUtils.readLines( ( InputStream ) resp.getEntity() );
 
                     this.remoteIndexChache = toObjectList( items.get( 0 ) );
-                    this.md5Sum = newMd5;
+
                     return this.remoteIndexChache;
                 }
                 catch ( IOException ex )
@@ -267,9 +259,6 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
                 }
             }
         }
-
-        LOGGER.warn( "Response status code: {}, returning empty list", resp != null ? resp.getStatus() : 0 );
-
         return Collections.emptyList();
     }
 
@@ -373,7 +362,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         objectMapper.configure( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false );
         try
         {
-            return objectMapper.readValue( items, new TypeReference<LinkedList<DefaultTemplate>>()
+            return objectMapper.readValue( items, new TypeReference<List<DefaultTemplate>>()
             {
             } );
         }

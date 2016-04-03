@@ -80,21 +80,21 @@ class FileSystemFileStore implements FileStore
 
 
     @Override
-    public boolean contains( byte[] md5 ) throws IOException
+    public boolean contains( String md5 ) throws IOException
     {
         try ( FileDb fileDb = new FileDb( makeDbFilePath() ) )
         {
-            return fileDb.contains( MAP_NAME, Hex.encodeHexString( md5 ) );
+            return fileDb.contains( MAP_NAME, md5 );
         }
     }
 
 
     @Override
-    public InputStream get( byte[] md5 ) throws IOException
+    public InputStream get( String md5 ) throws IOException
     {
         try ( FileDb fileDb = new FileDb( makeDbFilePath() ) )
         {
-            String path = fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), String.class );
+            String path = fileDb.get( MAP_NAME, md5, String.class );
 
             if ( path != null )
             {
@@ -109,7 +109,7 @@ class FileSystemFileStore implements FileStore
 
 
     @Override
-    public boolean get( byte[] md5, File target ) throws IOException
+    public boolean get( String md5, File target ) throws IOException
     {
         try ( InputStream is = get( md5 ) )
         {
@@ -124,7 +124,7 @@ class FileSystemFileStore implements FileStore
 
 
     @Override
-    public byte[] put( File source ) throws IOException
+    public String put( File source ) throws IOException
     {
         try ( InputStream is = new FileInputStream( source ) )
         {
@@ -135,7 +135,7 @@ class FileSystemFileStore implements FileStore
 
 
     @Override
-    public byte[] put( URL source ) throws IOException
+    public String put( URL source ) throws IOException
     {
         try ( InputStream is = source.openStream() )
         {
@@ -146,7 +146,7 @@ class FileSystemFileStore implements FileStore
 
 
     @Override
-    public byte[] put( String filename, InputStream source ) throws IOException
+    public String put( String filename, InputStream source ) throws IOException
     {
         Objects.requireNonNull( filename, "Filename" );
 
@@ -155,12 +155,12 @@ class FileSystemFileStore implements FileStore
         Files.createDirectories( subDir );
 
         Path target = Files.createTempFile( subDir, filename, "" );
-        byte[] md5 = copyStream( source, target );
+        String md5 = copyStream( source, target );
 
         try ( FileDb fileDb = new FileDb( makeDbFilePath() ) )
         {
             // check if we already have a file with the calculated md5 checksum, if so just replace the old file
-            String existingPath = fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), String.class );
+            String existingPath = fileDb.get( MAP_NAME, md5, String.class );
             if ( existingPath != null )
             {
                 Files.move( target, Paths.get( existingPath ), StandardCopyOption.REPLACE_EXISTING );
@@ -169,7 +169,7 @@ class FileSystemFileStore implements FileStore
             }
             else
             {
-                fileDb.put( MAP_NAME, Hex.encodeHexString( md5 ), target.toAbsolutePath().toString() );
+                fileDb.put( MAP_NAME, md5, target.toAbsolutePath().toString() );
             }
         }
         return md5;
@@ -228,9 +228,9 @@ class FileSystemFileStore implements FileStore
 
 
     @Override
-    public boolean remove( byte[] md5 ) throws IOException
+    public boolean remove( String md5 ) throws IOException
     {
-        String hexMd5 = Hex.encodeHexString( md5 );
+        String hexMd5 = md5;
         try ( FileDb fileDb = new FileDb( makeDbFilePath() ) )
         {
             String path = fileDb.get( MAP_NAME, hexMd5, String.class );
@@ -278,11 +278,11 @@ class FileSystemFileStore implements FileStore
 
 
     @Override
-    public long sizeOf( byte[] md5 ) throws IOException
+    public long sizeOf( String md5 ) throws IOException
     {
         try ( FileDb fileDb = new FileDb( makeDbFilePath() ) )
         {
-            String path = fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), String.class );
+            String path = fileDb.get( MAP_NAME, md5, String.class );
             if ( path != null )
             {
                 return Files.size( Paths.get( path ) );
@@ -302,12 +302,13 @@ class FileSystemFileStore implements FileStore
      *
      * @throws IOException if i/o errors occur
      */
-    private byte[] copyStream( InputStream source, Path dest ) throws IOException
+    private String copyStream( InputStream source, Path dest ) throws IOException
     {
         try ( DigestInputStream is = new DigestInputStream( source, DigestUtils.getMd5Digest() ) )
         {
             Files.copy( is, dest, StandardCopyOption.REPLACE_EXISTING );
-            return is.getMessageDigest().digest();
+
+            return Hex.encodeHexString( is.getMessageDigest().digest() );
         }
     }
 

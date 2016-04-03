@@ -2,7 +2,6 @@ package ai.subut.kurjun.repo.cache;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -51,7 +50,7 @@ public class MetadataCacheImpl implements MetadataCache
 
 
     @Override
-    public SerializableMetadata get( byte[] md5 )
+    public SerializableMetadata get( String md5 )
     {
         Objects.requireNonNull( md5, "MD5 checksum" );
 
@@ -61,7 +60,7 @@ public class MetadataCacheImpl implements MetadataCache
         }
         for ( SerializableMetadata m : metadata )
         {
-            if ( Arrays.equals( m.getMd5Sum(), md5 ) )
+            if ( m.getMd5Sum().equalsIgnoreCase( md5 ) )
             {
                 return m;
             }
@@ -119,7 +118,5 @@ public class MetadataCacheImpl implements MetadataCache
             lock.unlock();
         }
     }
-
-
 }
 

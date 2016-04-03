@@ -4,6 +4,7 @@ package ai.subut.kurjun.metadata.storage.file;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -12,12 +13,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 import com.google.inject.ProvisionException;
 import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.service.KurjunProperties;
+import ai.subut.kurjun.core.dao.service.template.TemplateDataService;
 import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.metadata.common.MetadataListingImpl;
 import ai.subut.kurjun.model.metadata.MetadataListing;
@@ -27,11 +32,16 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
 
 class DbFilePackageMetadataStore implements PackageMetadataStore
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger( DbFilePackageMetadataStore.class );
+
     private static final String MAP_NAME = "checksum-to-metadata";
 
     int batchSize = 1000;
 
     private Path fileDbPath;
+
+    @Inject
+    private TemplateDataService templateDataService;
 
 
     /**
@@ -64,11 +74,14 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
     {
         try
         {
+            //return templateDataService.find( id ) != null;
+            //*
             FileDb fileDb = new FileDb( fileDbPath.toString());
             boolean contains = fileDb.contains( MAP_NAME, id );
             fileDb.close();
 
             return contains;
+            //*/
         }
         catch(Exception ex)
         {
@@ -84,8 +97,11 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
         try
         {
+            //return templateDataService.find( id );
+            //*
             fileDb = new FileDb( fileDbPath.toString() );
             return fileDb.get( MAP_NAME, id, SerializableMetadata.class );
+            //*/
         }
         finally
         {
@@ -109,9 +125,12 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
         try
         {
+            //items = templateDataService.findAll();
+            //*
             fileDb = new FileDb( fileDbPath.toString() );
             Map<String, SerializableMetadata> map = fileDb.get( MAP_NAME );
             items = map.values();
+            //*/
         }
         finally
         {
@@ -141,8 +160,11 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
             try
             {
+                //*
                 fileDb = new FileDb( fileDbPath.toString() );
                 fileDb.put( MAP_NAME, meta.getId(), meta );
+                //*/
+                //templateDataService.persist( meta );
             }
             finally
             {
@@ -163,19 +185,32 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
         try
         {
+            //*
             fileDb = new FileDb( fileDbPath.toString() );
 
             return fileDb.remove( MAP_NAME, id ) != null;
+            //*/
+            /*
+            LOGGER.info( "here should faile *******************" );
+            SerializableMetadata metadata = templateDataService.find( id.toString() );
+            LOGGER.info( "not failed yet *******************" );
+            if ( metadata != null )
+            {
+                return templateDataService.delete( metadata );
+            }
+            */
+
         }
         catch(Exception ex)
         {
-            return false;
         }
         finally
         {
             if(fileDb != null)
                 fileDb.close();
         }
+
+        return false;
     }
 
 
@@ -201,11 +236,14 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
     {
         Map<String, SerializableMetadata> map;
         FileDb fileDb = null;
-
+        List<SerializableMetadata> metadataList = new ArrayList<>(  );
         try
         {
+            //metadataList = templateDataService.findAll();
+            //*
             fileDb = new FileDb( fileDbPath.toString());
             map = fileDb.get( MAP_NAME );
+            //*/
         }
         finally
         {
@@ -213,7 +251,7 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
                 fileDb.close();
         }
 
-        Collection<SerializableMetadata> items = map.values();
+        Collection<SerializableMetadata> items = metadataList;//map.values();
 
         // sort items by names
         Stream<SerializableMetadata> stream =

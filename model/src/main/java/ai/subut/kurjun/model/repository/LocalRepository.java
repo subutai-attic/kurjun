@@ -53,13 +53,13 @@ public interface LocalRepository extends Repository
      * may be caused by various reasons, for example when package for supplied md5 could not be found, or if package
      * deletion is not permitted.
      */
-    boolean delete( byte[] md5 ) throws IOException;
+    boolean delete( String md5 ) throws IOException;
 
 
-    boolean delete( Object id, byte[] md5 ) throws IOException;
+    boolean delete( Object id, String md5 ) throws IOException;
 
     Object getContext();
 
-    byte[] md5();
+    String md5();
 }
 

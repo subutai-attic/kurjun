@@ -55,6 +55,14 @@
         $('li#hdr_raw_tab').addClass("b-tabs-menu__item_active");
 
         $('#raw_files_tbl').DataTable();
+
+      $('table.dataTable').on( 'page.dt', function () {
+        setTimeout( function () { recreateColorboxes(); }, 1000 );
+      } );
+      $('table.dataTable').on( 'length.dt', function ( e, settings, len ) {
+        setTimeout( function () { recreateColorboxes(); }, 1000 );
+      } );
+
     } );
 
 

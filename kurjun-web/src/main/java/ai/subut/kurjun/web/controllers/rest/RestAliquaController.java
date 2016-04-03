@@ -11,7 +11,6 @@ import ai.subut.kurjun.web.controllers.BaseController;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
 import ai.subut.kurjun.web.model.KurjunFileItem;
 import ai.subut.kurjun.web.service.RawManagerService;
-import ai.subut.kurjun.web.utils.Utils;
 import ninja.Context;
 import ninja.Renderable;
 import ninja.Result;
@@ -55,7 +54,8 @@ public class RestAliquaController extends BaseController
 
         //********************************************
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-        metadata = rawManagerService.put( uSession, kurjunFileItem.getFile(), kurjunFileItem.getFileName(), fingerprint );
+        metadata =
+                rawManagerService.put( uSession, kurjunFileItem.getFile(), kurjunFileItem.getFileName(), fingerprint );
         //********************************************
 
         if ( metadata != null )
@@ -84,7 +84,7 @@ public class RestAliquaController extends BaseController
         //temp contains [fprint].[md5]
         if ( temp.length == 2 )
         {
-            renderable = rawManagerService.getFile( temp[0], Utils.MD5.toByteArray( temp[1] ) );
+            renderable = rawManagerService.getFile( temp[0], temp[1] );
         }
         if ( renderable != null )
         {
@@ -111,7 +111,7 @@ public class RestAliquaController extends BaseController
         {
             //********************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            success = rawManagerService.delete(uSession, temp[0], Utils.MD5.toByteArray( temp[1] ) );
+            success = rawManagerService.delete( uSession, temp[0], temp[1] );
             //********************************************
         }
 
@@ -159,7 +159,7 @@ public class RestAliquaController extends BaseController
             fingerprint = "raw";
         }
         rawMetadata.setName( name );
-        rawMetadata.setMd5Sum( Utils.MD5.toByteArray( md5 ) );
+        rawMetadata.setMd5Sum( md5 );
         rawMetadata.setFingerprint( fingerprint );
 
         Metadata metadata = rawManagerService.getInfo( rawMetadata );

@@ -31,6 +31,7 @@
             <thead>
             <tr>
                 <th>email</th>
+                <th>UserName</th>
                 <th>fingerprint</th>
                 <th>Auth ID</th>
             </tr>
@@ -40,6 +41,7 @@
                 <#list users as u >
                 <tr>
                     <td><#if u.emailAddress??>${u.emailAddress}</#if></td>
+                    <td>${u.userName}</td>
                     <td>${u.keyFingerprint}</td>
                     <td>${u.signature}</td>
                 </tr>
@@ -60,6 +62,14 @@
         $('#get-sys-owner').colorbox({href:"${contextPath}/system/owner"});
 
         $('#users_tbl').DataTable();
+
+      $('table.dataTable').on( 'page.dt', function () {
+        setTimeout( function () { recreateColorboxes(); }, 1000 );
+      } );
+      $('table.dataTable').on( 'length.dt', function ( e, settings, len ) {
+        setTimeout( function () { recreateColorboxes(); }, 1000 );
+      } );
+
     } );
 
 </script>

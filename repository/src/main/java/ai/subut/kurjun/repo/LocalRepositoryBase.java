@@ -3,13 +3,13 @@ package ai.subut.kurjun.repo;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.commons.codec.binary.Hex;
 
@@ -37,7 +37,7 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
         {
             if ( metadata.getId() != null || metadata.getMd5Sum() != null )
             {
-                return metadataStore.get( metadata.getId() != null? metadata.getId() : new BigInteger( 1, metadata.getMd5Sum() ).toString( 16 ) );
+                return metadataStore.get( metadata.getId() != null ? metadata.getId() : metadata.getMd5Sum() );
             }
             if ( metadata.getName() != null )
             {
@@ -79,10 +79,11 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
         return null;
     }
 
-
+    private static Logger LOGGER = LoggerFactory.getLogger( LocalRepositoryBase.class );
     @Override
     public List<SerializableMetadata> listPackages()
     {
+        LOGGER.info( "listing packages " );
         PackageMetadataStore metadataStore = getMetadataStore();
         List<SerializableMetadata> result = new LinkedList<>();
         try
@@ -100,6 +101,7 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
         {
             getLogger().error( "Failed to list package in metadata store", ex );
         }
+        LOGGER.info( " returning listing packages " );
         return result;
     }
 
@@ -112,14 +114,14 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
 
 
     @Override
-    public boolean delete( byte[] md5 ) throws IOException
+    public boolean delete( String md5 ) throws IOException
     {
-        return delete( Hex.encodeHexString( md5 ), md5 );
+        return delete( md5, md5 );
     }
 
 
     @Override
-    public boolean delete( Object id, byte[] md5 ) throws IOException
+    public boolean delete( Object id, String md5 ) throws IOException
     {
         PackageMetadataStore metadataStore = getMetadataStore();
         FileStore fileStore = getFileStore();
@@ -180,7 +182,7 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
 
 
     @Override
-    public byte[] md5()
+    public String md5()
     {
         try
         {
@@ -190,7 +192,9 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
             if ( list.size() != 0 )
             {
                 messageDigest.update( list.toString().getBytes() );
-                return messageDigest.digest();
+
+                byte[] md5 = messageDigest.digest();
+                return Hex.encodeHexString( md5 );
             }
         }
         catch ( NoSuchAlgorithmException e )
@@ -198,7 +202,7 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
             e.printStackTrace();
         }
 
-        return new byte[0];
+        return "";
     }
 }
 

@@ -97,9 +97,9 @@ class S3FileStore implements FileStore
 
 
     @Override
-    public boolean contains( byte[] md5 ) throws IOException
+    public boolean contains( String md5 ) throws IOException
     {
-        String hex = Hex.encodeHexString( md5 );
+        String hex = md5;
         String key = makeKey( hex );
 
         ListObjectsRequest lor = new ListObjectsRequest();
@@ -130,10 +130,10 @@ class S3FileStore implements FileStore
 
 
     @Override
-    public InputStream get( byte[] md5 ) throws IOException
+    public InputStream get( String md5 ) throws IOException
     {
         Objects.requireNonNull( md5, "Checksum" );
-        String hex = Hex.encodeHexString( md5 );
+        String hex = md5;
 
         GetObjectRequest gor = new GetObjectRequest( bucketName, makeKey( hex ) );
         try
@@ -150,7 +150,7 @@ class S3FileStore implements FileStore
 
 
     @Override
-    public boolean get( byte[] md5, File target ) throws IOException
+    public boolean get( String md5, File target ) throws IOException
     {
         Objects.requireNonNull( target, "Target file" );
         try ( InputStream is = get( md5 ) )
@@ -166,14 +166,17 @@ class S3FileStore implements FileStore
 
 
     @Override
-    public byte[] put( File source ) throws IOException
+    public String put( File source ) throws IOException
     {
         Objects.requireNonNull( source, "Source file" );
+
         byte[] md5;
+
         try ( InputStream is = new FileInputStream( source ) )
         {
             md5 = DigestUtils.md5( is );
         }
+
         String hex = Hex.encodeHexString( md5 );
 
         PutObjectRequest por = new PutObjectRequest( bucketName, makeKey( hex ), source );
@@ -198,19 +201,12 @@ class S3FileStore implements FileStore
                 tm.shutdownNow( false );
             }
         }
-        return md5;
+        return hex;
     }
 
 
     @Override
-    public byte[] put( final InputStream source ) throws IOException
-    {
-        return new byte[0];
-    }
-
-
-    @Override
-    public byte[] put( URL source ) throws IOException
+    public String put( URL source ) throws IOException
     {
         Objects.requireNonNull( source, "Source URL" );
         File file = File.createTempFile( "s3_", null );
@@ -227,7 +223,7 @@ class S3FileStore implements FileStore
 
 
     @Override
-    public byte[] put( String filename, InputStream source ) throws IOException
+    public String put( String filename, InputStream source ) throws IOException
     {
         // filename IS IGNORED in this implementation!!!
 
@@ -246,10 +242,10 @@ class S3FileStore implements FileStore
 
 
     @Override
-    public boolean remove( byte[] md5 ) throws IOException
+    public boolean remove( String md5 ) throws IOException
     {
         Objects.requireNonNull( md5, "Checksum" );
-        String hex = Hex.encodeHexString( md5 );
+        String hex = md5;
         if ( contains( md5 ) )
         {
             DeleteObjectRequest dor = new DeleteObjectRequest( bucketName, makeKey( hex ) );
@@ -291,13 +287,12 @@ class S3FileStore implements FileStore
 
 
     @Override
-    public long sizeOf( byte[] md5 ) throws IOException
+    public long sizeOf( String md5 ) throws IOException
     {
-        String hex = Hex.encodeHexString( md5 );
 
         ListObjectsRequest lor = new ListObjectsRequest();
         lor.setBucketName( bucketName );
-        lor.setPrefix( makeKey( hex ) );
+        lor.setPrefix( makeKey( md5 ) );
 
         // here we list items by supplied md5 digest value which is a uniquely identifying parameter
         // so there is no checks if listing is truncated or not. The listing can have one value or any.
@@ -311,7 +306,5 @@ class S3FileStore implements FileStore
     {
         return s.substring( 0, 2 ) + "/" + s;
     }
-
-
 }
 

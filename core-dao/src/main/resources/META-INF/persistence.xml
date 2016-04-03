@@ -1,0 +1,32 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+             version="2.0">
+  <persistence-unit name="PU_KURJUN" transaction-type="RESOURCE_LOCAL">
+    <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+
+    <class>ai.subut.kurjun.core.dao.model.identity.UserEntity</class>
+    <class>ai.subut.kurjun.core.dao.model.identity.UserTokenEntity</class>
+    <class>ai.subut.kurjun.core.dao.model.identity.RelationEntity</class>
+    <class>ai.subut.kurjun.core.dao.model.identity.RelationObjectEntity</class>
+    <class>ai.subut.kurjun.core.dao.model.metadata.TemplateEntity</class>
+
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+
+    <properties>
+      <property name="openjpa.ConnectionDriverName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+
+      <property name="openjpa.ConnectionDriverName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+      <property name="openjpa.ConnectionURL" value="jdbc:derby:/tmp/var/lib/kurjun/derbyDb;create=true"/>
+      <property name="openjpa.ConnectionUserName" value="sa"/>
+      <property name="openjpa.ConnectionPassword" value=""/>
+
+      <property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
+      <property name="openjpa.Log" value="DefaultLevel=INFO, Tool=INFO, SQL=INFO" />
+      <property name="openjpa.ConnectionFactoryProperties" value="PrintParameters=true" />
+      <property name="openjpa.jdbc.DBDictionary" value="derby" />
+      <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+    </properties>
+
+  </persistence-unit>
+</persistence>

@@ -44,7 +44,11 @@
             <#list templates as t >
             <tr>
                 <td><a href="${contextPath}/templates/${t.id}/info" class="js-colorbox">${t.name}</a></td>
-                <td>${(owners[t.id]??)?then(owners[t.id],"")}</td>
+                <td>
+                <#if owners??>
+                    ${(owners[t.id]??)?then(owners[t.id],"")}
+                </#if>
+                </td>
                 <td>${t.id?split(".")[0]}</td>
                 <td>${t.architecture}</td>
                 <td>${t.parent}</td>
@@ -87,6 +91,13 @@
         $('#repo-filter').on('change', function(e){
             $(this).parent().submit();
         });
+
+        $('table.dataTable').on( 'page.dt', function () {
+            setTimeout( function () { recreateColorboxes(); }, 1000 );
+        } );
+        $('table.dataTable').on( 'length.dt', function ( e, settings, len ) {
+            setTimeout( function () { recreateColorboxes(); }, 1000 );
+        } );
     } );
 
 </script>

@@ -18,8 +18,10 @@ import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 /**
  * Package cache that can be used in non-local repository implementations where packages fetched from remote repository
- * need to be cached locally. <p> This is basically a wrapper to local file system backed file store. A {@link
- * CachingContext} instance is used to inject such a file store.
+ * need to be cached locally.
+ * <p>
+ * This is basically a wrapper to local file system backed file store. A {@link CachingContext} instance is used to
+ * inject such a file store.
  */
 public class PackageCache
 {
@@ -28,6 +30,7 @@ public class PackageCache
     private FileStoreFactory fileStoreFactory;
 
     private final String LOG_MESSAGE = "Failed to check cache";
+
     private KurjunContext context = new CachingContext();
 
 
@@ -39,7 +42,7 @@ public class PackageCache
     }
 
 
-    public boolean contains( byte[] md5 )
+    public boolean contains( String md5 )
     {
         try
         {
@@ -51,9 +54,9 @@ public class PackageCache
             return false;
         }
     }
-
-
-    public boolean delete( byte[] md5 )
+    
+    
+    public boolean delete( String md5 )
     {
         try
         {
@@ -66,8 +69,7 @@ public class PackageCache
         }
     }
 
-
-    public InputStream get( byte[] md5 )
+    public InputStream get( String md5 )
     {
         try
         {
@@ -81,26 +83,11 @@ public class PackageCache
     }
 
 
-    public byte[] put( File file )
+    public String put( File file )
     {
         try
         {
-
             return getFileStore().put( file );
-        }
-        catch ( IOException ex )
-        {
-            LOGGER.info( LOG_MESSAGE, ex );
-            return null;
-        }
-    }
-
-
-    public byte[] put( InputStream is )
-    {
-        try
-        {
-            return getFileStore().put(is);
         }
         catch ( IOException ex )
         {
@@ -114,5 +101,6 @@ public class PackageCache
     {
         return fileStoreFactory.create( context );
     }
+
 }
 

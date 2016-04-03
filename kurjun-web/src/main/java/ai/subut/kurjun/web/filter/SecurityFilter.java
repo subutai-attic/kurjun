@@ -30,8 +30,6 @@ public class SecurityFilter implements Filter
     @Override
     public Result filter( final FilterChain filterChain, final Context ctx )
     {
-        LOGGER.info( "***** SecurityFilter called " );
-
         try
         {
             Session session = ctx.getSession();
@@ -75,7 +73,7 @@ public class SecurityFilter implements Filter
         }
         catch(Exception ex)
         {
-            LOGGER.error( "Not passed SecurityFilter: "+ex.getMessage() );
+            LOGGER.error( "Not passed SecurityFilter: "+ex.getMessage(), ex );
             return Results.forbidden().render( "Not allowed" ).text();
         }
 

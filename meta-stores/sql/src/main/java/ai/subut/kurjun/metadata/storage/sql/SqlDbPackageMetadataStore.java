@@ -13,7 +13,6 @@ import java.util.Objects;
 import java.util.Properties;
 
 import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
@@ -268,10 +267,8 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
     private DefaultMetadata makeMetadata( ResultSet current ) throws SQLException, DecoderException
     {
         String md5hex = current.getString( SqlStatements.CHECKSUM_COLUMN );
-        byte[] md5 = Hex.decodeHex( md5hex.toCharArray() );
-
         DefaultMetadata meta = new DefaultMetadata();
-        meta.setMd5sum( md5 );
+        meta.setMd5sum( md5hex );
         meta.setName( current.getString( SqlStatements.NAME_COLUMN ) );
         meta.setVersion( current.getString( SqlStatements.VERSION_COLUMN ) );
         meta.setSerialized( current.getString( SqlStatements.DATA_COLUMN ) );
