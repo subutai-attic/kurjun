@@ -15,10 +15,8 @@ import ai.subut.kurjun.model.repository.PackageType;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
 
 
-
 /**
  * Factory interface to create repositories.
- *
  */
 public interface RepositoryFactory
 {
@@ -27,7 +25,6 @@ public interface RepositoryFactory
      * Creates non-virtual local apt repository at specified base directory.
      *
      * @param baseDirectory base directory of the local repository
-     * @return
      */
     @Named( "APT_WRAPPER" )
     LocalRepository createLocalAptWrapper( String baseDirectory );
@@ -37,6 +34,7 @@ public interface RepositoryFactory
      * Creates virtual repository for the supplied context.
      *
      * @param context context
+     *
      * @return Kurjun local apt repository
      */
     @Named( PackageType.DEB )
@@ -47,21 +45,19 @@ public interface RepositoryFactory
      * Creates local snap repository for the supplied context.
      *
      * @param context context
+     *
      * @return local snap repository
      */
     @Named( PackageType.SNAP )
     LocalRepository createLocalSnap( KurjunContext context );
-    
-    
+
+
     @Named( PackageType.RAW )
     LocalRawRepository createLocalRaw( KurjunContext context );
 
 
     /**
      * Creates local templates repository for the supplied context.
-     *
-     * @param context
-     * @return
      */
     @Named( PackageType.SUBUTAI )
     LocalRepository createLocalTemplate( KurjunContext context );
@@ -72,15 +68,15 @@ public interface RepositoryFactory
      *
      * @param url URL to remote repository
      * @param identity identity to be used for requests for remote repo, maybe {@code null}
+     *
      * @return non-local snap repository
      */
     @Named( PackageType.SNAP )
     RemoteRepository createNonLocalSnap( String url, @Nullable User identity );
-    
-    
-    
+
+
     @Named( PackageType.RAW )
-    RemoteRawRepository createNonLocalRaw( @Assisted( "url" ) String url, @Nullable User identity );
+    RemoteRawRepository createNonLocalRaw( @Assisted( "url" ) String url, @Nullable User identity, String fetchType );
 
 
     /**
@@ -90,17 +86,20 @@ public interface RepositoryFactory
      * @param identity identity to be used for requests for remote repo, maybe {@code null}
      * @param kurjunContext kurjun context
      * @param token access token to the remote repository
+     *
      * @return non-local template repository
      */
     @Named( PackageType.SUBUTAI )
     RemoteRepository createNonLocalTemplate( @Assisted( "url" ) String url, @Nullable User identity,
-                                             @Assisted( "context" ) String kurjunContext, @Assisted( "token" ) @Nullable String token );
+                                             @Assisted( "context" ) String kurjunContext,
+                                             @Assisted( "token" ) @Nullable String token, String fetchType );
 
 
     /**
      * Creates non-local virtual apt repository at specified URL.
      *
      * @param url URL to remote repository
+     *
      * @return non-local template repository
      */
     @Named( PackageType.DEB )
@@ -109,9 +108,6 @@ public interface RepositoryFactory
 
     /**
      * Creates unified repository at specified URL.
-     *
-     * @return
      */
     UnifiedRepository createUnifiedRepo();
-
 }

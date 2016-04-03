@@ -63,7 +63,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     static final String GET_PATH = "get";
     static final String MD5_PATH = "md5";
 
-
+    private String fetchType;
     private WebClientFactory webClientFactory;
     private Gson gson;
 
@@ -89,7 +89,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     public RemoteTemplateRepository( PackageCache cache, WebClientFactory webClientFactory, Gson gson,
                                      @Assisted( "url" ) String url, @Assisted @Nullable User identity,
                                      @Assisted( "context" ) String kurjunContext,
-                                     @Assisted( "token" ) @Nullable String token )
+                                     @Assisted( "token" ) @Nullable String token, String fetchType )
     {
         this.gson = gson;
         this.webClientFactory = webClientFactory;
@@ -97,7 +97,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         this.identity = identity;
         this.context = kurjunContext;
         this.token = token;
-
+        this.fetchType = fetchType;
 
         try
         {
@@ -149,7 +149,8 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     @Override
     public SerializableMetadata getPackageInfo( Metadata metadata )
     {
-        WebClient webClient = webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + INFO_PATH, makeParamsMap( metadata ) );
+        WebClient webClient =
+                webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + INFO_PATH, makeParamsMap( metadata ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -185,7 +186,8 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
             return cachedStream;
         }
 
-        WebClient webClient = webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + GET_PATH, makeParamsMap( metadata ) );
+        WebClient webClient =
+                webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + GET_PATH, makeParamsMap( metadata ) );
         webClient.header( "Accept", "application/octet-stream" );
 
         if ( identity != null )
@@ -232,7 +234,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
             return this.remoteIndexChache;
         }
         Map<String, String> params = makeParamsMap( new DefaultMetadata() );
-        params.put( "repository", "local" );
+        params.put( "repository", fetchType );
 
         //get only public Kurjun local packages
         WebClient webClient = webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + LIST_PATH, params );

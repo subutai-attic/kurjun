@@ -75,15 +75,18 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     private static final int READ_TIMEOUT = 3000;
     private static final int CONN_TIMEOUT_FOR_URL_CHECK = 200;
 
+    private String fetchType;
+
 
     @Inject
     public RemoteRawRepository( PackageCache cache, WebClientFactory webClientFactory, @Assisted( "url" ) String url,
-                                @Assisted @Nullable User identity )
+                                @Assisted @Nullable User identity, String fetchType )
 
     {
         this.webClientFactory = webClientFactory;
         this.cache = cache;
         this.identity = identity;
+        this.fetchType = fetchType;
         try
         {
             this.url = new URL( url );
@@ -122,7 +125,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
                 try
                 {
                     String json = IOUtils.toString( ( InputStream ) resp.getEntity() );
-                    return toObject(json);
+                    return toObject( json );
                 }
                 catch ( IOException ex )
                 {
@@ -186,7 +189,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
             return this.remoteIndexChache;
         }
         Map<String, String> params = makeParamsMap( new RawMetadata() );
-        params.put( "repository", "local" );
+        params.put( "repository", fetchType );
 
         WebClient webClient = webClientFactory.makeSecure( this, FILE_PATH + LIST_PATH, params );
 
