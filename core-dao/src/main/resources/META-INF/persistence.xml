@@ -22,7 +22,7 @@
       <property name="openjpa.ConnectionPassword" value=""/>
 
       <property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
-      <property name="openjpa.Log" value="DefaultLevel=INFO, Tool=INFO, SQL=TRACE" />
+      <property name="openjpa.Log" value="DefaultLevel=INFO, Tool=INFO, SQL=INFO" />
       <property name="openjpa.ConnectionFactoryProperties" value="PrintParameters=true" />
       <property name="openjpa.jdbc.DBDictionary" value="derby" />
       <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
