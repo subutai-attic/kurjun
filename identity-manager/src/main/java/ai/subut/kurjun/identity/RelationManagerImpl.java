@@ -112,11 +112,11 @@ public class RelationManagerImpl implements RelationManager
 
             if ( Strings.isNullOrEmpty( objectId ) )
             {
-                relationObject.setId( securityManager.generateUUIDRandom() );
+                relationObject.setUniqID ( securityManager.generateUUIDRandom() );
             }
             else
             {
-                relationObject.setId( objectId );
+                relationObject.setUniqID( objectId );
             }
 
             relationObject.setType( objectType );
@@ -381,11 +381,11 @@ public class RelationManagerImpl implements RelationManager
 
             for ( Relation relation : relations )
             {
-                if ( relation.getTarget().getId().equals( target.getKeyFingerprint() ) )
+                if ( relation.getTarget().getUniqId().equals( target.getKeyFingerprint() ) )
                 {
                     perms.addAll( relation.getPermissions() );
                 }
-                else if ( relation.getTarget().getId().equals( IdentityManagerImpl.PUBLIC_USER_ID ) )
+                else if ( relation.getTarget().getUniqId().equals( IdentityManagerImpl.PUBLIC_USER_ID ) )
                 {
                     perms.addAll( relation.getPermissions() );
                 }
@@ -435,8 +435,8 @@ public class RelationManagerImpl implements RelationManager
 
     //*******************************************************************
     @Override
-    public boolean checkObjectPermissions( User user, String parentId, int parentType, String childId,
-                                         int childType, Permission perm )
+    public boolean checkObjectPermissions( User user, String parentId, int parentType, String childId, int childType,
+                                           Permission perm )
     {
         boolean access = false;
 

@@ -6,9 +6,13 @@ package ai.subut.kurjun.model.identity;
  */
 public interface RelationObject
 {
-    String getId();
+    long getId();
 
-    void setId( String id );
+    void setId( long id );
+
+    String getUniqID();
+
+    void setUniqID( String uniqID );
 
     int getType();
 

@@ -10,7 +10,9 @@ import com.google.inject.Singleton;
 
 import ai.subut.kurjun.core.dao.api.DAOException;
 import ai.subut.kurjun.core.dao.api.identity.UserDAO;
+import ai.subut.kurjun.core.dao.api.identity.UserTokenDAO;
 import ai.subut.kurjun.model.identity.User;
+import ai.subut.kurjun.model.identity.UserToken;
 
 
 /**
@@ -20,11 +22,13 @@ import ai.subut.kurjun.model.identity.User;
 public class IdentityDataServiceImpl implements IdentityDataService
 {
     private UserDAO userDAO;
+    private UserTokenDAO userTokenDAO;
 
     @Inject
-    public IdentityDataServiceImpl(UserDAO userDAO)
+    public IdentityDataServiceImpl(UserDAO userDAO, UserTokenDAO userTokenDAO)
     {
         this.userDAO = userDAO;
+        this.userTokenDAO = userTokenDAO;
     }
 
 
@@ -93,5 +97,40 @@ public class IdentityDataServiceImpl implements IdentityDataService
             return Collections.emptyList();
         }
     }
+
+
+
+    //*****************************
+    @Override
+    public List<UserToken> getAllTokens()
+    {
+        try
+        {
+            return userTokenDAO.findAll( "UserTokenEntity");
+        }
+        catch ( DAOException e )
+        {
+            return Collections.emptyList();
+        }
+    }
+
+
+    //*****************************
+    @Override
+    public UserToken  mergeToken(UserToken userToken)
+    {
+        try
+        {
+            if(userToken != null)
+                return userTokenDAO.merge( userToken );
+        }
+        catch ( DAOException e )
+        {
+            return null;
+        }
+
+        return null;
+    }
+
 
 }

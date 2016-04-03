@@ -117,7 +117,7 @@ public class RelationDataServiceImpl implements RelationDataService
     {
         try
         {
-            return relationDAO.findBySourceObject( relationObject.getId(), relationObject.getType());
+            return relationDAO.findBySourceObject( relationObject.getUniqID(), relationObject.getType());
         }
         catch ( Exception ex )
         {
@@ -148,7 +148,7 @@ public class RelationDataServiceImpl implements RelationDataService
     {
         try
         {
-            return relationDAO.findByTargetObject( relationObject.getId(), relationObject.getType() );
+            return relationDAO.findByTargetObject( relationObject.getUniqID(), relationObject.getType() );
         }
         catch ( Exception ex )
         {
@@ -180,7 +180,7 @@ public class RelationDataServiceImpl implements RelationDataService
     {
         try
         {
-            return relationDAO.findByTrustObject( relationObject.getId(), relationObject.getType() );
+            return relationDAO.findByTrustObject( relationObject.getUniqID(), relationObject.getType() );
         }
         catch ( Exception ex )
         {
@@ -262,7 +262,7 @@ public class RelationDataServiceImpl implements RelationDataService
     {
         try
         {
-            return relationObjectDAO.find( relationObject.getId(), relationObject.getType());
+            return relationObjectDAO.find( relationObject.getUniqID(), relationObject.getType());
 
         }
         catch ( Exception ex )

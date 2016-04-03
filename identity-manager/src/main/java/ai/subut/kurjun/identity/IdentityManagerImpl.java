@@ -181,10 +181,17 @@ public class IdentityManagerImpl implements IdentityManager
             if ( securityManager.verifyPGPSignatureAndContent( authMessage, user.getSignature(), user.getKeyData() ) )
             {
                 UserToken uToken = createUserToken( user, user.getKeyFingerprint(), "", "", null );
-                user.setUserToken( uToken );
 
                 //*************
-                identityDataService.mergeUser(  user );
+                if(user.getUserToken() == null)
+                {
+                    user.setUserToken( uToken );
+                    identityDataService.mergeUser(  user );
+                }
+                else
+                {
+                    identityDataService.mergeToken( uToken );
+                }
                 //*************
 
                 //*****************************************

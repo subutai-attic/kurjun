@@ -83,8 +83,9 @@ public class RestRoutes implements ApplicationRoutes
 
         //REST Relation Controller
         router.GET().route( baseRelationsUrl + "list" ).with( RestRelationController.class, "getAllRelations" );
-        /*
         router.PUT().route( baseRelationsUrl + "trust" ).with( RestRelationController.class, "addTrustRelation" );
+
+        /*
         router.GET().route( baseRelationsUrl + "source/{fingerprint}" )
               .with( RestRelationController.class, "getRelationsByOwner" );
         router.GET().route( baseRelationsUrl + "target/{fingerprint}" )

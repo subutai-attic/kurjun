@@ -27,6 +27,7 @@ public class RelationDAO extends GenericDAOImpl<Relation>
 
 
     //***********************************************
+    @Transactional
     public Relation find( long id ) throws DAOException
     {
         try
@@ -41,6 +42,7 @@ public class RelationDAO extends GenericDAOImpl<Relation>
 
 
     //***********************************************
+    @Transactional
     public List<Relation> findBySourceObject( String objectId, int objectType ) throws DAOException
     {
         try
@@ -67,6 +69,7 @@ public class RelationDAO extends GenericDAOImpl<Relation>
 
 
     //***********************************************
+    @Transactional
     public List<Relation> findByTargetObject( String objectId, int objectType ) throws DAOException
     {
         try
@@ -93,6 +96,7 @@ public class RelationDAO extends GenericDAOImpl<Relation>
 
 
     //***********************************************
+    @Transactional
     public List<Relation> findByTrustObject( String objectId, int objectType ) throws DAOException
     {
         try
@@ -140,6 +144,7 @@ public class RelationDAO extends GenericDAOImpl<Relation>
 
 
     //***********************************************
+    @Transactional
     public Relation findTrustObjectOwner( String objectId, int objectType ) throws DAOException
     {
         try
