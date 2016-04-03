@@ -1,9 +1,7 @@
 package ai.subut.kurjun.core.dao.model.identity;
 
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,10 +19,9 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
 
-import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.model.identity.Permission;
+import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.model.identity.RelationObject;
 import ai.subut.kurjun.model.identity.RelationType;
 

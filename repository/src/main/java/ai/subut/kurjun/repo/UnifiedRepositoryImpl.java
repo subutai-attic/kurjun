@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
@@ -113,13 +116,15 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
         return null;
     }
 
-
+    private static Logger LOGGER = LoggerFactory.getLogger( UnifiedRepositoryImpl.class );
     @Override
     public List<SerializableMetadata> listPackages()
     {
         List<SerializableMetadata> result = new LinkedList<>();
+        List<Repository> repoList =getAllRepositories();
+        LOGGER.info( "repoList size: "+repoList.size() );
 
-        for ( Repository repo : getAllRepositories() )
+        for ( Repository repo : repoList )
         {
             List<SerializableMetadata> list = repo.listPackages();
 

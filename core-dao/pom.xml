@@ -39,6 +39,12 @@
     </dependency>
 
     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>metadata-common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>com.google.inject.extensions</groupId>
       <artifactId>guice-persist</artifactId>
       <version>${guice.version}</version>

@@ -47,7 +47,8 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
 
 
     @Override
-    public void buildIndex( PackagesProvider provider, OutputStream out, CompressionType compressionType ) throws IOException
+    public void buildIndex( PackagesProvider provider, OutputStream out, CompressionType compressionType )
+            throws IOException
     {
         List<SerializableMetadata> items = provider.getPackages();
         try ( OutputStream os = wrapStream( out, compressionType ) )
@@ -156,12 +157,12 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
 
         // packages index specific fields
         cf.set( IndexPackageMetaData.FILENAME_FIELD, filenameBuilder.makeFilename( meta ) );
-        cf.set( IndexPackageMetaData.MD5SUM_FIELD, Hex.encodeHexString( meta.getMd5Sum() ) );
+        cf.set( IndexPackageMetaData.MD5SUM_FIELD, meta.getMd5Sum() );
         includeExtraField( cf, meta, IndexPackageMetaData.SHA1_FIELD );
         includeExtraField( cf, meta, IndexPackageMetaData.SHA256_FIELD );
         includeExtraField( cf, meta, IndexPackageMetaData.SIZE_FIELD );
         // TODO: description md5 does NOT match
-//        cf.set( IndexPackageMetaData.DESCRIPTION_MD5_FIELD, DigestUtils.md5Hex( meta.getDescription() ) );
+        //        cf.set( IndexPackageMetaData.DESCRIPTION_MD5_FIELD, DigestUtils.md5Hex( meta.getDescription() ) );
 
         if ( cf.isValid() )
         {
@@ -226,9 +227,6 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
 
     /**
      * Dumps dependencies to string. See {@link PackagesIndexBuilder#dumpDependency(Dependency)} for more info.
-     *
-     * @param dependencies
-     * @return
      */
     private String dumpDependencies( List dependencies )
     {
@@ -254,11 +252,8 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
 
 
     /**
-     * Dumps dependency to string according to syntax of relationship fields described in
-     * <a href="https://www.debian.org/doc/debian-policy/ch-relationships.html">Section 7.1 of the Debian Policy</a>
-     *
-     * @param dependency
-     * @return
+     * Dumps dependency to string according to syntax of relationship fields described in <a
+     * href="https://www.debian.org/doc/debian-policy/ch-relationships.html">Section 7.1 of the Debian Policy</a>
      */
     private String dumpDependency( Dependency dependency )
     {
@@ -279,7 +274,5 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
         }
         return sb.toString();
     }
-
-
 }
 

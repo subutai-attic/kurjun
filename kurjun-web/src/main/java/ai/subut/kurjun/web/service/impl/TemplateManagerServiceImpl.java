@@ -5,16 +5,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.apache.commons.codec.binary.Hex;
 
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
@@ -37,9 +33,7 @@ import ai.subut.kurjun.repo.LocalTemplateRepository;
 import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.web.context.ArtifactContext;
 import ai.subut.kurjun.web.service.IdentityManagerService;
-import ai.subut.kurjun.web.service.RepositoryService;
 import ai.subut.kurjun.web.service.TemplateManagerService;
-import ai.subut.kurjun.web.utils.Utils;
 import ninja.Context;
 import ninja.Renderable;
 import ninja.Result;
@@ -115,7 +109,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public SerializableMetadata getTemplate( UserSession userSession, final byte[] md5 ) throws IOException
+    public SerializableMetadata getTemplate( UserSession userSession, final String md5 ) throws IOException
     {
         //        KurjunContext context = artifactContext.getRepository( new BigInteger( 1, md5 ).toString( 16 ) );
 
@@ -131,7 +125,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public InputStream getTemplateData( UserSession userSession, final String repository, final byte[] md5,
+    public InputStream getTemplateData( UserSession userSession, final String repository, final String md5,
                                         final boolean isKurjunClient ) throws IOException
     {
 
@@ -194,8 +188,8 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         }
 
         // *******CheckRepoOwner ***************
-        relationManager.setObjectOwner( userSession.getUser(), repository,
-                RelationObjectType.RepositoryTemplate.getId() );
+        relationManager
+                .setObjectOwner( userSession.getUser(), repository, RelationObjectType.RepositoryTemplate.getId() );
         //**************************************
 
         //***** Check permissions (WRITE) *****************
@@ -209,12 +203,11 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
                 if ( metadata.getMd5Sum() != null )
                 {
 
-                    String templateId = repository + "." + Hex.encodeHexString( metadata.getMd5Sum() );
+                    String templateId = repository + "." + metadata.getMd5Sum();
 
                     //***** Build Relation ****************
                     relationManager.buildTrustRelation( userSession.getUser(), userSession.getUser(), templateId,
-                            RelationObjectType.RepositoryContent.getId(),
-                            relationManager.buildPermissions( 4 ) );
+                            RelationObjectType.RepositoryContent.getId(), relationManager.buildPermissions( 4 ) );
                     //*************************************
 
                     return templateId;
@@ -254,12 +247,11 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
             {
                 if ( metadata.getMd5Sum() != null )
                 {
-                    String templateId = toId( metadata != null ? metadata.getMd5Sum() : new byte[0], repository );
+                    String templateId = toId( metadata.getMd5Sum(), repository );
 
                     //***** Build Relation ****************
                     relationManager.buildTrustRelation( userSession.getUser(), userSession.getUser(), templateId,
-                            RelationObjectType.RepositoryContent.getId(),
-                            relationManager.buildPermissions( 4 ) );
+                            RelationObjectType.RepositoryContent.getId(), relationManager.buildPermissions( 4 ) );
                     //*************************************
                     return templateId;
                 }
@@ -280,7 +272,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
             // remove Relation
             relationManager.removeRelationsByTrustObject( tid.get(), RelationObjectType.RepositoryContent.getId() );
 
-            boolean success = _repository.delete( tid.get(), Utils.MD5.toByteArray( tid.getMd5() ) );
+            boolean success = _repository.delete( tid.get(), tid.getMd5() );
 
             if ( success )
             {
@@ -320,11 +312,11 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         if ( allowed )
         {
             DefaultTemplate defaultTemplate = new DefaultTemplate();
-            defaultTemplate.setId( repository, Utils.MD5.toByteArray( md5 ) );
+            defaultTemplate.setId( repository, md5 );
 
             DefaultTemplate metadata = ( DefaultTemplate ) unifiedTemplateRepository.getPackageInfo( defaultTemplate );
 
-            InputStream inputStream = getTemplateData( userSession, repository, Utils.MD5.toByteArray( md5 ), false );
+            InputStream inputStream = getTemplateData( userSession, repository, md5, false );
 
             if ( inputStream != null )
             {
@@ -342,7 +334,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
                     }
                     catch ( IOException e )
                     {
-                        LOGGER.error( "Failed to get renderable template by md5: " + md5 );
+                        LOGGER.error( "Failed to get renderable metadata by md5: " + md5 );
                     }
                 };
             }
@@ -362,7 +354,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
         if ( templateId != null )
         {
-            defaultTemplate.setId( templateId.getOwnerFprint(), Utils.MD5.toByteArray( templateId.getMd5() ) );
+            defaultTemplate.setId( templateId.getOwnerFprint(), templateId.getMd5() );
         }
 
         defaultTemplate.setName( name );
@@ -431,12 +423,12 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     @Override
     public String md5()
     {
-        return Utils.MD5.toString( getPublicRepository().md5() );
+        return getPublicRepository().md5() ;
     }
 
 
     @Override
-    public List<Map<String, Object>> getSharedTemplateInfos( final byte[] md5, final String templateOwner )
+    public List<Map<String, Object>> getSharedTemplateInfos( final String md5, final String templateOwner )
             throws IOException
     {
         return null;
@@ -472,11 +464,11 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     }
 
 
-    private String toId( final byte[] md5, String repo )
+    private String toId( final String md5, String repo )
     {
-        String hash = new BigInteger( 1, Arrays.copyOf( md5, md5.length ) ).toString( 16 );
 
-        return repo + "." + hash;
+
+        return repo + "." + md5;
     }
 
 
@@ -502,8 +494,8 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     private boolean checkRepoPermissions( UserSession userSession, String repoId, String contentId, Permission perm )
     {
         return relationManager
-                .checkObjectPermissions( userSession.getUser(), repoId, RelationObjectType.RepositoryTemplate.getId(), contentId,
-                        RelationObjectType.RepositoryContent.getId(), perm );
+                .checkObjectPermissions( userSession.getUser(), repoId, RelationObjectType.RepositoryTemplate.getId(),
+                        contentId, RelationObjectType.RepositoryContent.getId(), perm );
     }
     //*******************************************************************
 }

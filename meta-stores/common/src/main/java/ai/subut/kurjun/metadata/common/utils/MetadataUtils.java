@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.codec.binary.Hex;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -141,7 +139,7 @@ public class MetadataUtils
 
 
     /**
-     * Converts supplied Subutai template metadata into its serializable form.
+     * Converts supplied Subutai metadata metadata into its serializable form.
      *
      * @param metadata meta data to convert
      *
@@ -179,7 +177,7 @@ public class MetadataUtils
         }
         if ( metadata.getMd5Sum() != null )
         {
-            params.put( "md5", Hex.encodeHexString( metadata.getMd5Sum() ) );
+            params.put( "md5", metadata.getMd5Sum() );
         }
         if ( metadata.getName() != null )
         {

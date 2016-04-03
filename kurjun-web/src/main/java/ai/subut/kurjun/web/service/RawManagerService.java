@@ -14,15 +14,15 @@ public interface RawManagerService extends BaseService
 {
     String md5();
 
-    Renderable getFile( String repository, byte[] md5 );
+    Renderable getFile( String repository, String md5 );
 
-    Renderable getFile( byte[] md5, boolean isKurjun );
+    Renderable getFile( String md5, boolean isKurjun );
 
-    boolean delete(UserSession userSession, String repository, byte[] md5 );
+    boolean delete(UserSession userSession, String repository, String md5 );
 
     Renderable getFile( String name );
 
-    SerializableMetadata getInfo( byte[] md5 );
+    SerializableMetadata getInfo( String md5 );
 
     SerializableMetadata getInfo(Metadata metadata );
 

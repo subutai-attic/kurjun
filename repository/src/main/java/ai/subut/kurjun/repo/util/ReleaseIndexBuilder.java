@@ -32,7 +32,6 @@ import ai.subut.kurjun.riparser.ReleaseChecksummedResource;
 /**
  * This class generates a release index file for specific release. The supplied release should have checksummed
  * resources ready so that they can be included in the generated index.
- *
  */
 public class ReleaseIndexBuilder
 {
@@ -55,8 +54,7 @@ public class ReleaseIndexBuilder
 
 
     @Inject
-    public ReleaseIndexBuilder( @Assisted Repository repository,
-                                @Assisted KurjunContext context )
+    public ReleaseIndexBuilder( @Assisted Repository repository, @Assisted KurjunContext context )
     {
         compressionTypes.add( CompressionType.NONE );
         compressionTypes.add( CompressionType.GZIP );
@@ -85,7 +83,6 @@ public class ReleaseIndexBuilder
      *
      * @param release release for which index file is built
      * @param virtual indicated if release comes from virtual repository
-     * @return
      */
     public String build( ReleaseFile release, boolean virtual )
     {
@@ -191,8 +188,9 @@ public class ReleaseIndexBuilder
                     }
                     try ( ByteArrayOutputStream os = new ByteArrayOutputStream() )
                     {
-                        packagesIndexBuilder.buildIndex( packagesProviderFactory.create( repository, component, arch ),
-                                                         os, compressionType );
+                        packagesIndexBuilder
+                                .buildIndex( packagesProviderFactory.create( repository, component, arch ), os,
+                                        compressionType );
 
                         byte[] md5 = md5Digest.digest( os.toByteArray() );
                         byte[] sha1 = sha1Digest.digest( os.toByteArray() );
@@ -220,11 +218,11 @@ public class ReleaseIndexBuilder
     {
         for ( ChecksummedResource index : indices )
         {
-            byte[] checksum = index.getChecksum( checksumType );
+            String checksum = index.getChecksum( checksumType );
             if ( checksum != null )
             {
                 // indent each line by one space
-                sb.append( " " ).append( Hex.encodeHexString( checksum ) ).append( " " );
+                sb.append( " " ).append( checksum ).append( " " );
                 sb.append( String.format( "%16d", index.getSize() ) ).append( " " );
                 sb.append( index.getRelativePath() );
                 sb.append( line );

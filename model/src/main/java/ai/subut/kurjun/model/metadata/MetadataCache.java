@@ -24,7 +24,7 @@ public interface MetadataCache
      * @param md5 MD5 checksum to retrieve metadata for
      * @return metadata if found in the cache; {@code null} otherwise
      */
-    SerializableMetadata get( byte[] md5 );
+    SerializableMetadata get( String md5 );
 
 
     /**

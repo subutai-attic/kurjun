@@ -20,13 +20,13 @@ import ninja.Renderable;
 public interface TemplateManagerService extends BaseService
 {
     /**
-     * Gets template info.
+     * Gets metadata info.
      *
      * @param md5 md5 checksum of the package to retrieve info
      *
      * @return JSON encoded meta data
      */
-    SerializableMetadata getTemplate(UserSession userSession, byte[] md5 ) throws IOException;
+    SerializableMetadata getTemplate(UserSession userSession, String md5 ) throws IOException;
 
     /**
      * Gets the list of remote repo urls
@@ -37,7 +37,7 @@ public interface TemplateManagerService extends BaseService
 
 
     /**
-     * Gets template stream.
+     * Gets metadata stream.
      *
      * @param repository repository
      * @param md5 md5 checksum of the package to retrieve
@@ -45,7 +45,7 @@ public interface TemplateManagerService extends BaseService
      *
      * @return input stream to read package data
      */
-    InputStream getTemplateData(UserSession userSession, String repository, byte[] md5, boolean isKurjunClient ) throws IOException;
+    InputStream getTemplateData(UserSession userSession, String repository, String md5, boolean isKurjunClient ) throws IOException;
 
 
     /**
@@ -59,7 +59,7 @@ public interface TemplateManagerService extends BaseService
     List<SerializableMetadata> list(UserSession userSession, String repository, boolean isKurjunClient ) throws IOException;
 
 
-    List<Map<String, Object>> getSharedTemplateInfos( byte[] md5, String templateOwner ) throws IOException;
+    List<Map<String, Object>> getSharedTemplateInfos( String md5, String templateOwner ) throws IOException;
 
 
     List<Map<String, Object>> listAsSimple( String repository ) throws IOException;
@@ -79,7 +79,7 @@ public interface TemplateManagerService extends BaseService
      * @param repository repository
      * @param inputStream input stream to read package data
      *
-     * @return template id of uploaded package upload succeeds; {@code null} otherwise
+     * @return metadata id of uploaded package upload succeeds; {@code null} otherwise
      */
     String upload(UserSession userSession, String repository, InputStream inputStream ) throws IOException;
 
@@ -89,7 +89,7 @@ public interface TemplateManagerService extends BaseService
      * @param repository repository
      * @param file input stream to read package data
      *
-     * @return template id of uploaded package upload succeeds; {@code null} otherwise
+     * @return metadata id of uploaded package upload succeeds; {@code null} otherwise
      */
     String upload(UserSession userSession, String repository, File file ) throws IOException;
 

@@ -7,7 +7,6 @@ import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,7 +15,6 @@ import java.util.Set;
 
 import javax.ws.rs.core.Response;
 
-import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +41,6 @@ import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
-
 import ai.subut.kurjun.repo.cache.PackageCache;
 import ai.subut.kurjun.repo.util.http.WebClientFactory;
 
@@ -142,14 +139,15 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     @Override
     public Set<ReleaseFile> getDistributions()
     {
-        throw new UnsupportedOperationException( "Not supported in template repositories." );
+        throw new UnsupportedOperationException( "Not supported in metadata repositories." );
     }
 
 
     @Override
     public SerializableMetadata getPackageInfo( Metadata metadata )
     {
-        WebClient webClient = webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + INFO_PATH, makeParamsMap( metadata ) );
+        WebClient webClient =
+                webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + INFO_PATH, makeParamsMap( metadata ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -185,7 +183,8 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
             return cachedStream;
         }
 
-        WebClient webClient = webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + GET_PATH, makeParamsMap( metadata ) );
+        WebClient webClient =
+                webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + GET_PATH, makeParamsMap( metadata ) );
         webClient.header( "Accept", "application/octet-stream" );
 
         if ( identity != null )
@@ -201,10 +200,10 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
             {
                 InputStream inputStream = ( InputStream ) resp.getEntity();
 
-                byte[] md5Calculated = cacheStream( inputStream );
+                String md5Calculated = cacheStream( inputStream );
 
                 // compare the requested and received md5 checksums
-                if ( Arrays.equals( metadata.getMd5Sum(), md5Calculated ) )
+                if ( metadata.getMd5Sum().equalsIgnoreCase( md5Calculated ) )
                 {
                     return cache.get( md5Calculated );
                 }
@@ -213,9 +212,9 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
                     deleteCache( md5Calculated );
 
                     //LOGGER.error( "Md5 checksum mismatch after getting the package from remote host. "
-                                   // + "Requested with md5={}, name={}, version={}", Hex.toHexString( metadata
-                           // .getMd5Sum() ),
-                           // metadata.getName(), metadata.getVersion() );
+                    // + "Requested with md5={}, name={}, version={}", Hex.toHexString( metadata
+                    // .getMd5Sum() ),
+                    // metadata.getName(), metadata.getVersion() );
                 }
             }
         }

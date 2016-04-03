@@ -27,7 +27,7 @@ public class ProtocolFilter implements Filter
     @Override
     public Result filter( FilterChain filterChain, Context context )
     {
-
+        return filterChain.next( context );/*
         if(context.getScheme().equals( "https" ))
         {
             if(props.get( "security.https.enabled" ).equals( "true" ))
@@ -45,6 +45,6 @@ public class ProtocolFilter implements Filter
         else
         {
             return Results.forbidden().render( "Not allowed" ).text();
-        }
+        }*/
     }
 }

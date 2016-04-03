@@ -6,7 +6,7 @@ import java.util.Objects;
 
 
 /**
- * Wrapper class of composite template id for convenience
+ * Wrapper class of composite metadata id for convenience
  */
 public class TemplateId
 {

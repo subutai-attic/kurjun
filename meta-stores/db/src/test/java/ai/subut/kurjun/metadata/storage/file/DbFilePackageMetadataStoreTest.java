@@ -13,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import ai.subut.kurjun.metadata.common.MetadataListingImpl;
@@ -153,7 +154,7 @@ public class DbFilePackageMetadataStoreTest
         pm.setFilename( pm.getPackage() + "-ver-arch.deb" );
         pm.setInstalledSize( 1234 );
         pm.setMaintainer( "Maintainer" );
-        pm.setMd5( DigestUtils.md5( pm.getFilename() ) );
+        pm.setMd5( Hex.encodeHexString(DigestUtils.md5( pm.getFilename() ) ));
         pm.setPriority( Priority.important );
 
         DefaultDependency dep = new DefaultDependency();

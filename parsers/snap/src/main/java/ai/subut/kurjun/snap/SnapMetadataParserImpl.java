@@ -11,6 +11,7 @@ import java.nio.file.StandardCopyOption;
 
 import org.yaml.snakeyaml.Yaml;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 
@@ -41,7 +42,7 @@ class SnapMetadataParserImpl implements SnapMetadataParser
     @Override
     public SnapMetadata parse( File packageFile ) throws IOException
     {
-        byte[] md5 = calculateMd5Checksum( packageFile );
+        String md5 = calculateMd5Checksum( packageFile );
 
         Path target = Files.createTempDirectory( null );
         try
@@ -103,7 +104,7 @@ class SnapMetadataParserImpl implements SnapMetadataParser
     }
 
 
-    private DefaultSnapMetadata parseMetadataFile( InputStream stream, byte[] md5 )
+    private DefaultSnapMetadata parseMetadataFile( InputStream stream, String md5 )
     {
         DefaultSnapMetadata m = yaml.loadAs( stream, DefaultSnapMetadata.class );
 
@@ -125,13 +126,14 @@ class SnapMetadataParserImpl implements SnapMetadataParser
     }
 
 
-    private byte[] calculateMd5Checksum( File file ) throws IOException
+    private String calculateMd5Checksum( File file ) throws IOException
     {
         try ( InputStream is = new FileInputStream( file ) )
         {
-            return DigestUtils.md5( is );
+            byte[] md5 = DigestUtils.md5( is );
+            String hex = Hex.encodeHexString( md5 );
+            return hex;
         }
     }
-
 }
 

@@ -15,13 +15,13 @@ public class KurjunFileItem implements FileItem
 {
 
     private String name;
-    private byte[] md5;
+    private String md5;
     private File file;
     private String contentType;
     private FileItemHeaders headers;
 
 
-    public KurjunFileItem( final String name, final byte[] md5, final File file, final String contentType,
+    public KurjunFileItem( final String name, final String md5, final File file, final String contentType,
                            final FileItemHeaders headers )
     {
         this.name = name;
@@ -33,7 +33,7 @@ public class KurjunFileItem implements FileItem
 
 
     //return md5 digest of the file
-    public byte[] md5()
+    public String md5()
     {
         return this.md5;
     }

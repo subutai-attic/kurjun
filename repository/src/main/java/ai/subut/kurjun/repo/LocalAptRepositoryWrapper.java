@@ -177,14 +177,14 @@ class LocalAptRepositoryWrapper extends RepositoryBase implements LocalRepositor
 
 
     @Override
-    public boolean delete( byte[] md5 ) throws IOException
+    public boolean delete( String md5 ) throws IOException
     {
         throw new UnsupportedOperationException( "Not supported in non-virtual local apt repository." );
     }
 
 
     @Override
-    public boolean delete( Object id, byte[] md5 ) throws IOException
+    public boolean delete( Object id, String md5 ) throws IOException
     {
         throw new UnsupportedOperationException( "Not supported in non-virtual local apt repository." );
     }
@@ -238,9 +238,9 @@ class LocalAptRepositoryWrapper extends RepositoryBase implements LocalRepositor
 
 
     @Override
-    public byte[] md5()
+    public String md5()
     {
-        return new byte[0];
+        return "";
     }
 }
 

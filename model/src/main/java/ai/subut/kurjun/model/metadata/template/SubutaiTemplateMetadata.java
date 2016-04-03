@@ -8,7 +8,7 @@ import ai.subut.kurjun.model.metadata.Metadata;
 
 
 /**
- * Interface for Subutai template meta data.
+ * Interface for Subutai metadata meta data.
  *
  */
 public interface SubutaiTemplateMetadata extends Metadata
@@ -17,15 +17,15 @@ public interface SubutaiTemplateMetadata extends Metadata
     /**
      * Gets templates architecture.
      *
-     * @return template architecture
+     * @return metadata architecture
      */
     Architecture getArchitecture();
 
 
     /**
-     * Gets parent template name.
+     * Gets parent metadata name.
      *
-     * @return parent template name
+     * @return parent metadata name
      */
     String getParent();
 
@@ -39,7 +39,7 @@ public interface SubutaiTemplateMetadata extends Metadata
 
 
     /**
-     * Gets contents of the "config" file of this template.
+     * Gets contents of the "config" file of this metadata.
      *
      * @return contents of the "config" file
      */
@@ -47,7 +47,7 @@ public interface SubutaiTemplateMetadata extends Metadata
 
 
     /**
-     * Gets contents of the "packages" file of this template.
+     * Gets contents of the "packages" file of this metadata.
      *
      * @return contents of the "packages" file
      */
@@ -55,14 +55,14 @@ public interface SubutaiTemplateMetadata extends Metadata
 
 
     /**
-     * Gets template's owner fingerprint
+     * Gets metadata's owner fingerprint
      * @return owner
      */
     String getOwnerFprint();
 
 
     /**
-     * Gets additional properties map of the Subutai template.
+     * Gets additional properties map of the Subutai metadata.
      *
      * @return map of property values
      */

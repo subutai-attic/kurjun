@@ -57,7 +57,6 @@ import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
 
 /**
  * Local virtual apt repository implementation.
- *
  */
 class LocalAptRepository extends LocalRepositoryBase
 {
@@ -76,12 +75,9 @@ class LocalAptRepository extends LocalRepositoryBase
 
 
     @Inject
-    public LocalAptRepository(
-            ControlFileParser controlFileParser,
-            SubutaiTemplateParser templateParser,
-            FileStoreFactory fileStoreFactory,
-            PackageMetadataStoreFactory metadataStoreFactory,
-            @Assisted KurjunContext kurjunContext )
+    public LocalAptRepository( ControlFileParser controlFileParser, SubutaiTemplateParser templateParser,
+                               FileStoreFactory fileStoreFactory, PackageMetadataStoreFactory metadataStoreFactory,
+                               @Assisted KurjunContext kurjunContext )
     {
         // TODO: setup mechanism for repos
         DefaultRelease r = new DefaultRelease();
@@ -130,6 +126,7 @@ class LocalAptRepository extends LocalRepositoryBase
         return releases;
     }
 
+
     @Override
     public PackageMetadata put( InputStream is, CompressionType compressionType ) throws IOException
     {
@@ -146,7 +143,7 @@ class LocalAptRepository extends LocalRepositoryBase
             byte[] md5 = wrapped.getMessageDigest().digest();
 
             Map<String, Object> params = new HashMap<>();
-            params.put( "md5sum", md5 );
+            params.put( "md5sum", Hex.encodeHexString( md5 ) );
             params.put( "filename", "" );
 
             DebAr deb = new DefaultDebAr( target.toFile(), tempDir.toFile() );
@@ -240,7 +237,6 @@ class LocalAptRepository extends LocalRepositoryBase
      *
      * @param metadata meta data instance to add data to
      * @param packageFile Debian package file to check
-     * @throws IOException
      */
     private void addSubutaiData( DefaultPackageMetadata metadata, Path packageFile ) throws IOException
     {
