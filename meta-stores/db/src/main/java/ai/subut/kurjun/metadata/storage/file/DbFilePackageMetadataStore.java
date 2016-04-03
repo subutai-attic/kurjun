@@ -22,7 +22,6 @@ import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.service.KurjunProperties;
-import ai.subut.kurjun.core.dao.service.metadata.TemplateDataService;
 import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.metadata.common.MetadataListingImpl;
 import ai.subut.kurjun.model.metadata.MetadataListing;
@@ -40,8 +39,6 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
     private Path fileDbPath;
 
-    @Inject
-    private TemplateDataService templateDataService;
 
 
     /**

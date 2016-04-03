@@ -27,6 +27,7 @@ import ai.subut.kurjun.model.storage.FileStore;
  */
 abstract class LocalRepositoryBase extends RepositoryBase implements LocalRepository
 {
+    private static Logger LOGGER = LoggerFactory.getLogger( LocalRepositoryBase.class );
 
 
     @Override
@@ -79,7 +80,7 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
         return null;
     }
 
-    private static Logger LOGGER = LoggerFactory.getLogger( LocalRepositoryBase.class );
+
     @Override
     public List<SerializableMetadata> listPackages()
     {
