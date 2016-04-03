@@ -106,9 +106,12 @@ public class RelationManagerImpl implements RelationManager
     @Override
     public RelationObject createRelationObject( String objectId, int objectType )
     {
+        RelationObject relationObject = null;
+
         try
         {
-            RelationObject relationObject = new RelationObjectEntity();
+            //----------------------------------------
+            relationObject = new RelationObjectEntity();
 
             if ( Strings.isNullOrEmpty( objectId ) )
             {
@@ -121,13 +124,15 @@ public class RelationManagerImpl implements RelationManager
 
             relationObject.setType( objectType );
 
-            return relationObject;
+
         }
         catch ( Exception ex )
         {
             LOGGER.error( " ******* Error in RelationManager", ex );
             return null;
         }
+
+        return relationObject;
     }
 
 
@@ -213,7 +218,7 @@ public class RelationManagerImpl implements RelationManager
 
                 Relation relation = new RelationEntity();
 
-                relation.setSource( source );
+                //-------------------------------
                 relation.setTarget( target );
                 relation.setTrustObject( trustObject );
                 relation.setPermissions( permissions );
@@ -248,6 +253,22 @@ public class RelationManagerImpl implements RelationManager
         catch ( Exception ex )
         {
             LOGGER.error( " ***** Error getting relation with relationId:" + relationId, ex );
+            return null;
+        }
+    }
+
+
+    //********************************************
+    @Override
+    public RelationObject getRelationObject( String id, int type )
+    {
+        try
+        {
+            return relationDataService.getRelationObject( id ,type );
+        }
+        catch ( Exception ex )
+        {
+            LOGGER.error( " ***** Error getting relationObject with relationObjectId:" + id, ex );
             return null;
         }
     }

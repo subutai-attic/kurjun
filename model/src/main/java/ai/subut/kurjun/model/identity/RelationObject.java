@@ -9,6 +9,10 @@ public interface RelationObject
 
     int getType();
 
+    long getId();
+
+    void setId( long id );
+
     String getUniqueId();
 
     String getObjectId();

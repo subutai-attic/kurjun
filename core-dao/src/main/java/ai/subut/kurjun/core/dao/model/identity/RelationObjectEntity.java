@@ -9,7 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.Table;
 
 import ai.subut.kurjun.model.identity.RelationObject;
@@ -30,12 +29,9 @@ public class RelationObjectEntity implements RelationObject,Serializable
     //*********************
 
     @Id
-    @Column( name = "unique_id" )
-    @Override
-    public String getUniqueId()
-    {
-        return "{"+objectId + "}-{" + type + "}";
-    }
+    @GeneratedValue( strategy = GenerationType.IDENTITY )
+    @Column( name = "id" )
+    private long id;
 
 
     @Column(name = "object_id")
@@ -71,5 +67,27 @@ public class RelationObjectEntity implements RelationObject,Serializable
     {
         return type;
     }
+
+
+    @Override
+    public long getId()
+    {
+        return id;
+    }
+
+
+    @Override
+    public void setId( final long id )
+    {
+        this.id = id;
+    }
+
+
+    @Override
+    public String getUniqueId()
+    {
+        return "{"+objectId + "}-{" + type + "}";
+    }
+
 
 }

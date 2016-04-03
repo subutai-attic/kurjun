@@ -185,8 +185,16 @@ public class IdentityManagerImpl implements IdentityManager
                 //*************
                 if(user.getUserToken() == null)
                 {
-                    user.setUserToken( uToken );
-                    identityDataService.mergeUser(  user );
+                    try
+                    {
+                        user.setUserToken( uToken );
+                        identityDataService.mergeUser(  user );
+                    }
+                    catch ( Exception ignore )
+                    {
+                        //********Save new Token ****************
+                        identityDataService.mergeToken( uToken );
+                    }
                 }
                 else
                 {
