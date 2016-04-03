@@ -8,10 +8,7 @@ import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.IdClass;
 import javax.persistence.Table;
-
-import org.apache.commons.codec.binary.Hex;
 
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
@@ -28,7 +25,7 @@ public class TemplateEntity implements SerializableMetadata, SubutaiTemplateMeta
 
 
     @Column( name = "md5Sum" )
-    private byte[] md5Sum;
+    private String md5Sum;
 
     @Column( name = "name" )
     private String name;
@@ -66,7 +63,7 @@ public class TemplateEntity implements SerializableMetadata, SubutaiTemplateMeta
     {
         if ( ownerFprint != null && md5Sum != null )
         {
-            return new TemplateId( ownerFprint, Hex.encodeHexString( md5Sum ) ).get();
+            return new TemplateId( ownerFprint, md5Sum).get();
         }
         else
         {
@@ -74,7 +71,7 @@ public class TemplateEntity implements SerializableMetadata, SubutaiTemplateMeta
         }
     }
 
-    public void setId( String ownerFprint, byte[] md5Sum )
+    public void setId( String ownerFprint, String md5Sum )
     {
         this.ownerFprint = ownerFprint;
         this.md5Sum = md5Sum;
@@ -82,13 +79,13 @@ public class TemplateEntity implements SerializableMetadata, SubutaiTemplateMeta
 
 
     @Override
-    public byte[] getMd5Sum()
+    public String getMd5Sum()
     {
         return md5Sum;
     }
 
 
-    public void setMd5Sum( final byte[] md5Sum )
+    public void setMd5Sum( final String md5Sum )
     {
         this.md5Sum = md5Sum;
     }

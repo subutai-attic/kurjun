@@ -80,7 +80,7 @@ public class LocalRawRepository extends LocalRepositoryBase
             delete( oldmeta.getMd5Sum() );
         }
 
-        byte[] md5 = getFileStore().put( file );
+        String md5 = getFileStore().put( file );
 
         RawMetadata meta = new RawMetadata( md5, file.getName(), file.length(), owner );
         getMetadataStore().put( meta );
@@ -104,7 +104,7 @@ public class LocalRawRepository extends LocalRepositoryBase
             delete( oldmeta.getMd5Sum() );
         }
 
-        byte[] md5 = getFileStore().put( file );
+        String md5 = getFileStore().put( file );
 
         RawMetadata meta = new RawMetadata( md5, name, file.length(), owner );
 

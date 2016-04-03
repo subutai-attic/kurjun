@@ -7,9 +7,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
-
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
@@ -37,9 +34,8 @@ import static com.datastax.driver.core.querybuilder.QueryBuilder.token;
  * constructor. Keyspace with simple replication factor of 3 and a table in that keyspace are automatically created if
  * not already exist. If keyspace does not exist yet, a replication configuration file can be specified which shall
  * contain replication data in JSON format. Refer to
- * <a href="http://www.datastax.com/documentation/cql/3.0/cql/cql_reference/create_keyspace_r.html">this link</a> for
- * more info about replication configuration.
- *
+ * <a href="http://www.datastax.com/documentation/cql/3.0/cql/cql_reference/create_keyspace_r.html">this
+ * link</a> for more info about replication configuration.
  */
 class NoSqlPackageMetadataStore implements PackageMetadataStore
 {
@@ -78,7 +74,7 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
     public SerializableMetadata get( Object id ) throws IOException
     {
         Statement st = QueryBuilder.select().from( SchemaInfo.KEYSPACE, schemaInfo.getTableName() )
-                .where( QueryBuilder.eq( SchemaInfo.CHECKSUM_COLUMN, String.valueOf( id ) ) );
+                                   .where( QueryBuilder.eq( SchemaInfo.CHECKSUM_COLUMN, String.valueOf( id ) ) );
         ResultSet rs = session.execute( st );
         Row row = rs.one();
         if ( row != null )
@@ -98,7 +94,7 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
         }
 
         Statement st = QueryBuilder.select().from( SchemaInfo.KEYSPACE, schemaInfo.getTableName() )
-                .where( QueryBuilder.eq( SchemaInfo.NAME_COLUMN, name ) );
+                                   .where( QueryBuilder.eq( SchemaInfo.NAME_COLUMN, name ) );
         ResultSet rs = session.execute( st );
 
         List<SerializableMetadata> result = new LinkedList<>();
@@ -117,10 +113,10 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
         if ( !contains( meta.getId() ) )
         {
             Statement st = QueryBuilder.insertInto( SchemaInfo.KEYSPACE, schemaInfo.getTableName() )
-                    .value( SchemaInfo.CHECKSUM_COLUMN, String.valueOf( meta.getId() ) )
-                    .value( SchemaInfo.NAME_COLUMN, meta.getName() )
-                    .value( SchemaInfo.VERSION_COLUMN, meta.getVersion() )
-                    .value( SchemaInfo.DATA_COLUMN, meta.serialize() );
+                                       .value( SchemaInfo.CHECKSUM_COLUMN, String.valueOf( meta.getId() ) )
+                                       .value( SchemaInfo.NAME_COLUMN, meta.getName() )
+                                       .value( SchemaInfo.VERSION_COLUMN, meta.getVersion() )
+                                       .value( SchemaInfo.DATA_COLUMN, meta.serialize() );
             session.execute( st );
             return true;
         }
@@ -134,7 +130,7 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
         if ( contains( id ) )
         {
             Statement st = QueryBuilder.delete().from( SchemaInfo.KEYSPACE, schemaInfo.getTableName() )
-                    .where( QueryBuilder.eq( SchemaInfo.CHECKSUM_COLUMN, String.valueOf( id ) ) );
+                                       .where( QueryBuilder.eq( SchemaInfo.CHECKSUM_COLUMN, String.valueOf( id ) ) );
             session.execute( st );
             return true;
         }
@@ -165,8 +161,8 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
         MetadataListingImpl res = new MetadataListingImpl();
 
         Statement st = QueryBuilder.select().from( SchemaInfo.KEYSPACE, schemaInfo.getTableName() )
-                .where( gt( token( SchemaInfo.CHECKSUM_COLUMN ), fcall( "token", marker != null ? marker : "" ) ) )
-                .limit( batchSize + 1 );
+                                   .where( gt( token( SchemaInfo.CHECKSUM_COLUMN ),
+                                           fcall( "token", marker != null ? marker : "" ) ) ).limit( batchSize + 1 );
         // (*) limit with one more item to detect whether there are more results to fetch
 
         ResultSet rs = session.execute( st );
@@ -192,24 +188,16 @@ class NoSqlPackageMetadataStore implements PackageMetadataStore
 
     private SerializableMetadata makeMetadata( Row row ) throws IOException
     {
-        byte[] md5;
-        try
-        {
-            String md5hex = row.getString( SchemaInfo.CHECKSUM_COLUMN );
-            md5 = Hex.decodeHex( md5hex.toCharArray() );
-        }
-        catch ( DecoderException ex )
-        {
-            throw new IOException( ex );
-        }
+
+        String md5hex = row.getString( SchemaInfo.CHECKSUM_COLUMN );
+
+
         DefaultMetadata m = new DefaultMetadata();
-        m.setMd5sum( md5 );
+        m.setMd5sum( md5hex );
         m.setName( row.getString( SchemaInfo.NAME_COLUMN ) );
         m.setVersion( row.getString( SchemaInfo.VERSION_COLUMN ) );
         m.setSerialized( row.getString( SchemaInfo.DATA_COLUMN ) );
         return m;
     }
-
-
 }
 

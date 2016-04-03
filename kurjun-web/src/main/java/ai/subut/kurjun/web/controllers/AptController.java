@@ -1,15 +1,23 @@
 package ai.subut.kurjun.web.controllers;
 
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
 import ai.subut.kurjun.web.service.RepositoryService;
 import ai.subut.kurjun.web.service.impl.AptManagerServiceImpl;
-import ai.subut.kurjun.web.utils.Utils;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
 import ninja.Context;
 import ninja.Renderable;
 import ninja.Result;
@@ -19,14 +27,6 @@ import ninja.params.PathParam;
 import ninja.session.FlashScope;
 import ninja.uploads.FileItem;
 import ninja.uploads.FileProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.List;
 
 
 /**
@@ -56,23 +56,24 @@ public class AptController extends BaseAptController
         List<SerializableMetadata> serializableMetadataList = aptManagerService.list( repository );
         //********************************************
 
-        return Results.html().template("views/apts.ftl").render( "apts", serializableMetadataList );
+        return Results.html().template( "views/apts.ftl" ).render( "apts", serializableMetadataList );
     }
 
 
     @FileProvider( SubutaiFileHandler.class )
-    public Result upload(Context context, @Param( "file" ) FileItem file, FlashScope flashScope ) throws IOException
+    public Result upload( Context context, @Param( "file" ) FileItem file, FlashScope flashScope ) throws IOException
     {
         try ( InputStream inputStream = new FileInputStream( file.getFile() ) )
         {
             //********************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            URI uri = aptManagerService.upload(uSession, inputStream );
+            URI uri = aptManagerService.upload( uSession, inputStream );
             //********************************************
 
-            if ( uri != null ) {
-                flashScope.success("File uploaded successfully");
-                return Results.redirect(context.getContextPath()+"/apt");
+            if ( uri != null )
+            {
+                flashScope.success( "File uploaded successfully" );
+                return Results.redirect( context.getContextPath() + "/apt" );
             }
         }
         catch ( IOException e )
@@ -80,14 +81,14 @@ public class AptController extends BaseAptController
             LOGGER.error( "Failed to upload apt-file: {}", e.getMessage() );
         }
 
-        flashScope.error("Failed to upload apt-file");
-        return Results.redirect( context.getContextPath()+"/apt" );
+        flashScope.error( "Failed to upload apt-file" );
+        return Results.redirect( context.getContextPath() + "/apt" );
     }
 
 
     public Result release( @PathParam( "release" ) String release )
     {
-//        checkNotNull( release, "Release cannot be null" );
+        //        checkNotNull( release, "Release cannot be null" );
 
         //********************************************
         String rel = aptManagerService.getRelease( release, null, null );
@@ -102,14 +103,13 @@ public class AptController extends BaseAptController
     }
 
 
-    public Result packageIndexes( @PathParam( "release" ) String release,
-                                  @PathParam( "component" ) String component, @PathParam( "arch" ) String arch,
-                                  @PathParam( "packages" ) String packagesIndex )
+    public Result packageIndexes( @PathParam( "release" ) String release, @PathParam( "component" ) String component,
+                                  @PathParam( "arch" ) String arch, @PathParam( "packages" ) String packagesIndex )
     {
-//        checkNotNull( release, "Release cannot be null" );
-//        checkNotNull( component, "Component cannot be null" );
-//        checkNotNull( arch, "Arch cannot be null" );
-//        checkNotNull( packagesIndex, "Package Index cannot be null" );
+        //        checkNotNull( release, "Release cannot be null" );
+        //        checkNotNull( component, "Component cannot be null" );
+        //        checkNotNull( arch, "Arch cannot be null" );
+        //        checkNotNull( packagesIndex, "Package Index cannot be null" );
 
         //********************************************
         Renderable renderable = aptManagerService.getPackagesIndex( release, component, arch, packagesIndex );
@@ -121,7 +121,7 @@ public class AptController extends BaseAptController
 
     public Result getPackageByFileName( Context context, @PathParam( "filename" ) String filename )
     {
-//        checkNotNull( filename, "File name cannot be null" );
+        //        checkNotNull( filename, "File name cannot be null" );
 
         //********************************************
         Renderable renderable = aptManagerService.getPackageByFilename( filename );
@@ -131,8 +131,7 @@ public class AptController extends BaseAptController
     }
 
 
-    public Result info( @Param( "md5" ) String md5, @Param( "name" ) String name,
-                        @Param( "version" ) String version )
+    public Result info( @Param( "md5" ) String md5, @Param( "name" ) String name, @Param( "version" ) String version )
 
     {
         //        checkNotNull( md5, "MD5 cannot be null" );
@@ -140,7 +139,7 @@ public class AptController extends BaseAptController
         //        checkNotNull( version, "Version not found" );
 
         //********************************************
-        String metadata = aptManagerService.getPackageInfo( Utils.MD5.toByteArray( md5 ), name, version );
+        String metadata = aptManagerService.getPackageInfo( md5, name, version );
         //********************************************
 
         if ( metadata != null )
@@ -153,10 +152,10 @@ public class AptController extends BaseAptController
 
     public Result download( @PathParam( "id" ) String md5, FlashScope flashScope )
     {
-//        checkNotNull( md5, "MD5 cannot be null" );
+        //        checkNotNull( md5, "MD5 cannot be null" );
 
         //********************************************
-        Renderable renderable = aptManagerService.getPackage( Utils.MD5.toByteArray( md5 ) );
+        Renderable renderable = aptManagerService.getPackage( md5 );
         //********************************************
 
         if ( renderable != null )
@@ -169,21 +168,21 @@ public class AptController extends BaseAptController
 
     public Result delete( Context context, @PathParam( "id" ) String md5, FlashScope flashScope )
     {
-//        checkNotNull( md5, "MD5 cannot be null" );
+        //        checkNotNull( md5, "MD5 cannot be null" );
 
         //********************************************
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-        boolean success = aptManagerService.delete(uSession, Utils.MD5.toByteArray( md5 ) );
+        boolean success = aptManagerService.delete( uSession, md5 );
         //********************************************
 
         if ( success )
         {
-            flashScope.success("Deleted successfully");
-            return Results.redirect(context.getContextPath()+"/apt");
+            flashScope.success( "Deleted successfully" );
+            return Results.redirect( context.getContextPath() + "/apt" );
         }
 
-        flashScope.error("Failed to delete. Not found: "+md5);
-        return Results.redirect(context.getContextPath()+"/apt");
+        flashScope.error( "Failed to delete. Not found: " + md5 );
+        return Results.redirect( context.getContextPath() + "/apt" );
     }
 
 

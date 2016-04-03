@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 
 
@@ -31,7 +32,7 @@ public class FileSystemFileStoreTest
     private FileSystemFileStore fs;
     private File sampleFile;
     private String sampleData = "sample data";
-    private byte[] sampleMd5;
+    private String sampleMd5;
 
 
     @Before
@@ -42,8 +43,8 @@ public class FileSystemFileStoreTest
         {
             os.write( sampleData.getBytes( StandardCharsets.UTF_8 ) );
         }
-        sampleMd5 = DigestUtils.md5( sampleData );
 
+        sampleMd5 = Hex.encodeHexString( DigestUtils.md5( sampleData ) );
         fs = new FileSystemFileStore( tempDir.newFolder().getAbsolutePath() );
         fs.put( sampleFile );
     }
@@ -63,7 +64,8 @@ public class FileSystemFileStoreTest
         try ( InputStream is = new FileInputStream( tempDir.newFile() ) )
         {
             byte[] otherMd5 = DigestUtils.md5( is );
-            Assert.assertFalse( fs.contains( otherMd5 ) );
+
+            Assert.assertFalse( fs.contains( Hex.encodeHexString( otherMd5 ) ) );
         }
     }
 
@@ -83,7 +85,7 @@ public class FileSystemFileStoreTest
     public void testGetWithInvalidKey() throws IOException
     {
         byte[] checksum = DigestUtils.md5( "abc" );
-        Assert.assertNull( fs.get( checksum ) );
+        Assert.assertNull( fs.get( Hex.encodeHexString( checksum ) ) );
     }
 
 
@@ -101,15 +103,15 @@ public class FileSystemFileStoreTest
 
         // with invalid key
         byte[] checksum = DigestUtils.md5( "abc" );
-        Assert.assertFalse( fs.get( checksum, target ) );
+        Assert.assertFalse( fs.get( Hex.encodeHexString( checksum ), target ) );
     }
 
 
     @Test
     public void testPut_File() throws Exception
     {
-        byte[] checksum = fs.put( sampleFile );
-        Assert.assertArrayEquals( sampleMd5, checksum );
+        String checksum = fs.put( sampleFile );
+        Assert.assertEquals( sampleMd5, checksum );
         Assert.assertTrue( fs.contains( checksum ) );
     }
 
@@ -117,7 +119,7 @@ public class FileSystemFileStoreTest
     @Test
     public void testPut_URL() throws Exception
     {
-        byte[] checksum = fs.put( new URL( "http://example.com" ) );
+        String checksum = fs.put( new URL( "http://example.com" ) );
         Assert.assertNotNull( checksum );
         Assert.assertTrue( fs.contains( checksum ) );
     }
@@ -133,8 +135,8 @@ public class FileSystemFileStoreTest
     @Test
     public void testPutWithFilenameAndInputStream() throws Exception
     {
-        byte[] checksum = fs.put( "my-filename", new FileInputStream( sampleFile ) );
-        Assert.assertArrayEquals( sampleMd5, checksum );
+        String checksum = fs.put( "my-filename", new FileInputStream( sampleFile ) );
+        Assert.assertEquals( sampleMd5, checksum );
         Assert.assertTrue( fs.contains( checksum ) );
     }
 
@@ -154,7 +156,7 @@ public class FileSystemFileStoreTest
         int expected = sampleData.getBytes().length;
         long sizeof = fs.sizeOf( sampleMd5 );
         Assert.assertEquals( expected, sizeof );
-        Assert.assertEquals( 0, fs.sizeOf( DigestUtils.md5( "non-existing" ) ) );
+        Assert.assertEquals( 0, fs.sizeOf( "non-existing" ) );
     }
 
 
@@ -171,6 +173,5 @@ public class FileSystemFileStoreTest
             return os.toString( StandardCharsets.UTF_8.name() );
         }
     }
-
 }
 

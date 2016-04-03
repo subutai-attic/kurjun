@@ -1,6 +1,9 @@
 package ai.subut.kurjun.web.controllers;
 
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import ai.subut.kurjun.metadata.common.raw.RawMetadata;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.Metadata;
@@ -9,10 +12,6 @@ import ai.subut.kurjun.web.handler.SubutaiFileHandler;
 import ai.subut.kurjun.web.model.KurjunFileItem;
 import ai.subut.kurjun.web.service.RawManagerService;
 import ai.subut.kurjun.web.service.RepositoryService;
-import ai.subut.kurjun.web.utils.Utils;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
 import ninja.Context;
 import ninja.Renderable;
 import ninja.Result;
@@ -44,20 +43,20 @@ public class RawFileController extends BaseController
             repository = "all";
         }
 
-        return Results.html().template("views/raw-files.ftl").render( "files", rawManagerService.list( repository ) );
+        return Results.html().template( "views/raw-files.ftl" ).render( "files", rawManagerService.list( repository ) );
     }
 
 
     @FileProvider( SubutaiFileHandler.class )
-    public Result upload(Context context, @Param( "file" ) FileItem fileItem, FlashScope flashScope )
+    public Result upload( Context context, @Param( "file" ) FileItem fileItem, FlashScope flashScope )
     {
-        UserSession userSession = (UserSession) context.getAttribute(SecurityFilter.USER_SESSION);
+        UserSession userSession = ( UserSession ) context.getAttribute( SecurityFilter.USER_SESSION );
         String fingerprint = "raw";
 
         //checkNotNull( fileItem, "MD5 cannot be null" );
         //if ( userSession != null && userSession.getUser() != null )
         //{
-          //  fingerprint = userSession.getUser().getKeyFingerprint();
+        //  fingerprint = userSession.getUser().getKeyFingerprint();
         //}
 
         KurjunFileItem kurjunFileItem = ( KurjunFileItem ) fileItem;
@@ -65,18 +64,20 @@ public class RawFileController extends BaseController
         Metadata metadata;
 
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-        metadata = rawManagerService.put(userSession, kurjunFileItem.getFile(), kurjunFileItem.getFileName(), fingerprint );
+        metadata = rawManagerService
+                .put( userSession, kurjunFileItem.getFile(), kurjunFileItem.getFileName(), fingerprint );
 
         if ( metadata != null )
         {
-            flashScope.success("Uploaded successfully");
+            flashScope.success( "Uploaded successfully" );
         }
-        else {
+        else
+        {
 
-            flashScope.error("Failed to upload.");
+            flashScope.error( "Failed to upload." );
         }
 
-        return Results.redirect(context.getContextPath()+"/raw-files");
+        return Results.redirect( context.getContextPath() + "/raw-files" );
     }
 
 
@@ -90,7 +91,7 @@ public class RawFileController extends BaseController
         //temp contains [fprint].[md5]
         if ( temp.length == 2 )
         {
-            renderable = rawManagerService.getFile( temp[0], Utils.MD5.toByteArray( temp[1] ) );
+            renderable = rawManagerService.getFile( temp[0], temp[1] );
         }
         if ( renderable != null )
         {
@@ -110,17 +111,17 @@ public class RawFileController extends BaseController
         if ( temp.length == 2 )
         {
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            success = rawManagerService.delete(uSession, temp[0], Utils.MD5.toByteArray( temp[1] ) );
+            success = rawManagerService.delete( uSession, temp[0], temp[1] );
         }
 
         if ( success )
         {
-            flashScope.success("Deleted successfully");
-            return Results.redirect(context.getContextPath()+"/raw-files");
+            flashScope.success( "Deleted successfully" );
+            return Results.redirect( context.getContextPath() + "/raw-files" );
         }
 
-        flashScope.error("Failed to delete.");
-        return Results.redirect( context.getContextPath()+"/raw-files" );
+        flashScope.error( "Failed to delete." );
+        return Results.redirect( context.getContextPath() + "/raw-files" );
     }
 
 
@@ -140,7 +141,7 @@ public class RawFileController extends BaseController
             fingerprint = "raw";
         }
         rawMetadata.setName( name );
-        rawMetadata.setMd5Sum( Utils.MD5.toByteArray( md5 ) );
+        rawMetadata.setMd5Sum( md5 );
         rawMetadata.setFingerprint( fingerprint );
 
         Metadata metadata = rawManagerService.getInfo( rawMetadata );

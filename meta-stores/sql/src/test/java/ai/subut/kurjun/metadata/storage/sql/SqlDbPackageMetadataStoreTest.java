@@ -104,7 +104,7 @@ public class SqlDbPackageMetadataStoreTest
     @Test
     public void testGet() throws Exception
     {
-        Metadata res = store.get( meta.getMd5Sum() );
+        Metadata res = ( Metadata ) store.get( meta.getMd5Sum() );
         Assert.assertEquals( meta, res );
         Assert.assertNull( store.get( otherMd5 ) );
 
@@ -188,7 +188,7 @@ public class SqlDbPackageMetadataStoreTest
         pm.setFilename( pm.getPackage() + "-ver-arch.deb" );
         pm.setInstalledSize( 1234 );
         pm.setMaintainer( "Maintainer" );
-        pm.setMd5( DigestUtils.md5( pm.getFilename() ) );
+        pm.setMd5( pm.getFilename() );
         pm.setPriority( Priority.important );
 
         DefaultDependency dep = new DefaultDependency();

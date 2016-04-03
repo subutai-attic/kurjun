@@ -19,7 +19,7 @@ public interface FileStore
      * @return true if a file having the same md5sum exists, false otherwise
      * @throws IOException if there are problems accessing the store
      */
-    boolean contains( byte[] md5 ) throws IOException;
+    boolean contains( String md5 ) throws IOException;
 
 
     /**
@@ -29,7 +29,7 @@ public interface FileStore
      * @return null if the file does not exist, otherwise returns a stream containing the contents of the file
      * @throws IOException if there are problems access the store
      */
-    InputStream get( byte[] md5 ) throws IOException;
+    InputStream get( String md5 ) throws IOException;
 
 
     /**
@@ -40,7 +40,7 @@ public interface FileStore
      * @return true if the contents were successfully dumped, false otherwise
      * @throws IOException if there are problems accessing the store or writing to the target file
      */
-    boolean get( byte[] md5, File target ) throws IOException;
+    boolean get( String md5, File target ) throws IOException;
 
 
     /**
@@ -50,7 +50,7 @@ public interface FileStore
      * @return the md5 sum of the file
      * @throws IOException if there are problems accessing the store or the source file
      */
-    byte[] put( File source ) throws IOException;
+    String put( File source ) throws IOException;
 
 
     /**
@@ -60,7 +60,7 @@ public interface FileStore
      * @return the md5 sum of the file
      * @throws IOException if there are problems accessing the store or the source file
      */
-    byte[] put( URL source ) throws IOException;
+    String put( URL source ) throws IOException;
 
 
     /**
@@ -71,7 +71,7 @@ public interface FileStore
      * @return the md5 sum of the file
      * @throws IOException if there are problems accessing the store or the source content
      */
-    byte[] put( String filename, InputStream source ) throws IOException;
+    String put( String filename, InputStream source ) throws IOException;
 
 
     /**
@@ -81,7 +81,7 @@ public interface FileStore
      * @return true if the file was removed, false if no such file exists
      * @throws IOException if there are problems accessing the store
      */
-    boolean remove( byte[] md5 ) throws IOException;
+    boolean remove( String md5 ) throws IOException;
 
 
     /**
@@ -100,7 +100,7 @@ public interface FileStore
      * @return size of the package file in bytes if found; otherwise - 0L
      * @throws IOException
      */
-    long sizeOf( byte[] md5 ) throws IOException;
+    long sizeOf( String md5 ) throws IOException;
 
 }
 

@@ -15,8 +15,6 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.commons.codec.binary.Hex;
-
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -44,8 +42,6 @@ import ai.subut.kurjun.repo.util.ReleaseIndexBuilder;
 import ai.subut.kurjun.web.context.ArtifactContext;
 import ai.subut.kurjun.web.service.AptManagerService;
 import ai.subut.kurjun.web.service.IdentityManagerService;
-import ai.subut.kurjun.web.service.RelationManagerService;
-import ai.subut.kurjun.web.utils.Utils;
 import ninja.Renderable;
 import ninja.lifecycle.Dispose;
 import ninja.lifecycle.Start;
@@ -129,7 +125,7 @@ public class AptManagerServiceImpl implements AptManagerService
     @Override
     public String md5()
     {
-        return Utils.MD5.toString( localRepository.md5() );
+        return  localRepository.md5();
     }
 
 
@@ -197,7 +193,7 @@ public class AptManagerServiceImpl implements AptManagerService
 
 
     @Override
-    public String getPackageInfo( final byte[] md5, final String name, final String version )
+    public String getPackageInfo( final String md5, final String name, final String version )
     {
         if ( md5 == null && name == null && version == null )
         {
@@ -219,7 +215,7 @@ public class AptManagerServiceImpl implements AptManagerService
 
 
     @Override
-    public Renderable getPackage( final byte[] md5 )
+    public Renderable getPackage( final String md5 )
     {
         DefaultMetadata m = new DefaultMetadata();
         m.setMd5sum( md5 );
@@ -282,7 +278,7 @@ public class AptManagerServiceImpl implements AptManagerService
                                     relationManager.buildPermissions( 4 ) );
                     //*************************************
 
-                    return new URI( null, null, "/info", "md5=" + Hex.encodeHexString( meta.getMd5Sum() ), null );
+                    return new URI( null, null, "/info", "md5=" +  meta.getMd5Sum() , null );
                 }
             }
         }
@@ -320,11 +316,11 @@ public class AptManagerServiceImpl implements AptManagerService
 
 
     @Override
-    public boolean delete(UserSession userSession, final byte[] md5 )
+    public boolean delete(UserSession userSession, final String md5 )
     {
         try
         {
-            String id = Hex.encodeHexString( md5 );
+            String id = md5;
 
             if ( checkRepoPermissions( userSession, REPO_NAME, id, Permission.Delete ) )
             {
@@ -350,7 +346,7 @@ public class AptManagerServiceImpl implements AptManagerService
 
 
     @Override
-    public String getSerializedPackageInfo( final String filename ) throws IllegalArgumentException
+    public String getSerializedPackageInfoByFilename( final String filename ) throws IllegalArgumentException
     {
         SerializableMetadata meta = getPackageInfoByFilename( filename );
         return ( meta != null ) ? meta.serialize() : null;
@@ -358,7 +354,7 @@ public class AptManagerServiceImpl implements AptManagerService
 
 
     @Override
-    public String getSerializedPackageInfo( final byte[] md5 ) throws IllegalArgumentException
+    public String getSerializedPackageInfoByMd5( final String md5 ) throws IllegalArgumentException
     {
         DefaultMetadata m = new DefaultMetadata();
         m.setMd5sum( md5 );
@@ -438,7 +434,7 @@ public class AptManagerServiceImpl implements AptManagerService
     }
 
 
-    private InputStream getPackageStream( byte[] md5 )
+    private InputStream getPackageStream( String md5 )
     {
         DefaultMetadata defaultMetadata = new DefaultMetadata();
         defaultMetadata.setMd5sum( md5 );

@@ -1,11 +1,11 @@
 package ai.subut.kurjun.model.metadata.apt;
 
 
-import ai.subut.kurjun.model.metadata.Architecture;
-import ai.subut.kurjun.model.metadata.Metadata;
-
 import java.net.URL;
 import java.util.List;
+
+import ai.subut.kurjun.model.metadata.Architecture;
+import ai.subut.kurjun.model.metadata.Metadata;
 
 
 /**
@@ -42,7 +42,7 @@ public interface PackageMetadata extends Metadata
      * @return the md5 sum for the Debian package file
      */
     @Override
-    byte[] getMd5Sum();
+    String getMd5Sum();
 
 
     /**
