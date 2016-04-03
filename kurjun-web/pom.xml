@@ -144,7 +144,10 @@
     <!--<artifactId>ninja-standalone</artifactId>-->
     <!--<version>${ninja.version}</version>-->
     <!--</dependency>-->
-
+    <dependency>
+      <groupId>com.turn</groupId>
+      <artifactId>ttorrent-core</artifactId>
+    </dependency>
     <dependency>
       <groupId>ai.subut.kurjun</groupId>
       <artifactId>core-dao</artifactId>

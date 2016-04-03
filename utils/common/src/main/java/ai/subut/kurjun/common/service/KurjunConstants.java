@@ -30,6 +30,8 @@ public final class KurjunConstants
 
     public static final String KURJUN_TORRENT_TRACKER_DIR = "kurjun.torrent.tracker.dir";
 
+    public static final String KURJUN_TORRENT_CREATOR = "subutai";
+
     public static final String KURJUN_TORRENT_OUTPUT_DIR = "kurjun.torrent.output.di";
 
     public static final String KURJUN_TORRENT_PORT = "kurjun.torrent.port";

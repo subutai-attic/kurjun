@@ -24,9 +24,7 @@ public class KurjunClient
     {
         try
         {
-
             SharedTorrent sharedTorrent = SharedTorrent.fromFile( source, output );
-
             return new Client( inetAddress, sharedTorrent );
         }
         catch ( IOException | NoSuchAlgorithmException e )
