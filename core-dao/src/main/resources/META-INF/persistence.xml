@@ -9,6 +9,7 @@
     <class>ai.subut.kurjun.core.dao.model.identity.UserTokenEntity</class>
     <class>ai.subut.kurjun.core.dao.model.identity.RelationEntity</class>
     <class>ai.subut.kurjun.core.dao.model.identity.RelationObjectEntity</class>
+    <class>ai.subut.kurjun.core.dao.model.metadata.TemplateEntity</class>
 
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
@@ -21,7 +22,7 @@
       <property name="openjpa.ConnectionPassword" value=""/>
 
       <property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
-      <property name="openjpa.Log" value="DefaultLevel=WARN, Tool=INFO, SQL=TRACE" />
+      <property name="openjpa.Log" value="DefaultLevel=INFO, Tool=INFO, SQL=TRACE" />
       <property name="openjpa.ConnectionFactoryProperties" value="PrintParameters=true" />
       <property name="openjpa.jdbc.DBDictionary" value="derby" />
       <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />

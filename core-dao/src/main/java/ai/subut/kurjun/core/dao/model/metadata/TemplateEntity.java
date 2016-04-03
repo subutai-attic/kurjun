@@ -8,13 +8,16 @@ import java.util.Map;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.IdClass;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
 
 import org.apache.commons.codec.binary.Hex;
 
-import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
+import ai.subut.kurjun.metadata.common.subutai.TemplateId;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
@@ -27,8 +30,12 @@ import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 //@IdClass(TemplatePk.class)
 public class TemplateEntity implements SerializableMetadata, SubutaiTemplateMetadata
 {
-    public static final String TABLE_NAME = "template";
+    public static final String TABLE_NAME = "templates";
 
+
+    @Id
+    @Column( name = "ID" )
+    private String id;
 
     @Column( name = "md5Sum" )
     private byte[] md5Sum;
@@ -60,12 +67,14 @@ public class TemplateEntity implements SerializableMetadata, SubutaiTemplateMeta
     @Column( name = "size" )
     private long size;
 
+    @ElementCollection(fetch = FetchType.LAZY)
+    @MapKeyColumn
     @Column( name = "extra" )
     private Map<String, String> extra = new HashMap<>();
 
 
     @Override
-    public Object getId()
+    public String getId()
     {
         if ( ownerFprint != null && md5Sum != null )
         {
