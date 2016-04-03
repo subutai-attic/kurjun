@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.commons.codec.binary.Hex;
 
@@ -78,10 +79,11 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
         return null;
     }
 
-
+    private static Logger LOGGER = LoggerFactory.getLogger( LocalRepositoryBase.class );
     @Override
     public List<SerializableMetadata> listPackages()
     {
+        LOGGER.info( "listing packages " );
         PackageMetadataStore metadataStore = getMetadataStore();
         List<SerializableMetadata> result = new LinkedList<>();
         try
@@ -99,6 +101,7 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
         {
             getLogger().error( "Failed to list package in metadata store", ex );
         }
+        LOGGER.info( " returning listing packages " );
         return result;
     }
 

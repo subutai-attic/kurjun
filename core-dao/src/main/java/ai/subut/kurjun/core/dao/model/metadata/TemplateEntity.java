@@ -7,9 +7,15 @@ import java.util.Map;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
 
+import ai.subut.kurjun.metadata.common.subutai.TemplateId;
+import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
@@ -21,8 +27,12 @@ import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 //@IdClass(TemplatePk.class)
 public class TemplateEntity implements SerializableMetadata, SubutaiTemplateMetadata
 {
-    public static final String TABLE_NAME = "template";
+    public static final String TABLE_NAME = "templates";
 
+
+    @Id
+    @Column( name = "ID" )
+    private String id;
 
     @Column( name = "md5Sum" )
     private String md5Sum;
@@ -54,22 +64,25 @@ public class TemplateEntity implements SerializableMetadata, SubutaiTemplateMeta
     @Column( name = "size" )
     private long size;
 
+    @ElementCollection( fetch = FetchType.LAZY )
+    @MapKeyColumn
     @Column( name = "extra" )
     private Map<String, String> extra = new HashMap<>();
 
 
     @Override
-    public Object getId()
+    public String getId()
     {
         if ( ownerFprint != null && md5Sum != null )
         {
-            return new TemplateId( ownerFprint, md5Sum).get();
+            return new TemplateId( ownerFprint, md5Sum ).get();
         }
         else
         {
             return null;
         }
     }
+
 
     public void setId( String ownerFprint, String md5Sum )
     {
@@ -123,16 +136,16 @@ public class TemplateEntity implements SerializableMetadata, SubutaiTemplateMeta
     }
 
 
-    @Override
-    public String getPackage()
-    {
-        return null;
-    }
-
-
     public void setParent( final String parent )
     {
         this.parent = parent;
+    }
+
+
+    @Override
+    public String getPackage()
+    {
+        return packageName;
     }
 
 
@@ -160,6 +173,7 @@ public class TemplateEntity implements SerializableMetadata, SubutaiTemplateMeta
     }
 
 
+    @Override
     public String getConfigContents()
     {
         return configContents;
@@ -172,6 +186,7 @@ public class TemplateEntity implements SerializableMetadata, SubutaiTemplateMeta
     }
 
 
+    @Override
     public String getPackagesContents()
     {
         return packagesContents;
@@ -184,6 +199,7 @@ public class TemplateEntity implements SerializableMetadata, SubutaiTemplateMeta
     }
 
 
+    @Override
     public String getOwnerFprint()
     {
         return ownerFprint;
@@ -196,6 +212,7 @@ public class TemplateEntity implements SerializableMetadata, SubutaiTemplateMeta
     }
 
 
+    @Override
     public long getSize()
     {
         return size;
@@ -223,6 +240,27 @@ public class TemplateEntity implements SerializableMetadata, SubutaiTemplateMeta
     @Override
     public String serialize()
     {
-        return null;
+        return MetadataUtils.JSON.toJson( this );
+    }
+
+
+    @Override
+    public int hashCode()
+    {
+        int hash = 3;
+        hash = 17 * hash + this.md5Sum.hashCode();
+        return hash;
+    }
+
+
+    @Override
+    public boolean equals( Object obj )
+    {
+        if ( obj instanceof TemplateEntity )
+        {
+            TemplateEntity other = ( TemplateEntity ) obj;
+            return this.md5Sum.equalsIgnoreCase( other.md5Sum );
+        }
+        return false;
     }
 }

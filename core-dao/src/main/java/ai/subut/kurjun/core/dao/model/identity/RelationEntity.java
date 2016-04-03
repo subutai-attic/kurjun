@@ -1,9 +1,7 @@
 package ai.subut.kurjun.core.dao.model.identity;
 
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,10 +19,9 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
 
-import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.model.identity.Permission;
+import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.model.identity.RelationObject;
 import ai.subut.kurjun.model.identity.RelationType;
 
@@ -176,18 +173,18 @@ public class RelationEntity implements Relation
         }
         else
         {
-            Set<Permission> perms = new HashSet<>();
+            Set<Permission> permSet = new HashSet<>();
 
             if ( perms.contains( Permission.Read.getName() ) )
-                perms.add( Permission.Read );
+                permSet.add( Permission.Read );
             if ( perms.contains( Permission.Write.getName() ) )
-                perms.add( Permission.Write );
+                permSet.add( Permission.Write );
             if ( perms.contains( Permission.Update.getName() ) )
-                perms.add( Permission.Update );
+                permSet.add( Permission.Update );
             if ( perms.contains( Permission.Delete.getName() ) )
-                perms.add( Permission.Delete );
+                permSet.add( Permission.Delete );
 
-            return perms;
+            return permSet;
         }
     }
 
@@ -199,13 +196,13 @@ public class RelationEntity implements Relation
     {
         perms = "";
 
-        if ( permissions.contains( Permission.Read.getName() ) )
+        if ( permissions.contains( Permission.Read) )
             perms += Permission.Read.getName() +";";
-        if ( perms.contains( Permission.Write.getName() ) )
+        if ( permissions.contains( Permission.Write) )
             perms += Permission.Write.getName() +";";
-        if ( perms.contains( Permission.Update.getName() ) )
+        if ( permissions.contains( Permission.Update ))
             perms += Permission.Update.getName() +";";
-        if ( perms.contains( Permission.Delete.getName() ) )
+        if ( permissions.contains( Permission.Delete) )
             perms += Permission.Delete.getName() +";";
 
     }

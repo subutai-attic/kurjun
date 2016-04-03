@@ -51,7 +51,7 @@ public class RelationManagerServiceImpl implements RelationManagerService
             return Collections.emptyList();
         }
     }
-    
+
 
     //*************************************
     @Override

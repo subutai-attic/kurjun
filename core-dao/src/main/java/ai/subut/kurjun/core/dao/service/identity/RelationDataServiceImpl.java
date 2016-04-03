@@ -117,7 +117,7 @@ public class RelationDataServiceImpl implements RelationDataService
     {
         try
         {
-            return relationDAO.findBySourceObject( relationObject.getUniqID(), relationObject.getType());
+            return relationDAO.findBySourceObject( relationObject.getObjectId() , relationObject.getType());
         }
         catch ( Exception ex )
         {
@@ -148,7 +148,7 @@ public class RelationDataServiceImpl implements RelationDataService
     {
         try
         {
-            return relationDAO.findByTargetObject( relationObject.getUniqID(), relationObject.getType() );
+            return relationDAO.findByTargetObject( relationObject.getObjectId(), relationObject.getType() );
         }
         catch ( Exception ex )
         {
@@ -180,7 +180,7 @@ public class RelationDataServiceImpl implements RelationDataService
     {
         try
         {
-            return relationDAO.findByTrustObject( relationObject.getUniqID(), relationObject.getType() );
+            return relationDAO.findByTrustObject( relationObject.getObjectId(), relationObject.getType() );
         }
         catch ( Exception ex )
         {
@@ -262,7 +262,7 @@ public class RelationDataServiceImpl implements RelationDataService
     {
         try
         {
-            return relationObjectDAO.find( relationObject.getUniqID(), relationObject.getType());
+            return relationObjectDAO.find( relationObject.getUniqueId());
 
         }
         catch ( Exception ex )
@@ -274,12 +274,32 @@ public class RelationDataServiceImpl implements RelationDataService
 
     //***************************
     @Override
-    public void removeRelationObject( String id, int type )
+    public RelationObject getRelationObject( String uniqID, int type )
     {
         try
         {
-            RelationObject relationObject = relationObjectDAO.find( id, type );
-            removeRelationObject( relationObject );
+            return relationObjectDAO.findByUniqID( uniqID, type );
+
+        }
+        catch ( Exception ex )
+        {
+            return null;
+        }
+    }
+
+
+    //***************************
+    @Override
+    public void removeRelationObject( String uniqID, int type )
+    {
+        try
+        {
+            RelationObject obj = getRelationObject( uniqID, type);
+
+            if(obj != null)
+            {
+                removeRelationObject( obj );
+            }
         }
         catch ( Exception ex )
         {

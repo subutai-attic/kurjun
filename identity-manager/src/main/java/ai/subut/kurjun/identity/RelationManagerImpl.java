@@ -112,11 +112,11 @@ public class RelationManagerImpl implements RelationManager
 
             if ( Strings.isNullOrEmpty( objectId ) )
             {
-                relationObject.setUniqID ( securityManager.generateUUIDRandom() );
+                relationObject.setObjectId( securityManager.generateUUIDRandom() );
             }
             else
             {
-                relationObject.setUniqID( objectId );
+                relationObject.setObjectId( objectId );
             }
 
             relationObject.setType( objectType );
@@ -279,7 +279,7 @@ public class RelationManagerImpl implements RelationManager
         }
         catch ( Exception ex )
         {
-            LOGGER.error( " ***** Failed to get relations by this TrustObject: " + trustObject.getId(), ex );
+            LOGGER.error( " ***** Failed to get relations by this TrustObject: " + trustObject.getObjectId(), ex );
         }
 
         return Collections.emptyList();
@@ -330,7 +330,7 @@ public class RelationManagerImpl implements RelationManager
         }
         catch ( Exception ex )
         {
-            LOGGER.error( " ***** Failed to get relations by this SourceObject: " + sourceObject.getId(), ex );
+            LOGGER.error( " ***** Failed to get relations by this SourceObject: " + sourceObject.getObjectId(), ex );
         }
 
         return Collections.emptyList();
@@ -347,7 +347,7 @@ public class RelationManagerImpl implements RelationManager
         }
         catch ( Exception ex )
         {
-            LOGGER.error( " ***** Failed to get relations by this TargetObject: " + targetObject.getId(), ex );
+            LOGGER.error( " ***** Failed to get relations by this TargetObject: " + targetObject.getObjectId(), ex );
         }
 
         return Collections.emptyList();
@@ -381,11 +381,11 @@ public class RelationManagerImpl implements RelationManager
 
             for ( Relation relation : relations )
             {
-                if ( relation.getTarget().getUniqId().equals( target.getKeyFingerprint() ) )
+                if ( relation.getTarget().getObjectId().equals( target.getKeyFingerprint() ) )
                 {
                     perms.addAll( relation.getPermissions() );
                 }
-                else if ( relation.getTarget().getUniqId().equals( IdentityManagerImpl.PUBLIC_USER_ID ) )
+                else if ( relation.getTarget().getObjectId().equals( IdentityManagerImpl.PUBLIC_USER_ID ) )
                 {
                     perms.addAll( relation.getPermissions() );
                 }

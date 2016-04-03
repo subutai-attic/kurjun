@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 
 import ai.subut.kurjun.model.identity.RelationObject;
@@ -29,55 +30,33 @@ public class RelationObjectEntity implements RelationObject,Serializable
     //*********************
 
     @Id
-    @GeneratedValue( strategy = GenerationType.IDENTITY )
-    @Column( name = "id" )
-    private long id;
+    @Column( name = "unique_id" )
+    @Override
+    public String getUniqueId()
+    {
+        return "{"+objectId + "}-{" + type + "}";
+    }
+
 
     @Column(name = "object_id")
-    private String uniqID;
+    private String objectId;
+
 
     @Column(name = "object_type")
     private int type = RelationObjectType.User.getId();
 
 
     @Override
-    public long getId()
+    public String getObjectId()
     {
-        return id;
+        return objectId;
     }
 
 
     @Override
-    public void setId( final long id )
+    public void setObjectId( final String objectId )
     {
-        this.id = id;
-    }
-
-
-    @Override
-    public String getUniqID()
-    {
-        return uniqID;
-    }
-
-
-    @Override
-    public void setUniqID( final String uniqID )
-    {
-        this.uniqID = uniqID;
-    }
-
-
-    @Override
-    public int getType()
-    {
-        return type;
-    }
-
-    @Override
-    public String getUniqId()
-    {
-        return id+"-"+type;
+        this.objectId = objectId;
     }
 
 
@@ -87,5 +66,10 @@ public class RelationObjectEntity implements RelationObject,Serializable
         this.type = type;
     }
 
+    @Override
+    public int getType()
+    {
+        return type;
+    }
 
 }

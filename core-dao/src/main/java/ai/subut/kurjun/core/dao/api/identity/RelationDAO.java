@@ -48,7 +48,7 @@ public class RelationDAO extends GenericDAOImpl<Relation>
         try
         {
             Query qr = getEntityManager().createQuery(
-                    " select e from RelationEntity e where e.source.id=:objectId and e.source.type=:objectType",
+                    " select e from RelationEntity e where e.source.objectId=:objectId and e.source.type=:objectType",
                     RelationEntity.class );
             qr.setParameter( "objectId" ,objectId );
             qr.setParameter( "objectType" ,objectType );
@@ -75,7 +75,7 @@ public class RelationDAO extends GenericDAOImpl<Relation>
         try
         {
             Query qr = getEntityManager().createQuery(
-                    " select e from RelationEntity e where e.target.id=:objectId and e.target.type=:objectType",
+                    " select e from RelationEntity e where e.target.objectId=:objectId and e.target.type=:objectType",
                     RelationEntity.class );
             qr.setParameter( "objectId" ,objectId );
             qr.setParameter( "objectType" ,objectType );
@@ -102,7 +102,7 @@ public class RelationDAO extends GenericDAOImpl<Relation>
         try
         {
             Query qr = getEntityManager().createQuery(
-                    " select e from RelationEntity e where e.trustObject.id=:objectId and e.trustObject.type=:objectType",
+                    " select e from RelationEntity e where e.trustObject.objectId=:objectId and e.trustObject.type=:objectType",
                     RelationEntity.class );
             qr.setParameter( "objectId" ,objectId );
             qr.setParameter( "objectType" ,objectType );
@@ -128,7 +128,7 @@ public class RelationDAO extends GenericDAOImpl<Relation>
         try
         {
             Query qr = getEntityManager().createQuery(
-                    " delete from RelationEntity e where e.trustObject.id=:objectId and e.trustObject.type=:objectType",
+                    " delete from RelationEntity e where e.trustObject.objectId=:objectId and e.trustObject.type=:objectType",
                     RelationEntity.class );
             qr.setParameter( "objectId" ,objectId );
             qr.setParameter( "objectType" ,objectType );
@@ -150,16 +150,22 @@ public class RelationDAO extends GenericDAOImpl<Relation>
         try
         {
             Query qr = getEntityManager().createQuery(
-                    " select e from RelationEntity e where e.trustObject.id=:objectId and e.trustObject.type=:objectType"
-                            + " and e.source.id=e.target.id"
+                    " select e from RelationEntity e where e.trustObject.objectId =:objectId and e.trustObject.type=:objectType"
+                            + " and e.source.objectId=e.target.objectId"
                             + " and e.source.type=e.target.type", RelationEntity.class );
 
             qr.setParameter( "objectId" ,objectId );
             qr.setParameter( "objectType" ,objectType );
 
-            Relation relation = (RelationEntity)qr.getSingleResult();
+            //**************************************
+            List<Relation> relations = qr.getResultList();
 
-            return relation;
+            if(relations.isEmpty())
+                return null;
+            else
+                return relations.get( 0 );
+            //**************************************
+
         }
         catch ( Exception e )
         {
