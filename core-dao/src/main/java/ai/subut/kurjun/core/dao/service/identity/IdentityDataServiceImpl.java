@@ -13,6 +13,7 @@ import ai.subut.kurjun.core.dao.api.identity.UserDAO;
 import ai.subut.kurjun.core.dao.api.identity.UserTokenDAO;
 import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.identity.UserToken;
+import ninja.jpa.UnitOfWork;
 
 
 /**
@@ -33,6 +34,7 @@ public class IdentityDataServiceImpl implements IdentityDataService
 
 
     //*****************************
+    @UnitOfWork
     @Override
     public void persistUser( User user )
     {
@@ -49,6 +51,7 @@ public class IdentityDataServiceImpl implements IdentityDataService
 
 
     //*****************************
+    @UnitOfWork
     @Override
     public User mergeUser( User user )
     {
@@ -67,6 +70,7 @@ public class IdentityDataServiceImpl implements IdentityDataService
 
 
     //*****************************
+    @UnitOfWork
     @Override
     public User getUser( String fingerprint )
     {
@@ -85,6 +89,7 @@ public class IdentityDataServiceImpl implements IdentityDataService
 
 
     //*****************************
+    @UnitOfWork
     @Override
     public List<User> getAllUsers()
     {
@@ -101,6 +106,7 @@ public class IdentityDataServiceImpl implements IdentityDataService
 
 
     //*****************************
+    @UnitOfWork
     @Override
     public List<UserToken> getAllTokens()
     {
@@ -116,8 +122,9 @@ public class IdentityDataServiceImpl implements IdentityDataService
 
 
     //*****************************
+    @UnitOfWork
     @Override
-    public UserToken  mergeToken(UserToken userToken)
+    public UserToken  mergeUserToken( UserToken userToken)
     {
         try
         {
@@ -130,6 +137,26 @@ public class IdentityDataServiceImpl implements IdentityDataService
         }
 
         return null;
+    }
+
+
+
+    //*****************************
+    @UnitOfWork
+    @Override
+    public UserToken getUserToken( String fingerprint )
+    {
+        try
+        {
+            if( !Strings.isNullOrEmpty(fingerprint))
+                return userTokenDAO.find( fingerprint.toLowerCase() );
+            else
+                return null;
+        }
+        catch ( Exception e )
+        {
+            return null;
+        }
     }
 
 

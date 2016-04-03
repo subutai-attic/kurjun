@@ -8,8 +8,7 @@ import com.google.inject.persist.Transactional;
 
 import ai.subut.kurjun.core.dao.api.DAOException;
 import ai.subut.kurjun.core.dao.api.GenericDAOImpl;
-import ai.subut.kurjun.core.dao.model.identity.UserEntity;
-import ai.subut.kurjun.model.identity.User;
+import ai.subut.kurjun.core.dao.model.identity.UserTokenEntity;
 import ai.subut.kurjun.model.identity.UserToken;
 
 
@@ -26,11 +25,11 @@ public class UserTokenDAO  extends GenericDAOImpl<UserToken>
     }
 
     @Transactional
-    public User find(String token) throws DAOException
+    public UserToken find(String token) throws DAOException
     {
         try
         {
-            return getEntityManager().find( UserEntity.class, token );
+            return getEntityManager().find( UserTokenEntity.class, token );
         }
         catch ( Exception e )
         {

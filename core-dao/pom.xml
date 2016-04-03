@@ -13,6 +13,10 @@
   <artifactId>core-dao</artifactId>
   <version>1.0</version>
 
+  <properties>
+    <ninja.version>5.2.2</ninja.version>
+  </properties>
+
   <dependencies>
 
 
@@ -39,6 +43,13 @@
       <artifactId>guice-persist</artifactId>
       <version>${guice.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.ninjaframework</groupId>
+      <artifactId>ninja-core</artifactId>
+      <version>${ninja.version}</version>
+    </dependency>
+
 
 
     <!-- Derby Database -->

@@ -31,6 +31,11 @@ public interface IdentityDataService
     //*****************************
     List<UserToken> getAllTokens();
 
+
     //*****************************
-    UserToken  mergeToken( UserToken userToken );
+    UserToken  mergeUserToken( UserToken userToken );
+
+
+    //*****************************
+    UserToken getUserToken( String fingerprint );
 }

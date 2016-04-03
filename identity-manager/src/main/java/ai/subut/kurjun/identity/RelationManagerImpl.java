@@ -219,6 +219,10 @@ public class RelationManagerImpl implements RelationManager
                 Relation relation = new RelationEntity();
 
                 //-------------------------------
+                //RelationObject sourceObj = getRelationObject(source.getObjectId(),source.getType());
+
+
+                relation.setSource( source );
                 relation.setTarget( target );
                 relation.setTrustObject( trustObject );
                 relation.setPermissions( permissions );
