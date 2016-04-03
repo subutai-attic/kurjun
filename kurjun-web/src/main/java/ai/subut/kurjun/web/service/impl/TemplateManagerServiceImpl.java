@@ -334,7 +334,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
                     }
                     catch ( IOException e )
                     {
-                        LOGGER.error( "Failed to get renderable template by md5: " + md5 );
+                        LOGGER.error( "Failed to get renderable metadata by md5: " + md5 );
                     }
                 };
             }

@@ -139,7 +139,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     @Override
     public Set<ReleaseFile> getDistributions()
     {
-        throw new UnsupportedOperationException( "Not supported in template repositories." );
+        throw new UnsupportedOperationException( "Not supported in metadata repositories." );
     }
 
 

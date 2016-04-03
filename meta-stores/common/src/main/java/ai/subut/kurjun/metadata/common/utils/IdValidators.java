@@ -32,12 +32,12 @@ public class IdValidators
             
             if ( owner == null || owner.trim().isEmpty() )
             {
-                throw new IllegalArgumentException( "Invalid template id. Owner fingerprint is empty" );
+                throw new IllegalArgumentException( "Invalid metadata id. Owner fingerprint is empty" );
             }
 
             if ( md5 == null || md5.trim().isEmpty() )
             {
-                throw new IllegalArgumentException( "Invalid template id. Md5 checksum is empty" );
+                throw new IllegalArgumentException( "Invalid metadata id. Md5 checksum is empty" );
             }
 
             return new TemplateId( owner, md5 );
@@ -48,14 +48,14 @@ public class IdValidators
         {
             if ( ownerMd5Combined == null || ownerMd5Combined.trim().isEmpty() )
             {
-                throw new IllegalArgumentException( "Invalid empty template id" );
+                throw new IllegalArgumentException( "Invalid empty metadata id" );
             }
 
             String[] arr = ownerMd5Combined.trim().split( SEPARATOR );
 
             if ( arr.length != 2 )
             {
-                throw new IllegalArgumentException( "Invalid template id: " + ownerMd5Combined );
+                throw new IllegalArgumentException( "Invalid metadata id: " + ownerMd5Combined );
             }
 
             return validate( arr[0], arr[1] );

@@ -1,14 +1,23 @@
 package ai.subut.kurjun.core.dao.model.metadata;
 
 
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
 
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
@@ -26,28 +35,88 @@ public class AptEntity implements PackageMetadata, SerializableMetadata
 {
     public static final String TABLE_NAME = "debs";
 
+    @Id
+    @Column( name = "md5" )
     private String md5;
+
+    @Column( name = "component" )
     private String component;
+
+    @Column( name = "filename" )
     private String filename;
+
+    @Column( name = "packageName" )
     private String packageName;
+
+    @Column( name = "    private String version;\n" )
     private String version;
+
+    @Column( name = "source" )
     private String source;
+
+    @Column( name = "maintainer" )
     private String maintainer;
+
+    @Enumerated( EnumType.STRING )
+    @Column( name = "architecture" )
     private Architecture architecture;
+
+    @Column( name = "installedSize" )
     private int installedSize;
+
+
+    @ElementCollection
+    @Column( name = "dependencies" )
     private List<Dependency> dependencies;
+
+    @ElementCollection
+    @Column( name = "recommends" )
     private List<Dependency> recommends;
+
+    @ElementCollection
+    @Column( name = "suggests" )
     private List<Dependency> suggests;
+
+    @ElementCollection
+    @Column( name = "enhances" )
     private List<Dependency> enhances;
+
+    @ElementCollection
+    @Column( name = "preDepends" )
     private List<Dependency> preDepends;
+
+    @ElementCollection
+    @Column( name = "conflicts" )
     private List<Dependency> conflicts;
+
+    @ElementCollection
+    @Column( name = "breaks" )
     private List<Dependency> breaks;
+
+    @ElementCollection
+    @Column( name = "replaces" )
     private List<Dependency> replaces;
+
+    @ElementCollection
+    @Column( name = "provides" )
     private List<String> provides;
+
+    @Column( name = "section" )
     private String section;
+
+    @Enumerated( EnumType.STRING )
+    @Column( name = "priority" )
     private Priority priority;
-    private URL homepage;
+
+    @Column( name = "homepage" )
+    private String homepage;
+
+    @Column( name = "description" )
     private String description;
+
+    @MapKeyColumn
+    @ElementCollection( fetch = FetchType.LAZY )
+    @Column( name = "extra" )
     private Map<String, String> extra = new HashMap<>();
 
 
@@ -61,7 +130,6 @@ public class AptEntity implements PackageMetadata, SerializableMetadata
     @Override
     public String getMd5Sum()
     {
-
         return md5;
     }
 
@@ -330,13 +398,20 @@ public class AptEntity implements PackageMetadata, SerializableMetadata
     @Override
     public URL getHomepage()
     {
-        return homepage;
+        try
+        {
+            return new URL( homepage );
+        }
+        catch ( MalformedURLException e )
+        {
+            return null;
+        }
     }
 
 
     public void setHomepage( URL homepage )
     {
-        this.homepage = homepage;
+        this.homepage = homepage.toString();
     }
 
 
@@ -355,6 +430,8 @@ public class AptEntity implements PackageMetadata, SerializableMetadata
 
     /**
      * Gets extra meta data associated with this package.
+     *
+     * @return
      */
     public Map<String, String> getExtra()
     {
@@ -364,6 +441,8 @@ public class AptEntity implements PackageMetadata, SerializableMetadata
 
     /**
      * Sets extra meta data for this package.
+     *
+     * @param extra
      */
     public void setExtra( Map<String, String> extra )
     {
@@ -382,7 +461,7 @@ public class AptEntity implements PackageMetadata, SerializableMetadata
     public int hashCode()
     {
         int hash = 3;
-        hash = 79 * hash + this.md5.hashCode();
+        hash = 79 * hash + Arrays.hashCode( this.md5.getBytes() );
         return hash;
     }
 
@@ -393,7 +472,7 @@ public class AptEntity implements PackageMetadata, SerializableMetadata
         if ( obj instanceof PackageMetadata )
         {
             PackageMetadata p = ( PackageMetadata ) obj;
-            return md5.equalsIgnoreCase( p.getMd5Sum() );
+            return Arrays.equals( md5.getBytes(), p.getMd5Sum().getBytes() );
         }
         return true;
     }

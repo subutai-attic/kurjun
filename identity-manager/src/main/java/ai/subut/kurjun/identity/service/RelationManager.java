@@ -39,7 +39,6 @@ public interface RelationManager
     //***************************
     RelationObject createRelationObject( String objectId, int objectType );
 
-
     //***************************
     Relation buildTrustRelation( User user, String targetObjectId, int targetObjectType, String trustObjectId,
                                  int trustObjectType, Set<Permission> permissions );
@@ -69,6 +68,9 @@ public interface RelationManager
     //********************************************
     Relation getRelation( long relationId );
 
+
+    //********************************************
+    RelationObject getRelationObject( String id, int type );
 
     //********************************************
     List<Relation> getAllRelations();

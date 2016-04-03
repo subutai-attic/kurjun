@@ -7,7 +7,7 @@ import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
 
 
 /**
- * Guice module to initialize Subutai template parser bindings.
+ * Guice module to initialize Subutai metadata parser bindings.
  *
  */
 public class SubutaiTemplateParserModule extends AbstractModule

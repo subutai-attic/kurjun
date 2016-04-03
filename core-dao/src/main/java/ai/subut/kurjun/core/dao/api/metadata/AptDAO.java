@@ -10,30 +10,31 @@ import com.google.inject.persist.Transactional;
 
 import ai.subut.kurjun.core.dao.api.DAOException;
 import ai.subut.kurjun.core.dao.api.GenericDAOImpl;
-import ai.subut.kurjun.core.dao.model.metadata.TemplateEntity;
-import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.core.dao.model.metadata.AptEntity;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 
 
-public class TemplateDAO extends GenericDAOImpl<SerializableMetadata>
+public class AptDAO extends GenericDAOImpl<PackageMetadata>
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger( TemplateDAO.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( AptDAO.class );
 
-    public TemplateDAO()
+
+    public AptDAO()
     {
         super();
     }
 
     @Transactional
-    public SerializableMetadata find( String id ) throws DAOException
+    public PackageMetadata find( String id ) throws DAOException
     {
         try
         {
             EntityManager em = getEntityManager();
-            return em.find( TemplateEntity.class, id );
+            return em.find( AptEntity.class, id );
         }
         catch ( Exception e )
         {
-            LOGGER.error( "****** Error in TemplateDAO find :" + e.getMessage(), e );
+            LOGGER.error( "****** Error in AptDAO find :" + e.getMessage(), e );
             throw new DAOException( e );
         }
     }

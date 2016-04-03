@@ -1,4 +1,4 @@
-package ai.subut.kurjun.core.dao.service.template;
+package ai.subut.kurjun.core.dao.service.metadata;
 
 
 import java.util.ArrayList;
