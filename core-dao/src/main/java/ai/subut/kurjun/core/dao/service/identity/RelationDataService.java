@@ -67,6 +67,9 @@ public interface RelationDataService
 
 
     //***************************
+    RelationObject getRelationObject( String uniqID, int type );
+
+    //***************************
     void removeRelationObject( String id, int type );
 
 

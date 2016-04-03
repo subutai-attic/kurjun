@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -87,7 +88,11 @@ public class RelationController extends BaseController
         }
         else
         {
-            return Results.html().template( "views/relations.ftl" ).render( "relations", rels );
+            Map<String, String> map = RelationObjectType.getMap();
+            for ( Map.Entry<String, String> e : map.entrySet()) LOGGER.info( e.getKey()+" = "+e.getValue() );
+            return Results.html().template( "views/relations.ftl" )
+                          .render( "relations", rels )
+                          .render( "relObjTypes", map );
         }
     }
 

@@ -44,7 +44,11 @@
             <#list templates as t >
             <tr>
                 <td><a href="${contextPath}/templates/${t.id}/info" class="js-colorbox">${t.name}</a></td>
-                <td>${(owners[t.id]??)?then(owners[t.id],"")}</td>
+                <td>
+                <#if owners??>
+                    ${(owners[t.id]??)?then(owners[t.id],"")}
+                </#if>
+                </td>
                 <td>${t.id?split(".")[0]}</td>
                 <td>${t.architecture}</td>
                 <td>${t.parent}</td>
