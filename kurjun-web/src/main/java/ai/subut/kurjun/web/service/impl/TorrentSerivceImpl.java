@@ -9,6 +9,7 @@ import com.google.inject.Singleton;
 import ai.subut.kurjun.core.dao.api.torrent.TorrentDAO;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.web.service.TorrentService;
+import ninja.Renderable;
 
 
 @Singleton
@@ -19,7 +20,7 @@ public class TorrentSerivceImpl implements TorrentService
 
 
     @Override
-    public InputStream getTorrent( final String id )
+    public Renderable getTorrent( final String id )
     {
         return null;
     }
@@ -43,5 +44,11 @@ public class TorrentSerivceImpl implements TorrentService
     public void update( final String id )
     {
 
+    }
+
+
+    private InputStream getTrackerStream( String id )
+    {
+        return null;
     }
 }
