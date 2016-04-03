@@ -20,7 +20,7 @@ import ninja.Renderable;
 public interface TemplateManagerService extends BaseService
 {
     /**
-     * Gets template info.
+     * Gets metadata info.
      *
      * @param md5 md5 checksum of the package to retrieve info
      *
@@ -37,7 +37,7 @@ public interface TemplateManagerService extends BaseService
 
 
     /**
-     * Gets template stream.
+     * Gets metadata stream.
      *
      * @param repository repository
      * @param md5 md5 checksum of the package to retrieve
@@ -79,7 +79,7 @@ public interface TemplateManagerService extends BaseService
      * @param repository repository
      * @param inputStream input stream to read package data
      *
-     * @return template id of uploaded package upload succeeds; {@code null} otherwise
+     * @return metadata id of uploaded package upload succeeds; {@code null} otherwise
      */
     String upload(UserSession userSession, String repository, InputStream inputStream ) throws IOException;
 
@@ -89,7 +89,7 @@ public interface TemplateManagerService extends BaseService
      * @param repository repository
      * @param file input stream to read package data
      *
-     * @return template id of uploaded package upload succeeds; {@code null} otherwise
+     * @return metadata id of uploaded package upload succeeds; {@code null} otherwise
      */
     String upload(UserSession userSession, String repository, File file ) throws IOException;
 

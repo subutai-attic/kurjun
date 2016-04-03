@@ -116,7 +116,7 @@ public class TemplateController extends BaseController
 
             if ( Strings.isNullOrEmpty( id ) )
             {
-                flashScope.error( "Failed to upload template. Access Permission error." );
+                flashScope.error( "Failed to upload metadata. Access Permission error." );
                 return Results.redirect( context.getContextPath() + "/" );
             }
             else
@@ -132,10 +132,10 @@ public class TemplateController extends BaseController
         }
         catch ( IOException e )
         {
-            LOGGER.error( "Failed to upload template: {}", e.getMessage() );
+            LOGGER.error( "Failed to upload metadata: {}", e.getMessage() );
         }
 
-        flashScope.error( "Failed to upload template" );
+        flashScope.error( "Failed to upload metadata" );
         return Results.redirect( context.getContextPath() + "/" );
     }
 
@@ -179,8 +179,8 @@ public class TemplateController extends BaseController
         }
         catch ( IOException e )
         {
-            LOGGER.error( "Failed to download template: " + e.getMessage() );
-            return Results.internalServerError().text().render( "Failed to download template" );
+            LOGGER.error( "Failed to download metadata: " + e.getMessage() );
+            return Results.internalServerError().text().render( "Failed to download metadata" );
         }
     }
 
@@ -219,8 +219,8 @@ public class TemplateController extends BaseController
         }
         catch ( Exception e )
         {
-            LOGGER.error( "Failed to remove template: " + e.getMessage() );
-            flashScope.error( "Failed to remove template." );
+            LOGGER.error( "Failed to remove metadata: " + e.getMessage() );
+            flashScope.error( "Failed to remove metadata." );
         }
 
         return Results.redirect( context.getContextPath() + "/" );

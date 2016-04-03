@@ -70,7 +70,7 @@ public class LocalTemplateRepository extends LocalRepositoryBase
     @Override
     public Set<ReleaseFile> getDistributions()
     {
-        throw new UnsupportedOperationException( "Not supported for template repositories." );
+        throw new UnsupportedOperationException( "Not supported for metadata repositories." );
     }
 
 
