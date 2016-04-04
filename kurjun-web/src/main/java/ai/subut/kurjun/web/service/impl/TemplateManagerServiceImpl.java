@@ -443,7 +443,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     }
 
 
-    @Override
+//    @Override
     public List<SerializableMetadata> list()
     {
         return null;

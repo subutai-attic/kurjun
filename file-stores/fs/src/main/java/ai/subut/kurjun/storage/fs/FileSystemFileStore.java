@@ -206,7 +206,7 @@ class FileSystemFileStore implements FileStore
         
         Path target = Files.createTempFile( subDir, filename, "" );
 
-        byte[] md5 = copyStream( source, target );
+        byte[] md5 = copyStream( source, target ).getBytes();
 
         try ( FileDb fileDb = new FileDb( makeDbFilePath() ) )
         {

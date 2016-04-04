@@ -289,7 +289,6 @@ class S3FileStore implements FileStore
     @Override
     public long sizeOf( String md5 ) throws IOException
     {
-
         ListObjectsRequest lor = new ListObjectsRequest();
         lor.setBucketName( bucketName );
         lor.setPrefix( makeKey( md5 ) );
@@ -305,6 +304,10 @@ class S3FileStore implements FileStore
     private String makeKey( String s )
     {
         return s.substring( 0, 2 ) + "/" + s;
+    }
+
+    @Override public byte[] put(InputStream source) throws IOException {
+        return new byte[0];
     }
 }
 
