@@ -1,7 +1,7 @@
 <script type="text/javascript">
     window.onload = function() {
         <#if flash.success?? >
-            alert('${flash.success}');
+            alert('Error:\n\n${flash.success}');
         </#if>
 
         <#if flash.error?? >

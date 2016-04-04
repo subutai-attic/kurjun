@@ -14,15 +14,13 @@ import ninja.Result;
 import ninja.Results;
 
 
-/**
- *
- */
-public class ProtocolFilter implements Filter
+public class ProtocolAptFilter implements Filter
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( AuthorizedFilter.class );
 
     @Inject
     KurjunProperties props;
+
 
     @Override
     public Result filter( FilterChain filterChain, Context context )
@@ -30,8 +28,10 @@ public class ProtocolFilter implements Filter
         String scheme = context.getScheme();
         boolean httpEnabled = props.get( "security.http.enabled" ).equals( "true" );
         boolean httpsEnabled = props.get( "security.https.enabled" ).equals( "true" );
+        boolean aptHttpEnabled = props.get( "security.apt.http.enabled" ).equals( "true" );
 
-        if( scheme.equals("https") && httpsEnabled || scheme.equals("http") && httpEnabled )
+        if ( scheme.equals("http") && (httpEnabled || aptHttpEnabled)
+                || scheme.equals("https") && httpsEnabled )
         {
             return filterChain.next( context );
         }
