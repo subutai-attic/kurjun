@@ -78,8 +78,8 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     private List<SerializableMetadata> remoteIndexChache = new LinkedList<>();
 
 
-    private static final int CONN_TIMEOUT = 5000;
-    private static final int READ_TIMEOUT = 10000;
+    private static final int CONN_TIMEOUT = 15000;
+    private static final int READ_TIMEOUT = 1200000;
     private static final int CONN_TIMEOUT_FOR_URL_CHECK = 200;
 
     private String context;
