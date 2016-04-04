@@ -1,6 +1,7 @@
 package ai.subut.kurjun.identity;
 
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -223,13 +224,13 @@ public class RelationManagerImpl implements RelationManager
     @Override
     public Relation saveTrustRelation( Relation relation )
     {
+        FileDb fileDb = null;
         try
         {
             if(relation != null)
             {
-                FileDb fileDb = fileDbProvider.get();
+                fileDb = fileDbProvider.get();
                 fileDb.put( DefaultRelation.MAP_NAME, relation.getId().toLowerCase(), relation );
-                fileDb.close();
             }
 
             return relation;
@@ -239,6 +240,20 @@ public class RelationManagerImpl implements RelationManager
             LOGGER.error( " ***** Error saving  relation:", ex );
             return null;
         }
+        finally
+        {
+            if ( fileDb != null )
+            {
+                try
+                {
+                    fileDb.close();
+                }
+                catch ( IOException e )
+                {
+                    LOGGER.warn( "Failed to close fileDB: "+e.getMessage() );
+                }
+            }
+        }
     }
 
 
@@ -246,11 +261,11 @@ public class RelationManagerImpl implements RelationManager
     @Override
     public Relation getRelation( String relationId )
     {
+        FileDb fileDb = null;
         try
         {
-            FileDb fileDb = fileDbProvider.get();
+            fileDb = fileDbProvider.get();
             Relation rel = fileDb.get( DefaultRelation.MAP_NAME, relationId.toLowerCase(), DefaultRelation.class );
-            fileDb.close();
 
             return rel;
         }
@@ -259,20 +274,34 @@ public class RelationManagerImpl implements RelationManager
             LOGGER.error( " ***** Error getting relation with relationId:" + relationId, ex );
             return null;
         }
+        finally
+        {
+            if ( fileDb != null )
+            {
+                try
+                {
+                    fileDb.close();
+                }
+                catch ( IOException e )
+                {
+                    LOGGER.warn( "Failed to close fileDB: "+e.getMessage() );
+                }
+            }
+        }
     }
 
     //********************************************
     @Override
     public List<Relation> getAllRelations()
     {
+        FileDb fileDb = null;
         try
         {
-            FileDb fileDb = fileDbProvider.get();
+            fileDb = fileDbProvider.get();
             Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
             if ( map != null )
             {
                 List<Relation> items = new ArrayList<>( map.values() );
-                fileDb.close();
 
                 return items;
             }
@@ -286,6 +315,20 @@ public class RelationManagerImpl implements RelationManager
         {
             LOGGER.error( " ***** Error getting relation list:" , ex );
             return null;
+        }
+        finally
+        {
+            if ( fileDb != null )
+            {
+                try
+                {
+                    fileDb.close();
+                }
+                catch ( IOException e )
+                {
+                    LOGGER.warn( "Failed to close fileDB: "+e.getMessage() );
+                }
+            }
         }
     }
 
@@ -324,17 +367,31 @@ public class RelationManagerImpl implements RelationManager
     @Override
     public List<Relation> getRelationsByObject( final RelationObject trustObject )
     {
+        FileDb fileDb = null;
         try
         {
-            FileDb fileDb = fileDbProvider.get();
+            fileDb = fileDbProvider.get();
             Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
-            fileDb.close();
 
             return map.values().stream().filter( r -> r.getTrustObject().equals(trustObject)).collect(Collectors.toList());
         }
         catch ( Exception ex )
         {
             LOGGER.error( " ***** Failed to get relations by this TrustObject: " + trustObject.getId(), ex );
+        }
+        finally
+        {
+            if ( fileDb != null )
+            {
+                try
+                {
+                    fileDb.close();
+                }
+                catch ( IOException e )
+                {
+                    LOGGER.warn( "Failed to close fileDB: "+e.getMessage() );
+                }
+            }
         }
 
         return Collections.emptyList();
@@ -388,17 +445,31 @@ public class RelationManagerImpl implements RelationManager
     @Override
     public List<Relation> getRelationsBySource( final RelationObject sourceObject )
     {
+        FileDb fileDb = null;
         try
         {
-            FileDb fileDb = fileDbProvider.get();
+            fileDb = fileDbProvider.get();
             Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
-            fileDb.close();
 
             return map.values().parallelStream().filter( r -> r.getSource().equals(sourceObject)).collect(Collectors.toList());
         }
         catch ( Exception ex )
         {
             LOGGER.error( " ***** Failed to get relations by this SourceObject: " + sourceObject.getId(), ex );
+        }
+        finally
+        {
+            if ( fileDb != null )
+            {
+                try
+                {
+                    fileDb.close();
+                }
+                catch ( IOException e )
+                {
+                    LOGGER.warn( "Failed to close fileDB: "+e.getMessage() );
+                }
+            }
         }
 
         return Collections.emptyList();
@@ -409,17 +480,31 @@ public class RelationManagerImpl implements RelationManager
     @Override
     public List<Relation> getRelationsByTarget( final RelationObject targetObject )
     {
+        FileDb fileDb = null;
         try
         {
-            FileDb fileDb = fileDbProvider.get();
+            fileDb = fileDbProvider.get();
             Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
-            fileDb.close();
 
             return map.values().stream().filter( r -> r.getTarget().equals(targetObject)).collect(Collectors.toList());
         }
         catch ( Exception ex )
         {
             LOGGER.error( " ***** Failed to get relations by this TargetObject: " + targetObject.getId(), ex );
+        }
+        finally
+        {
+            if ( fileDb != null )
+            {
+                try
+                {
+                    fileDb.close();
+                }
+                catch ( IOException e )
+                {
+                    LOGGER.warn( "Failed to close fileDB: "+e.getMessage() );
+                }
+            }
         }
 
         return Collections.emptyList();
@@ -430,15 +515,29 @@ public class RelationManagerImpl implements RelationManager
     @Override
     public void removeRelation( final String relationId )
     {
+        FileDb fileDb = null;
         try
         {
-            FileDb fileDb = fileDbProvider.get();
+            fileDb = fileDbProvider.get();
             fileDb.remove( DefaultRelation.MAP_NAME, relationId );
-            fileDb.close();
         }
         catch ( Exception ex )
         {
             LOGGER.error( " ***** Failed to remove this relation: " + relationId, ex );
+        }
+        finally
+        {
+            if ( fileDb != null )
+            {
+                try
+                {
+                    fileDb.close();
+                }
+                catch ( IOException e )
+                {
+                    LOGGER.warn( "Failed to close fileDB: "+e.getMessage() );
+                }
+            }
         }
     }
 
