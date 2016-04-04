@@ -10,6 +10,7 @@
     <class>ai.subut.kurjun.core.dao.model.identity.RelationEntity</class>
     <class>ai.subut.kurjun.core.dao.model.identity.RelationObjectEntity</class>
     <class>ai.subut.kurjun.core.dao.model.metadata.TemplateEntity</class>
+    <class>ai.subut.kurjun.core.dao.model.metadata.AptEntity</class>
 
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
