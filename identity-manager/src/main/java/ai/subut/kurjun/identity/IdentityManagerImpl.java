@@ -1,6 +1,7 @@
 package ai.subut.kurjun.identity;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -231,11 +232,11 @@ public class IdentityManagerImpl implements IdentityManager
     @Override
     public User getUser( String fingerprint )
     {
+        FileDb fileDb = null;
         try
         {
-            FileDb fileDb = fileDbProvider.get();
+            fileDb = fileDbProvider.get();
             User user = fileDb.get( DefaultUser.MAP_NAME, fingerprint.toLowerCase(), DefaultUser.class );
-            fileDb.close();
 
             return user;
         }
@@ -243,6 +244,20 @@ public class IdentityManagerImpl implements IdentityManager
         {
             LOGGER.error( " ***** Error getting user with fingerprint:" + fingerprint );
             return null;
+        }
+        finally
+        {
+            if ( fileDb != null )
+            {
+                try
+                {
+                    fileDb.close();
+                }
+                catch ( IOException e )
+                {
+                    LOGGER.warn( "Failed to close fileDB: "+e.getMessage() );
+                }
+            }
         }
     }
 
@@ -376,16 +391,30 @@ public class IdentityManagerImpl implements IdentityManager
     @Override
     public User saveUser( User user )
     {
+        FileDb fileDb = null;
         try
         {
-            FileDb fileDb = fileDbProvider.get();
+            fileDb = fileDbProvider.get();
             fileDb.put( DefaultUser.MAP_NAME, user.getKeyFingerprint().toLowerCase(), user );
-            fileDb.close();
         }
         catch ( Exception ex )
         {
             LOGGER.error( " ***** Error saving user:", ex );
             return null;
+        }
+        finally
+        {
+            if ( fileDb != null )
+            {
+                try
+                {
+                    fileDb.close();
+                }
+                catch ( IOException e )
+                {
+                    LOGGER.warn( "Failed to close fileDB: "+e.getMessage() );
+                }
+            }
         }
 
         return user;
@@ -396,11 +425,11 @@ public class IdentityManagerImpl implements IdentityManager
     @Override
     public List<User> getAllUsers()
     {
+        FileDb fileDb = null;
         try
         {
-            FileDb fileDb = fileDbProvider.get();
+            fileDb = fileDbProvider.get();
             Map<String, User> map = fileDb.get( DefaultUser.MAP_NAME );
-            fileDb.close();
 
             if ( map != null )
             {
@@ -417,6 +446,20 @@ public class IdentityManagerImpl implements IdentityManager
         {
             LOGGER.error( " ***** Error adding user:", ex );
             return null;
+        }
+        finally
+        {
+            if ( fileDb != null )
+            {
+                try
+                {
+                    fileDb.close();
+                }
+                catch ( IOException e )
+                {
+                    LOGGER.warn( "Failed to close fileDB: "+e.getMessage() );
+                }
+            }
         }
     }
 

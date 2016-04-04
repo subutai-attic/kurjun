@@ -62,17 +62,21 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
     @Override
     public boolean contains( Object id ) throws IOException
     {
+        FileDb fileDb = null;
         try
         {
-            FileDb fileDb = new FileDb( fileDbPath.toString());
+            fileDb = new FileDb( fileDbPath.toString());
             boolean contains = fileDb.contains( MAP_NAME, id );
-            fileDb.close();
 
             return contains;
         }
         catch(Exception ex)
         {
              return false;
+        }
+        finally
+        {
+            if ( fileDb != null ) fileDb.close();
         }
     }
 
