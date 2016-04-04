@@ -27,7 +27,7 @@ public class ProtocolFilter implements Filter
         }
         else
         {
-            return filterChain.next( context );// Results.forbidden().render( "Not allowed" ).text();
+            return Results.forbidden().render( "Not allowed" ).text();
         }
     }
 }
