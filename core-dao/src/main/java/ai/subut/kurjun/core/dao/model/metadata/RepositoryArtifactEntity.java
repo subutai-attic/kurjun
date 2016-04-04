@@ -10,6 +10,8 @@ import ai.subut.kurjun.model.metadata.Metadata;
 public class RepositoryArtifactEntity implements Metadata
 {
 
+
+
     @Override
     public Object getId()
     {

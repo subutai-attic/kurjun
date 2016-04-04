@@ -5,11 +5,16 @@
   <persistence-unit name="PU_KURJUN" transaction-type="RESOURCE_LOCAL">
     <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
 
+    <!--  Identity     -->
     <class>ai.subut.kurjun.core.dao.model.identity.UserEntity</class>
     <class>ai.subut.kurjun.core.dao.model.identity.UserTokenEntity</class>
     <class>ai.subut.kurjun.core.dao.model.identity.RelationEntity</class>
     <class>ai.subut.kurjun.core.dao.model.identity.RelationObjectEntity</class>
+
+    <!--  Metadata
     <class>ai.subut.kurjun.core.dao.model.metadata.TemplateEntity</class>
+    <class>ai.subut.kurjun.core.dao.model.metadata.RepositoryEntity</class>
+    ************* -->
 
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
