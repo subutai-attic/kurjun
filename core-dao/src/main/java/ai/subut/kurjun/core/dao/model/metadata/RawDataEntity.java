@@ -11,9 +11,9 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
 
 
 @Entity
-@Table( name = RawEntity.TABLE_NAME )
+@Table( name = RawDataEntity.TABLE_NAME )
 @Access( AccessType.FIELD )
-public class RawEntity implements SerializableMetadata, Metadata
+public class RawDataEntity implements SerializableMetadata, Metadata
 {
 
     public static final String TABLE_NAME = "raw_file";
@@ -28,12 +28,12 @@ public class RawEntity implements SerializableMetadata, Metadata
     private String id;
 
 
-    public RawEntity()
+    public RawDataEntity()
     {
     }
 
 
-    public RawEntity( final String md5Sum, final String name, final long size, final String fingerprint )
+    public RawDataEntity( final String md5Sum, final String name, final long size, final String fingerprint )
     {
         this.md5Sum = md5Sum;
         this.name = name;
@@ -145,12 +145,12 @@ public class RawEntity implements SerializableMetadata, Metadata
         {
             return true;
         }
-        if ( !( o instanceof RawEntity ) )
+        if ( !( o instanceof RawDataEntity ) )
         {
             return false;
         }
 
-        final RawEntity rawEntity = ( RawEntity ) o;
+        final RawDataEntity rawEntity = ( RawDataEntity ) o;
 
         if ( size != rawEntity.size )
         {

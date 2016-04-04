@@ -8,6 +8,7 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
 /**
  * Default POJO implementation of {@link Metadata}.
  */
+
 public class DefaultMetadata implements SerializableMetadata
 {
 

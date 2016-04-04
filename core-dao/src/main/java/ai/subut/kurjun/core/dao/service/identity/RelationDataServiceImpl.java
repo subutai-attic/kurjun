@@ -10,7 +10,7 @@ import ai.subut.kurjun.core.dao.api.identity.RelationDAO;
 import ai.subut.kurjun.core.dao.api.identity.RelationObjectDAO;
 import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.model.identity.RelationObject;
-import ninja.jpa.UnitOfWork;
+
 
 
 /**
@@ -32,7 +32,6 @@ public class RelationDataServiceImpl implements RelationDataService
 
 
     //***************************
-    @UnitOfWork
     @Override
     public void persistRelation( Relation relation )
     {
@@ -48,7 +47,6 @@ public class RelationDataServiceImpl implements RelationDataService
 
 
     //***************************
-    @UnitOfWork
     @Override
     public Relation mergeRelation( Relation relation )
     {
@@ -67,7 +65,6 @@ public class RelationDataServiceImpl implements RelationDataService
 
 
     //***************************
-    @UnitOfWork
     @Override
     public Relation getRelation( long relationId)
     {
@@ -84,7 +81,6 @@ public class RelationDataServiceImpl implements RelationDataService
 
 
     //***************************
-    @UnitOfWork
     @Override
     public List<Relation> getAllRelations()
     {
@@ -101,7 +97,6 @@ public class RelationDataServiceImpl implements RelationDataService
 
 
     //***************************
-    @UnitOfWork
     @Override
     public List<Relation> getRelationsBySource( String sourceObjId, int sourceObjType )
     {
@@ -117,8 +112,7 @@ public class RelationDataServiceImpl implements RelationDataService
     }
 
 
-    //***************************
-    @UnitOfWork
+    //**************************
     @Override
     public List<Relation> getRelationsBySource( RelationObject relationObject )
     {
@@ -134,7 +128,6 @@ public class RelationDataServiceImpl implements RelationDataService
     }
 
     //***************************
-    @UnitOfWork
     @Override
     public List<Relation> getRelationsByTarget( String targetObjId, int targetObjType )
     {
@@ -150,8 +143,7 @@ public class RelationDataServiceImpl implements RelationDataService
     }
 
 
-    //***************************
-    @UnitOfWork
+    //**************************
     @Override
     public List<Relation> getRelationsByTarget( RelationObject relationObject )
     {
@@ -168,7 +160,6 @@ public class RelationDataServiceImpl implements RelationDataService
 
 
     //***************************
-    @UnitOfWork
     @Override
     public List<Relation> getRelationsByTrustObject( String trustObjId, int trustObjType )
     {
@@ -185,7 +176,6 @@ public class RelationDataServiceImpl implements RelationDataService
 
 
     //***************************
-    @UnitOfWork
     @Override
     public List<Relation> getRelationsByTrustObject( RelationObject relationObject )
     {
@@ -202,7 +192,6 @@ public class RelationDataServiceImpl implements RelationDataService
 
 
     //***************************
-    @UnitOfWork
     @Override
     public Relation getTrustObjectOwner( String objectId, int objectType )
     {
@@ -219,7 +208,6 @@ public class RelationDataServiceImpl implements RelationDataService
 
 
     //***************************
-    @UnitOfWork
     @Override
     public void removeByTrustObject( String objectId, int objectType )
     {
@@ -235,7 +223,6 @@ public class RelationDataServiceImpl implements RelationDataService
 
 
     //***************************
-    @UnitOfWork
     @Override
     public void removeRelation( Relation entity )
     {
@@ -251,7 +238,6 @@ public class RelationDataServiceImpl implements RelationDataService
 
 
     //***************************
-    @UnitOfWork
     @Override
     public void removeRelation( long id)
     {
@@ -272,7 +258,6 @@ public class RelationDataServiceImpl implements RelationDataService
 
 
     //***************************
-    @UnitOfWork
     @Override
     public RelationObject getRelationObject( RelationObject relationObject )
     {
@@ -289,7 +274,6 @@ public class RelationDataServiceImpl implements RelationDataService
 
 
     //***************************
-    @UnitOfWork
     @Override
     public RelationObject getRelationObject( String uniqID, int type )
     {
@@ -306,7 +290,6 @@ public class RelationDataServiceImpl implements RelationDataService
 
 
     //***************************
-    @UnitOfWork
     @Override
     public void removeRelationObject( String uniqID, int type )
     {
@@ -326,7 +309,6 @@ public class RelationDataServiceImpl implements RelationDataService
 
 
     //***************************
-    @UnitOfWork
     @Override
     public void removeRelationObject( RelationObject relationObject )
     {

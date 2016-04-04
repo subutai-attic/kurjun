@@ -6,6 +6,8 @@ import java.util.*;
 
 import ai.subut.kurjun.model.identity.RelationObjectType;
 import ai.subut.kurjun.model.identity.UserSession;
+import ai.subut.kurjun.model.metadata.RepositoryData;
+import ai.subut.kurjun.repo.service.RepositoryManager;
 import ai.subut.kurjun.web.service.RelationManagerService;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -22,14 +24,19 @@ public class RepositoryServiceImpl implements RepositoryService
 {
 
 
-    @Inject KurjunProperties kurjunProperties;
+    //@Inject KurjunProperties kurjunProperties;
+
+    @Inject
+    RepositoryManager repositoryManager;
+
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger( RepositoryService.class );
 
     @Override
-    public synchronized List<String> getRepositories()
+    public synchronized List<RepositoryData> getRepositoryList()
     {
+        /*
         String fileDbDirectory = kurjunProperties.get( DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME );
 
         File fileDirectory = new File( fileDbDirectory );
@@ -47,18 +54,32 @@ public class RepositoryServiceImpl implements RepositoryService
 
         results.remove( AptManagerServiceImpl.REPO_NAME );
         results.remove( RawManagerServiceImpl.DEFAULT_RAW_REPO_NAME );
+        */
 
-        return results;
+        return repositoryManager.getRepositoryList();
     }
+
 
     @Override
-    public List<String> getRepositoryList()
+    public synchronized List<String> getRepositoryContextList()
     {
-        List<String> repoList = new ArrayList<>();
+        List<RepositoryData> repoDataList = repositoryManager.getRepositoryList();
 
-        return repoList;
+        if(repoDataList.isEmpty())
+        {
+            return Collections.emptyList();
+        }
+        else
+        {
+            List<String> contexList = new ArrayList<>();
+
+            for(RepositoryData repodata:repoDataList)
+            {
+                contexList.add( repodata.getContext() );
+            }
+
+            return contexList;
+        }
     }
-
-
 
 }

@@ -10,7 +10,7 @@ import com.google.inject.persist.Transactional;
 
 import ai.subut.kurjun.core.dao.api.DAOException;
 import ai.subut.kurjun.core.dao.api.GenericDAOImpl;
-import ai.subut.kurjun.core.dao.model.metadata.AptEntity;
+import ai.subut.kurjun.core.dao.model.metadata.AptDataEntity;
 import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 
 
@@ -30,7 +30,7 @@ public class AptDAO extends GenericDAOImpl<PackageMetadata>
         try
         {
             EntityManager em = getEntityManager();
-            return em.find( AptEntity.class, id );
+            return em.find( AptDataEntity.class, id );
         }
         catch ( Exception e )
         {

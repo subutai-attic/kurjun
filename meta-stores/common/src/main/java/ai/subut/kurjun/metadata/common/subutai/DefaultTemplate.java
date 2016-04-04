@@ -29,7 +29,7 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
     private Map<String, String> extra = new HashMap<>();
 
 
-    @Override
+   @Override
     public Object getId()
     {
         if ( ownerFprint != null && md5Sum != null )

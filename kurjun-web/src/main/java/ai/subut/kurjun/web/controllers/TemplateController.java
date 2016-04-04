@@ -67,7 +67,7 @@ public class TemplateController extends BaseController
             flashScope.error( "Failed to get list of templates." );
             LOGGER.error( "Failed to get list of templates: " + e.getMessage() );
         }
-        List<String> repos = repositoryService.getRepositories();
+        List<String> repos = repositoryService.getRepositoryContextList();
 
         return Results.html().template( "views/templates.ftl" ).render( "templates", defaultTemplateList )
                       .render( "repos", repos ).render( "sel_repo", repo ).render( "owners", null );
@@ -76,7 +76,7 @@ public class TemplateController extends BaseController
 
     public Result getUploadTemplateForm()
     {
-        List<String> repos = repositoryService.getRepositories();
+        List<String> repos = repositoryService.getRepositoryContextList();
 
         return Results.html().template( "views/_popup-upload-templ.ftl" ).render( "repos", repos );
     }

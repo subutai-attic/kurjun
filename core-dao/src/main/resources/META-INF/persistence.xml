@@ -16,6 +16,9 @@
     <class>ai.subut.kurjun.core.dao.model.metadata.RepositoryEntity</class>
     ************* -->
 
+    <class>ai.subut.kurjun.core.dao.model.metadata.RepositoryDataId</class>
+    <class>ai.subut.kurjun.core.dao.model.metadata.RepositoryDataEntity</class>
+
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
     <properties>
@@ -24,7 +27,7 @@
       <property name="openjpa.ConnectionUserName" value="sa"/>
       <property name="openjpa.ConnectionPassword" value=""/>
 
-      <property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
+      <property name="openjpa.RuntimeUnenhancedClasses" value="unsupported" />
       <property name="openjpa.Log" value="DefaultLevel=INFO, Tool=INFO, SQL=INFO" />
       <property name="openjpa.ConnectionFactoryProperties" value="PrintParameters=true" />
       <property name="openjpa.jdbc.DBDictionary" value="derby" />

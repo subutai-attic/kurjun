@@ -1,13 +1,13 @@
 package ai.subut.kurjun.core.dao.model.metadata;
 
 
-import ai.subut.kurjun.model.metadata.Metadata;
+import ai.subut.kurjun.model.repository.RepositoryArtifactData;
 
 
 /**
  *
  */
-public class RepositoryArtifactEntity implements Metadata
+public class RepositoryArtifactDataEntity implements RepositoryArtifactData
 {
 
 
