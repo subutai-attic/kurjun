@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import ai.subut.kurjun.model.metadata.RepositoryData;
 import ai.subut.kurjun.web.controllers.BaseController;
 import ai.subut.kurjun.web.service.RepositoryService;
 import ninja.Result;
@@ -27,7 +28,7 @@ public class RestRepositoryController extends BaseController
     public Result list()
     {
         LOGGER.debug( "Getting list of repositories" );
-        List<String> repos = repositoryService.getRepositories();
+        List<RepositoryData> repos = repositoryService.getRepositoryList();
 
         return Results.ok().render( repos ).json();
     }

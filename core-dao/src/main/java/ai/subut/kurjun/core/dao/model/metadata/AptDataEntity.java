@@ -29,9 +29,9 @@ import ai.subut.kurjun.model.metadata.apt.Priority;
 
 
 @Entity
-@Table( name = AptEntity.TABLE_NAME )
+@Table( name = AptDataEntity.TABLE_NAME )
 @Access( AccessType.FIELD )
-public class AptEntity implements PackageMetadata, SerializableMetadata
+public class AptDataEntity implements PackageMetadata, SerializableMetadata
 {
     public static final String TABLE_NAME = "debs";
 

@@ -3,6 +3,8 @@ package ai.subut.kurjun.web.controllers;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import ai.subut.kurjun.model.metadata.RepositoryData;
 import ai.subut.kurjun.web.service.RepositoryService;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -26,7 +28,8 @@ public class RepositoryController extends BaseController {
 
     public Result getRepoList()
     {
-        List<String> repos = repositoryService.getRepositories();
+        //List<RepositoryData> repos = repositoryService.getRepositoryList();
+        List<String> repos = repositoryService.getRepositoryContextList();
 
         Map<String, String> ownerMap = new HashMap<>();
         return Results.html().template("views/repositories.ftl").render( "repos", repos )

@@ -1,14 +1,14 @@
 package ai.subut.kurjun.web.service;
 
 
-import ai.subut.kurjun.model.repository.Repository;
+import ai.subut.kurjun.model.metadata.RepositoryData;
 
 import java.util.List;
 
 
 public interface RepositoryService extends BaseService
 {
-    List<String> getRepositories();
+    List<RepositoryData> getRepositoryList();
 
-    List<String> getRepositoryList();
+    List<String> getRepositoryContextList();
 }

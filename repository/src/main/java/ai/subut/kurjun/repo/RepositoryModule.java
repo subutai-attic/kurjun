@@ -10,6 +10,7 @@ import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.repository.RemoteRepository;
 import ai.subut.kurjun.model.repository.PackageType;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
+import ai.subut.kurjun.repo.service.RepositoryManager;
 import ai.subut.kurjun.repo.util.AptIndiceBuilderModule;
 import ai.subut.kurjun.repo.util.http.WebClientModule;
 
@@ -39,6 +40,13 @@ public class RepositoryModule extends AbstractModule
                 .implement( UnifiedRepository.class, UnifiedRepositoryImpl.class )
                 // finally build the module
                 .build( RepositoryFactory.class );
+
+
+        //*******************************
+        bind( RepositoryManager.class).to( RepositoryManagerImpl.class );
+        //*******************************
+
+
 
         install( module );
         install( new AptIndiceBuilderModule() );
