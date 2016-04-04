@@ -17,6 +17,7 @@ import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
+import ai.subut.kurjun.core.dao.service.metadata.TemplateDataService;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
@@ -40,6 +41,9 @@ public class LocalTemplateRepository extends LocalRepositoryBase
     private FileStoreFactory fileStoreFactory;
     private SubutaiTemplateParser templateParser;
     private KurjunContext context;
+
+    @Inject
+    TemplateDataService templateDataService;
 
 
     @Inject
@@ -90,7 +94,10 @@ public class LocalTemplateRepository extends LocalRepositoryBase
             String md5 = fileStore.put( temp );
             if ( md5.equalsIgnoreCase( meta.getMd5Sum() ) )
             {
+                //***********************************
                 metadataStore.put( MetadataUtils.serializableTemplateMetadata( meta ) );
+                //templateDataService.merge( MetadataUtils.serializableTemplateMetadata( meta ) );
+                //***********************************
             }
             else
             {
@@ -126,7 +133,12 @@ public class LocalTemplateRepository extends LocalRepositoryBase
                 DefaultTemplate dt = MetadataUtils.serializableTemplateMetadata( meta );
                 dt.setSize( temp.length() );
                 dt.setOwnerFprint( owner );
+
+                //***********************************
                 metadataStore.put( dt );
+                //templateDataService.merge( dt );
+                //***********************************
+
                 return dt;
             }
             else
@@ -159,6 +171,11 @@ public class LocalTemplateRepository extends LocalRepositoryBase
                 dt.setSize( file.length() );
                 dt.setOwnerFprint( owner );
                 metadataStore.put( dt );
+
+                //***********************************
+                //templateDataService.merge( dt );
+                //***********************************
+
                 return dt;
             }
             else

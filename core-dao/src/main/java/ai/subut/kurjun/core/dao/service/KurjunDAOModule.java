@@ -11,6 +11,10 @@ import ai.subut.kurjun.core.dao.service.identity.RelationDataService;
 import ai.subut.kurjun.core.dao.service.identity.RelationDataServiceImpl;
 import ai.subut.kurjun.core.dao.model.identity.UserEntity;
 import ai.subut.kurjun.core.dao.model.identity.UserTokenEntity;
+import ai.subut.kurjun.core.dao.service.metadata.AptDataService;
+import ai.subut.kurjun.core.dao.service.metadata.AptDataServiceImpl;
+import ai.subut.kurjun.core.dao.service.metadata.TemplateDataService;
+import ai.subut.kurjun.core.dao.service.metadata.TemplateDataServiceImpl;
 import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.model.identity.RelationObject;
 import ai.subut.kurjun.model.identity.User;
@@ -38,6 +42,10 @@ public class KurjunDAOModule extends AbstractModule
 
         bind( IdentityDataService.class ).to( IdentityDataServiceImpl.class );
         bind( RelationDataService.class ).to( RelationDataServiceImpl.class );
+
+        bind( TemplateDataService.class ).to( TemplateDataServiceImpl.class );
+        bind( AptDataService.class ).to( AptDataServiceImpl.class );
+
     }
 }
 
