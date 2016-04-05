@@ -7,8 +7,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -97,7 +95,7 @@ public class IdentityDataServiceImpl implements IdentityDataService
     {
         try
         {
-            if( StringUtils.isNotBlank( username ))
+            if( !Strings.isNullOrEmpty( username ))
                 return userDAO.findByUsername( username.toLowerCase() );
         }
         catch ( Exception e )
