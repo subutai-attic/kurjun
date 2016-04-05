@@ -504,4 +504,12 @@ public class IdentityManagerImpl implements IdentityManager
         return true;
     }
     //********************************************
+
+
+    @Override
+    public void logout( User user )
+    {
+        user.setUserToken( null );
+        saveUser( user );
+    }
 }

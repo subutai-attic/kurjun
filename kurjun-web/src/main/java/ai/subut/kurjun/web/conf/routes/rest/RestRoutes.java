@@ -73,6 +73,7 @@ public class RestRoutes implements ApplicationRoutes
         router.GET().route( baseIdentityUrl + "user/get-active" ).with( RestIdentityController.class, "getActiveUser" );
         router.POST().route( baseIdentityUrl + "user/add" ).with( RestIdentityController.class, "addUser" );
         router.POST().route( baseIdentityUrl + "user/auth" ).with( RestIdentityController.class, "authorizeUser" );
+        router.POST().route( baseIdentityUrl + "user/logout" ).with( RestIdentityController.class, "logout");
         router.POST().route( baseIdentityUrl + "system-owner" ).with( RestIdentityController.class, "setSystemOwner" );
         router.GET().route( baseIdentityUrl + "system-owner" ).with( RestIdentityController.class, "getSystemOwner" );
         router.POST().route( baseRelationsUrl + "owner/set" ).with( RestIdentityController.class, "setSystemOwner" );

@@ -109,4 +109,10 @@ public class IdentityManagerServiceImpl implements IdentityManagerService
         return identityManager.getSystemOwner();
     }
 
+
+    @Override
+    public void logout( final User user )
+    {
+        identityManager.logout( user );
+    }
 }

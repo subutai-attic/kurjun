@@ -49,4 +49,6 @@ public interface IdentityManagerService extends BaseService
     //*************************************
     User getSystemOwner();
 
+    void logout(User user);
+
 }

@@ -78,4 +78,7 @@ public interface IdentityManager
 
     //********************************************
     boolean hasPermmission( User user, RelationObject relationObject, Permission permission );
+
+
+    void logout(User user);
 }
