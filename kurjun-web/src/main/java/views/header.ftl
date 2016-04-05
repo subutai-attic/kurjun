@@ -2,7 +2,7 @@
     <img src="${contextPath}/assets/img/icons/kurjun.png" height="50px" alt="">
     <div class="b-nav-menu__add">
         <#if isPublic?? && isPublic >
-          Hello anonymous ${userInfo.keyFingerprint} | <a href="${contextPath}/login" id="js-login">Login</a>
+          Hello anonymous | <a href="${contextPath}/login" id="js-login">Login</a>
         <#else>
           Hello ${userInfo.emailAddress!userInfo.keyFingerprint} | <a href="#" id="js-logout">Logout</a>
         </#if>

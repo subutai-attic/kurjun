@@ -91,6 +91,7 @@ public class IdentityManagerImpl implements IdentityManager
 
         if(user == null)
         {
+            LOGGER.info( "didn't find public user WTF??? " );
             user = addUser(PUBLIC_USER_NAME, PUBLIC_USER_ID, UserType.System.getId() );
         }
 
@@ -245,7 +246,22 @@ public class IdentityManagerImpl implements IdentityManager
     {
         try
         {
-            return identityDataService.getUser( fingerprint );
+            boolean fprintValid = false;
+            try
+            {
+                fprintValid = PGPKeyUtil.isFingerprint( fingerprint );
+            }
+            catch ( Exception e )
+            {}
+
+            if ( fprintValid || fingerprint.equalsIgnoreCase( PUBLIC_USER_ID ))
+            {
+                return identityDataService.getUserByFingerprint( fingerprint );
+            }
+            else
+            {
+                return identityDataService.getUserByUsername( fingerprint );
+            }
         }
         catch ( Exception ex )
         {

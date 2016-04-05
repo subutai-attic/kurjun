@@ -27,24 +27,18 @@ public class ProtocolFilter implements Filter
     @Override
     public Result filter( FilterChain filterChain, Context context )
     {
-        return filterChain.next( context );/*
-        if(context.getScheme().equals( "https" ))
+        String scheme = context.getScheme();
+        boolean httpEnabled = props.get( "security.http.enabled" ).equals( "true" );
+        boolean httpsEnabled = props.get( "security.https.enabled" ).equals( "true" );
+
+        if( scheme.equals("https") && httpsEnabled || scheme.equals("http") && httpEnabled )
         {
-            if(props.get( "security.https.enabled" ).equals( "true" ))
-                return filterChain.next( context );
-            else
-                return Results.forbidden().render( "Not allowed" ).text();
-        }
-        else if(context.getScheme().equals( "http" ))
-        {
-            if(props.get( "security.http.enabled" ).equals( "true" ))
-                return filterChain.next( context );
-            else
-                return Results.forbidden().render( "Not allowed" ).text();
+            return filterChain.next( context );
         }
         else
         {
+            LOGGER.warn( "Not passed "+this.getClass().getName() );
             return Results.forbidden().render( "Not allowed" ).text();
-        }*/
+        }
     }
 }
