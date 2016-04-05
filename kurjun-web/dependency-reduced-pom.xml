@@ -31,6 +31,18 @@
     <finalName>kurjun</finalName>
     <plugins>
       <plugin>
+        <groupId>org.ninjaframework</groupId>
+        <artifactId>ninja-maven-plugin</artifactId>
+        <version>${ninja.version}</version>
+        <configuration>
+          <useDefaultExcludes>true</useDefaultExcludes>
+          <excludes>
+            <exclude>(.*)html$</exclude>
+          </excludes>
+          <context>/kurjun</context>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
         <version>9.3.0.M2</version>

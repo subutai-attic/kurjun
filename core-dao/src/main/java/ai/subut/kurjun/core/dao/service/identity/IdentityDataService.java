@@ -21,7 +21,10 @@ public interface IdentityDataService
 
 
     //*****************************
-    User getUser( String fingerprint );
+    User getUserByFingerprint( String fingerprint );
+
+    //*****************************
+    User getUserByUsername( String username );
 
 
     //*****************************
