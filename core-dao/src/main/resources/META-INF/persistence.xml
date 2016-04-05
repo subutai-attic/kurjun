@@ -27,7 +27,7 @@
       <property name="openjpa.ConnectionUserName" value="sa"/>
       <property name="openjpa.ConnectionPassword" value=""/>
 
-      <property name="openjpa.RuntimeUnenhancedClasses" value="unsupported" />
+      <property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
       <property name="openjpa.Log" value="DefaultLevel=INFO, Tool=INFO, SQL=INFO" />
       <property name="openjpa.ConnectionFactoryProperties" value="PrintParameters=true" />
       <property name="openjpa.jdbc.DBDictionary" value="derby" />

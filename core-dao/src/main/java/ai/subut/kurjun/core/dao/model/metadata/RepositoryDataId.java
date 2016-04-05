@@ -2,7 +2,6 @@ package ai.subut.kurjun.core.dao.model.metadata;
 
 
 import java.io.Serializable;
-
 import javax.persistence.Embeddable;
 
 
@@ -13,7 +12,6 @@ import javax.persistence.Embeddable;
 public class RepositoryDataId implements Serializable
 {
     String context;
-
     int type;
 
 

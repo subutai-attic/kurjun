@@ -16,7 +16,7 @@ public interface LocalRepository extends Repository
 {
 
     /**
-     * Puts supplied package stream into the repository. Shortcut for {@link LocalRepository#put(java.io.InputStream,
+     * Puts supplied package stream into the repository. Shortcut for {@link LocalRepository#(java.io.InputStream,
      * ai.subut.kurjun.ar.CompressionType)} to be used for uncompressed streams.
      *
      * @param is stream to read package data from
@@ -40,9 +40,9 @@ public interface LocalRepository extends Repository
      */
     Metadata put( InputStream is, CompressionType compressionType ) throws IOException;
 
-    Metadata put( InputStream is, CompressionType compressionType, String owner ) throws IOException;
+    Metadata put( InputStream is, CompressionType compressionType,String context, String owner ) throws IOException;
 
-    Metadata put( File file, CompressionType compressionType, String owner ) throws IOException;
+    Metadata put( File file, CompressionType compressionType, String context, String owner ) throws IOException;
 
     /**
      * Deletes package from the repository. Package should be specified by its md5 checksum.
@@ -58,8 +58,11 @@ public interface LocalRepository extends Repository
 
     boolean delete( Object id, String md5 ) throws IOException;
 
+
     Object getContext();
 
+
     String md5();
+
 }
 

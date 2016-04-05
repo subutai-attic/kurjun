@@ -57,7 +57,7 @@ public class LocalRawRepository extends LocalRepositoryBase
 
 
     @Override
-    public Metadata put( final InputStream is, final CompressionType compressionType, final String owner )
+    public Metadata put( final InputStream is, final CompressionType compressionType, final String context, final String owner )
             throws IOException
     {
         Objects.requireNonNull( is, "InputStream cannot be null" );
@@ -67,7 +67,7 @@ public class LocalRawRepository extends LocalRepositoryBase
 
 
     @Override
-    public Metadata put( final File file, final CompressionType compressionType, final String owner ) throws IOException
+    public Metadata put( final File file, final CompressionType compressionType, final String context,  final String owner ) throws IOException
     {
         DefaultMetadata metadata = new DefaultMetadata();
         metadata.setName( file.getName() );

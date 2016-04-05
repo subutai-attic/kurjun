@@ -241,7 +241,8 @@ public class RawManagerServiceImpl implements RawManagerService
             //***** Check permissions (WRITE) *****************
             if ( checkRepoPermissions( userSession, "raw", null, Permission.Write ) )
             {
-                metadata = localPublicRawRepository.put( file, CompressionType.NONE, DEFAULT_RAW_REPO_NAME );
+                metadata = localPublicRawRepository.put( file, CompressionType.NONE, DEFAULT_RAW_REPO_NAME,
+                        userSession.getUser().getKeyFingerprint() );
 
                 //***** Build Relation ****************
                 relationManager
@@ -271,8 +272,8 @@ public class RawManagerServiceImpl implements RawManagerService
             //***** Check permissions (WRITE) *****************
             if ( checkRepoPermissions( userSession, "raw", null, Permission.Write ) )
             {
-                metadata =
-                        localPublicRawRepository.put( new FileInputStream( file ), CompressionType.NONE, repository );
+                metadata = localPublicRawRepository.put( new FileInputStream( file ), CompressionType.NONE, repository,
+                        userSession.getUser().getKeyFingerprint() );
 
                 //***** Build Relation ****************
                 relationManager

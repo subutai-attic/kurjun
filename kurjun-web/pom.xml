@@ -27,7 +27,7 @@
     <finalName>kurjun</finalName>
     <plugins>
 
-      <!-- Ninja SuperDevMode -->
+      <!-- Ninja SuperDevMode
       <plugin>
         <groupId>org.ninjaframework</groupId>
         <artifactId>ninja-maven-plugin</artifactId>
@@ -40,6 +40,7 @@
           <context>/kurjun</context>
         </configuration>
       </plugin>
+      -->
 
       <!-- Needed to debug in SuperDevMode -->
       <plugin>

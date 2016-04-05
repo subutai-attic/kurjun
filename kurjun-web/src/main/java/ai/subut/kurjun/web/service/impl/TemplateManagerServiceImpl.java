@@ -196,7 +196,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         if ( checkRepoPermissions( userSession, repository, null, Permission.Write ) )
         {
             SubutaiTemplateMetadata metadata = ( SubutaiTemplateMetadata ) getRepo( repository )
-                    .put( inputStream, CompressionType.GZIP, repository );
+                    .put( inputStream, CompressionType.GZIP, repository, userSession.getUser().getKeyFingerprint() );
 
             if ( metadata != null )
             {
@@ -240,8 +240,9 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         //***** Check permissions (WRITE) *****************
         if ( checkRepoPermissions( userSession, repository, null, Permission.Write ) )
         {
-            SubutaiTemplateMetadata metadata =
-                    ( SubutaiTemplateMetadata ) getRepo( repository ).put( file, CompressionType.GZIP, repository );
+
+            SubutaiTemplateMetadata metadata = ( SubutaiTemplateMetadata ) getRepo( repository )
+                    .put( file, CompressionType.GZIP, repository, userSession.getUser().getKeyFingerprint() );
 
             if ( metadata != null )
             {
@@ -400,7 +401,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
                     try
                     {
                         loaded[0] = ( DefaultTemplate ) localPublicTemplateRepository
-                                .put( inputStream, CompressionType.GZIP, "public" );
+                                .put( inputStream, CompressionType.GZIP, "public" , "" );
                     }
                     catch ( IOException e )
                     {
@@ -423,7 +424,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     @Override
     public String md5()
     {
-        return getPublicRepository().md5() ;
+        return getPublicRepository().md5();
     }
 
 

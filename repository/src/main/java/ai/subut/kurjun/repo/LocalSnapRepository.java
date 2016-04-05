@@ -108,7 +108,7 @@ class LocalSnapRepository extends LocalRepositoryBase
 
 
     @Override
-    public Metadata put( final InputStream is, final CompressionType compressionType, final String owner )
+    public Metadata put( final InputStream is, final CompressionType compressionType,final String context,  final String owner )
             throws IOException
     {
         return null;
@@ -116,7 +116,7 @@ class LocalSnapRepository extends LocalRepositoryBase
 
 
     @Override
-    public Metadata put( final File file, final CompressionType compressionType, final String owner ) throws IOException
+    public Metadata put( final File file, final CompressionType compressionType, final String context, final String owner ) throws IOException
     {
         return null;
     }

@@ -24,8 +24,11 @@ import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
+import ai.subut.kurjun.model.metadata.RepositoryData;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
+import ai.subut.kurjun.model.repository.RepositoryType;
 import ai.subut.kurjun.model.storage.FileStore;
+import ai.subut.kurjun.repo.service.RepositoryManager;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
 
@@ -44,6 +47,9 @@ public class LocalTemplateRepository extends LocalRepositoryBase
 
     @Inject
     TemplateDataService templateDataService;
+
+    @Inject
+    RepositoryManager repositoryManager;
 
 
     @Inject
@@ -114,7 +120,7 @@ public class LocalTemplateRepository extends LocalRepositoryBase
 
 
     //TODO files is copied to temp file and gets copied again in put(File)
-    public Metadata put( InputStream is, CompressionType compressionType, String owner ) throws IOException
+    public Metadata put( InputStream is, CompressionType compressionType, String context , String owner ) throws IOException
     {
         PackageMetadataStore metadataStore = getMetadataStore();
         FileStore fileStore = getFileStore();
@@ -130,6 +136,11 @@ public class LocalTemplateRepository extends LocalRepositoryBase
             String md5 = fileStore.put( temp );
             if ( md5.equalsIgnoreCase( meta.getMd5Sum() ) )
             {
+                //*******************
+                RepositoryData repoData = getRepositoryData(context, RepositoryType.TemplateRepo.getId(), owner);
+                //*******************
+
+
                 DefaultTemplate dt = MetadataUtils.serializableTemplateMetadata( meta );
                 dt.setSize( temp.length() );
                 dt.setOwnerFprint( owner );
@@ -155,7 +166,7 @@ public class LocalTemplateRepository extends LocalRepositoryBase
 
 
     @Override
-    public Metadata put( final File file, final CompressionType compressionType, final String owner ) throws IOException
+    public Metadata put( final File file, final CompressionType compressionType,final String context,  final String owner ) throws IOException
     {
         PackageMetadataStore metadataStore = getMetadataStore();
         FileStore fileStore = getFileStore();
@@ -167,12 +178,18 @@ public class LocalTemplateRepository extends LocalRepositoryBase
 
             if ( md5.equalsIgnoreCase( meta.getMd5Sum() ) )
             {
+
+                //*******************
+                RepositoryData repoData = getRepositoryData(context, RepositoryType.TemplateRepo.getId(), owner);
+                //*******************
+
                 DefaultTemplate dt = MetadataUtils.serializableTemplateMetadata( meta );
                 dt.setSize( file.length() );
                 dt.setOwnerFprint( owner );
                 metadataStore.put( dt );
 
                 //***********************************
+
                 //templateDataService.merge( dt );
                 //***********************************
 
@@ -217,5 +234,15 @@ public class LocalTemplateRepository extends LocalRepositoryBase
     {
         return fileStoreFactory.create( context );
     }
+
+
+
+    //******************************************
+    public RepositoryData getRepositoryData(String context, int type, String ownerFingerprint)
+    {
+        return repositoryManager.getRepositoryData( context, type, ownerFingerprint, true );
+    }
+
+
 }
 

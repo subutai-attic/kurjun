@@ -13,8 +13,7 @@ public interface RepositoryData
 
     int getType();
 
-    String getOwnerFingerpint();
+    String getOwner();
 
-    void setOwnerFingerpint( String ownerFingerpint );
-
+    void setOwner( String owner );
 }

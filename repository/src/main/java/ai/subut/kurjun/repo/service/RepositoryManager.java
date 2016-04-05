@@ -13,4 +13,16 @@ public interface RepositoryManager
 {
     //*************************************************
     List<RepositoryData> getRepositoryList();
+
+
+    //*************************************************
+    RepositoryData  getRepository( String context, int type );
+
+
+    //*************************************************
+    RepositoryData  persistRepositoryData( String context, int type, String ownerFingerprint );
+
+
+    //*************************************************
+    RepositoryData  getRepositoryData( String context, int type, String ownerFingerprint, boolean create );
 }

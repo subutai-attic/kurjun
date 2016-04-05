@@ -29,7 +29,7 @@ public class RepositoryController extends BaseController {
     public Result getRepoList()
     {
         //List<RepositoryData> repos = repositoryService.getRepositoryList();
-        List<String> repos = repositoryService.getRepositoryContextList();
+        List<RepositoryData> repos = repositoryService.getRepositoryList();
 
         Map<String, String> ownerMap = new HashMap<>();
         return Results.html().template("views/repositories.ftl").render( "repos", repos )

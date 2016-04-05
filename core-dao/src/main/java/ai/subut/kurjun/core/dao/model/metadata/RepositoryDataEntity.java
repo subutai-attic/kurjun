@@ -26,8 +26,8 @@ public class RepositoryDataEntity implements RepositoryData
     private RepositoryDataId id;
 
 
-    @Column( name = "fingerprint" )
-    private String ownerFingerpint;
+    @Column( name = "owner" )
+    private String owner;
 
 
     public RepositoryDataEntity()
@@ -61,16 +61,15 @@ public class RepositoryDataEntity implements RepositoryData
 
 
     @Override
-    public String getOwnerFingerpint()
+    public String getOwner()
     {
-        return ownerFingerpint;
+        return owner;
     }
 
 
     @Override
-    public void setOwnerFingerpint( final String ownerFingerpint )
+    public void setOwner( final String owner )
     {
-        this.ownerFingerpint = ownerFingerpint;
+        this.owner = owner;
     }
-
 }
