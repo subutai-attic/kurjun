@@ -49,6 +49,13 @@ class BinaryPackageMetadata extends AbstractPackageMetadata
 
 
     @Override
+    public String getOwner()
+    {
+        return null;
+    }
+
+
+    @Override
     public String getName()
     {
         return getPackage();

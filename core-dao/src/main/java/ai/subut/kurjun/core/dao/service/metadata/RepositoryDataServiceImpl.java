@@ -7,9 +7,13 @@ import java.util.List;
 import com.google.inject.Inject;
 
 import ai.subut.kurjun.core.dao.api.DAOException;
+import ai.subut.kurjun.core.dao.api.metadata.RepositoryArtifactDAO;
 import ai.subut.kurjun.core.dao.api.metadata.RepositoryDAO;
+import ai.subut.kurjun.core.dao.model.metadata.RepositoryArtifactEntity;
 import ai.subut.kurjun.core.dao.model.metadata.RepositoryDataId;
 import ai.subut.kurjun.model.metadata.RepositoryData;
+import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.repository.RepositoryArtifact;
 
 
 /**
@@ -18,12 +22,14 @@ import ai.subut.kurjun.model.metadata.RepositoryData;
 public class RepositoryDataServiceImpl implements RepositoryDataService
 {
     private RepositoryDAO repositoryDAO;
+    private RepositoryArtifactDAO repositoryArtifactDAO;
 
 
     @Inject
-    public RepositoryDataServiceImpl(RepositoryDAO repositoryDAO)
+    public RepositoryDataServiceImpl(RepositoryDAO repositoryDAO, RepositoryArtifactDAO repositoryArtifactDAO)
     {
         this.repositoryDAO = repositoryDAO;
+        this.repositoryArtifactDAO = repositoryArtifactDAO;
     }
 
 
@@ -81,6 +87,34 @@ public class RepositoryDataServiceImpl implements RepositoryDataService
         {
         }
     }
+
+
+    //***************************
+    @Override
+    public RepositoryArtifact addArtifactToRepository( RepositoryData repoData, Object metadata )
+    {
+        RepositoryArtifact artifact = null;
+        try
+        {
+            if(repoData != null)
+            {
+                SerializableMetadata sMetadata = (SerializableMetadata)metadata;
+                artifact = new RepositoryArtifactEntity(sMetadata.getName(),sMetadata.getOwner(),sMetadata.getMd5Sum());
+                artifact.setVersion( sMetadata.getVersion() );
+                artifact.setTemplateMetada( metadata  );
+                repoData.getArtifacts().add( artifact );
+
+                repositoryDAO.merge( repoData );
+            }
+        }
+        catch ( Exception ex )
+        {
+            return null;
+        }
+
+        return artifact;
+    }
+
 
 
 

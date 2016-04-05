@@ -5,7 +5,7 @@ import com.google.inject.AbstractModule;
 
 import ai.subut.kurjun.core.dao.model.identity.RelationEntity;
 import ai.subut.kurjun.core.dao.model.identity.RelationObjectEntity;
-import ai.subut.kurjun.core.dao.model.metadata.RepositoryArtifactDataEntity;
+import ai.subut.kurjun.core.dao.model.metadata.RepositoryArtifactEntity;
 import ai.subut.kurjun.core.dao.model.metadata.RepositoryDataEntity;
 import ai.subut.kurjun.core.dao.service.identity.IdentityDataService;
 import ai.subut.kurjun.core.dao.service.identity.IdentityDataServiceImpl;
@@ -13,18 +13,14 @@ import ai.subut.kurjun.core.dao.service.identity.RelationDataService;
 import ai.subut.kurjun.core.dao.service.identity.RelationDataServiceImpl;
 import ai.subut.kurjun.core.dao.model.identity.UserEntity;
 import ai.subut.kurjun.core.dao.model.identity.UserTokenEntity;
-import ai.subut.kurjun.core.dao.service.metadata.AptDataService;
-import ai.subut.kurjun.core.dao.service.metadata.AptDataServiceImpl;
 import ai.subut.kurjun.core.dao.service.metadata.RepositoryDataService;
 import ai.subut.kurjun.core.dao.service.metadata.RepositoryDataServiceImpl;
-import ai.subut.kurjun.core.dao.service.metadata.TemplateDataService;
-import ai.subut.kurjun.core.dao.service.metadata.TemplateDataServiceImpl;
 import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.model.identity.RelationObject;
 import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.identity.UserToken;
 import ai.subut.kurjun.model.metadata.RepositoryData;
-import ai.subut.kurjun.model.repository.RepositoryArtifactData;
+import ai.subut.kurjun.model.repository.RepositoryArtifact;
 
 
 /**
@@ -48,7 +44,7 @@ public class KurjunDAOModule extends AbstractModule
         bind( RelationObject.class ).to( RelationObjectEntity.class );
 
         bind( RepositoryData.class ).to( RepositoryDataEntity.class );
-        bind( RepositoryArtifactData.class ).to( RepositoryArtifactDataEntity.class );
+        bind( RepositoryArtifact.class ).to( RepositoryArtifactEntity.class );
 
         // -------------------------------------------
 
@@ -56,9 +52,7 @@ public class KurjunDAOModule extends AbstractModule
         // -------------------------------------------
         bind( IdentityDataService.class ).to( IdentityDataServiceImpl.class );
         bind( RelationDataService.class ).to( RelationDataServiceImpl.class );
-        bind( TemplateDataService.class ).to( TemplateDataServiceImpl.class );
         bind( RepositoryDataService.class ).to( RepositoryDataServiceImpl.class );
-        bind( AptDataService.class ).to( AptDataServiceImpl.class );
         // -------------------------------------------
 
     }

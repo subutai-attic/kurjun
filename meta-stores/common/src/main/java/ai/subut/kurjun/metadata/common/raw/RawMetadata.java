@@ -44,6 +44,13 @@ public class RawMetadata implements Metadata, SerializableMetadata
 
 
     @Override
+    public String getOwner()
+    {
+        return fingerprint;
+    }
+
+
+    @Override
     public Object getId()
     {
         if ( md5Sum == null || fingerprint == null )

@@ -4,6 +4,7 @@ package ai.subut.kurjun.repo.service;
 import java.util.List;
 
 import ai.subut.kurjun.model.metadata.RepositoryData;
+import ai.subut.kurjun.model.repository.RepositoryArtifact;
 
 
 /**
@@ -25,4 +26,8 @@ public interface RepositoryManager
 
     //*************************************************
     RepositoryData  getRepositoryData( String context, int type, String ownerFingerprint, boolean create );
+
+
+    //*************************************************
+    RepositoryArtifact addArtifactToRepository( RepositoryData repoData, Object metadata );
 }

@@ -18,7 +18,8 @@ import org.slf4j.LoggerFactory;
  *
  */
 @Singleton
-public class RepositoryController extends BaseController {
+public class RepositoryController extends BaseController
+{
 
     private static final Logger LOGGER = LoggerFactory.getLogger( RepositoryController.class );
 
@@ -30,6 +31,7 @@ public class RepositoryController extends BaseController {
     {
         //List<RepositoryData> repos = repositoryService.getRepositoryList();
         List<RepositoryData> repos = repositoryService.getRepositoryList();
+
 
         Map<String, String> ownerMap = new HashMap<>();
         return Results.html().template("views/repositories.ftl").render( "repos", repos )

@@ -121,6 +121,13 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
 
 
     @Override
+    public String getOwner()
+    {
+        return null;
+    }
+
+
+    @Override
     public Object getId()
     {
         return md5;

@@ -15,6 +15,15 @@ public interface Metadata
      *
      * @return identifier
      */
+    String getOwner();
+
+    /**
+     * Gets package identifier. Mostly it will be a md5 sum but other may implement
+     * differently.
+     *
+     * @return identifier
+     */
+
     Object getId();
 
     /**

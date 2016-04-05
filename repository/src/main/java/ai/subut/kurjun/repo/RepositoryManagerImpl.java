@@ -9,6 +9,7 @@ import com.google.inject.Singleton;
 import ai.subut.kurjun.core.dao.model.metadata.RepositoryDataEntity;
 import ai.subut.kurjun.core.dao.service.metadata.RepositoryDataService;
 import ai.subut.kurjun.model.metadata.RepositoryData;
+import ai.subut.kurjun.model.repository.RepositoryArtifact;
 import ai.subut.kurjun.repo.service.RepositoryManager;
 
 
@@ -72,5 +73,15 @@ public class RepositoryManagerImpl implements RepositoryManager
             return repoData;
         }
     }
+
+
+    //*************************************************
+    @Override
+    public RepositoryArtifact  addArtifactToRepository( RepositoryData repoData,  Object metadata )
+    {
+        return repositoryDataService.addArtifactToRepository( repoData, metadata );
+    }
+
+
 
 }

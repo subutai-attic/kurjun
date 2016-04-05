@@ -71,6 +71,13 @@ public class TemplateEntity implements SerializableMetadata, SubutaiTemplateMeta
 
 
     @Override
+    public String getOwner()
+    {
+        return null;
+    }
+
+
+    @Override
     public String getId()
     {
         if ( ownerFprint != null && md5Sum != null )

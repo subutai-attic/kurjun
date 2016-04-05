@@ -1,6 +1,8 @@
 package ai.subut.kurjun.metadata.common;
 
 
+import javax.persistence.Embeddable;
+
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 
@@ -8,7 +10,7 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
 /**
  * Default POJO implementation of {@link Metadata}.
  */
-
+@Embeddable
 public class DefaultMetadata implements SerializableMetadata
 {
 
@@ -17,6 +19,7 @@ public class DefaultMetadata implements SerializableMetadata
     private String version;
     private String serialized;
     private String fingerprint;
+
     //private String objectOwner;
 
 
@@ -29,6 +32,13 @@ public class DefaultMetadata implements SerializableMetadata
     public void setFingerprint( final String fingerprint )
     {
         this.fingerprint = fingerprint;
+    }
+
+
+    @Override
+    public String getOwner()
+    {
+        return fingerprint;
     }
 
 

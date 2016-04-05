@@ -35,6 +35,24 @@
       <artifactId>commons-codec</artifactId>
     </dependency>
 
+    <!-- Derby Database -->
+    <dependency>
+      <groupId>org.apache.openjpa</groupId>
+      <artifactId>openjpa-all</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.openjpa</groupId>
+      <artifactId>openjpa</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
+    </dependency>
+    <!-- ******************** -->
+
+
   </dependencies>
 
 </project>

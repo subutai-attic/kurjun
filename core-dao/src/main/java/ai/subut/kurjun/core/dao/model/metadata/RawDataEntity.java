@@ -73,6 +73,13 @@ public class RawDataEntity implements SerializableMetadata, Metadata
 
 
     @Override
+    public String getOwner()
+    {
+        return null;
+    }
+
+
+    @Override
     public Object getId()
     {
         if ( md5Sum == null || fingerprint == null )

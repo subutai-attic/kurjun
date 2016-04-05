@@ -17,7 +17,6 @@ import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
-import ai.subut.kurjun.core.dao.service.metadata.TemplateDataService;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
@@ -45,8 +44,6 @@ public class LocalTemplateRepository extends LocalRepositoryBase
     private SubutaiTemplateParser templateParser;
     private KurjunContext context;
 
-    @Inject
-    TemplateDataService templateDataService;
 
     @Inject
     RepositoryManager repositoryManager;
@@ -140,14 +137,13 @@ public class LocalTemplateRepository extends LocalRepositoryBase
                 RepositoryData repoData = getRepositoryData(context, RepositoryType.TemplateRepo.getId(), owner);
                 //*******************
 
-
                 DefaultTemplate dt = MetadataUtils.serializableTemplateMetadata( meta );
                 dt.setSize( temp.length() );
                 dt.setOwnerFprint( owner );
 
                 //***********************************
-                metadataStore.put( dt );
-                //templateDataService.merge( dt );
+                //metadataStore.put( dt );
+                repositoryManager.addArtifactToRepository( repoData ,dt );
                 //***********************************
 
                 return dt;
@@ -178,19 +174,13 @@ public class LocalTemplateRepository extends LocalRepositoryBase
 
             if ( md5.equalsIgnoreCase( meta.getMd5Sum() ) )
             {
-
-                //*******************
-                RepositoryData repoData = getRepositoryData(context, RepositoryType.TemplateRepo.getId(), owner);
-                //*******************
-
                 DefaultTemplate dt = MetadataUtils.serializableTemplateMetadata( meta );
                 dt.setSize( file.length() );
                 dt.setOwnerFprint( owner );
                 metadataStore.put( dt );
 
                 //***********************************
-
-                //templateDataService.merge( dt );
+                RepositoryData repoData = getRepositoryData(context, RepositoryType.TemplateRepo.getId(), owner);
                 //***********************************
 
                 return dt;

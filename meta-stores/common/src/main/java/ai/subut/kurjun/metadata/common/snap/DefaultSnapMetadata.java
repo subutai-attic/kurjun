@@ -21,7 +21,16 @@ public class DefaultSnapMetadata implements SnapMetadata, SerializableMetadata
     private String version;
     private String vendor;
     private String source;
+    private String owner;
+
     private List<Framework> frameworks;
+
+
+    @Override
+    public String getOwner()
+    {
+        return owner;
+    }
 
 
     @Override

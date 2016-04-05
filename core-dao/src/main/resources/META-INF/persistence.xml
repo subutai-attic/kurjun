@@ -11,13 +11,14 @@
     <class>ai.subut.kurjun.core.dao.model.identity.RelationEntity</class>
     <class>ai.subut.kurjun.core.dao.model.identity.RelationObjectEntity</class>
 
-    <!--  Metadata
-    <class>ai.subut.kurjun.core.dao.model.metadata.TemplateEntity</class>
-    <class>ai.subut.kurjun.core.dao.model.metadata.RepositoryEntity</class>
-    ************* -->
 
+    <class>ai.subut.kurjun.core.dao.model.metadata.RepositoryArtifactId</class>
+    <class>ai.subut.kurjun.core.dao.model.metadata.RepositoryArtifactEntity</class>
     <class>ai.subut.kurjun.core.dao.model.metadata.RepositoryDataId</class>
     <class>ai.subut.kurjun.core.dao.model.metadata.RepositoryDataEntity</class>
+    <class>ai.subut.kurjun.metadata.common.subutai.DefaultTemplate</class>
+
+
 
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
 

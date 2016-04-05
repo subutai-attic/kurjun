@@ -47,6 +47,13 @@ public class DefaultPackageMetadata implements PackageMetadata, SerializableMeta
 
 
     @Override
+    public String getOwner()
+    {
+        return null;
+    }
+
+
+    @Override
     public Object getId()
     {
         return md5;

@@ -77,6 +77,13 @@ public class IndexPackageMetadataImpl implements IndexPackageMetaData
 
 
     @Override
+    public String getOwner()
+    {
+        return null;
+    }
+
+
+    @Override
     public String getId()
     {
         return getMd5Sum();

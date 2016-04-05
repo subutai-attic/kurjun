@@ -111,6 +111,13 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
         {
 
             @Override
+            public String getOwner()
+            {
+                return null;
+            }
+
+
+            @Override
             public String getId()
             {
                 return getMd5Sum();

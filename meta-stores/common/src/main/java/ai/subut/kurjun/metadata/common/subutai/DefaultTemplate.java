@@ -4,6 +4,12 @@ package ai.subut.kurjun.metadata.common.subutai;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
+import javax.persistence.MapKeyColumn;
+
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
@@ -13,6 +19,7 @@ import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 /**
  * Default serializable POJO implementation class of {@link SubutaiTemplateMetadata}.
  */
+@Embeddable
 public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMetadata
 {
 
@@ -26,10 +33,21 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
     private String packagesContents;
     private String ownerFprint;
     private long size;
+
+    @MapKeyColumn
+    @ElementCollection( fetch = FetchType.LAZY )
+    @Column( name = "extra" )
     private Map<String, String> extra = new HashMap<>();
 
 
-   @Override
+    @Override
+    public String getOwner()
+    {
+        return ownerFprint;
+    }
+
+
+    @Override
     public Object getId()
     {
         if ( ownerFprint != null && md5Sum != null )
