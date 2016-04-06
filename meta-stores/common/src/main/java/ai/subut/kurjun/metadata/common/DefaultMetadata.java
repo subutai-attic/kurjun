@@ -1,8 +1,6 @@
 package ai.subut.kurjun.metadata.common;
 
 
-import javax.persistence.Embeddable;
-
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 
@@ -10,7 +8,6 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
 /**
  * Default POJO implementation of {@link Metadata}.
  */
-@Embeddable
 public class DefaultMetadata implements SerializableMetadata
 {
 

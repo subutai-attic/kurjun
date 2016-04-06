@@ -18,7 +18,7 @@ import ai.subut.kurjun.identity.service.RelationManager;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.raw.RawMetadata;
 import ai.subut.kurjun.model.identity.Permission;
-import ai.subut.kurjun.model.identity.RelationObjectType;
+import ai.subut.kurjun.model.identity.ObjectType;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
@@ -197,9 +197,10 @@ public class RawManagerServiceImpl implements RawManagerService
             //***** Check permissions (DELETE) *****************
             if ( checkRepoPermissions( userSession, "raw", objectId, Permission.Delete ) )
             {
-                relationManager.removeRelationsByTrustObject( objectId, RelationObjectType.RepositoryContent.getId() );
+                relationManager.removeRelationsByTrustObject( objectId, ObjectType.Artifact.getId() );
 
-                return localPublicRawRepository.delete( defaultMetadata.getId(), md5 );
+                //return localPublicRawRepository.delete( defaultMetadata.getId(), md5 );
+                return localPublicRawRepository.delete( null );
             }
         }
         catch ( IOException e )
@@ -235,7 +236,7 @@ public class RawManagerServiceImpl implements RawManagerService
         try
         {
             // *******CheckRepoOwner ***************
-            relationManager.setObjectOwner( userSession.getUser(), "raw", RelationObjectType.RepositoryRaw.getId() );
+            relationManager.setObjectOwner( userSession.getUser(), "raw", ObjectType.RawRepo.getId() );
             //**************************************
 
             //***** Check permissions (WRITE) *****************
@@ -247,7 +248,7 @@ public class RawManagerServiceImpl implements RawManagerService
                 //***** Build Relation ****************
                 relationManager
                         .buildTrustRelation( userSession.getUser(), userSession.getUser(), metadata.getId().toString(),
-                                RelationObjectType.RepositoryContent.getId(), relationManager.buildPermissions( 4 ) );
+                                ObjectType.Artifact.getId(), relationManager.buildPermissions( 4 ) );
                 //*************************************
             }
         }
@@ -266,7 +267,7 @@ public class RawManagerServiceImpl implements RawManagerService
         try
         {
             // *******CheckRepoOwner ***************
-            relationManager.setObjectOwner( userSession.getUser(), "raw", RelationObjectType.RepositoryRaw.getId() );
+            relationManager.setObjectOwner( userSession.getUser(), "raw", ObjectType.RawRepo.getId() );
             //**************************************
 
             //***** Check permissions (WRITE) *****************
@@ -278,7 +279,7 @@ public class RawManagerServiceImpl implements RawManagerService
                 //***** Build Relation ****************
                 relationManager
                         .buildTrustRelation( userSession.getUser(), userSession.getUser(), metadata.getId().toString(),
-                                RelationObjectType.RepositoryContent.getId(), relationManager.buildPermissions( 4 ) );
+                                ObjectType.Artifact.getId(), relationManager.buildPermissions( 4 ) );
                 //*************************************
             }
         }
@@ -303,7 +304,7 @@ public class RawManagerServiceImpl implements RawManagerService
         try
         {
             // *******CheckRepoOwner ***************
-            relationManager.setObjectOwner( userSession.getUser(), "raw", RelationObjectType.RepositoryRaw.getId() );
+            relationManager.setObjectOwner( userSession.getUser(), "raw", ObjectType.RawRepo.getId() );
             //**************************************
 
             //***** Check permissions (WRITE) *****************
@@ -316,7 +317,7 @@ public class RawManagerServiceImpl implements RawManagerService
                 //***** Build Relation ****************
                 relationManager
                         .buildTrustRelation( userSession.getUser(), userSession.getUser(), metadata.getId().toString(),
-                                RelationObjectType.RepositoryContent.getId(), relationManager.buildPermissions( 4 ) );
+                                ObjectType.Artifact.getId(), relationManager.buildPermissions( 4 ) );
                 //*************************************
             }
         }
@@ -332,7 +333,7 @@ public class RawManagerServiceImpl implements RawManagerService
     {
         // *******CheckRepoOwner ***************
         relationManager
-                .setObjectOwner( userSession.getUser(), context.getName(), RelationObjectType.RepositoryRaw.getId() );
+                .setObjectOwner( userSession.getUser(), context.getName(), ObjectType.RawRepo.getId() );
         //**************************************
 
         return repositoryFactory.createLocalRaw( context );
@@ -361,8 +362,8 @@ public class RawManagerServiceImpl implements RawManagerService
     private boolean checkRepoPermissions( UserSession userSession, String repoId, String contentId, Permission perm )
     {
         return relationManager
-                .checkObjectPermissions( userSession.getUser(), repoId, RelationObjectType.RepositoryRaw.getId(),
-                        contentId, RelationObjectType.RepositoryContent.getId(), perm );
+                .checkObjectPermissions( userSession.getUser(), repoId, ObjectType.RawRepo.getId(),
+                        contentId, ObjectType.Artifact.getId(), perm );
     }
     //*******************************************************************
 }

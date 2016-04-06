@@ -1,21 +1,14 @@
 package ai.subut.kurjun.core.dao.model.metadata;
 
 
-import java.util.Collections;
-import java.util.List;
-
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import ai.subut.kurjun.model.metadata.RepositoryData;
-import ai.subut.kurjun.model.repository.RepositoryArtifact;
 
 
 /**
@@ -37,10 +30,14 @@ public class RepositoryDataEntity implements RepositoryData
     private String owner;
 
 
-    @OneToMany( mappedBy = "repositoryData", fetch = FetchType.LAZY, cascade = {CascadeType.ALL},
+    /*
+    @OneToMany( mappedBy = "repositoryData",
+                fetch = FetchType.LAZY,
+                orphanRemoval = true ,
+                cascade = {CascadeType.ALL},
                 targetEntity = RepositoryArtifactEntity.class )
-    private List<RepositoryArtifact> artifacts = Collections.emptyList();
-
+    private List<RepositoryArtifact> artifacts = new ArrayList<>();
+    */
 
     public RepositoryDataEntity()
     {
@@ -86,7 +83,7 @@ public class RepositoryDataEntity implements RepositoryData
         this.owner = owner;
     }
 
-
+    /*
     @Override
     public List<RepositoryArtifact> getArtifacts()
     {
@@ -98,5 +95,5 @@ public class RepositoryDataEntity implements RepositoryData
     public void setArtifacts( final List<RepositoryArtifact> artifacts )
     {
         this.artifacts = artifacts;
-    }
+    }*/
 }

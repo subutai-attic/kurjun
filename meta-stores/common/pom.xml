@@ -55,6 +55,11 @@
       <artifactId>guice-assistedinject</artifactId>
     </dependency>
 
+    <!-- DAO -->
+
+    <!-- ******************** -->
+
+
   </dependencies>
 
 </project>

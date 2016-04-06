@@ -31,6 +31,7 @@ import ai.subut.kurjun.model.repository.UnifiedRepository;
  */
 class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
 {
+    private static Logger LOGGER = LoggerFactory.getLogger( UnifiedRepositoryImpl.class );
 
     private URL url;
     private final Set<Repository> repositories;
@@ -116,7 +117,6 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
         return null;
     }
 
-    private static Logger LOGGER = LoggerFactory.getLogger( UnifiedRepositoryImpl.class );
     @Override
     public List<SerializableMetadata> listPackages()
     {
@@ -138,6 +138,30 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
         }
         return result;
     }
+
+
+    @Override
+    public List<SerializableMetadata> listPackages(String context , int type)
+    {
+        List<SerializableMetadata> result = new LinkedList<>();
+        List<Repository> repoList =getAllRepositories();
+        LOGGER.info( "repoList size: "+repoList.size() );
+
+        for ( Repository repo : repoList )
+        {
+            List<SerializableMetadata> list = repo.listPackages();
+
+            for ( SerializableMetadata meta : list )
+            {
+                if ( !result.contains( meta ) )
+                {
+                    result.add( meta );
+                }
+            }
+        }
+        return result;
+    }
+
 
     private Comparator<Repository> makeLocalsFirstComparator()
     {

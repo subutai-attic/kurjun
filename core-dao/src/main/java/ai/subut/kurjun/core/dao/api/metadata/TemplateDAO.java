@@ -10,11 +10,12 @@ import com.google.inject.persist.Transactional;
 
 import ai.subut.kurjun.core.dao.api.DAOException;
 import ai.subut.kurjun.core.dao.api.GenericDAOImpl;
-import ai.subut.kurjun.core.dao.model.metadata.TemplateEntity;
-import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.core.dao.model.metadata.TemplateDataEntity;
+import ai.subut.kurjun.model.metadata.template.TemplateData;
+import ai.subut.kurjun.model.repository.ArtifactId;
 
 
-public class TemplateDAO extends GenericDAOImpl<SerializableMetadata>
+public class TemplateDAO extends GenericDAOImpl<TemplateData>
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( TemplateDAO.class );
 
@@ -24,12 +25,12 @@ public class TemplateDAO extends GenericDAOImpl<SerializableMetadata>
     }
 
     @Transactional
-    public SerializableMetadata find( String id ) throws DAOException
+    public TemplateData find( ArtifactId id ) throws DAOException
     {
         try
         {
             EntityManager em = getEntityManager();
-            return em.find( TemplateEntity.class, id );
+            return em.find( TemplateDataEntity.class, id );
         }
         catch ( Exception e )
         {

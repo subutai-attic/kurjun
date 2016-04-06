@@ -47,16 +47,12 @@ public interface LocalRepository extends Repository
     /**
      * Deletes package from the repository. Package should be specified by its md5 checksum.
      *
-     * @param md5 md5 checksum of the package to delete
      *
      * @return {@code true} if package was found and successfully deleted; {@code false} otherwise. Failure to delete
      * may be caused by various reasons, for example when package for supplied md5 could not be found, or if package
      * deletion is not permitted.
      */
-    boolean delete( String md5 ) throws IOException;
-
-
-    boolean delete( Object id, String md5 ) throws IOException;
+    boolean delete( ArtifactId id ) throws IOException;
 
 
     Object getContext();

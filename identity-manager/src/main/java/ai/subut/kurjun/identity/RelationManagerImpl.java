@@ -17,7 +17,7 @@ import ai.subut.kurjun.identity.service.RelationManager;
 import ai.subut.kurjun.model.identity.Permission;
 import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.model.identity.RelationObject;
-import ai.subut.kurjun.model.identity.RelationObjectType;
+import ai.subut.kurjun.model.identity.ObjectType;
 import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.security.manager.service.SecurityManager;
 
@@ -141,7 +141,7 @@ public class RelationManagerImpl implements RelationManager
     public Relation buildTrustRelation( User user, String targetObjectId, int targetObjectType, String trustObjectId,
                                         int trustObjectType, Set<Permission> permissions )
     {
-        RelationObject sourceObject = createRelationObject( user.getKeyFingerprint(), RelationObjectType.User.getId() );
+        RelationObject sourceObject = createRelationObject( user.getKeyFingerprint(), ObjectType.User.getId() );
         RelationObject targetObject = createRelationObject( targetObjectId, targetObjectType );
         RelationObject trustObject = createRelationObject( trustObjectId, trustObjectType );
 
@@ -155,9 +155,9 @@ public class RelationManagerImpl implements RelationManager
                                         Set<Permission> permissions )
     {
         RelationObject sourceObject =
-                createRelationObject( sourceUser.getKeyFingerprint(), RelationObjectType.User.getId() );
+                createRelationObject( sourceUser.getKeyFingerprint(), ObjectType.User.getId() );
         RelationObject targetObject =
-                createRelationObject( targetUser.getKeyFingerprint(), RelationObjectType.User.getId() );
+                createRelationObject( targetUser.getKeyFingerprint(), ObjectType.User.getId() );
         RelationObject trustObject = createRelationObject( trustObjectId, trustObjectType );
 
         return buildTrustRelation( sourceObject, targetObject, trustObject, permissions );
@@ -170,9 +170,9 @@ public class RelationManagerImpl implements RelationManager
                                         Set<Permission> permissions )
     {
         RelationObject sourceObject =
-                createRelationObject( sourceUser.getKeyFingerprint(), RelationObjectType.User.getId() );
+                createRelationObject( sourceUser.getKeyFingerprint(), ObjectType.User.getId() );
         RelationObject targetObject =
-                createRelationObject( targetUser.getKeyFingerprint(), RelationObjectType.User.getId() );
+                createRelationObject( targetUser.getKeyFingerprint(), ObjectType.User.getId() );
 
         return buildTrustRelation( sourceObject, targetObject, trustObject, permissions );
     }
@@ -184,7 +184,7 @@ public class RelationManagerImpl implements RelationManager
                                         Set<Permission> permissions )
     {
         RelationObject sourceObject =
-                createRelationObject( sourceUser.getKeyFingerprint(), RelationObjectType.User.getId() );
+                createRelationObject( sourceUser.getKeyFingerprint(), ObjectType.User.getId() );
 
         return buildTrustRelation( sourceObject, targetObject, trustObject, permissions );
     }

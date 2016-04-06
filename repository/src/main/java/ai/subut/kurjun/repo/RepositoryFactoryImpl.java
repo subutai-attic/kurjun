@@ -92,7 +92,7 @@ public class RepositoryFactoryImpl implements RepositoryFactory
     @Override
     public LocalRepository createLocalTemplate( KurjunContext context )
     {
-        return new LocalTemplateRepository( metadataStoreFactory, fileStoreFactory, templateParser, context );
+        return new LocalTemplateRepository( fileStoreFactory, templateParser, context );
     }
 
 
