@@ -3,6 +3,8 @@ package ai.subut.kurjun.common.service;
 
 import java.util.Objects;
 
+import ai.subut.kurjun.model.identity.ObjectType;
+
 
 /**
  * Context within a Kurjun application. Context is kind of some name space or an environment of some specific
@@ -12,12 +14,20 @@ import java.util.Objects;
 public class KurjunContext
 {
     private String name;
+    private int    type;
 
-    public KurjunContext( String name )
+
+    public KurjunContext( String name , int type)
     {
         this.name = name;
+        this.type = type;
     }
 
+    public KurjunContext( String name)
+    {
+        this.name = name;
+        this.type = ObjectType.TemplateRepo.getId();
+    }
 
     public String getName()
     {

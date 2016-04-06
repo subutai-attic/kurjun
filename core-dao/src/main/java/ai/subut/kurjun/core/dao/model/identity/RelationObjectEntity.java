@@ -12,7 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import ai.subut.kurjun.model.identity.RelationObject;
-import ai.subut.kurjun.model.identity.RelationObjectType;
+import ai.subut.kurjun.model.identity.ObjectType;
 
 
 /**
@@ -39,7 +39,7 @@ public class RelationObjectEntity implements RelationObject,Serializable
 
 
     @Column(name = "object_type")
-    private int type = RelationObjectType.User.getId();
+    private int type = ObjectType.User.getId();
 
 
     @Override

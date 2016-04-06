@@ -47,6 +47,7 @@ import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
+import ai.subut.kurjun.model.metadata.RepositoryData;
 import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 import ai.subut.kurjun.model.storage.FileStore;
@@ -194,9 +195,9 @@ class LocalAptRepository extends LocalRepositoryBase
 
 
     @Override
-    protected PackageMetadataStore getMetadataStore()
+    protected RepositoryData getRepositoryData( final String repoContext, final int type )
     {
-        return metadataStoreFactory.create( context );
+        return null;
     }
 
 

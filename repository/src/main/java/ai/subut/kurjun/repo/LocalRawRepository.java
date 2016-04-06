@@ -22,6 +22,7 @@ import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
+import ai.subut.kurjun.model.metadata.RepositoryData;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
@@ -77,13 +78,13 @@ public class LocalRawRepository extends LocalRepositoryBase
         if ( oldmeta != null )
         {
             // delete old record having the same file name
-            delete( oldmeta.getMd5Sum() );
+            //delete( oldmeta.getMd5Sum() );
         }
 
         String md5 = getFileStore().put( file );
 
         RawMetadata meta = new RawMetadata( md5, file.getName(), file.length(), owner );
-        getMetadataStore().put( meta );
+        //getMetadataStore().put( meta );
 
         return meta;
     }
@@ -101,14 +102,14 @@ public class LocalRawRepository extends LocalRepositoryBase
         if ( oldmeta != null )
         {
             // delete old record having the same file name
-            delete( oldmeta.getMd5Sum() );
+            //delete( oldmeta.getMd5Sum() );
         }
 
         String md5 = getFileStore().put( file );
 
         RawMetadata meta = new RawMetadata( md5, name, file.length(), owner );
 
-        getMetadataStore().put( meta );
+        //getMetadataStore().put( meta );
 
         return meta;
     }
@@ -122,9 +123,9 @@ public class LocalRawRepository extends LocalRepositoryBase
 
 
     @Override
-    protected PackageMetadataStore getMetadataStore()
+    protected RepositoryData getRepositoryData( final String repoContext, final int type )
     {
-        return metadataStoreFactory.create( context );
+        return null;
     }
 
 

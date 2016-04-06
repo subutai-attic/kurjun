@@ -30,6 +30,7 @@ import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.repository.ArtifactId;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.repo.util.PathBuilder;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
@@ -175,16 +176,15 @@ class LocalAptRepositoryWrapper extends RepositoryBase implements LocalRepositor
         throw new UnsupportedOperationException( "TODO: get packages index and parse." );
     }
 
-
     @Override
-    public boolean delete( String md5 ) throws IOException
+    public List<SerializableMetadata> listPackages(String context , int type)
     {
-        throw new UnsupportedOperationException( "Not supported in non-virtual local apt repository." );
+        throw new UnsupportedOperationException( "TODO: get packages index and parse." );
     }
 
 
     @Override
-    public boolean delete( Object id, String md5 ) throws IOException
+    public boolean delete( ArtifactId id ) throws IOException
     {
         throw new UnsupportedOperationException( "Not supported in non-virtual local apt repository." );
     }

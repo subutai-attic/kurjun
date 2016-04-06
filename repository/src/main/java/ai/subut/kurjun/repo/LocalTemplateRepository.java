@@ -12,6 +12,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
@@ -20,12 +21,12 @@ import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
+import ai.subut.kurjun.model.identity.ObjectType;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.RepositoryData;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
-import ai.subut.kurjun.model.repository.RepositoryType;
 import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.repo.service.RepositoryManager;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
@@ -39,7 +40,6 @@ public class LocalTemplateRepository extends LocalRepositoryBase
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( LocalTemplateRepository.class );
 
-    private PackageMetadataStoreFactory metadataStoreFactory;
     private FileStoreFactory fileStoreFactory;
     private SubutaiTemplateParser templateParser;
     private KurjunContext context;
@@ -50,10 +50,9 @@ public class LocalTemplateRepository extends LocalRepositoryBase
 
 
     @Inject
-    public LocalTemplateRepository( PackageMetadataStoreFactory metadataStoreFactory, FileStoreFactory fileStoreFactory,
+    public LocalTemplateRepository( FileStoreFactory fileStoreFactory,
                                     SubutaiTemplateParser templateParser, @Assisted KurjunContext context )
     {
-        this.metadataStoreFactory = metadataStoreFactory;
         this.fileStoreFactory = fileStoreFactory;
         this.templateParser = templateParser;
         this.context = context;
@@ -84,7 +83,10 @@ public class LocalTemplateRepository extends LocalRepositoryBase
     @Override
     public Metadata put( InputStream is, CompressionType compressionType ) throws IOException
     {
-        PackageMetadataStore metadataStore = getMetadataStore();
+        //*******************
+        RepositoryData repoData = getRepositoryData( "", ObjectType.TemplateRepo.getId(), "public-user" );
+        //*******************
+
         FileStore fileStore = getFileStore();
 
         String ext = CompressionType.makeFileExtenstion( compressionType );
@@ -98,8 +100,7 @@ public class LocalTemplateRepository extends LocalRepositoryBase
             if ( md5.equalsIgnoreCase( meta.getMd5Sum() ) )
             {
                 //***********************************
-                metadataStore.put( MetadataUtils.serializableTemplateMetadata( meta ) );
-                //templateDataService.merge( MetadataUtils.serializableTemplateMetadata( meta ) );
+                repositoryManager.addArtifactToRepository( repoData ,meta );
                 //***********************************
             }
             else
@@ -119,7 +120,10 @@ public class LocalTemplateRepository extends LocalRepositoryBase
     //TODO files is copied to temp file and gets copied again in put(File)
     public Metadata put( InputStream is, CompressionType compressionType, String context , String owner ) throws IOException
     {
-        PackageMetadataStore metadataStore = getMetadataStore();
+        //*******************
+        RepositoryData repoData = getRepositoryData( context, ObjectType.TemplateRepo.getId(), owner );
+        //*******************
+
         FileStore fileStore = getFileStore();
 
         String ext = CompressionType.makeFileExtenstion( compressionType );
@@ -133,20 +137,11 @@ public class LocalTemplateRepository extends LocalRepositoryBase
             String md5 = fileStore.put( temp );
             if ( md5.equalsIgnoreCase( meta.getMd5Sum() ) )
             {
-                //*******************
-                RepositoryData repoData = getRepositoryData(context, RepositoryType.TemplateRepo.getId(), owner);
-                //*******************
-
-                DefaultTemplate dt = MetadataUtils.serializableTemplateMetadata( meta );
-                dt.setSize( temp.length() );
-                dt.setOwnerFprint( owner );
-
                 //***********************************
-                //metadataStore.put( dt );
-                repositoryManager.addArtifactToRepository( repoData ,dt );
+                repositoryManager.addArtifactToRepository( repoData ,meta );
                 //***********************************
 
-                return dt;
+                return meta;
             }
             else
             {
@@ -164,7 +159,10 @@ public class LocalTemplateRepository extends LocalRepositoryBase
     @Override
     public Metadata put( final File file, final CompressionType compressionType,final String context,  final String owner ) throws IOException
     {
-        PackageMetadataStore metadataStore = getMetadataStore();
+        //*******************
+        RepositoryData repoData = getRepositoryData( context, ObjectType.TemplateRepo.getId(), owner );
+        //*******************
+
         FileStore fileStore = getFileStore();
         SubutaiTemplateMetadata meta = templateParser.parseTemplate( file );
 
@@ -174,16 +172,11 @@ public class LocalTemplateRepository extends LocalRepositoryBase
 
             if ( md5.equalsIgnoreCase( meta.getMd5Sum() ) )
             {
-                DefaultTemplate dt = MetadataUtils.serializableTemplateMetadata( meta );
-                dt.setSize( file.length() );
-                dt.setOwnerFprint( owner );
-                metadataStore.put( dt );
-
                 //***********************************
-                RepositoryData repoData = getRepositoryData(context, RepositoryType.TemplateRepo.getId(), owner);
+                repositoryManager.addArtifactToRepository( repoData ,meta );
                 //***********************************
 
-                return dt;
+                return meta;
             }
             else
             {
@@ -212,9 +205,14 @@ public class LocalTemplateRepository extends LocalRepositoryBase
 
 
     @Override
-    protected PackageMetadataStore getMetadataStore()
+    protected RepositoryData getRepositoryData(String repoContext, int type )
     {
-        return metadataStoreFactory.create( context );
+        if( Strings.isNullOrEmpty(repoContext))
+        {
+            repoContext = context.getName();
+        }
+
+        return repositoryManager.getRepository( repoContext, ObjectType.TemplateRepo.getId() );
     }
 
 

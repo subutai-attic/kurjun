@@ -88,7 +88,7 @@ public class RelationController extends BaseController
         }
         else
         {
-            Map<String, String> map = RelationObjectType.getMap();
+            Map<String, String> map = ObjectType.getMap();
             for ( Map.Entry<String, String> e : map.entrySet()) LOGGER.info( e.getKey()+" = "+e.getValue() );
             return Results.html().template( "views/relations.ftl" )
                           .render( "relations", rels )

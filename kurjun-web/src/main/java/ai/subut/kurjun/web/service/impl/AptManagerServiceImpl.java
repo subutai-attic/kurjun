@@ -25,7 +25,7 @@ import ai.subut.kurjun.identity.service.RelationManager;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
 import ai.subut.kurjun.model.identity.Permission;
-import ai.subut.kurjun.model.identity.RelationObjectType;
+import ai.subut.kurjun.model.identity.ObjectType;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
@@ -261,7 +261,7 @@ public class AptManagerServiceImpl implements AptManagerService
         try
         {
             // *******CheckRepoOwner ***************
-            relationManager.setObjectOwner( userSession.getUser(), REPO_NAME, RelationObjectType.RepositoryApt.getId
+            relationManager.setObjectOwner( userSession.getUser(), REPO_NAME, ObjectType.AptRepo.getId
                     () );
             //**************************************
 
@@ -274,7 +274,7 @@ public class AptManagerServiceImpl implements AptManagerService
                     //***** Build Relation ****************
                     relationManager
                             .buildTrustRelation( userSession.getUser(), userSession.getUser(), meta.getId().toString(),
-                                    RelationObjectType.RepositoryContent.getId(),
+                                    ObjectType.Artifact.getId(),
                                     relationManager.buildPermissions( 4 ) );
                     //*************************************
 
@@ -325,9 +325,10 @@ public class AptManagerServiceImpl implements AptManagerService
             if ( checkRepoPermissions( userSession, REPO_NAME, id, Permission.Delete ) )
             {
                 // remove relation
-                relationManager.removeRelationsByTrustObject( id, RelationObjectType.RepositoryContent.getId() );
+                relationManager.removeRelationsByTrustObject( id, ObjectType.Artifact.getId() );
 
-                return localRepository.delete( md5 );
+                //return localRepository.delete( md5 );
+                return localRepository.delete( null );
             }
         }
         catch ( IOException ex )
@@ -448,8 +449,8 @@ public class AptManagerServiceImpl implements AptManagerService
     private boolean checkRepoPermissions(UserSession userSession, String repoId, String contentId, Permission perm )
     {
         return relationManager
-                .checkObjectPermissions( userSession.getUser(), repoId, RelationObjectType.RepositoryApt.getId(), contentId,
-                        RelationObjectType.RepositoryContent.getId(), perm );
+                .checkObjectPermissions( userSession.getUser(), repoId, ObjectType.AptRepo.getId(), contentId,
+                        ObjectType.Artifact.getId(), perm );
     }
     //*******************************************************************
 }

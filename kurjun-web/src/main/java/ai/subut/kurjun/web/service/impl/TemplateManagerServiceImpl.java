@@ -22,7 +22,7 @@ import ai.subut.kurjun.identity.service.RelationManager;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.subutai.TemplateId;
 import ai.subut.kurjun.model.identity.Permission;
-import ai.subut.kurjun.model.identity.RelationObjectType;
+import ai.subut.kurjun.model.identity.ObjectType;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
@@ -189,7 +189,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
         // *******CheckRepoOwner ***************
         relationManager
-                .setObjectOwner( userSession.getUser(), repository, RelationObjectType.RepositoryTemplate.getId() );
+                .setObjectOwner( userSession.getUser(), repository, ObjectType.TemplateRepo.getId() );
         //**************************************
 
         //***** Check permissions (WRITE) *****************
@@ -207,7 +207,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
                     //***** Build Relation ****************
                     relationManager.buildTrustRelation( userSession.getUser(), userSession.getUser(), templateId,
-                            RelationObjectType.RepositoryContent.getId(), relationManager.buildPermissions( 4 ) );
+                            ObjectType.Artifact.getId(), relationManager.buildPermissions( 4 ) );
                     //*************************************
 
                     return templateId;
@@ -234,7 +234,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
         // *******CheckRepoOwner ***************
         relationManager
-                .setObjectOwner( userSession.getUser(), repository, RelationObjectType.RepositoryTemplate.getId() );
+                .setObjectOwner( userSession.getUser(), repository, ObjectType.TemplateRepo.getId() );
         //**************************************
 
         //***** Check permissions (WRITE) *****************
@@ -252,7 +252,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
                     //***** Build Relation ****************
                     relationManager.buildTrustRelation( userSession.getUser(), userSession.getUser(), templateId,
-                            RelationObjectType.RepositoryContent.getId(), relationManager.buildPermissions( 4 ) );
+                            ObjectType.Artifact.getId(), relationManager.buildPermissions( 4 ) );
                     //*************************************
                     return templateId;
                 }
@@ -271,9 +271,10 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
             LocalTemplateRepository _repository = ( LocalTemplateRepository ) getRepo( tid.getOwnerFprint() );
 
             // remove Relation
-            relationManager.removeRelationsByTrustObject( tid.get(), RelationObjectType.RepositoryContent.getId() );
+            relationManager.removeRelationsByTrustObject( tid.get(), ObjectType.Artifact.getId() );
 
-            boolean success = _repository.delete( tid.get(), tid.getMd5() );
+            //boolean success = _repository.delete( tid.get(), tid.getMd5() );
+            boolean success = _repository.delete( null);
 
             if ( success )
             {
@@ -495,8 +496,8 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     private boolean checkRepoPermissions( UserSession userSession, String repoId, String contentId, Permission perm )
     {
         return relationManager
-                .checkObjectPermissions( userSession.getUser(), repoId, RelationObjectType.RepositoryTemplate.getId(),
-                        contentId, RelationObjectType.RepositoryContent.getId(), perm );
+                .checkObjectPermissions( userSession.getUser(), repoId, ObjectType.TemplateRepo.getId(),
+                        contentId, ObjectType.Artifact.getId(), perm );
     }
     //*******************************************************************
 }

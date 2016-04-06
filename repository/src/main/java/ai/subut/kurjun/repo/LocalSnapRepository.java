@@ -23,6 +23,7 @@ import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
+import ai.subut.kurjun.model.metadata.RepositoryData;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
 import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.snap.service.SnapMetadataParser;
@@ -78,7 +79,7 @@ class LocalSnapRepository extends LocalRepositoryBase
     @Override
     public Metadata put( InputStream is, CompressionType compressionType ) throws IOException
     {
-        PackageMetadataStore metadataStore = getMetadataStore();
+        PackageMetadataStore metadataStore = null;//getMetadataStore();
         FileStore fileStore = getFileStore();
 
         String ext = CompressionType.makeFileExtenstion( compressionType );
@@ -130,10 +131,11 @@ class LocalSnapRepository extends LocalRepositoryBase
 
 
     @Override
-    protected PackageMetadataStore getMetadataStore()
+    protected RepositoryData getRepositoryData( final String repoContext, final int type )
     {
-        return metadataStoreFactory.create( context );
+        return null;
     }
+
 
 
     @Override

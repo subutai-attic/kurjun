@@ -1,22 +1,16 @@
 package ai.subut.kurjun.core.dao.model.metadata;
 
 
-import java.lang.annotation.Target;
-
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
-import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
-import ai.subut.kurjun.model.metadata.RepositoryData;
-import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.repository.ArtifactId;
 import ai.subut.kurjun.model.repository.RepositoryArtifact;
 
 
@@ -37,10 +31,11 @@ public class RepositoryArtifactEntity implements RepositoryArtifact
     @Column(name = "version")
     private String version;
 
-    @ManyToOne(targetEntity = RepositoryDataEntity.class)
-    private RepositoryData repositoryData;
+    //@ManyToOne(targetEntity = RepositoryDataEntity.class)
+    //private RepositoryData repositoryData;
 
-    @Embedded
+    //@Embedded
+    @Transient
     DefaultTemplate templateMetada;
 
 
@@ -51,11 +46,11 @@ public class RepositoryArtifactEntity implements RepositoryArtifact
 
     public RepositoryArtifactEntity(String name, String owner, String md5Sum)
     {
-        id = new RepositoryArtifactId( name, owner ,md5Sum);
+        id = new RepositoryArtifactId( name, owner ,md5Sum, "" ,0);
     }
 
 
-    public RepositoryArtifactId getId()
+    public ArtifactId getId()
     {
         return id;
     }
@@ -98,20 +93,6 @@ public class RepositoryArtifactEntity implements RepositoryArtifact
     public void setVersion( final String version )
     {
         this.version = version;
-    }
-
-
-    @Override
-    public RepositoryData getRepositoryData()
-    {
-        return repositoryData;
-    }
-
-
-    @Override
-    public void setRepositoryData( final RepositoryData repositoryData )
-    {
-        this.repositoryData = repositoryData;
     }
 
 
