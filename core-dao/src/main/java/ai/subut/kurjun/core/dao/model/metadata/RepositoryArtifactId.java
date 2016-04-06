@@ -6,12 +6,14 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+import ai.subut.kurjun.model.repository.ArtifactId;
+
 
 /**
  *
  */
 @Embeddable
-public class RepositoryArtifactId implements Serializable
+public class RepositoryArtifactId implements ArtifactId,Serializable
 {
 
     @Column (name = "name")
@@ -23,50 +25,92 @@ public class RepositoryArtifactId implements Serializable
     @Column (name = "md5sum")
     private String md5Sum;
 
+    @Column (name = "context")
+    private String context;
+
+    @Column (name = "type")
+    private int type;
+
 
     public  RepositoryArtifactId()
     {
 
     }
 
-    public  RepositoryArtifactId(String  name, String owner ,String md5Sum )
-    {
-        this.name = name;
-        this.owner = owner;
-        this.md5Sum = md5Sum;
-    }
-
-
+    @Override
     public String getName()
     {
         return name;
     }
 
 
+    @Override
     public void setName( final String name )
     {
         this.name = name;
     }
 
 
+    public  RepositoryArtifactId(String  name, String owner ,String md5Sum , String context , int type )
+    {
+        this.name = name;
+        this.owner = owner;
+        this.md5Sum = md5Sum;
+        this.context = context;
+        this.type = type;
+    }
+
+
+    @Override
+    public String getContext()
+    {
+        return context;
+    }
+
+
+    @Override
+    public void setContext( final String context )
+    {
+        this.context = context;
+    }
+
+
+    @Override
+    public int getType()
+    {
+        return type;
+    }
+
+
+    @Override
+    public void setType( final int type )
+    {
+        this.type = type;
+    }
+
+
+    @Override
     public String getOwner()
     {
         return owner;
     }
 
 
+    @Override
     public void setOwner( final String owner )
     {
         this.owner = owner;
     }
 
 
+    @Override
     public String getMd5Sum()
     {
         return md5Sum;
     }
 
 
+    @Override
     public void setMd5Sum( final String md5Sum )
     {
         this.md5Sum = md5Sum;
@@ -75,7 +119,7 @@ public class RepositoryArtifactId implements Serializable
 
     private String getUniqId()
     {
-        return name + "." + owner+"." +md5Sum;
+        return name + "." + owner + "." + md5Sum + "." + context + "." + type;
     }
 
 
@@ -88,6 +132,8 @@ public class RepositoryArtifactId implements Serializable
         result = prime * result + ( ( name == null ) ? 0 : name.hashCode() );
         result = prime * result + ( ( owner == null ) ? 0 : owner.hashCode() );
         result = prime * result + ( ( md5Sum == null ) ? 0 : md5Sum.hashCode() );
+        result = prime * result + ( ( context == null ) ? 0 : context.hashCode() );
+        result = prime * result + type;
 
         return result;
     }

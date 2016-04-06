@@ -264,6 +264,46 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
 
 
     @Override
+    public List<SerializableMetadata> listPackages(String context , int type)
+    {
+
+        if ( this.md5Sum.equalsIgnoreCase( getMd5() ) )
+        {
+            return this.remoteIndexChache;
+        }
+        Map<String, String> params = makeParamsMap( new DefaultMetadata() );
+        params.put( "repository", "local" );
+
+        //get only public Kurjun local packages
+        WebClient webClient = webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + LIST_PATH, params );
+        if ( identity != null )
+        {
+            webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
+        }
+
+        Response resp = doGet( webClient );
+        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
+        {
+            if ( resp.getEntity() instanceof InputStream )
+            {
+                try
+                {
+                    List<String> items = IOUtils.readLines( ( InputStream ) resp.getEntity() );
+
+                    this.remoteIndexChache = toObjectList( items.get( 0 ) );
+
+                    return this.remoteIndexChache;
+                }
+                catch ( IOException ex )
+                {
+                    LOGGER.error( "Failed to read packages list", ex );
+                }
+            }
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
     protected Logger getLogger()
     {
         return LOGGER;

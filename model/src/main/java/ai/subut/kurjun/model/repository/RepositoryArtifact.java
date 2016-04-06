@@ -20,9 +20,5 @@ public interface RepositoryArtifact extends Metadata
 
     void setVersion( String version );
 
-    RepositoryData getRepositoryData();
-
-    void setRepositoryData( RepositoryData repositoryData );
-
     void setTemplateMetada( Object templateMetada );
 }

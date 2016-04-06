@@ -248,6 +248,36 @@ class RemoteAptRepository extends RemoteRepositoryBase
         return result;
     }
 
+    @Override
+    public List<SerializableMetadata> listPackages(String context , int type)
+    {
+        if ( this.md5Sum.equalsIgnoreCase( getMd5() ) )
+        {
+            return this.remoteIndexChache;
+        }
+
+        List<SerializableMetadata> result = new LinkedList<>();
+        Set<ReleaseFile> distributions = getDistributions();
+
+        if ( distributions != null )
+        {
+            for ( ReleaseFile distr : distributions )
+            {
+                PathBuilder pb = PathBuilder.instance().setRelease( distr );
+                for ( String component : distr.getComponents() )
+                {
+                    for ( Architecture arch : distr.getArchitectures() )
+                    {
+                        String path = pb.setResource( makePackagesIndexResource( component, arch ) ).build();
+                        List<SerializableMetadata> items = fetchPackagesMetadata( path, component );
+                        result.addAll( items );
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
 
     @Override
     protected Logger getLogger()

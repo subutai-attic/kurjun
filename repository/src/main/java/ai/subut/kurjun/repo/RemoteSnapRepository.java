@@ -204,6 +204,34 @@ class RemoteSnapRepository extends RemoteRepositoryBase
         return Collections.emptyList();
     }
 
+    @Override
+    public List<SerializableMetadata> listPackages(String context, int type)
+    {
+        WebClient webClient = webClientFactory.makeSecure( this, INFO_PATH, null );
+        if ( identity != null )
+        {
+            webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
+        }
+
+        Response resp = webClient.get();
+        if ( resp.getStatus() == Response.Status.OK.getStatusCode() )
+        {
+            if ( resp.getEntity() instanceof InputStream )
+            {
+                try
+                {
+                    List<String> items = IOUtils.readLines( ( InputStream ) resp.getEntity() );
+                    return parseItems( items );
+                }
+                catch ( IOException ex )
+                {
+                    LOGGER.error( "Failed to read packages list", ex );
+                }
+            }
+        }
+        return Collections.emptyList();
+    }
+
 
     @Override
     protected Logger getLogger()

@@ -211,6 +211,12 @@ public class RemoteRawRepository extends RemoteRepositoryBase
         return Collections.emptyList();
     }
 
+    @Override
+    public List<SerializableMetadata> listPackages(String context , int type)
+    {
+        return null;
+    }
+
 
     @Override
     protected Logger getLogger()

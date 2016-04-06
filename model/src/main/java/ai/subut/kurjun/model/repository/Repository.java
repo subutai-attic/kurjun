@@ -122,5 +122,13 @@ public interface Repository
      */
     List<SerializableMetadata> listPackages();
 
+
+    /**
+     * List packages in the repository.
+     *
+     * @return list of package in the repository, never {@code null}.
+     */
+    List<SerializableMetadata> listPackages(String context , int type);
+
 }
 

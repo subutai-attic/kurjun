@@ -35,7 +35,7 @@ public class RepositoryHelpersTest
         Repository r4 = new LocalSnapRepository( null, null, null, null );
         Assert.assertFalse( RepositoryHelpers.isAptRepository( r4 ) );
 
-        Repository r5 = new LocalTemplateRepository( null, null, null, null );
+        Repository r5 = new LocalTemplateRepository( null, null, null );
         Assert.assertFalse( RepositoryHelpers.isAptRepository( r5 ) );
 
         // unified
