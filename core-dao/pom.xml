@@ -13,12 +13,17 @@
   <artifactId>core-dao</artifactId>
   <version>1.0</version>
 
-  <properties>
-    <ninja.version>5.2.2</ninja.version>
-  </properties>
+
+    <properties>
+      <osgi.export-package>{local-packages};version=${project.version};-noimport:=true</osgi.export-package>
+      <osgi.import-package>ai.subut.kurjun.*, !*</osgi.import-package>
+      <osgi.embed-dependency>groupId=com.google.inject.extensions</osgi.embed-dependency>
+      <osgi.embed-transitive>true</osgi.embed-transitive>
+    </properties>
+
+
 
   <dependencies>
-
 
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -50,7 +55,6 @@
       <version>${guice.version}</version>
     </dependency>
 
-
     <!-- Derby Database -->
     <dependency>
       <groupId>org.apache.openjpa</groupId>
@@ -67,7 +71,6 @@
       <artifactId>derby</artifactId>
     </dependency>
     <!-- ******************** -->
-
 
   </dependencies>
 
