@@ -4,6 +4,9 @@ package ai.subut.kurjun.core.dao.service.identity;
 import java.util.Collections;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -22,6 +25,8 @@ import ai.subut.kurjun.model.identity.UserToken;
 @Singleton
 public class IdentityDataServiceImpl implements IdentityDataService
 {
+    private static Logger LOGGER = LoggerFactory.getLogger( IdentityDataServiceImpl.class );
+
     private UserDAO userDAO;
     private UserTokenDAO userTokenDAO;
 
@@ -69,19 +74,36 @@ public class IdentityDataServiceImpl implements IdentityDataService
 
     //*****************************
     @Override
-    public User getUser( String fingerprint )
+    public User getUserByFingerprint( String fingerprint )
     {
         try
         {
             if( !Strings.isNullOrEmpty(fingerprint))
                 return userDAO.find( fingerprint.toLowerCase() );
-            else
-                return null;
         }
         catch ( Exception e )
         {
-            return null;
+            LOGGER.error( "Failed getUserByFingerprint", e );
         }
+
+        return null;
+    }
+
+    //*****************************
+    @Override
+    public User getUserByUsername( String username )
+    {
+        try
+        {
+            if( !Strings.isNullOrEmpty( username ))
+                return userDAO.findByUsername( username.toLowerCase() );
+        }
+        catch ( Exception e )
+        {
+            LOGGER.error( "Failed getUserByUsername", e );
+        }
+
+        return null;
     }
 
 

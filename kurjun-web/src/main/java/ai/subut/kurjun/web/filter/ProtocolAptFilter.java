@@ -28,30 +28,19 @@ public class ProtocolAptFilter implements Filter
     @Override
     public Result filter( FilterChain filterChain, Context context )
     {
-        //LOGGER.info( "***** ProtocolAptFilter called " );
+        String scheme = context.getScheme();
+        boolean httpEnabled = props.get( "security.http.enabled" ).equals( "true" );
+        boolean httpsEnabled = props.get( "security.https.enabled" ).equals( "true" );
+        boolean aptHttpEnabled = props.get( "security.apt.http.enabled" ).equals( "true" );
 
-
-        if(context.getScheme().equals( "https" ))
+        if ( scheme.equals("http") && (httpEnabled || aptHttpEnabled)
+                || scheme.equals("https") && httpsEnabled )
         {
-            if(props.get( "security.https.enabled" ).equals( "true" ))
-                return filterChain.next( context );
-            else
-                return Results.forbidden().render( "Not allowed" ).text();
-        }
-        else if ( context.getScheme().equals( "http" ) )
-        {
-            if ( props.get( "security.http.enabled" ).equals( "true" ) || props.get( "security.apt.http.enabled" )
-                                                                               .equals( "true" ) )
-            {
-                return filterChain.next( context );
-            }
-            else
-            {
-                return Results.forbidden().render( "Not allowed" ).text();
-            }
+            return filterChain.next( context );
         }
         else
         {
+            LOGGER.warn( "Not passed "+this.getClass().getName() );
             return Results.forbidden().render( "Not allowed" ).text();
         }
     }
