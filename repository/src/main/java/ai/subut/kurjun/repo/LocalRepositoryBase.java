@@ -92,7 +92,6 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
     @Override
     public List<SerializableMetadata> listPackages()
     {
-        LOGGER.info( "listing packages " );
         RepositoryData repoData = getRepositoryData( "", 0 , "");
         List<SerializableMetadata> result = new LinkedList<>();
         try
@@ -108,7 +107,6 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
         {
             getLogger().error( "Failed to list package in metadata store", ex );
         }
-        LOGGER.info( " returning listing packages " );
 
         return null;
     }
@@ -117,8 +115,6 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
     @Override
     public List<SerializableMetadata> listPackages(String context, int type)
     {
-        LOGGER.info( "listing packages " );
-
         RepositoryData repoData = getRepositoryData(context, type , "" );
 
         List<SerializableMetadata> result = new LinkedList<>();

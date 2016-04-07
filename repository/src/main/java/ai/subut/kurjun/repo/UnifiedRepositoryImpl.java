@@ -3,6 +3,7 @@ package ai.subut.kurjun.repo;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -124,9 +125,8 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
     @Override
     public List<SerializableMetadata> listPackages()
     {
-        List<SerializableMetadata> result = new LinkedList<>();
+        List<SerializableMetadata> result = new ArrayList<>();
         List<Repository> repoList = getAllRepositories();
-        LOGGER.info( "repoList size: "+repoList.size() );
 
         for ( Repository repo : repoList )
         {
@@ -150,9 +150,8 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
     @Override
     public List<SerializableMetadata> listPackages(String context , int type)
     {
-        List<SerializableMetadata> result = new LinkedList<>();
+        List<SerializableMetadata> result = new ArrayList<>();
         List<Repository> repoList = getAllRepositories();
-        LOGGER.info( "repoList size: "+repoList.size() );
 
         for ( Repository repo : repoList )
         {

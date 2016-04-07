@@ -23,7 +23,7 @@
                               ${(r.permissions?seq_contains("Write"))?then("W"," ")}
                               ${(r.permissions?seq_contains("Delete"))?then("D"," ")}
                           </td>
-                          <td>${r.target.id}</td>
+                          <td>${r.target.objectId}</td>
                         </tr>
                     </#list>
                     </tbody>

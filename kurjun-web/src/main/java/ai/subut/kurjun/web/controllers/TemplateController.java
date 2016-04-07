@@ -52,16 +52,16 @@ public class TemplateController extends BaseController
 
 
     public Result listTemplates( Context context, FlashScope flashScope, @Param( "repository" ) String repo,
-                                 @Param( "search" ) String search )
+                                 @Param( "node" ) String node )
     {
         List<SerializableMetadata> defaultTemplateList = new ArrayList<>();
         try
         {
             repo = StringUtils.isBlank( repo ) ? "public" : repo;
-            search = StringUtils.isBlank( search ) ? "all" : search;
+            node = StringUtils.isBlank( node ) ? "local" : node;
             //*****************************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            defaultTemplateList = templateManagerService.list( uSession, repo, search, false );
+            defaultTemplateList = templateManagerService.list( uSession, repo, node, false );
             //*****************************************************
         }
         catch ( IOException e )
@@ -69,18 +69,17 @@ public class TemplateController extends BaseController
             flashScope.error( "Failed to get list of templates." );
             LOGGER.error( "Failed to get list of templates: " + e.getMessage() );
         }
-        List<String> repos = repositoryService.getRepositoryContextList();
 
         return Results.html().template( "views/templates.ftl" ).render( "templates", defaultTemplateList )
-                      .render( "repos", repos ).render( "sel_repo", repo ).render( "owners", null );
+                      .render( "repos", templateManagerService.getRepoList() )
+                      .render( "sel_repo", repo ).render( "node", node);
     }
 
 
     public Result getUploadTemplateForm()
     {
-        List<String> repos = repositoryService.getRepositoryContextList();
-
-        return Results.html().template( "views/_popup-upload-templ.ftl" ).render( "repos", repos );
+        return Results.html().template( "views/_popup-upload-templ.ftl" )
+                      .render( "repos", templateManagerService.getRepoList() );
     }
 
 
@@ -172,7 +171,7 @@ public class TemplateController extends BaseController
     }
 
 
-    public Result deleteTemplate( Context context, @PathParam( "repository" ) String repository, @PathParam( "md5" ) String md5,
+    public Result deleteTemplate( Context context, @Param( "repository" ) String repository, @Param( "md5" ) String md5,
                                   FlashScope flashScope )
     {
         try
