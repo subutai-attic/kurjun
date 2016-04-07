@@ -132,7 +132,7 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
         {
             getLogger().error( "Failed to list package in metadata store", ex );
         }
-        LOGGER.info( " returning listing packages " );
+
         return null;
     }
 
