@@ -8,7 +8,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -24,6 +23,7 @@ import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.PackageMetadataStore;
+import ai.subut.kurjun.model.metadata.RepositoryData;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
 import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.snap.service.SnapMetadataParser;
@@ -32,7 +32,6 @@ import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 /**
  * Local snap repository implementation.
- *
  */
 class LocalSnapRepository extends LocalRepositoryBase
 {
@@ -46,10 +45,8 @@ class LocalSnapRepository extends LocalRepositoryBase
 
 
     @Inject
-    public LocalSnapRepository( PackageMetadataStoreFactory metadataStoreFactory,
-                                FileStoreFactory fileStoreFactory,
-                                SnapMetadataParser metadataParser,
-                                @Assisted KurjunContext context )
+    public LocalSnapRepository( PackageMetadataStoreFactory metadataStoreFactory, FileStoreFactory fileStoreFactory,
+                                SnapMetadataParser metadataParser, @Assisted KurjunContext context )
     {
         this.metadataStoreFactory = metadataStoreFactory;
         this.fileStoreFactory = fileStoreFactory;
@@ -82,7 +79,7 @@ class LocalSnapRepository extends LocalRepositoryBase
     @Override
     public Metadata put( InputStream is, CompressionType compressionType ) throws IOException
     {
-        PackageMetadataStore metadataStore = getMetadataStore();
+        PackageMetadataStore metadataStore = null;//getMetadataStore();
         FileStore fileStore = getFileStore();
 
         String ext = CompressionType.makeFileExtenstion( compressionType );
@@ -92,8 +89,8 @@ class LocalSnapRepository extends LocalRepositoryBase
             Files.copy( is, temp, StandardCopyOption.REPLACE_EXISTING );
             SnapMetadata meta = metadataParser.parse( temp.toFile() );
 
-            byte[] md5 = fileStore.put( temp.toFile() );
-            if ( Arrays.equals( md5, meta.getMd5Sum() ) )
+            String md5 = fileStore.put( temp.toFile() );
+            if ( md5.equalsIgnoreCase( meta.getMd5Sum() ) )
             {
                 metadataStore.put( MetadataUtils.serializableSnapMetadata( meta ) );
             }
@@ -112,7 +109,7 @@ class LocalSnapRepository extends LocalRepositoryBase
 
 
     @Override
-    public Metadata put( final InputStream is, final CompressionType compressionType, final String owner )
+    public Metadata put( final InputStream is, final CompressionType compressionType,final String context,  final String owner )
             throws IOException
     {
         return null;
@@ -120,7 +117,7 @@ class LocalSnapRepository extends LocalRepositoryBase
 
 
     @Override
-    public Metadata put( final File file, final CompressionType compressionType, final String owner ) throws IOException
+    public Metadata put( final File file, final CompressionType compressionType, final String context, final String owner ) throws IOException
     {
         return null;
     }
@@ -134,10 +131,11 @@ class LocalSnapRepository extends LocalRepositoryBase
 
 
     @Override
-    protected PackageMetadataStore getMetadataStore()
+    protected RepositoryData getRepositoryData( final String repoContext, final int type, String owner )
     {
-        return metadataStoreFactory.create( context );
+        return null;
     }
+
 
 
     @Override

@@ -29,6 +29,12 @@
 
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>core-dao</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>db-file</artifactId>
       <version>${project.version}</version>
     </dependency>

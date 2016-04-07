@@ -55,6 +55,7 @@
       <artifactId>guice-assistedinject</artifactId>
     </dependency>
 
+
   </dependencies>
 
 </project>

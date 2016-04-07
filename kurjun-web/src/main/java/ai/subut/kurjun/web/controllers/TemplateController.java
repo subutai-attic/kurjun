@@ -3,9 +3,7 @@ package ai.subut.kurjun.web.controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,13 +14,11 @@ import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.subutai.TemplateId;
 import ai.subut.kurjun.metadata.common.utils.IdValidators;
-import ai.subut.kurjun.model.identity.Relation;
-import ai.subut.kurjun.model.identity.RelationObjectType;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.metadata.template.TemplateData;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
 import ai.subut.kurjun.web.model.KurjunFileItem;
 import ai.subut.kurjun.web.service.RelationManagerService;
@@ -55,15 +51,16 @@ public class TemplateController extends BaseController
     private RelationManagerService relationManagerService;
 
 
-    public Result listTemplates( Context context, FlashScope flashScope, @Param( "repo" ) String repo )
+    public Result listTemplates( Context context, FlashScope flashScope, @Param( "repository" ) String repo,
+                                 @Param( "search" ) String search )
     {
         List<SerializableMetadata> defaultTemplateList = new ArrayList<>();
         try
         {
-            repo = StringUtils.isBlank( repo ) ? "all" : repo;
+            search = StringUtils.isBlank( search ) ? "all" : search;
             //*****************************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            defaultTemplateList = templateManagerService.list( uSession, repo, false );
+            defaultTemplateList = templateManagerService.list( uSession, repo, search, false );
             //*****************************************************
         }
         catch ( IOException e )
@@ -71,23 +68,16 @@ public class TemplateController extends BaseController
             flashScope.error( "Failed to get list of templates." );
             LOGGER.error( "Failed to get list of templates: " + e.getMessage() );
         }
-        List<String> repos = repositoryService.getRepositories();
-
-
-        Map<String, String> ownerMap = new HashMap<>();
-        relationManagerService.getAllRelations().stream().filter(
-                r -> r.getSource().getId().equals( r.getTarget().getId() )
-                        && r.getTrustObject().getType() == RelationObjectType.RepositoryContent.getId() )
-                              .forEach( r -> ownerMap.put( r.getTrustObject().getId(), r.getSource().getId() ) );
+        List<String> repos = repositoryService.getRepositoryContextList();
 
         return Results.html().template( "views/templates.ftl" ).render( "templates", defaultTemplateList )
-                      .render( "repos", repos ).render( "sel_repo", repo ).render( "owners", ownerMap );
+                      .render( "repos", repos ).render( "sel_repo", repo ).render( "owners", null );
     }
 
 
     public Result getUploadTemplateForm()
     {
-        List<String> repos = repositoryService.getRepositories();
+        List<String> repos = repositoryService.getRepositoryContextList();
 
         return Results.html().template( "views/_popup-upload-templ.ftl" ).render( "repos", repos );
     }
@@ -105,21 +95,7 @@ public class TemplateController extends BaseController
                 repository = repoName;
             }
 
-            if ( StringUtils.isBlank( repository ) )
-            {
-                repository = "public";
-            }
-
             KurjunFileItem fileItem = ( KurjunFileItem ) file;
-            /*
-            if (md5 != null && !md5.isEmpty()) {
-                if (!fileItem.md5().equals(md5)) {
-                    fileItem.cleanup();
-                    flashScope.error( "Failed: MD5 checksum mismatch.");
-                    return Results.redirect( context.getContextPath()+"/" );
-                }
-            }
-            */
             //*****************************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
             String id = templateManagerService.upload( uSession, repository, fileItem.getInputStream() );
@@ -127,7 +103,7 @@ public class TemplateController extends BaseController
 
             if ( Strings.isNullOrEmpty( id ) )
             {
-                flashScope.error( "Failed to upload template. Access Permission error." );
+                flashScope.error( "Failed to upload metadata. Access Permission error." );
                 return Results.redirect( context.getContextPath() + "/" );
             }
             else
@@ -143,30 +119,31 @@ public class TemplateController extends BaseController
         }
         catch ( IOException e )
         {
-            LOGGER.error( "Failed to upload template: {}", e.getMessage() );
+            LOGGER.error( "Failed to upload metadata: {}", e.getMessage() );
         }
 
-        flashScope.error( "Failed to upload template" );
+        flashScope.error( "Failed to upload metadata" );
         return Results.redirect( context.getContextPath() + "/" );
     }
 
 
-    public Result getTemplateInfo( Context context, @PathParam( "id" ) String id, @Param( "name" ) String name,
+    public Result getTemplateInfo( Context context, @Param( "repository" ) String repoContext,
                                    @Param( "version" ) String version, @Param( "md5" ) String md5,
-                                   @Param( "type" ) String type )
+                                   @Param( "search" ) String search )
     {
-        if ( !StringUtils.isBlank( id ) )
+        if ( !StringUtils.isBlank( md5 ) )
         {
-            TemplateId tid = IdValidators.Template.validate( id );
+            //TemplateId tid = IdValidators.Template.validate( id );
 
             //*****************************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            DefaultTemplate defaultTemplate = templateManagerService.getTemplate( uSession, tid, md5, name, version );
+            TemplateData templateData =
+                    templateManagerService.getTemplate( uSession, repoContext, md5, version, search );
             //*****************************************************
 
-            if ( defaultTemplate != null )
+            if ( templateData != null )
             {
-                return Results.html().template( "views/_popup-view-tpl.ftl" ).render( "templ_info", defaultTemplate );
+                return Results.html().template( "views/_popup-view-tpl.ftl" ).render( "templ_info", templateData );
             }
         }
 
@@ -174,45 +151,44 @@ public class TemplateController extends BaseController
     }
 
 
-    public Result downloadTemplate( Context context, @PathParam( "id" ) String id )
+    public Result downloadTemplate( Context context,@Param( "repository" ) String repository, @Param( "md5" ) String md5 )
     {
         try
         {
-            TemplateId tid = IdValidators.Template.validate( id );
-
             //*****************************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
             Renderable renderable =
-                    templateManagerService.renderableTemplate( uSession, tid.getOwnerFprint(), tid.getMd5(), false );
+                    templateManagerService.renderableTemplate( uSession, repository, md5, false );
             //*****************************************************
 
             return Results.ok().render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
         }
         catch ( IOException e )
         {
-            LOGGER.error( "Failed to download template: " + e.getMessage() );
-            return Results.internalServerError().text().render( "Failed to download template" );
+            LOGGER.error( "Failed to download metadata: " + e.getMessage() );
+            return Results.internalServerError().text().render( "Failed to download metadata" );
         }
     }
 
 
-    public Result deleteTemplate( Context context, @PathParam( "id" ) String id, FlashScope flashScope )
+    public Result deleteTemplate( Context context, @PathParam( "repository" ) String repository, @PathParam( "md5" ) String md5,
+                                  FlashScope flashScope )
     {
         try
         {
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            TemplateId tid = IdValidators.Template.validate( id );
+
 
             // get relations list
-            List<Relation> relations = relationManagerService.getTrustRelationsByObject( relationManagerService
-                    .toTrustObject( uSession, id, null, null, null, RelationObjectType.RepositoryContent ) );
+            //List<Relation> relations = relationManagerService.getTrustRelationsByObject( relationManagerService
+            // .toTrustObject( uSession, id, null, null, null, RelationObjectType.RepositoryContent ) );
 
             //*****************************************************
-            Integer status = templateManagerService.delete( uSession, tid );
+            Integer status = templateManagerService.delete( uSession, repository, md5 );
             //*****************************************************
 
             // remove relations
-            relations.forEach( r -> relationManagerService.removeRelation( r ) );
+            // relations.forEach( r -> relationManagerService.removeRelation( r ) );
             switch ( status )
             {
                 case 0:
@@ -230,8 +206,8 @@ public class TemplateController extends BaseController
         }
         catch ( Exception e )
         {
-            LOGGER.error( "Failed to remove template: " + e.getMessage() );
-            flashScope.error( "Failed to remove template." );
+            LOGGER.error( "Failed to remove metadata: " + e.getMessage() );
+            flashScope.error( "Failed to remove metadata." );
         }
 
         return Results.redirect( context.getContextPath() + "/" );

@@ -10,11 +10,16 @@ import java.util.Date;
 public interface User
 {
     //*************************
-    void setKeyId( String keyId );
+    String getUserName();
 
     //*************************
-    String getKeyId();
+    void setUserName( String userName );
 
+    //*************************
+    void setDate( Date date );
+
+    //*************************
+    void setEmailAddress( String emailAddress );
 
     //*************************
     String getKeyFingerprint();
@@ -40,11 +45,11 @@ public interface User
 
 
     //*************************
-    String getKeyData();
+    byte[] getKeyData();
 
 
     //*************************
-    void setKeyData( String keyData );
+    void setKeyData( byte[] keyData );
 
 
     //*************************
@@ -54,9 +59,17 @@ public interface User
     //*************************
     void setUserToken( UserToken userToken );
 
+
     //*************************
     int getType();
 
+
     //*************************
     void setType( int type );
+
+    //*************************
+    int getTrustLevel();
+
+    //*************************
+    void setTrustLevel( int trustLevel );
 }

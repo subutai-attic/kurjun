@@ -20,6 +20,12 @@ public interface IdentityManagerService extends BaseService
 
 
     //*************************************
+    String getPublicUserName();
+
+    //*************************************
+    boolean isPublicUser( User user );
+
+    //*************************************
     User getPublicUser();
 
     //*************************************
@@ -27,7 +33,7 @@ public interface IdentityManagerService extends BaseService
 
 
     //*************************************
-    User addUser( String publicKeyASCII );
+    User addUser(String userName, String publicKeyASCII );
 
 
     //*************************************

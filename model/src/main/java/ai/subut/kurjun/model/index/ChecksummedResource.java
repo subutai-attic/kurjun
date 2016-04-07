@@ -1,9 +1,6 @@
 package ai.subut.kurjun.model.index;
 
 
-import ai.subut.kurjun.model.index.Checksum;
-
-
 /**
  * A resource, mainly a file, that has one or more checksums associated with it in the release
  * distribution archive.
@@ -30,5 +27,5 @@ public interface ChecksummedResource
      * @param type the type of checksum algorithm
      * @return the checksum value based on the type
      */
-    byte[] getChecksum( Checksum type );
+    String getChecksum( Checksum type );
 }

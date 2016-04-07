@@ -7,8 +7,8 @@ import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +16,6 @@ import java.util.Set;
 
 import javax.ws.rs.core.Response;
 
-import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,15 +34,13 @@ import com.google.inject.assistedinject.Assisted;
 import ai.subut.kurjun.common.service.KurjunConstants;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.utils.InetUtils;
-import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.annotation.Nullable;
 import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.index.ReleaseFile;
-import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
-
+import ai.subut.kurjun.model.repository.ArtifactId;
 import ai.subut.kurjun.repo.cache.PackageCache;
 import ai.subut.kurjun.repo.util.http.WebClientFactory;
 
@@ -142,15 +139,14 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     @Override
     public Set<ReleaseFile> getDistributions()
     {
-        throw new UnsupportedOperationException( "Not supported in template repositories." );
+        throw new UnsupportedOperationException( "Not supported in metadata repositories." );
     }
 
 
     @Override
-    public SerializableMetadata getPackageInfo( Metadata metadata )
+    public SerializableMetadata getPackageInfo( ArtifactId id )
     {
-        WebClient webClient =
-                webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + INFO_PATH, makeParamsMap( metadata ) );
+        WebClient webClient =  webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + INFO_PATH, makeParamsMap( id ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -177,17 +173,17 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     }
 
 
+
     @Override
-    public InputStream getPackageStream( Metadata metadata )
+    public InputStream getPackageStream( final ArtifactId id )
     {
-        InputStream cachedStream = checkCache( metadata );
+        InputStream cachedStream = checkCache( id );
         if ( cachedStream != null )
         {
             return cachedStream;
         }
 
-        WebClient webClient =
-                webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + GET_PATH, makeParamsMap( metadata ) );
+        WebClient webClient = webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + GET_PATH, makeParamsMap( id ) );
         webClient.header( "Accept", "application/octet-stream" );
 
         if ( identity != null )
@@ -203,10 +199,10 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
             {
                 InputStream inputStream = ( InputStream ) resp.getEntity();
 
-                byte[] md5Calculated = cacheStream( inputStream );
+                String md5Calculated = cacheStream( inputStream );
 
                 // compare the requested and received md5 checksums
-                if ( Arrays.equals( metadata.getMd5Sum(), md5Calculated ) )
+                if ( id.getMd5Sum().equalsIgnoreCase( md5Calculated ) )
                 {
                     return cache.get( md5Calculated );
                 }
@@ -214,15 +210,17 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
                 {
                     deleteCache( md5Calculated );
 
-                    LOGGER.error( "Md5 checksum mismatch after getting the package from remote host. "
-                                    + "Requested with md5={}, name={}, version={}", Hex.toHexString( metadata
-                            .getMd5Sum() ),
-                            metadata.getName(), metadata.getVersion() );
+                    //LOGGER.error( "Md5 checksum mismatch after getting the package from remote host. "
+                    // + "Requested with md5={}, name={}, version={}", Hex.toHexString( metadata
+                    // .getMd5Sum() ),
+                    // metadata.getName(), metadata.getVersion() );
                 }
             }
         }
         return null;
     }
+
+
 
 
     @Override
@@ -233,8 +231,8 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         {
             return this.remoteIndexChache;
         }
-        Map<String, String> params = makeParamsMap( new DefaultMetadata() );
-        params.put( "repository", fetchType );
+        Map<String, String> params = new HashMap(); //makeParamsMap( new DefaultMetadata() );
+        params.put( "repository", "local" );
 
         //get only public Kurjun local packages
         WebClient webClient = webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + LIST_PATH, params );
@@ -265,6 +263,46 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         return Collections.emptyList();
     }
 
+
+    @Override
+    public List<SerializableMetadata> listPackages(String context , int type)
+    {
+
+        if ( this.md5Sum.equalsIgnoreCase( getMd5() ) )
+        {
+            return this.remoteIndexChache;
+        }
+        Map<String, String> params = null; // makeParamsMap( new DefaultMetadata() );
+        params.put( "repository", "local" );
+
+        //get only public Kurjun local packages
+        WebClient webClient = webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + LIST_PATH, params );
+        if ( identity != null )
+        {
+            webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
+        }
+
+        Response resp = doGet( webClient );
+        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
+        {
+            if ( resp.getEntity() instanceof InputStream )
+            {
+                try
+                {
+                    List<String> items = IOUtils.readLines( ( InputStream ) resp.getEntity() );
+
+                    this.remoteIndexChache = toObjectList( items.get( 0 ) );
+
+                    return this.remoteIndexChache;
+                }
+                catch ( IOException ex )
+                {
+                    LOGGER.error( "Failed to read packages list", ex );
+                }
+            }
+        }
+        return Collections.emptyList();
+    }
 
     @Override
     protected Logger getLogger()
@@ -334,9 +372,9 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     }
 
 
-    private Map<String, String> makeParamsMap( Metadata metadata )
+    private Map<String, String> makeParamsMap( ArtifactId id )
     {
-        Map<String, String> params = MetadataUtils.makeParamsMap( metadata );
+        Map<String, String> params = MetadataUtils.makeParamsMap( id );
 
         if ( token != null )
         {

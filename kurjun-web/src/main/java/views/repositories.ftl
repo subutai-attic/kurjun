@@ -28,9 +28,9 @@
             <#if repos?? && repos?has_content >
                 <#list repos as r >
                 <tr>
-                    <td>${r}</td>
-                    <td>${(owners[r]??)?then(owners[r], "")}</td>
-                    <td><a href="${contextPath}/relations/by-object?id=${r}&obj_type=4" class="js-colorbox">permissions</a>
+                    <td><#if r.id.context??>${r.id.context}</#if></td>
+                    <td><#if r.owner??>${r.owner}</#if></td>
+                    <td><a href="${contextPath}/relations/by-object?id=${r.id.context}&obj_type=4" class="js-colorbox">permissions</a>
                 </tr>
                 </#list>
             </#if>

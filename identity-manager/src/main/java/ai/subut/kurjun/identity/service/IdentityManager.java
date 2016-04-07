@@ -29,6 +29,9 @@ public interface IdentityManager
 
 
     //********************************************
+    String getPublicUserName();
+
+    //********************************************
     UserSession loginPublicUser();
 
 
@@ -57,15 +60,12 @@ public interface IdentityManager
 
 
     //********************************************
-    User addUser( String publicKeyASCII );
+    User addUser( String userName, String publicKeyASCII );
 
 
     //********************************************
-    User addUser( String publicKeyASCII, int userType );
+    User addUser(String username, String publicKeyASCII, int userType );
 
-
-    //********************************************
-    User saveUser( User user );
 
 
     //********************************************
@@ -80,5 +80,13 @@ public interface IdentityManager
     boolean hasPermmission( User user, RelationObject relationObject, Permission permission );
 
 
-    void logout(User user);
+    //********************************************
+    int checkUserName( String userName );
+
+
+    //********************************************
+    boolean isPublicUser(User user);
+
+    //********************************************
+    void logout( User user );
 }

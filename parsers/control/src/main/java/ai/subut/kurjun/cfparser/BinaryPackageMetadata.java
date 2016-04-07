@@ -23,7 +23,7 @@ class BinaryPackageMetadata extends AbstractPackageMetadata
     private static final Logger LOG = LoggerFactory.getLogger( BinaryPackageMetadata.class );
 
 
-    BinaryPackageMetadata( byte[] md5, String filename, BinaryPackageControlFile controlFile )
+    BinaryPackageMetadata( String md5, String filename, BinaryPackageControlFile controlFile )
     {
         super( md5, filename, controlFile );
     }
@@ -45,6 +45,13 @@ class BinaryPackageMetadata extends AbstractPackageMetadata
     public String getPackage()
     {
         return controlFile.get( PACKAGE_FIELD );
+    }
+
+
+    @Override
+    public String getOwner()
+    {
+        return null;
     }
 
 

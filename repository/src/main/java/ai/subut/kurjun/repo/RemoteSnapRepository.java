@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,7 +12,6 @@ import java.util.Set;
 
 import javax.ws.rs.core.Response;
 
-import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,13 +32,13 @@ import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.repository.ArtifactId;
 import ai.subut.kurjun.repo.cache.PackageCache;
 import ai.subut.kurjun.repo.util.http.WebClientFactory;
 
 
 /**
  * Non-local snap repository implementation.
- *
  */
 class RemoteSnapRepository extends RemoteRepositoryBase
 {
@@ -107,7 +105,7 @@ class RemoteSnapRepository extends RemoteRepositoryBase
 
 
     @Override
-    public SerializableMetadata getPackageInfo( Metadata metadata )
+    public SerializableMetadata getPackageInfo( ArtifactId metadata )
     {
         WebClient webClient = webClientFactory.makeSecure( this, INFO_PATH, MetadataUtils.makeParamsMap( metadata ) );
         if ( identity != null )
@@ -135,8 +133,10 @@ class RemoteSnapRepository extends RemoteRepositoryBase
     }
 
 
+
+    @Deprecated
     @Override
-    public InputStream getPackageStream( Metadata metadata )
+    public InputStream getPackageStream( ArtifactId metadata )
     {
         InputStream cachedStream = checkCache( metadata );
         if ( cachedStream != null )
@@ -157,10 +157,10 @@ class RemoteSnapRepository extends RemoteRepositoryBase
             {
                 InputStream inputStream = ( InputStream ) resp.getEntity();
 
-                byte[] md5Calculated = cacheStream( inputStream );
+                String md5Calculated = cacheStream( inputStream );
 
                 // compare the requested and received md5 checksums
-                if ( Arrays.equals( metadata.getMd5Sum(), md5Calculated ) )
+                if ( metadata.getMd5Sum().equalsIgnoreCase( md5Calculated ) )
                 {
                     return cache.get( md5Calculated );
                 }
@@ -168,10 +168,10 @@ class RemoteSnapRepository extends RemoteRepositoryBase
                 {
                     deleteCache( md5Calculated );
 
-                    LOGGER.error(
-                            "Md5 checksum mismatch after getting the package from remote host. "
-                            + "Requested with md5={}, name={}, version={}",
-                            Hex.toHexString( metadata.getMd5Sum() ), metadata.getName(), metadata.getVersion() );
+                    //LOGGER.error(
+                    // "Md5 checksum mismatch after getting the package from remote host. "
+                    // + "Requested with md5={}, name={}, version={}",
+                    //Hex.toHexString( metadata.getMd5Sum() ), metadata.getName(), metadata.getVersion() );
                 }
             }
         }
@@ -179,8 +179,38 @@ class RemoteSnapRepository extends RemoteRepositoryBase
     }
 
 
+
+
     @Override
     public List<SerializableMetadata> listPackages()
+    {
+        WebClient webClient = webClientFactory.makeSecure( this, INFO_PATH, null );
+        if ( identity != null )
+        {
+            webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
+        }
+
+        Response resp = webClient.get();
+        if ( resp.getStatus() == Response.Status.OK.getStatusCode() )
+        {
+            if ( resp.getEntity() instanceof InputStream )
+            {
+                try
+                {
+                    List<String> items = IOUtils.readLines( ( InputStream ) resp.getEntity() );
+                    return parseItems( items );
+                }
+                catch ( IOException ex )
+                {
+                    LOGGER.error( "Failed to read packages list", ex );
+                }
+            }
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<SerializableMetadata> listPackages(String context, int type)
     {
         WebClient webClient = webClientFactory.makeSecure( this, INFO_PATH, null );
         if ( identity != null )

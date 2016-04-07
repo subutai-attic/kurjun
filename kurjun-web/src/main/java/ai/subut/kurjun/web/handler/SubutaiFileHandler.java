@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.security.DigestInputStream;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.fileupload.FileItemHeaders;
 import org.apache.commons.fileupload.FileItemStream;
@@ -21,6 +22,7 @@ import ninja.uploads.FileItem;
 import ninja.uploads.FileItemProvider;
 import ninja.utils.NinjaConstant;
 import ninja.utils.NinjaProperties;
+
 
 @Singleton
 public class SubutaiFileHandler implements FileItemProvider
@@ -68,7 +70,7 @@ public class SubutaiFileHandler implements FileItemProvider
 
         // return
         final String name = item.getName();
-        final byte[] md5 = md5Digest;
+        final String md5 = Hex.encodeHexString( md5Digest );
         final File file = tmpFile;
         final String contentType = item.getContentType();
         final FileItemHeaders headers = item.getHeaders();

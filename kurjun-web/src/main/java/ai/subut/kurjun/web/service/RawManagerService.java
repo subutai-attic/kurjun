@@ -12,25 +12,24 @@ import ninja.Renderable;
 
 public interface RawManagerService extends BaseService
 {
+
     String md5();
 
-    Renderable getFile( String repository, byte[] md5 );
 
-    Renderable getFile( byte[] md5, boolean isKurjun );
+    Renderable getFile( String repository, String md5 );
 
-    boolean delete(UserSession userSession, String repository, byte[] md5 );
 
-    Renderable getFile( String name );
+    Renderable getFile( String md5, boolean isKurjun );
 
-    SerializableMetadata getInfo( byte[] md5 );
 
-    SerializableMetadata getInfo(Metadata metadata );
+    boolean delete(UserSession userSession, String repository, String md5 );
 
-    Metadata put(UserSession userSession, File file );
 
-    Metadata put(UserSession userSession, File file, String repository );
+    SerializableMetadata getInfo( String repository, String md5, String search );
 
-    List<SerializableMetadata> list( String repository );
 
     Metadata put(UserSession userSession, final File file, final String filename, final String repository );
+
+
+    List<SerializableMetadata> list( UserSession userSession, String repository, String search );
 }

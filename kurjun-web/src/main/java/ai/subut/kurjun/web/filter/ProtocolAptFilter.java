@@ -14,6 +14,9 @@ import ninja.Result;
 import ninja.Results;
 
 
+/**
+ *
+ */
 public class ProtocolAptFilter implements Filter
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( AuthorizedFilter.class );
@@ -37,6 +40,7 @@ public class ProtocolAptFilter implements Filter
         }
         else
         {
+            LOGGER.warn( "Not passed "+this.getClass().getName() );
             return Results.forbidden().render( "Not allowed" ).text();
         }
     }

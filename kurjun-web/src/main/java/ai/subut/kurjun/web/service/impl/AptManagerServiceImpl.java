@@ -15,36 +15,36 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.commons.codec.binary.Hex;
-
+import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
-import ai.subut.kurjun.metadata.common.DefaultMetadata;
+import ai.subut.kurjun.identity.service.RelationManager;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
 import ai.subut.kurjun.model.identity.Permission;
-import ai.subut.kurjun.model.identity.RelationObjectType;
+import ai.subut.kurjun.model.identity.ObjectType;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.metadata.apt.AptData;
+import ai.subut.kurjun.model.repository.ArtifactId;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
 import ai.subut.kurjun.repo.RepositoryFactory;
 import ai.subut.kurjun.repo.service.PackageFilenameParser;
 import ai.subut.kurjun.repo.service.PackagesIndexBuilder;
+import ai.subut.kurjun.repo.service.RepositoryManager;
 import ai.subut.kurjun.repo.util.AptIndexBuilderFactory;
 import ai.subut.kurjun.repo.util.PackagesProviderFactory;
 import ai.subut.kurjun.repo.util.ReleaseIndexBuilder;
 import ai.subut.kurjun.web.context.ArtifactContext;
 import ai.subut.kurjun.web.service.AptManagerService;
 import ai.subut.kurjun.web.service.IdentityManagerService;
-import ai.subut.kurjun.web.service.RelationManagerService;
-import ai.subut.kurjun.web.utils.Utils;
 import ninja.Renderable;
 import ninja.lifecycle.Dispose;
 import ninja.lifecycle.Start;
@@ -68,12 +68,13 @@ public class AptManagerServiceImpl implements AptManagerService
 
     private KurjunContext kurjunContext;
 
-    public static final String REPO_NAME = "vapt";
-
     @Inject
     IdentityManagerService identityManagerService;
     @Inject
-    RelationManagerService relationManagerService;
+    RelationManager relationManager;
+
+    @Inject
+    RepositoryManager repositoryManager;
 
 
     @Inject
@@ -87,9 +88,7 @@ public class AptManagerServiceImpl implements AptManagerService
         this.aptIndexBuilderFactory = aptIndexBuilderFactory;
         this.packagesProviderFactory = packagesProviderFactory;
         this.packageFilenameParser = packageFilenameParser;
-
     }
-
 
 
     @Start( order = 90 )
@@ -111,7 +110,7 @@ public class AptManagerServiceImpl implements AptManagerService
     //init local repos
     private void _local()
     {
-        this.kurjunContext = new KurjunContext( REPO_NAME );
+        this.kurjunContext = new KurjunContext( "subutai", ObjectType.AptRepo.getId(), "system-owner" );
         this.localRepository = repositoryFactory.createLocalApt( kurjunContext );
     }
 
@@ -128,7 +127,7 @@ public class AptManagerServiceImpl implements AptManagerService
     @Override
     public String md5()
     {
-        return Utils.MD5.toString( localRepository.md5() );
+        return localRepository.md5();
     }
 
 
@@ -196,19 +195,19 @@ public class AptManagerServiceImpl implements AptManagerService
 
 
     @Override
-    public String getPackageInfo( final byte[] md5, final String name, final String version )
+    public String getPackageInfo( UserSession userSession, String repository, final String md5, final String name,
+                                  final String version )
     {
         if ( md5 == null && name == null && version == null )
         {
             return null;
         }
 
-        DefaultMetadata m = new DefaultMetadata();
-        m.setMd5sum( md5 );
-        m.setName( name );
-        m.setVersion( version );
+        ArtifactId id = repositoryManager.constructArtifactId( repository, ObjectType.AptRepo.getId(), md5 );
+        id.setVersion( version );
+        id.setArtifactName( name );
 
-        SerializableMetadata meta = unifiedRepository.getPackageInfo( m );
+        SerializableMetadata meta = unifiedRepository.getPackageInfo( id );
         if ( meta != null )
         {
             return meta.serialize();
@@ -218,12 +217,11 @@ public class AptManagerServiceImpl implements AptManagerService
 
 
     @Override
-    public Renderable getPackage( final byte[] md5 )
+    public Renderable getPackage( UserSession userSession, final String md5 )
     {
-        DefaultMetadata m = new DefaultMetadata();
-        m.setMd5sum( md5 );
+        ArtifactId id = repositoryManager.constructArtifactId( "", ObjectType.AptRepo.getId(), md5 );
 
-        DefaultPackageMetadata md = ( DefaultPackageMetadata ) unifiedRepository.getPackageInfo( m );
+        AptData md = ( AptData ) unifiedRepository.getPackageInfo( id );
 
         InputStream inputStream = getPackageStream( md5 );
 
@@ -253,35 +251,39 @@ public class AptManagerServiceImpl implements AptManagerService
 
 
     @Override
-    public URI upload(UserSession userSession,  final InputStream is )
+    public URI upload( UserSession userSession, String repository, final InputStream is )
     {
 
-        if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
+        if ( identityManagerService.isPublicUser( userSession.getUser() ) )
         {
             return null;
         }
 
         try
         {
+            if( Strings.isNullOrEmpty(repository))
+            {
+                repository = userSession.getUser().getUserName();
+            }
+
+
             // *******CheckRepoOwner ***************
-            relationManagerService
-                    .checkRelationOwner( userSession, REPO_NAME, RelationObjectType.RepositoryApt.getId() );
+            relationManager.setObjectOwner( userSession.getUser(), repository, ObjectType.AptRepo.getId() );
             //**************************************
 
             //***** Check permissions (WRITE) *****************
-            if ( checkRepoPermissions(userSession, REPO_NAME, null, Permission.Write ) )
+            if ( checkRepoPermissions( userSession, repository, null, Permission.Write ) )
             {
-                Metadata meta = localRepository.put( is );
+                Metadata meta = localRepository.put( is ,CompressionType.NONE,repository, userSession.getUser().getKeyFingerprint() );
                 if ( meta != null )
                 {
                     //***** Build Relation ****************
-                    relationManagerService
+                    relationManager
                             .buildTrustRelation( userSession.getUser(), userSession.getUser(), meta.getId().toString(),
-                                    RelationObjectType.RepositoryContent.getId(),
-                                    relationManagerService.buildPermissions( 4 ) );
+                                    ObjectType.Artifact.getId(), relationManager.buildPermissions( 4 ) );
                     //*************************************
 
-                    return new URI( null, null, "/info", "md5=" + Hex.encodeHexString( meta.getMd5Sum() ), null );
+                    return new URI( null, null, "/info", "md5=" + meta.getMd5Sum(), null );
                 }
             }
         }
@@ -294,48 +296,64 @@ public class AptManagerServiceImpl implements AptManagerService
 
 
     @Override
-    public List<SerializableMetadata> list( String repository )
+    public List<SerializableMetadata> list( UserSession userSession, String repository, String search )
     {
         List<SerializableMetadata> list;
 
-        switch ( repository )
+        if( Strings.isNullOrEmpty(repository))
+        {
+            repository = userSession.getUser().getUserName();
+        }
+
+        switch ( search )
         {
             //return local list
             case "local":
-                list = localRepository.listPackages();
+                list = localRepository.listPackages( repository, ObjectType.AptRepo.getId() );
                 break;
             //return unified repo list
             case "all":
-                list = unifiedRepository.listPackages();
+                list = unifiedRepository.listPackages( repository, ObjectType.AptRepo.getId() );
                 break;
             //return personal repository list
             default:
-                list = repositoryFactory.createLocalApt( new KurjunContext( repository ) ).listPackages();
+                list = repositoryFactory.createLocalApt( new KurjunContext( repository ) )
+                                        .listPackages( repository, ObjectType.AptRepo.getId() );
                 break;
         }
 
-        return list.stream().map( pkg -> ( DefaultPackageMetadata ) pkg ).collect( Collectors.toList() );
+        return list;
     }
 
 
     @Override
-    public boolean delete(UserSession userSession, final byte[] md5 )
+    public boolean delete( UserSession userSession, String repository, final String md5 )
     {
+
+        if ( identityManagerService.isPublicUser( userSession.getUser() ) )
+        {
+            return false;
+        }
+
+
         try
         {
-            String id = Hex.encodeHexString( md5 );
+            ArtifactId artId = repositoryManager.constructArtifactId( repository, ObjectType.AptRepo.getId(), md5 );
 
-            if ( checkRepoPermissions( userSession, REPO_NAME, id, Permission.Delete ) )
+            String uniqId = repository + "." + md5;
+
+            if ( checkRepoPermissions( userSession, repository, uniqId, Permission.Delete ) )
             {
                 // remove relation
-                relationManagerService.removeRelationsByTrustObject( id, RelationObjectType.RepositoryContent.getId() );
+                relationManager.removeRelationsByTrustObject( uniqId, ObjectType.Artifact.getId() );
 
-                return localRepository.delete( md5 );
+                //return localRepository.delete( md5 );
+                return localRepository.delete( artId );
             }
         }
         catch ( IOException ex )
         {
-            ex.printStackTrace();
+            //ex.printStackTrace();
         }
         return false;
     }
@@ -349,7 +367,7 @@ public class AptManagerServiceImpl implements AptManagerService
 
 
     @Override
-    public String getSerializedPackageInfo( final String filename ) throws IllegalArgumentException
+    public String getSerializedPackageInfoByFilename( final String filename ) throws IllegalArgumentException
     {
         SerializableMetadata meta = getPackageInfoByFilename( filename );
         return ( meta != null ) ? meta.serialize() : null;
@@ -357,11 +375,11 @@ public class AptManagerServiceImpl implements AptManagerService
 
 
     @Override
-    public String getSerializedPackageInfo( final byte[] md5 ) throws IllegalArgumentException
+    public String getSerializedPackageInfoByMd5( final String md5 ) throws IllegalArgumentException
     {
-        DefaultMetadata m = new DefaultMetadata();
-        m.setMd5sum( md5 );
-        SerializableMetadata meta = unifiedRepository.getPackageInfo( m );
+        ArtifactId artId = repositoryManager.constructArtifactId( "", ObjectType.AptRepo.getId(), md5 );
+
+        SerializableMetadata meta = unifiedRepository.getPackageInfo( artId );
 
         return ( meta != null ) ? meta.serialize() : null;
     }
@@ -378,11 +396,11 @@ public class AptManagerServiceImpl implements AptManagerService
             throw new IllegalArgumentException( "Invalid pool path" );
         }
 
-        DefaultMetadata m = new DefaultMetadata();
-        m.setName( packageName );
-        m.setVersion( version );
+        ArtifactId artId = repositoryManager.constructArtifactId( "", ObjectType.AptRepo.getId(), "" );
+        artId.setArtifactName( packageName );
+        artId.setVersion( version );
 
-        return unifiedRepository.getPackageInfo( m );
+        return unifiedRepository.getPackageInfo( artId );
     }
 
 
@@ -433,26 +451,26 @@ public class AptManagerServiceImpl implements AptManagerService
     private InputStream getPackageByFilenameStream( String filename ) throws IllegalArgumentException
     {
         SerializableMetadata meta = getPackageInfoByFilename( filename );
-        return ( meta != null ) ? unifiedRepository.getPackageStream( meta ) : null;
+
+        ArtifactId artId = repositoryManager.constructArtifactId( "", ObjectType.AptRepo.getId(), meta.getMd5Sum() );
+
+        return ( meta != null ) ? unifiedRepository.getPackageStream( artId ) : null;
     }
 
 
-    private InputStream getPackageStream( byte[] md5 )
+    private InputStream getPackageStream( String md5 )
     {
-        DefaultMetadata defaultMetadata = new DefaultMetadata();
-        defaultMetadata.setMd5sum( md5 );
-        unifiedRepository.getPackageInfo( defaultMetadata );
-        return unifiedRepository.getPackageStream( defaultMetadata );
+        ArtifactId artId = repositoryManager.constructArtifactId( "", ObjectType.AptRepo.getId(), md5 );
+        return unifiedRepository.getPackageStream( artId );
     }
-
 
 
     //*******************************************************************
-    private boolean checkRepoPermissions(UserSession userSession, String repoId, String contentId, Permission perm )
+    private boolean checkRepoPermissions( UserSession userSession, String repoId, String contentId, Permission perm )
     {
-        return relationManagerService
-                .checkRepoPermissions( userSession, repoId, RelationObjectType.RepositoryApt.getId(), contentId,
-                        RelationObjectType.RepositoryContent.getId(), perm );
+        return relationManager
+                .checkObjectPermissions( userSession.getUser(), repoId, ObjectType.AptRepo.getId(), contentId,
+                        ObjectType.Artifact.getId(), perm );
     }
     //*******************************************************************
 }

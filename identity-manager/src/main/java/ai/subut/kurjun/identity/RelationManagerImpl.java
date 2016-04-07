@@ -1,9 +1,7 @@
 package ai.subut.kurjun.identity;
 
 
-import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,13 +10,14 @@ import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import ai.subut.kurjun.db.file.FileDb;
-import ai.subut.kurjun.identity.service.FileDbProvider;
+import ai.subut.kurjun.core.dao.model.identity.RelationEntity;
+import ai.subut.kurjun.core.dao.model.identity.RelationObjectEntity;
+import ai.subut.kurjun.core.dao.service.identity.RelationDataService;
 import ai.subut.kurjun.identity.service.RelationManager;
 import ai.subut.kurjun.model.identity.Permission;
 import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.model.identity.RelationObject;
-import ai.subut.kurjun.model.identity.RelationObjectType;
+import ai.subut.kurjun.model.identity.ObjectType;
 import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.security.manager.service.SecurityManager;
 
@@ -31,17 +30,16 @@ public class RelationManagerImpl implements RelationManager
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( RelationManagerImpl.class );
 
-    @Inject
-    SecurityManager securityManager;
-
-    @Inject
-    FileDbProvider fileDbProvider;
+    private SecurityManager securityManager = null;
+    private RelationDataService relationDataService = null;
 
 
     //***************************
-    public RelationManagerImpl()
+    @Inject
+    public RelationManagerImpl( RelationDataService relationDataService, SecurityManager securityManager )
     {
-
+        this.relationDataService = relationDataService;
+        this.securityManager = securityManager;
     }
 
 
@@ -51,14 +49,22 @@ public class RelationManagerImpl implements RelationManager
     {
         Set<Permission> perms = new HashSet<Permission>();
 
-        if(permLevel > 0)
-            perms.add(  Permission.Read) ;
-        if(permLevel > 1)
-            perms.add(  Permission.Write) ;
-        if(permLevel > 2)
-            perms.add(  Permission.Update) ;
-        if(permLevel > 3)
-            perms.add(  Permission.Delete) ;
+        if ( permLevel > 0 )
+        {
+            perms.add( Permission.Read );
+        }
+        if ( permLevel > 1 )
+        {
+            perms.add( Permission.Write );
+        }
+        if ( permLevel > 2 )
+        {
+            perms.add( Permission.Update );
+        }
+        if ( permLevel > 3 )
+        {
+            perms.add( Permission.Delete );
+        }
 
         return perms;
     }
@@ -96,59 +102,62 @@ public class RelationManagerImpl implements RelationManager
     }
 
 
-
     //***************************
     @Override
     public RelationObject createRelationObject( String objectId, int objectType )
     {
+        RelationObject relationObject = null;
+
         try
         {
-            RelationObject relationObject = new DefaultRelationObject();
+            //----------------------------------------
+            relationObject = new RelationObjectEntity();
 
             if ( Strings.isNullOrEmpty( objectId ) )
             {
-                relationObject.setId( securityManager.generateUUIDRandom() );
+                relationObject.setObjectId( securityManager.generateUUIDRandom() );
             }
             else
             {
-                relationObject.setId( objectId );
+                relationObject.setObjectId( objectId );
             }
 
             relationObject.setType( objectType );
 
-            return relationObject;
+
         }
         catch ( Exception ex )
         {
-            LOGGER.error( " ******* Error in RelationManager" ,ex );
+            LOGGER.error( " ******* Error in RelationManager", ex );
             return null;
         }
+
+        return relationObject;
     }
 
 
     //***************************
     @Override
-    public Relation buildTrustRelation( User user, String targetObjectId, int targetObjectType,
-                                        String trustObjectId, int trustObjectType,
-                                        Set<Permission> permissions )
-    {
-        RelationObject sourceObject = createRelationObject( user.getKeyFingerprint(), RelationObjectType.User.getId() );
-        RelationObject targetObject = createRelationObject( targetObjectId,  targetObjectType );
-        RelationObject trustObject = createRelationObject( trustObjectId,  trustObjectType );
-
-        return buildTrustRelation( sourceObject, targetObject, trustObject ,permissions );
-    }
-
-
-    //***************************
-    @Override
-    public Relation buildTrustRelation( User sourceUser, User targetUser, String trustObjectId,
+    public Relation buildTrustRelation( User user, String targetObjectId, int targetObjectType, String trustObjectId,
                                         int trustObjectType, Set<Permission> permissions )
     {
+        RelationObject sourceObject = createRelationObject( user.getKeyFingerprint(), ObjectType.User.getId() );
+        RelationObject targetObject = createRelationObject( targetObjectId, targetObjectType );
+        RelationObject trustObject = createRelationObject( trustObjectId, trustObjectType );
+
+        return buildTrustRelation( sourceObject, targetObject, trustObject, permissions );
+    }
+
+
+    //***************************
+    @Override
+    public Relation buildTrustRelation( User sourceUser, User targetUser, String trustObjectId, int trustObjectType,
+                                        Set<Permission> permissions )
+    {
         RelationObject sourceObject =
-                createRelationObject( sourceUser.getKeyFingerprint(), RelationObjectType.User.getId() );
+                createRelationObject( sourceUser.getKeyFingerprint(), ObjectType.User.getId() );
         RelationObject targetObject =
-                createRelationObject( targetUser.getKeyFingerprint(), RelationObjectType.User.getId() );
+                createRelationObject( targetUser.getKeyFingerprint(), ObjectType.User.getId() );
         RelationObject trustObject = createRelationObject( trustObjectId, trustObjectType );
 
         return buildTrustRelation( sourceObject, targetObject, trustObject, permissions );
@@ -161,9 +170,9 @@ public class RelationManagerImpl implements RelationManager
                                         Set<Permission> permissions )
     {
         RelationObject sourceObject =
-                createRelationObject( sourceUser.getKeyFingerprint(), RelationObjectType.User.getId() );
+                createRelationObject( sourceUser.getKeyFingerprint(), ObjectType.User.getId() );
         RelationObject targetObject =
-                createRelationObject( targetUser.getKeyFingerprint(), RelationObjectType.User.getId() );
+                createRelationObject( targetUser.getKeyFingerprint(), ObjectType.User.getId() );
 
         return buildTrustRelation( sourceObject, targetObject, trustObject, permissions );
     }
@@ -171,17 +180,29 @@ public class RelationManagerImpl implements RelationManager
 
     //***************************
     @Override
-    public Relation buildTrustRelation( String sourceObjectId, int sourceObjectType,
-                                        String targetObjectId, int targetObjectType,
-                                        String trustObjectId,  int trustObjectType,
+    public Relation buildTrustRelation( User sourceUser, RelationObject targetObject, RelationObject trustObject,
+                                        Set<Permission> permissions )
+    {
+        RelationObject sourceObject =
+                createRelationObject( sourceUser.getKeyFingerprint(), ObjectType.User.getId() );
+
+        return buildTrustRelation( sourceObject, targetObject, trustObject, permissions );
+    }
+
+
+    //***************************
+    @Override
+    public Relation buildTrustRelation( String sourceObjectId, int sourceObjectType, String targetObjectId,
+                                        int targetObjectType, String trustObjectId, int trustObjectType,
                                         Set<Permission> permissions )
     {
         RelationObject sourceObject = createRelationObject( sourceObjectId, sourceObjectType );
         RelationObject targetObject = createRelationObject( targetObjectId, targetObjectType );
-        RelationObject trustObject = createRelationObject( trustObjectId,  trustObjectType );
+        RelationObject trustObject = createRelationObject( trustObjectId, trustObjectType );
 
         return buildTrustRelation( sourceObject, targetObject, trustObject, permissions );
     }
+
 
 
     //***************************
@@ -191,10 +212,15 @@ public class RelationManagerImpl implements RelationManager
     {
         try
         {
-            if(source != null && target != null && trustObject != null)
+
+            if ( source != null && target != null && trustObject != null )
             {
 
-                Relation relation = new DefaultRelation();
+                Relation relation = new RelationEntity();
+
+                //-------------------------------
+                //RelationObject sourceObj = getRelationObject(source.getObjectId(),source.getType());
+
 
                 relation.setSource( source );
                 relation.setTarget( target );
@@ -202,7 +228,7 @@ public class RelationManagerImpl implements RelationManager
                 relation.setPermissions( permissions );
 
                 //**************************
-                saveTrustRelation( relation );
+                relationDataService.persistRelation( relation );
                 //**************************
 
                 return relation;
@@ -214,152 +240,57 @@ public class RelationManagerImpl implements RelationManager
         }
         catch ( Exception ex )
         {
-            LOGGER.error( " ******* Error in RelationManager" ,ex );
+            LOGGER.error( " ******* Error in RelationManager", ex );
             return null;
-        }
-    }
-
-
-    //***************************
-    @Override
-    public Relation saveTrustRelation( Relation relation )
-    {
-        FileDb fileDb = null;
-        try
-        {
-            if(relation != null)
-            {
-                fileDb = fileDbProvider.get();
-                fileDb.put( DefaultRelation.MAP_NAME, relation.getId().toLowerCase(), relation );
-            }
-
-            return relation;
-        }
-        catch ( Exception ex )
-        {
-            LOGGER.error( " ***** Error saving  relation:", ex );
-            return null;
-        }
-        finally
-        {
-            if ( fileDb != null )
-            {
-                try
-                {
-                    fileDb.close();
-                }
-                catch ( IOException e )
-                {
-                    LOGGER.warn( "Failed to close fileDB: "+e.getMessage() );
-                }
-            }
         }
     }
 
 
     //********************************************
     @Override
-    public Relation getRelation( String relationId )
+    public Relation getRelation( long relationId )
     {
-        FileDb fileDb = null;
         try
         {
-            fileDb = fileDbProvider.get();
-            Relation rel = fileDb.get( DefaultRelation.MAP_NAME, relationId.toLowerCase(), DefaultRelation.class );
-
-            return rel;
+            return relationDataService.getRelation( relationId );
         }
         catch ( Exception ex )
         {
             LOGGER.error( " ***** Error getting relation with relationId:" + relationId, ex );
             return null;
         }
-        finally
+    }
+
+
+    //********************************************
+    @Override
+    public RelationObject getRelationObject( String id, int type )
+    {
+        try
         {
-            if ( fileDb != null )
-            {
-                try
-                {
-                    fileDb.close();
-                }
-                catch ( IOException e )
-                {
-                    LOGGER.warn( "Failed to close fileDB: "+e.getMessage() );
-                }
-            }
+            return relationDataService.getRelationObject( id ,type );
+        }
+        catch ( Exception ex )
+        {
+            LOGGER.error( " ***** Error getting relationObject with relationObjectId:" + id, ex );
+            return null;
         }
     }
+
 
     //********************************************
     @Override
     public List<Relation> getAllRelations()
     {
-        FileDb fileDb = null;
         try
         {
-            fileDb = fileDbProvider.get();
-            Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
-            if ( map != null )
-            {
-                List<Relation> items = new ArrayList<>( map.values() );
-
-                return items;
-            }
-            else
-            {
-                return null;
-            }
-
+            return relationDataService.getAllRelations();
         }
         catch ( Exception ex )
         {
-            LOGGER.error( " ***** Error getting relation list:" , ex );
+            LOGGER.error( " ***** Error getting relation list:", ex );
             return null;
         }
-        finally
-        {
-            if ( fileDb != null )
-            {
-                try
-                {
-                    fileDb.close();
-                }
-                catch ( IOException e )
-                {
-                    LOGGER.warn( "Failed to close fileDB: "+e.getMessage() );
-                }
-            }
-        }
-    }
-
-
-        //********************************************
-        @Override
-        public Relation getRelation( String sourceObjectId, String targetObjectId, String trustedObjectId,
-                                     int objectId )
-        {
-            try
-            {
-                RelationObject obj = createRelationObject( trustedObjectId, objectId );
-                List<Relation> relations = getRelationsByObject( obj );
-
-                for(Relation relation:relations)
-                {
-                    if(relation.getSource().getId().equals( sourceObjectId ) &&
-                            relation.getTarget().getId().equals( sourceObjectId ))
-                    {
-                        return relation;
-                    }
-                }
-
-                return null;
-
-            }
-            catch ( Exception ex )
-            {
-                LOGGER.error( " ***** Error getting relation with sourceId:" + sourceObjectId, ex );
-                return null;
-            }
     }
 
 
@@ -367,31 +298,13 @@ public class RelationManagerImpl implements RelationManager
     @Override
     public List<Relation> getRelationsByObject( final RelationObject trustObject )
     {
-        FileDb fileDb = null;
         try
         {
-            fileDb = fileDbProvider.get();
-            Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
-
-            return map.values().stream().filter( r -> r.getTrustObject().equals(trustObject)).collect(Collectors.toList());
+            return relationDataService.getRelationsByTrustObject( trustObject );
         }
         catch ( Exception ex )
         {
-            LOGGER.error( " ***** Failed to get relations by this TrustObject: " + trustObject.getId(), ex );
-        }
-        finally
-        {
-            if ( fileDb != null )
-            {
-                try
-                {
-                    fileDb.close();
-                }
-                catch ( IOException e )
-                {
-                    LOGGER.warn( "Failed to close fileDB: "+e.getMessage() );
-                }
-            }
+            LOGGER.error( " ***** Failed to get relations by this TrustObject: " + trustObject.getObjectId(), ex );
         }
 
         return Collections.emptyList();
@@ -404,7 +317,7 @@ public class RelationManagerImpl implements RelationManager
     {
         try
         {
-            return getRelationsByObject(createRelationObject( trustObjectId, trustObjectType ));
+            return getRelationsByObject( createRelationObject( trustObjectId, trustObjectType ) );
         }
         catch ( Exception ex )
         {
@@ -421,16 +334,7 @@ public class RelationManagerImpl implements RelationManager
     {
         try
         {
-            List<Relation> relations = getRelationsByObject(createRelationObject( trustObjectId, trustObjectType ));
-
-            for(Relation relation: relations)
-            {
-                if(relation.getSource().getId().equals( relation.getTarget().getId()))
-                {
-                    return relation;
-                }
-            }
-
+           return relationDataService.getTrustObjectOwner( trustObjectId, trustObjectType );
         }
         catch ( Exception ex )
         {
@@ -445,31 +349,13 @@ public class RelationManagerImpl implements RelationManager
     @Override
     public List<Relation> getRelationsBySource( final RelationObject sourceObject )
     {
-        FileDb fileDb = null;
         try
         {
-            fileDb = fileDbProvider.get();
-            Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
-
-            return map.values().parallelStream().filter( r -> r.getSource().equals(sourceObject)).collect(Collectors.toList());
+            return relationDataService.getRelationsBySource( sourceObject );
         }
         catch ( Exception ex )
         {
-            LOGGER.error( " ***** Failed to get relations by this SourceObject: " + sourceObject.getId(), ex );
-        }
-        finally
-        {
-            if ( fileDb != null )
-            {
-                try
-                {
-                    fileDb.close();
-                }
-                catch ( IOException e )
-                {
-                    LOGGER.warn( "Failed to close fileDB: "+e.getMessage() );
-                }
-            }
+            LOGGER.error( " ***** Failed to get relations by this SourceObject: " + sourceObject.getObjectId(), ex );
         }
 
         return Collections.emptyList();
@@ -480,31 +366,13 @@ public class RelationManagerImpl implements RelationManager
     @Override
     public List<Relation> getRelationsByTarget( final RelationObject targetObject )
     {
-        FileDb fileDb = null;
         try
         {
-            fileDb = fileDbProvider.get();
-            Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
-
-            return map.values().stream().filter( r -> r.getTarget().equals(targetObject)).collect(Collectors.toList());
+            return relationDataService.getRelationsByTarget( targetObject );
         }
         catch ( Exception ex )
         {
-            LOGGER.error( " ***** Failed to get relations by this TargetObject: " + targetObject.getId(), ex );
-        }
-        finally
-        {
-            if ( fileDb != null )
-            {
-                try
-                {
-                    fileDb.close();
-                }
-                catch ( IOException e )
-                {
-                    LOGGER.warn( "Failed to close fileDB: "+e.getMessage() );
-                }
-            }
+            LOGGER.error( " ***** Failed to get relations by this TargetObject: " + targetObject.getObjectId(), ex );
         }
 
         return Collections.emptyList();
@@ -513,31 +381,15 @@ public class RelationManagerImpl implements RelationManager
 
     //***************************
     @Override
-    public void removeRelation( final String relationId )
+    public void removeRelation( final long relationId )
     {
-        FileDb fileDb = null;
         try
         {
-            fileDb = fileDbProvider.get();
-            fileDb.remove( DefaultRelation.MAP_NAME, relationId );
+            relationDataService.removeRelation( relationId );
         }
         catch ( Exception ex )
         {
             LOGGER.error( " ***** Failed to remove this relation: " + relationId, ex );
-        }
-        finally
-        {
-            if ( fileDb != null )
-            {
-                try
-                {
-                    fileDb.close();
-                }
-                catch ( IOException e )
-                {
-                    LOGGER.warn( "Failed to close fileDB: "+e.getMessage() );
-                }
-            }
         }
     }
 
@@ -552,13 +404,13 @@ public class RelationManagerImpl implements RelationManager
         {
             List<Relation> relations = getRelationsByObject( createRelationObject( trustObjectId, trustObjectType ) );
 
-            for(Relation relation: relations)
+            for ( Relation relation : relations )
             {
-                if(relation.getTarget().getId().equals( target.getKeyFingerprint()) )
+                if ( relation.getTarget().getObjectId().equals( target.getKeyFingerprint() ) )
                 {
                     perms.addAll( relation.getPermissions() );
                 }
-                else if(relation.getTarget().getId().equals( IdentityManagerImpl.PUBLIC_USER_ID) )
+                else if ( relation.getTarget().getObjectId().equals( IdentityManagerImpl.PUBLIC_USER_ID ) )
                 {
                     perms.addAll( relation.getPermissions() );
                 }
@@ -579,16 +431,55 @@ public class RelationManagerImpl implements RelationManager
     {
         try
         {
-            List<Relation> relations = getRelationsByObject( createRelationObject( trustObjectId, trustObjectType ) );
-
-            for(Relation relation: relations)
-            {
-                removeRelation( relation.getId() );
-            }
+            relationDataService.removeByTrustObject( trustObjectId, trustObjectType );
         }
         catch ( Exception ex )
         {
             LOGGER.error( " ***** Failed to remove trustedObjects: " + trustObjectId, ex );
         }
     }
+
+
+    //***************************
+    @Override
+    public int setObjectOwner( User owner, String objectId, int objectType )
+    {
+        Relation relation = getObjectOwner( objectId, objectType );
+
+        if ( relation == null )
+        {
+            buildTrustRelation( owner, owner, objectId, objectType, buildPermissions( Permission.Delete.getId() ) );
+        }
+
+        return 0;
+    }
+
+
+
+    //*******************************************************************
+    @Override
+    public boolean checkObjectPermissions( User user, String parentId, int parentType, String childId, int childType,
+                                           Permission perm )
+    {
+        boolean access = false;
+
+        if ( getUserPermissions( user, parentId, parentType ).contains( perm ) )
+        {
+            access = true;
+        }
+
+        if ( !Strings.isNullOrEmpty( childId ) )
+        {
+
+            if ( !access)
+            {
+                if ( getUserPermissions( user, childId, childType ).contains( perm ) )
+                {
+                    access = true;
+                }
+            }
+        }
+        return access;
+    }
+
 }

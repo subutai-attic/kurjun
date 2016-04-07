@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.codec.binary.Hex;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -23,6 +21,7 @@ import ai.subut.kurjun.model.metadata.apt.Dependency;
 import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
+import ai.subut.kurjun.model.repository.ArtifactId;
 
 
 public class MetadataUtils
@@ -141,7 +140,7 @@ public class MetadataUtils
 
 
     /**
-     * Converts supplied Subutai template metadata into its serializable form.
+     * Converts supplied Subutai metadata metadata into its serializable form.
      *
      * @param metadata meta data to convert
      *
@@ -170,24 +169,30 @@ public class MetadataUtils
     }
 
 
-    public static Map<String, String> makeParamsMap( Metadata metadata )
+    public static Map<String, String> makeParamsMap( ArtifactId metadata )
     {
+
         Map<String, String> params = new HashMap<>();
-        if ( metadata.getId() != null )
+
+        if ( metadata == null )
         {
-            params.put( "id", String.valueOf( metadata.getId() ) );
+            return params;
         }
         if ( metadata.getMd5Sum() != null )
         {
-            params.put( "md5", Hex.encodeHexString( metadata.getMd5Sum() ) );
+            params.put( "md5", metadata.getMd5Sum() );
         }
-        if ( metadata.getName() != null )
+        if ( metadata.getContext() != null )
         {
-            params.put( "name", metadata.getName() );
+            params.put( "repository", metadata.getContext() );
         }
         if ( metadata.getVersion() != null )
         {
             params.put( "version", metadata.getVersion() );
+        }
+        if ( metadata.getSearch() != null )
+        {
+            params.put( "search", metadata.getSearch() );
         }
         return params;
     }

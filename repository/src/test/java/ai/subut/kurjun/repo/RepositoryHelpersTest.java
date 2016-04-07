@@ -23,7 +23,7 @@ public class RepositoryHelpersTest
     @Test
     public void testIsAptRepository() throws IOException
     {
-        Repository r1 = new LocalAptRepository( null, null, null, null, null );
+        Repository r1 = new LocalAptRepository( null, null, null, null );
         Assert.assertTrue( RepositoryHelpers.isAptRepository( r1 ) );
 
         Repository r2 = new LocalAptRepositoryWrapper( null, temporaryFolder.newFolder().toString() );
@@ -35,7 +35,7 @@ public class RepositoryHelpersTest
         Repository r4 = new LocalSnapRepository( null, null, null, null );
         Assert.assertFalse( RepositoryHelpers.isAptRepository( r4 ) );
 
-        Repository r5 = new LocalTemplateRepository( null, null, null, null );
+        Repository r5 = new LocalTemplateRepository( null, null, null );
         Assert.assertFalse( RepositoryHelpers.isAptRepository( r5 ) );
 
         // unified

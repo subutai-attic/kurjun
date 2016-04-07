@@ -28,11 +28,15 @@ public interface SecurityManager
     String generateSecurePassword( String passwordToHash, String salt );
 
 
+    String parseEmailAddress( PGPPublicKey pubKey ) throws PGPException;
+
     PGPPublicKey readPGPKey( InputStream input ) throws PGPException;
 
 
     PGPPublicKey readPGPKey( String key ) throws PGPException;
 
+
+    PGPPublicKeyRing readPGPKeyRing( String key ) throws PGPException;
 
     String exportPGPKeyAsASCII( PGPPublicKey key ) throws PGPException;
 
@@ -52,6 +56,8 @@ public interface SecurityManager
 
 
     boolean verifyPGPSignatureAndContent( String signedMessage, String content, PGPPublicKeyRing pubKeyRing );
+
+    boolean verifyPGPSignatureAndContent( String signedMessage, String content, byte[] keyData );
 
     boolean verifyPGPSignatureAndContent( String signedMessage, String content, String pubKeyASCII );
 

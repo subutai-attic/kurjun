@@ -1,10 +1,6 @@
 package ai.subut.kurjun.metadata.common;
 
 
-import java.util.Arrays;
-
-import org.apache.commons.codec.binary.Hex;
-
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 
@@ -15,11 +11,12 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
 public class DefaultMetadata implements SerializableMetadata
 {
 
-    private byte[] md5sum;
+    private String md5sum;
     private String name;
     private String version;
     private String serialized;
     private String fingerprint;
+
     //private String objectOwner;
 
 
@@ -36,27 +33,34 @@ public class DefaultMetadata implements SerializableMetadata
 
 
     @Override
+    public String getOwner()
+    {
+        return fingerprint;
+    }
+
+
+    @Override
     public Object getId()
     {
 
         if ( fingerprint != null && md5sum != null )
         {
-            return fingerprint + "." + Hex.encodeHexString( md5sum );
+            return fingerprint + "." + md5sum;
         }
         return null;
     }
 
 
     @Override
-    public byte[] getMd5Sum()
+    public String getMd5Sum()
     {
-        return md5sum != null ? Arrays.copyOf( md5sum, md5sum.length ) : null;
+        return md5sum;
     }
 
 
-    public void setMd5sum( byte[] md5sum )
+    public void setMd5sum( String md5sum )
     {
-        this.md5sum = md5sum != null ? Arrays.copyOf( md5sum, md5sum.length ) : null;
+        this.md5sum = md5sum;
     }
 
 
@@ -103,7 +107,7 @@ public class DefaultMetadata implements SerializableMetadata
     public int hashCode()
     {
         int hash = 7;
-        hash = 17 * hash + Arrays.hashCode( this.md5sum );
+        hash = 17 * hash + this.md5sum.hashCode();
         return hash;
     }
 
@@ -114,7 +118,7 @@ public class DefaultMetadata implements SerializableMetadata
         if ( obj instanceof Metadata )
         {
             Metadata other = ( Metadata ) obj;
-            return Arrays.equals( this.md5sum, other.getMd5Sum() );
+            return this.md5sum.equalsIgnoreCase( other.getMd5Sum() );
         }
         return false;
     }

@@ -37,6 +37,7 @@ public class ProtocolFilter implements Filter
         }
         else
         {
+            LOGGER.warn( "Not passed "+this.getClass().getName() );
             return Results.forbidden().render( "Not allowed" ).text();
         }
     }

@@ -29,6 +29,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
@@ -41,15 +42,17 @@ import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.utils.InetUtils;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
-import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
+import ai.subut.kurjun.model.identity.ObjectType;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.Metadata;
-import ai.subut.kurjun.model.metadata.PackageMetadataStore;
+import ai.subut.kurjun.model.metadata.RepositoryData;
+import ai.subut.kurjun.model.metadata.apt.AptData;
 import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 import ai.subut.kurjun.model.storage.FileStore;
+import ai.subut.kurjun.repo.service.RepositoryManager;
 import ai.subut.kurjun.riparser.DefaultRelease;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
@@ -57,7 +60,6 @@ import ai.subut.kurjun.subutai.service.SubutaiTemplateParser;
 
 /**
  * Local virtual apt repository implementation.
- *
  */
 class LocalAptRepository extends LocalRepositoryBase
 {
@@ -67,21 +69,20 @@ class LocalAptRepository extends LocalRepositoryBase
     private ControlFileParser controlFileParser;
     private SubutaiTemplateParser templateParser;
     private FileStoreFactory fileStoreFactory;
-    private PackageMetadataStoreFactory metadataStoreFactory;
+    //private PackageMetadataStoreFactory metadataStoreFactory;
 
     private final KurjunContext context;
 
     private final URL url;
     private Set<ReleaseFile> releases = new HashSet<>();
 
+    @Inject
+    RepositoryManager repositoryManager;
+
 
     @Inject
-    public LocalAptRepository(
-            ControlFileParser controlFileParser,
-            SubutaiTemplateParser templateParser,
-            FileStoreFactory fileStoreFactory,
-            PackageMetadataStoreFactory metadataStoreFactory,
-            @Assisted KurjunContext kurjunContext )
+    public LocalAptRepository( ControlFileParser controlFileParser, SubutaiTemplateParser templateParser,
+                               FileStoreFactory fileStoreFactory, @Assisted KurjunContext kurjunContext )
     {
         // TODO: setup mechanism for repos
         DefaultRelease r = new DefaultRelease();
@@ -95,7 +96,6 @@ class LocalAptRepository extends LocalRepositoryBase
         this.controlFileParser = controlFileParser;
         this.templateParser = templateParser;
         this.fileStoreFactory = fileStoreFactory;
-        this.metadataStoreFactory = metadataStoreFactory;
         this.context = kurjunContext;
 
         try
@@ -130,10 +130,16 @@ class LocalAptRepository extends LocalRepositoryBase
         return releases;
     }
 
+
+
+
     @Override
-    public PackageMetadata put( InputStream is, CompressionType compressionType ) throws IOException
+    public PackageMetadata put( InputStream is, CompressionType compressionType, String repoContext, String owner) throws IOException
     {
-        PackageMetadataStore metadataStore = metadataStoreFactory.create( context );
+        //*******************
+        RepositoryData repoData = getRepositoryData( repoContext, ObjectType.AptRepo.getId(), owner );
+        //*******************
+
         FileStore fileStore = fileStoreFactory.create( context );
 
         String ext = CompressionType.makeFileExtenstion( compressionType );
@@ -146,7 +152,7 @@ class LocalAptRepository extends LocalRepositoryBase
             byte[] md5 = wrapped.getMessageDigest().digest();
 
             Map<String, Object> params = new HashMap<>();
-            params.put( "md5sum", md5 );
+            params.put( "md5sum", Hex.encodeHexString( md5 ) );
             params.put( "filename", "" );
 
             DebAr deb = new DefaultDebAr( target.toFile(), tempDir.toFile() );
@@ -158,8 +164,12 @@ class LocalAptRepository extends LocalRepositoryBase
             addExtraData( metadata, target );
             addSubutaiData( metadata, target );
 
-            metadataStore.put( metadata );
+            AptData aptData = repositoryManager.constructAptData( repoData , Hex.encodeHexString( md5 ),owner  );
+            aptData = repositoryManager.copyAptPackage( metadata,aptData );
+            repositoryManager.addArtifactToRepository( repoData , aptData);
             fileStore.put( target.toFile() );
+
+
             return meta;
         }
         catch ( Exception ex )
@@ -174,16 +184,18 @@ class LocalAptRepository extends LocalRepositoryBase
     }
 
 
+    @Deprecated
     @Override
-    public Metadata put( final InputStream is, final CompressionType compressionType, final String owner )
+    public Metadata put( final InputStream is, final CompressionType compressionType )
             throws IOException
     {
         return null;
     }
 
 
+    @Deprecated
     @Override
-    public Metadata put( final File file, final CompressionType compressionType, final String owner ) throws IOException
+    public Metadata put( final File file, final CompressionType compressionType,final String context,  final String owner ) throws IOException
     {
         return null;
     }
@@ -197,9 +209,19 @@ class LocalAptRepository extends LocalRepositoryBase
 
 
     @Override
-    protected PackageMetadataStore getMetadataStore()
+    protected RepositoryData getRepositoryData(String repoContext,int type, String owner )
     {
-        return metadataStoreFactory.create( context );
+        if( Strings.isNullOrEmpty( repoContext ))
+        {
+            repoContext = context.getName();
+        }
+
+        if( Strings.isNullOrEmpty(owner))
+        {
+            owner = context.getOwner();
+        }
+
+        return repositoryManager.getRepositoryData( repoContext, ObjectType.AptRepo.getId(), owner, true );
     }
 
 
@@ -240,7 +262,6 @@ class LocalAptRepository extends LocalRepositoryBase
      *
      * @param metadata meta data instance to add data to
      * @param packageFile Debian package file to check
-     * @throws IOException
      */
     private void addSubutaiData( DefaultPackageMetadata metadata, Path packageFile ) throws IOException
     {

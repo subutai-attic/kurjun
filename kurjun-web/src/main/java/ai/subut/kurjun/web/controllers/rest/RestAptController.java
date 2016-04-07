@@ -16,7 +16,6 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.web.controllers.BaseAptController;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
 import ai.subut.kurjun.web.service.impl.AptManagerServiceImpl;
-import ai.subut.kurjun.web.utils.Utils;
 import ninja.Context;
 import ninja.Renderable;
 import ninja.Result;
@@ -39,8 +38,8 @@ public class RestAptController extends BaseAptController
 
 
     @FileProvider( SubutaiFileHandler.class )
-    public Result upload( Context context, @Param( "file" ) FileItem file,
-                          @Param( "global_kurjun_sptoken" ) String globalKurjunToken ) throws IOException
+    public Result upload( Context context, @Param( "repository" ) String repository, @Param( "file" ) FileItem file )
+            throws IOException
     {
 
         File filename = file.getFile();
@@ -48,7 +47,7 @@ public class RestAptController extends BaseAptController
         {
             //********************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            URI uri = managerService.upload(uSession, inputStream );
+            URI uri = managerService.upload( uSession, repository ,inputStream );
             //********************************************
 
             return Results.ok().render( uri ).text();
@@ -56,7 +55,8 @@ public class RestAptController extends BaseAptController
     }
 
 
-    public Result release( Context context, @PathParam( "release" ) String release, @PathParam( "repository" ) String repository,
+    public Result release( Context context, @PathParam( "release" ) String release,
+                           @PathParam( "repository" ) String repository,
 
                            @Param( "global_kurjun_sptoken" ) String globalKurjunToken )
     {
@@ -77,14 +77,8 @@ public class RestAptController extends BaseAptController
 
     public Result packageIndexes( Context context, @PathParam( "release" ) String release,
                                   @PathParam( "component" ) String component, @PathParam( "arch" ) String arch,
-                                  @PathParam( "packages" ) String packagesIndex,
-                                  @Param( "global_kurjun_sptoken" ) String globalKurjunToken )
+                                  @PathParam( "packages" ) String packagesIndex)
     {
-        //        checkNotNull( release, "Release cannot be null" );
-        //        checkNotNull( component, "Component cannot be null" );
-        //        checkNotNull( arch, "Arch cannot be null" );
-        //        checkNotNull( packagesIndex, "Package Index cannot be null" );
-
         //********************************************
         Renderable renderable = managerService.getPackagesIndex( release, component, arch, packagesIndex );
         //********************************************
@@ -95,7 +89,6 @@ public class RestAptController extends BaseAptController
 
     public Result getPackageByFileName( @PathParam( "filename" ) String filename )
     {
-        //        checkNotNull( filename, "File name cannot be null" );
 
         //********************************************
         Renderable renderable = managerService.getPackageByFilename( filename );
@@ -105,16 +98,13 @@ public class RestAptController extends BaseAptController
     }
 
 
-    public Result info( @Param( "md5" ) String md5, @Param( "name" ) String name,
-                        @Param( "version" ) String version )
+    public Result info( Context context , @Param( "repository" ) String repository, @Param( "md5" ) String md5, @Param( "name" ) String name, @Param( "version" ) String version )
 
     {
-        //        checkNotNull( md5, "MD5 cannot be null" );
-        //        checkNotNull( name, "Name cannot be null" );
-        //        checkNotNull( version, "Version not found" );
 
         //********************************************
-        String metadata = managerService.getPackageInfo( Utils.MD5.toByteArray( md5 ), name, version );
+        UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+        String metadata = managerService.getPackageInfo(uSession , repository, md5, name, version );
         //********************************************
 
         if ( metadata != null )
@@ -125,12 +115,13 @@ public class RestAptController extends BaseAptController
     }
 
 
-    public Result download( @Param( "md5" ) String md5 )
+    public Result download( Context context , @Param( "md5" ) String md5 )
     {
         //        checkNotNull( md5, "MD5 cannot be null" );
 
         //********************************************
-        Renderable renderable = managerService.getPackage( Utils.MD5.toByteArray( md5 ) );
+        UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+        Renderable renderable = managerService.getPackage( uSession, md5 );
         //********************************************
 
         if ( renderable != null )
@@ -141,15 +132,16 @@ public class RestAptController extends BaseAptController
     }
 
 
-    public Result list(  @Param( "type" ) String type, @Param( "repository" ) String repository )
+    public Result list( Context context , @Param( "type" ) String type, @Param( "repository" ) String repository, @Param( "search" ) String search  )
     {
-        if ( repository == null )
+        if ( search == null )
         {
-            repository = "local";
+            search = "local";
         }
 
         //********************************************
-        List<SerializableMetadata> serializableMetadataList = managerService.list( repository );
+        UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+        List<SerializableMetadata> serializableMetadataList = managerService.list( uSession, repository, search );
         //********************************************
 
         if ( serializableMetadataList != null )
@@ -165,13 +157,13 @@ public class RestAptController extends BaseAptController
     }
 
 
-    public Result delete( Context context, @Param( "md5" ) String md5 )
+    public Result delete( Context context, @Param( "repository" ) String repository, @Param( "md5" ) String md5 )
     {
         //        checkNotNull( md5, "MD5 cannot be null" );
 
         //********************************************
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-        boolean success = managerService.delete( uSession, Utils.MD5.toByteArray( md5 ) );
+        boolean success = managerService.delete( uSession, repository, md5 );
         //********************************************
 
         if ( success )

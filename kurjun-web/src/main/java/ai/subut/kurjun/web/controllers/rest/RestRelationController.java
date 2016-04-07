@@ -2,10 +2,8 @@ package ai.subut.kurjun.web.controllers.rest;
 
 import java.util.List;
 
-import ai.subut.kurjun.identity.DefaultRelationObject;
 import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.web.controllers.BaseController;
-import ai.subut.kurjun.web.service.IdentityManagerService;
 import ninja.Context;
 import ninja.Result;
 import ninja.Results;
@@ -13,18 +11,15 @@ import ninja.Results;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import ai.subut.kurjun.model.identity.*;
-import ai.subut.kurjun.web.security.AuthorizedUser;
 import ai.subut.kurjun.web.service.RelationManagerService;
 import ninja.params.Param;
 import ninja.params.Params;
-import ninja.params.PathParam;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.apache.commons.lang.StringUtils;
 
 
 /**
@@ -35,34 +30,59 @@ public class RestRelationController extends BaseController
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( RestIdentityController.class );
 
-    @Inject
-    IdentityManagerService identityManagerservice;
 
     @Inject
     private RelationManagerService relationManagerService;
 
-    @Inject
-    private IdentityManagerService identityManagerService;
 
 
+    //*************************************************
     public Result getAllRelations(Context context)
     {
         //************************************
         UserSession userSession = (UserSession ) context.getAttribute( "USER_SESSION" );
         //************************************
 
-        if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
-        {
-            return null;
-        }
-        else
-        {
-            List<Relation> relations = relationManagerService.getAllRelations();
-            return Results.ok().render( relations ).json();
-        }
+        List<Relation> relations = relationManagerService.getAllRelations(userSession);
+        return Results.ok().render( relations ).json();
+
     }
 
 
+    //*************************************************
+    public Result addTrustRelation( @Param( "target_obj_id" ) String sourceObjId,
+                                    @Param( "target_obj_type" ) int sourceObjType,
+                                    @Param( "trust_obj_id" ) String trustObjId,
+                                    @Param( "trust_obj_type" ) int trustObjType,
+                                    @Params( "permission" ) String[] permissions, Context context)
+    {
+        //************************************
+        UserSession userSession = (UserSession ) context.getAttribute( "USER_SESSION" );
+        //************************************
+
+        Set<Permission> objectPermissions = new HashSet<>();
+        Arrays.asList( permissions ).forEach( p -> objectPermissions.add( Permission.valueOf( p ) ) );
+
+        int result = relationManagerService
+                .addTrustRelation( userSession, sourceObjId, sourceObjType, trustObjId, trustObjType,
+                        objectPermissions );
+
+
+        if ( result == 0 )
+        {
+            return Results.ok();
+        }
+        else if ( result == 2 )
+        {
+            return Results.forbidden();
+        }
+        else
+        {
+            return Results.internalServerError();
+        }
+    }
+
+    /*
     public Result getRelationsByOwner( @PathParam( "fingerprint" ) String fingerprint )
     {
         return Results.ok().json().render( relationManagerService.getTrustRelationsBySource(
@@ -200,4 +220,5 @@ public class RestRelationController extends BaseController
             return Results.notFound().json().render( "Object not found." );
         }
     }
+    */
 }

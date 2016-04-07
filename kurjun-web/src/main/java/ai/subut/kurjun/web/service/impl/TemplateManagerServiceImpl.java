@@ -1,45 +1,38 @@
 package ai.subut.kurjun.web.service.impl;
 
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.commons.codec.binary.Hex;
-
+import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.ar.CompressionType;
+import ai.subut.kurjun.common.ErrorCode;
 import ai.subut.kurjun.common.service.KurjunContext;
-import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
-import ai.subut.kurjun.metadata.common.subutai.TemplateId;
+import ai.subut.kurjun.identity.service.RelationManager;
 import ai.subut.kurjun.model.identity.Permission;
-import ai.subut.kurjun.model.identity.RelationObjectType;
+import ai.subut.kurjun.model.identity.ObjectType;
 import ai.subut.kurjun.model.identity.UserSession;
-import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
+import ai.subut.kurjun.model.metadata.template.TemplateData;
+import ai.subut.kurjun.model.repository.ArtifactId;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
 import ai.subut.kurjun.repo.LocalTemplateRepository;
 import ai.subut.kurjun.repo.RepositoryFactory;
+import ai.subut.kurjun.repo.service.RepositoryManager;
 import ai.subut.kurjun.web.context.ArtifactContext;
 import ai.subut.kurjun.web.service.IdentityManagerService;
-import ai.subut.kurjun.web.service.RelationManagerService;
-import ai.subut.kurjun.web.service.RepositoryService;
 import ai.subut.kurjun.web.service.TemplateManagerService;
-import ai.subut.kurjun.web.utils.Utils;
 import ninja.Context;
 import ninja.Renderable;
 import ninja.Result;
@@ -58,10 +51,11 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     IdentityManagerService identityManagerService;
 
     @Inject
-    RelationManagerService relationManagerService;
+    RepositoryManager repositoryManager;
 
     @Inject
-    RepositoryService repositoryService;
+    RelationManager relationManager;
+
     //------------------------------
 
     private RepositoryFactory repositoryFactory;
@@ -98,8 +92,8 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     //init local repo
     private void _local()
     {
-        this.localPublicTemplateRepository =
-                ( LocalTemplateRepository ) repositoryFactory.createLocalTemplate( new KurjunContext( "public" ) );
+        this.localPublicTemplateRepository = ( LocalTemplateRepository ) repositoryFactory.createLocalTemplate(
+                new KurjunContext( "public", ObjectType.TemplateRepo.getId(),"system-owner" ));
     }
 
 
@@ -117,65 +111,29 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public SerializableMetadata getTemplate( UserSession userSession, final byte[] md5 ) throws IOException
-    {
-        //        KurjunContext context = artifactContext.getRepository( new BigInteger( 1, md5 ).toString( 16 ) );
-
-        //        if ( checkRepoPermissions( context.getName(), toId( md5, context.getName() ), Permission.Write ) )
-        //        {
-        //            DefaultTemplate defaultTemplate = new DefaultTemplate();
-        //            defaultTemplate.setId( context.getName(), md5 );
-        //            return repositoryFactory.createLocalTemplate( context ).getPackageInfo( defaultTemplate );
-        //        }
-
-        return null;
-    }
-
-
-    @Override
-    public InputStream getTemplateData( UserSession userSession, final String repository, final byte[] md5,
-                                        final boolean isKurjunClient ) throws IOException
-    {
-
-
-        DefaultTemplate defaultTemplate = new DefaultTemplate();
-        defaultTemplate.setId( repository, md5 );
-
-        if ( repository.equalsIgnoreCase( "public" ) )
-        {
-            return unifiedTemplateRepository.getPackageStream( defaultTemplate );
-        }
-        else
-        {
-            if ( checkRepoPermissions( userSession, repository, toId( md5, repository ), Permission.Read ) )
-            {
-                return repositoryFactory.createLocalTemplate( new KurjunContext( repository ) )
-                                        .getPackageStream( defaultTemplate );
-            }
-        }
-        return null;
-    }
-
-
-    @Override
-    public List<SerializableMetadata> list( UserSession userSession, final String repository,
+    public List<SerializableMetadata> list( UserSession userSession, String repository, String search,
                                             final boolean isKurjunClient ) throws IOException
     {
         List<SerializableMetadata> results;
 
-        switch ( repository )
+        if( Strings.isNullOrEmpty( repository ))
+        {
+            repository = userSession.getUser().getUserName();
+        }
+
+        switch ( search )
         {
             //return local list
             case "local":
-                results = localPublicTemplateRepository.listPackages();
+                results = localPublicTemplateRepository.listPackages( repository, ObjectType.TemplateRepo.getId() );
                 //return personal repository list
                 break;
             case "all":
-                results = unifiedTemplateRepository.listPackages();
+                results = unifiedTemplateRepository.listPackages( repository, ObjectType.TemplateRepo.getId() );
                 //return unified repo list
                 break;
             default:
-                results = unifiedTemplateRepository.listPackages();
+                results = unifiedTemplateRepository.listPackages( repository, ObjectType.TemplateRepo.getId() );
                 results.addAll(
                         repositoryFactory.createLocalTemplate( new KurjunContext( repository ) ).listPackages() );
                 break;
@@ -186,37 +144,41 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public String upload( UserSession userSession, final String repository, final InputStream inputStream )
+    public String upload( UserSession userSession, String repository, final InputStream inputStream )
             throws IOException
     {
 
-        if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
+        if ( identityManagerService.isPublicUser( userSession.getUser() ) )
         {
             return null;
         }
 
+        if( Strings.isNullOrEmpty( repository ))
+        {
+            repository = userSession.getUser().getUserName();
+        }
+
+
         // *******CheckRepoOwner ***************
-        relationManagerService
-                .checkRelationOwner( userSession, repository, RelationObjectType.RepositoryTemplate.getId() );
+        relationManager.setObjectOwner( userSession.getUser(), repository, ObjectType.TemplateRepo.getId() );
         //**************************************
 
         //***** Check permissions (WRITE) *****************
         if ( checkRepoPermissions( userSession, repository, null, Permission.Write ) )
         {
             SubutaiTemplateMetadata metadata = ( SubutaiTemplateMetadata ) getRepo( repository )
-                    .put( inputStream, CompressionType.GZIP, repository );
+                    .put( inputStream, CompressionType.GZIP, repository, userSession.getUser().getKeyFingerprint() );
 
             if ( metadata != null )
             {
                 if ( metadata.getMd5Sum() != null )
                 {
 
-                    String templateId = repository + "." + Hex.encodeHexString( metadata.getMd5Sum() );
+                    String templateId = repository + "." + metadata.getMd5Sum();
 
                     //***** Build Relation ****************
-                    relationManagerService.buildTrustRelation( userSession.getUser(), userSession.getUser(), templateId,
-                            RelationObjectType.RepositoryContent.getId(),
-                            relationManagerService.buildPermissions( 4 ) );
+                    relationManager.buildTrustRelation( userSession.getUser(), userSession.getUser(), templateId,
+                            ObjectType.Artifact.getId(), relationManager.buildPermissions( 4 ) );
                     //*************************************
 
                     return templateId;
@@ -233,70 +195,33 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public String upload( UserSession userSession, final String repository, final File file ) throws IOException
-    {
-
-        if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
-        {
-            return null;
-        }
-
-        // *******CheckRepoOwner ***************
-        relationManagerService
-                .checkRelationOwner( userSession, repository, RelationObjectType.RepositoryTemplate.getId() );
-        //**************************************
-
-        //***** Check permissions (WRITE) *****************
-        if ( checkRepoPermissions( userSession, repository, null, Permission.Write ) )
-        {
-            SubutaiTemplateMetadata metadata =
-                    ( SubutaiTemplateMetadata ) getRepo( repository ).put( file, CompressionType.GZIP, repository );
-
-            if ( metadata != null )
-            {
-                if ( metadata.getMd5Sum() != null )
-                {
-                    String templateId = toId( metadata != null ? metadata.getMd5Sum() : new byte[0], repository );
-
-                    //***** Build Relation ****************
-                    relationManagerService.buildTrustRelation( userSession.getUser(), userSession.getUser(), templateId,
-                            RelationObjectType.RepositoryContent.getId(),
-                            relationManagerService.buildPermissions( 4 ) );
-                    //*************************************
-                    return templateId;
-                }
-            }
-        }
-        return null;
-    }
-
-
-    @Override
-    public int delete( UserSession userSession, TemplateId tid ) throws IOException
+    public int delete( UserSession userSession, String repository, String md5 ) throws IOException
     {
         //************ CheckPermissions ************************************
-        if ( checkRepoPermissions( userSession, tid.getOwnerFprint(), tid.get(), Permission.Delete ) )
+        ArtifactId id = repositoryManager.constructArtifactId( repository, ObjectType.TemplateRepo.getId(), md5 );
+        String atifactId = repository + "." + md5;
+        String fprint = userSession.getUser().getKeyFingerprint();
+
+
+        if ( checkRepoPermissions( userSession, fprint, atifactId, Permission.Delete ) )
         {
-            LocalTemplateRepository _repository = ( LocalTemplateRepository ) getRepo( tid.getOwnerFprint() );
+            LocalTemplateRepository _repository = ( LocalTemplateRepository ) getRepo( repository );
 
             // remove Relation
-            relationManagerService
-                    .removeRelationsByTrustObject( tid.get(), RelationObjectType.RepositoryContent.getId() );
+            relationManager.removeRelationsByTrustObject( atifactId, ObjectType.Artifact.getId() );
 
-            boolean success = _repository.delete( tid.get(), Utils.MD5.toByteArray( tid.getMd5() ) );
+            boolean success = _repository.delete( id );
 
             if ( success )
             {
-                //succeed
-                return 0;
+                return ErrorCode.Success.getId();
             }
-            //not found
-            return 1;
+
+            return ErrorCode.ObjectNotFound.getId();
         }
         else
         {
-            //no permission
-            return 2;
+            return ErrorCode.AccessPermissionError.getId();
         }
     }
 
@@ -306,7 +231,6 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     {
         return repositoryFactory.createLocalTemplate( userName );
     }
-
 
     @Override
     public Renderable renderableTemplate( UserSession userSession, final String repository, String md5,
@@ -322,20 +246,19 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
         if ( allowed )
         {
-            DefaultTemplate defaultTemplate = new DefaultTemplate();
-            defaultTemplate.setId( repository, Utils.MD5.toByteArray( md5 ) );
+            ArtifactId id = repositoryManager.constructArtifactId( repository, ObjectType.TemplateRepo.getId(), md5 );
 
-            DefaultTemplate metadata = ( DefaultTemplate ) unifiedTemplateRepository.getPackageInfo( defaultTemplate );
 
-            InputStream inputStream = getTemplateData( userSession, repository, Utils.MD5.toByteArray( md5 ), false );
+            TemplateData templateData = ( TemplateData ) unifiedTemplateRepository.getPackageInfo( id );
+            InputStream inputStream = getTemplateData( userSession, repository, md5, true );
 
             if ( inputStream != null )
             {
                 return ( Context context, Result result ) -> {
 
-                    result.addHeader( "Content-Disposition", "attachment;filename=" + makeTemplateName( metadata ) );
+                    result.addHeader( "Content-Disposition", "attachment;filename=" + makeTemplateName( templateData ) );
                     result.addHeader( "Content-Type", "application/octet-stream" );
-                    result.addHeader( "Content-Length", String.valueOf( metadata.getSize() ) );
+                    result.addHeader( "Content-Length", String.valueOf( templateData.getSize() ) );
 
                     ResponseStreams responseStreams = context.finalizeHeaders( result );
 
@@ -345,7 +268,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
                     }
                     catch ( IOException e )
                     {
-                        LOGGER.error( "Failed to get renderable template by md5: " + md5 );
+                        LOGGER.error( "Failed to get renderable metadata by md5: " + md5 );
                     }
                 };
             }
@@ -355,37 +278,22 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     }
 
 
-    @Override
-    public DefaultTemplate getTemplate( UserSession userSession, final TemplateId templateId, final String md5,
-                                        String name, String version )
+    private InputStream getTemplateData( UserSession userSession, final String repository, final String md5,
+                                        final boolean isKurjunClient ) throws IOException
     {
-        //************ CheckPermissions ************************************
+        ArtifactId id = repositoryManager.constructArtifactId( repository, ObjectType.TemplateRepo.getId(), md5 );
 
-        DefaultTemplate defaultTemplate = new DefaultTemplate();
 
-        if ( templateId != null )
+        if ( repository.equalsIgnoreCase( "public" ) )
         {
-            defaultTemplate.setId( templateId.getOwnerFprint(), Utils.MD5.toByteArray( templateId.getMd5() ) );
+            return unifiedTemplateRepository.getPackageStream( id );
         }
-
-        defaultTemplate.setName( name );
-        defaultTemplate.setVersion( version );
-        DefaultTemplate defaultTemplate1 =
-                ( DefaultTemplate ) unifiedTemplateRepository.getPackageInfo( defaultTemplate );
-
-        if ( defaultTemplate1 != null )
+        else
         {
-            boolean allowed = true;
-            //if not public, check for permissions
-            if ( !defaultTemplate1.getOwnerFprint().equals( "public" ) )
+            if ( checkRepoPermissions( userSession, repository, toId( md5, repository ), Permission.Read ) )
             {
-                allowed = checkRepoPermissions( userSession, defaultTemplate1.getOwnerFprint(),
-                        ( ( String ) defaultTemplate1.getId() ), Permission.Read );
-            }
-
-            if ( allowed )
-            {
-                return defaultTemplate1;
+                return repositoryFactory.createLocalTemplate( new KurjunContext( repository ) )
+                                        .getPackageStream( id );
             }
         }
         return null;
@@ -405,93 +313,44 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public int downloadTemplates()
+    public TemplateData getTemplate( UserSession userSession, String repository, final String md5, String version,
+                                     String search )
     {
-        DefaultTemplate defaultTemplate = new DefaultTemplate();
-        defaultTemplate.setName( "master" );
+        //************ CheckPermissions ************************************
 
-        final Metadata[] loaded = new DefaultTemplate[1];
+        ArtifactId id = repositoryManager.constructArtifactId( repository, ObjectType.TemplateRepo.getId(), md5 );
 
-        if ( localPublicTemplateRepository.getPackageInfo( defaultTemplate ) == null )
+        TemplateData templateData = ( TemplateData ) unifiedTemplateRepository.getPackageInfo( id );
+
+        if ( templateData != null )
         {
-            Thread thread = new Thread( () -> {
-
-                InputStream inputStream = unifiedTemplateRepository.getPackageStream( defaultTemplate );
-
-                if ( inputStream != null )
-                {
-                    try
-                    {
-                        loaded[0] = ( DefaultTemplate ) localPublicTemplateRepository
-                                .put( inputStream, CompressionType.GZIP, "public" );
-                    }
-                    catch ( IOException e )
-                    {
-                        e.printStackTrace();
-                    }
-                }
-            } );
-
-            thread.run();
-
-            if ( loaded[0] instanceof DefaultTemplate )
+            boolean allowed = true;
+            //if not public, check for permissions
+            if ( !templateData.getOwnerFprint().equals( "public" ) )
             {
-                return 0;
+                allowed = checkRepoPermissions( userSession, templateData.getOwnerFprint(),
+                        ( templateData.getUniqId()  ), Permission.Read );
+            }
+
+            if ( allowed )
+            {
+                return templateData;
             }
         }
-        return 1;
+        return null;
     }
 
 
     @Override
     public String md5()
     {
-        return Utils.MD5.toString( getPublicRepository().md5() );
+        return getPublicRepository().md5();
     }
 
 
-    @Override
-    public List<Map<String, Object>> getSharedTemplateInfos( final byte[] md5, final String templateOwner )
-            throws IOException
+    private String toId( final String md5, String repo )
     {
-        return null;
-    }
-
-
-    @Override
-    public List<Map<String, Object>> listAsSimple( final String repository ) throws IOException
-    {
-
-        return null;
-    }
-
-
-    @Override
-    public List<SerializableMetadata> list()
-    {
-        return null;
-    }
-
-
-    @Override
-    public List<Map<String, Object>> getRemoteRepoUrls()
-    {
-        return null;
-    }
-
-
-    @Override
-    public Set<String> getRepositories()
-    {
-        return null;
-    }
-
-
-    private String toId( final byte[] md5, String repo )
-    {
-        String hash = new BigInteger( 1, Arrays.copyOf( md5, md5.length ) ).toString( 16 );
-
-        return repo + "." + hash;
+        return repo + "." + md5;
     }
 
 
@@ -516,9 +375,9 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     //*******************************************************************
     private boolean checkRepoPermissions( UserSession userSession, String repoId, String contentId, Permission perm )
     {
-        return relationManagerService
-                .checkRepoPermissions( userSession, repoId, RelationObjectType.RepositoryTemplate.getId(), contentId,
-                        RelationObjectType.RepositoryContent.getId(), perm );
+        return relationManager
+                .checkObjectPermissions( userSession.getUser(), repoId, ObjectType.TemplateRepo.getId(), contentId,
+                        ObjectType.Artifact.getId(), perm );
     }
     //*******************************************************************
 }

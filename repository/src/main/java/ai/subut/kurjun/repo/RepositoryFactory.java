@@ -80,14 +80,13 @@ public interface RepositoryFactory
 
 
     /**
-     * Creates non-local template repository at specified URL.
+     * Creates non-local metadata repository at specified URL.
      *
      * @param url URL to remote repository
      * @param identity identity to be used for requests for remote repo, maybe {@code null}
      * @param kurjunContext kurjun context
      * @param token access token to the remote repository
-     *
-     * @return non-local template repository
+     * @return non-local metadata repository
      */
     @Named( PackageType.SUBUTAI )
     RemoteRepository createNonLocalTemplate( @Assisted( "url" ) String url, @Nullable User identity,
@@ -99,8 +98,7 @@ public interface RepositoryFactory
      * Creates non-local virtual apt repository at specified URL.
      *
      * @param url URL to remote repository
-     *
-     * @return non-local template repository
+     * @return non-local metadata repository
      */
     @Named( PackageType.DEB )
     RemoteRepository createNonLocalApt( URL url );

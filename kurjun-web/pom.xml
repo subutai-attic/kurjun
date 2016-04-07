@@ -41,6 +41,7 @@
         </configuration>
       </plugin>
 
+
       <!-- Needed to debug in SuperDevMode -->
       <plugin>
         <groupId>org.eclipse.jetty</groupId>
@@ -49,7 +50,8 @@
         <configuration>
           <webApp>
             <contextPath>/kurjun</contextPath>
-          </webApp>          <stopKey>stop</stopKey>
+          </webApp>
+          <stopKey>stop</stopKey>
           <stopPort>8889</stopPort>
           <scanIntervalSeconds>1</scanIntervalSeconds>
           <reload>automatic</reload>
@@ -110,7 +112,7 @@
       </plugin>
     </plugins>
 
-    <!-- Removing this may cause error reading of configuration file -->
+     <!--Removing this may cause error reading of configuration file-->
     <resources>
 
       <resource>
@@ -146,9 +148,10 @@
 
     <dependency>
       <groupId>ai.subut.kurjun</groupId>
-      <artifactId>model</artifactId>
+      <artifactId>core-dao</artifactId>
       <version>${ai.subut.kurjun.version}</version>
     </dependency>
+
     <dependency>
       <groupId>ai.subut.kurjun</groupId>
       <artifactId>security-manager</artifactId>
@@ -168,6 +171,12 @@
       <groupId>ai.subut.kurjun</groupId>
       <artifactId>file-store-factory</artifactId>
       <version>${ai.subut.kurjun.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.1.0</version>
     </dependency>
 
     <dependency>

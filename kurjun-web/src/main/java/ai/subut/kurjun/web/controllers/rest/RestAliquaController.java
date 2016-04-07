@@ -4,14 +4,12 @@ package ai.subut.kurjun.web.controllers.rest;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import ai.subut.kurjun.metadata.common.raw.RawMetadata;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.web.controllers.BaseController;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
 import ai.subut.kurjun.web.model.KurjunFileItem;
 import ai.subut.kurjun.web.service.RawManagerService;
-import ai.subut.kurjun.web.utils.Utils;
 import ninja.Context;
 import ninja.Renderable;
 import ninja.Result;
@@ -33,21 +31,8 @@ public class RestAliquaController extends BaseController
 
     @FileProvider( SubutaiFileHandler.class )
     public Result upload( Context context, @Param( "file" ) FileItem fileItem,
-                          @Param( "fingerprint" ) String fingerprint,
-                          @Param( "global_kurjun_sptoken" ) String globalKurjunToken )
+                          @Param( "repository" ) String repository )
     {
-        String sptoken = "";
-
-        if ( globalKurjunToken != null )
-        {
-            sptoken = globalKurjunToken;
-        }
-
-        //checkNotNull( fileItem, "MD5 cannot be null" );
-        if ( fingerprint == null )
-        {
-            fingerprint = "raw";
-        }
 
         KurjunFileItem kurjunFileItem = ( KurjunFileItem ) fileItem;
 
@@ -55,7 +40,8 @@ public class RestAliquaController extends BaseController
 
         //********************************************
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-        metadata = rawManagerService.put( uSession, kurjunFileItem.getFile(), kurjunFileItem.getFileName(), fingerprint );
+        metadata =
+                rawManagerService.put( uSession, kurjunFileItem.getFile(), kurjunFileItem.getFileName(), repository );
         //********************************************
 
         if ( metadata != null )
@@ -67,16 +53,10 @@ public class RestAliquaController extends BaseController
     }
 
 
-    public Result getFile( Context context, @Param( "id" ) String id,
-                           @Param( "global_kurjun_sptoken" ) String globalKurjunToken )
+    public Result getFile( Context context, @Param( "id" ) String id )
     {
         checkNotNull( id, "ID cannot be null" );
-        String sptoken = "";
 
-        if ( globalKurjunToken != null )
-        {
-            sptoken = globalKurjunToken;
-        }
 
         String[] temp = id.split( "\\." );
 
@@ -84,7 +64,7 @@ public class RestAliquaController extends BaseController
         //temp contains [fprint].[md5]
         if ( temp.length == 2 )
         {
-            renderable = rawManagerService.getFile( temp[0], Utils.MD5.toByteArray( temp[1] ) );
+            renderable = rawManagerService.getFile( temp[0], temp[1] );
         }
         if ( renderable != null )
         {
@@ -111,7 +91,7 @@ public class RestAliquaController extends BaseController
         {
             //********************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            success = rawManagerService.delete(uSession, temp[0], Utils.MD5.toByteArray( temp[1] ) );
+            success = rawManagerService.delete( uSession, temp[0], temp[1] );
             //********************************************
         }
 
@@ -130,39 +110,21 @@ public class RestAliquaController extends BaseController
     }
 
 
-    public Result list( @Param( "repository" ) String repository,
-                        @Param( "global_kurjun_sptoken" ) String globalKurjunToken )
+    public Result list( Context context , @Param( "repository" ) String repository, @Param( "search" ) String search )
     {
-        if ( repository == null )
+        if ( search == null )
         {
-            repository = "local";
+            search = "local";
         }
-
-        return Results.ok().render( rawManagerService.list( repository ) ).json();
+        UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+        return Results.ok().render( rawManagerService.list(uSession, repository, search ) ).json();
     }
 
 
-    public Result info( @Param( "id" ) String id, @Param( "name" ) String name, @Param( "md5" ) String md5,
-                        @Param( "type" ) String type, @Param( "fingerprint" ) String fingerprint,
-                        @Param( "global_kurjun_sptoken" ) String globalKurjunToken )
+
+    public Result info( @Param( "repository" ) String repository, @Param( "md5" ) String md5, @Param( "search" ) String search )
     {
-        RawMetadata rawMetadata = new RawMetadata();
-        String sptoken = "";
-
-        if ( globalKurjunToken != null )
-        {
-            sptoken = globalKurjunToken;
-        }
-
-        if ( fingerprint == null && md5 != null )
-        {
-            fingerprint = "raw";
-        }
-        rawMetadata.setName( name );
-        rawMetadata.setMd5Sum( Utils.MD5.toByteArray( md5 ) );
-        rawMetadata.setFingerprint( fingerprint );
-
-        Metadata metadata = rawManagerService.getInfo( rawMetadata );
+        Metadata metadata = rawManagerService.getInfo( repository , md5 , search );
 
         if ( metadata != null )
         {
@@ -170,4 +132,5 @@ public class RestAliquaController extends BaseController
         }
         return Results.notFound().render( "Not found" ).text();
     }
+
 }

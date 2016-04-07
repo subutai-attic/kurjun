@@ -23,6 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import com.amazonaws.AmazonClientException;
@@ -41,7 +42,7 @@ public class S3FileStoreTest
 
     private File sampleFile;
     private String sampleData = "sample data";
-    private byte[] sampleMd5;
+    private String sampleMd5;
 
 
     @BeforeClass
@@ -103,7 +104,8 @@ public class S3FileStoreTest
         Assert.assertTrue( s3.contains( sampleMd5 ) );
 
         byte[] otherMd5 = DigestUtils.md5( "12345" );
-        Assert.assertFalse( s3.contains( otherMd5 ) );
+        String hex = Hex.encodeHexString( otherMd5 );
+        Assert.assertFalse( s3.contains( hex ) );
     }
 
 
@@ -122,7 +124,8 @@ public class S3FileStoreTest
     public void testGetWithInvalidKey() throws IOException, NoSuchAlgorithmException
     {
         byte[] checksum = DigestUtils.md5( "abc" );
-        Assert.assertNull( s3.get( checksum ) );
+        String hex = Hex.encodeHexString( checksum );
+        Assert.assertNull( s3.get( hex ) );
     }
 
 
@@ -140,15 +143,16 @@ public class S3FileStoreTest
 
         // with invalid key
         byte[] checksum = DigestUtils.md5( "abc" );
-        Assert.assertFalse( s3.get( checksum, target ) );
+        String hex = Hex.encodeHexString( checksum );
+        Assert.assertFalse( s3.get( hex, target ) );
     }
 
 
     @Test
     public void testPut_File() throws Exception
     {
-        byte[] checksum = s3.put( sampleFile );
-        Assert.assertArrayEquals( sampleMd5, checksum );
+        String checksum = s3.put( sampleFile );
+        Assert.assertEquals( sampleMd5, checksum );
         Assert.assertTrue( s3.contains( checksum ) );
     }
 
@@ -156,7 +160,7 @@ public class S3FileStoreTest
     @Test
     public void testPut_URL() throws Exception
     {
-        byte[] checksum = s3.put( new URL( "http://example.com" ) );
+        String checksum = s3.put( new URL( "http://example.com" ) );
         Assert.assertNotNull( checksum );
         Assert.assertTrue( s3.contains( checksum ) );
     }
@@ -172,8 +176,8 @@ public class S3FileStoreTest
     @Test
     public void testPutWithFilenameAndInputStream() throws Exception
     {
-        byte[] checksum = s3.put( "my-filename", new FileInputStream( sampleFile ) );
-        Assert.assertArrayEquals( sampleMd5, checksum );
+        String checksum = s3.put( "my-filename", new FileInputStream( sampleFile ) );
+        Assert.assertEquals( sampleMd5, checksum );
         Assert.assertTrue( s3.contains( checksum ) );
     }
 
@@ -200,6 +204,5 @@ public class S3FileStoreTest
             return os.toString( StandardCharsets.UTF_8.name() );
         }
     }
-
 }
 

@@ -40,6 +40,7 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
     public SubutaiTemplateMetadata parseTemplate( File file ) throws IOException
     {
         byte[] md5;
+
         try ( InputStream is = new FileInputStream( file ) )
         {
             //buffered digest
@@ -57,7 +58,7 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
             try ( InputStream cis = new FileInputStream( configPath.toFile() );
                   InputStream pis = new FileInputStream( packagesPath.toFile() ) )
             {
-                return parseConfigFile( cis, pis, md5 );
+                return parseConfigFile( cis, pis, Hex.encodeHexString( md5 ) );
             }
         }
         finally
@@ -74,7 +75,8 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
     }
 
 
-    private SubutaiTemplateMetadata parseConfigFile( InputStream stream, InputStream packagesStream, byte[] md5 ) throws IOException
+    private SubutaiTemplateMetadata parseConfigFile( InputStream stream, InputStream packagesStream, String md5 )
+            throws IOException
     {
         if ( stream == null )
         {
@@ -109,9 +111,16 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
         {
 
             @Override
+            public String getOwner()
+            {
+                return null;
+            }
+
+
+            @Override
             public String getId()
             {
-                return Hex.encodeHexString( getMd5Sum() );
+                return getMd5Sum();
             }
 
 
@@ -138,9 +147,9 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
 
 
             @Override
-            public byte[] getMd5Sum()
+            public String getMd5Sum()
             {
-                return ( byte[] ) prop.get( MD5_KEY );
+                return ( String ) prop.get( MD5_KEY );
             }
 
 
@@ -179,6 +188,7 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
                 return null;
             }
 
+
             @Override
             public Map<String, String> getExtra()
             {
@@ -192,7 +202,7 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
                 skipProperties.add( CONFIG_FILE_CONTENTS_KEY );
                 skipProperties.add( PACKAGES_FILE_CONTENTS_KEY );
 
-                Map< String, String> map = new HashMap<>();
+                Map<String, String> map = new HashMap<>();
                 for ( String key : prop.stringPropertyNames() )
                 {
                     if ( !skipProperties.contains( key ) )
@@ -211,7 +221,5 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
             }
         };
     }
-
-
 }
 

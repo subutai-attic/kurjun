@@ -29,5 +29,6 @@ public interface Dependency extends Serializable
 
 
     String getVersion();
+
     RelationOperator getDependencyOperator();
 }

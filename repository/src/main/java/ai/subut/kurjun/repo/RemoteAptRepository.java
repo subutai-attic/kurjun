@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -42,8 +41,8 @@ import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.repository.ArtifactId;
 import ai.subut.kurjun.model.repository.RemoteRepository;
-
 import ai.subut.kurjun.repo.cache.PackageCache;
 import ai.subut.kurjun.repo.util.PathBuilder;
 import ai.subut.kurjun.repo.util.http.WebClientFactory;
@@ -133,7 +132,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
     public Set<ReleaseFile> getDistributions()
     {
 
-        WebClient webClient = webClientFactory.makeSecure( this, "/" + DEB_PATH +  RELEASE_PATH, null );
+        WebClient webClient = webClientFactory.makeSecure( this, "/" + DEB_PATH + RELEASE_PATH, null );
 
         Response resp = doGet( webClient );
         if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
@@ -158,7 +157,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
 
 
     @Override
-    public SerializableMetadata getPackageInfo( Metadata metadata )
+    public SerializableMetadata getPackageInfo( ArtifactId metadata)
     {
         List<SerializableMetadata> items = listPackages();
 
@@ -168,13 +167,13 @@ class RemoteAptRepository extends RemoteRepositoryBase
         }
         else
         {
-            return findByName( metadata.getName(), metadata.getVersion(), items );
+            return findByName( metadata.getArtifactName(), metadata.getVersion(), items );
         }
     }
 
 
     @Override
-    public InputStream getPackageStream( Metadata metadata )
+    public InputStream getPackageStream( ArtifactId metadata )
     {
         SerializableMetadata m = getPackageInfo( metadata );
         if ( m == null )
@@ -182,7 +181,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
             return null;
         }
 
-        InputStream cachedStream = checkCache( m );
+        InputStream cachedStream = null; //checkCache( m );
         if ( cachedStream != null )
         {
             return cachedStream;
@@ -199,10 +198,10 @@ class RemoteAptRepository extends RemoteRepositoryBase
             {
                 InputStream inputStream = ( InputStream ) resp.getEntity();
 
-                byte[] md5Calculated = cacheStream( inputStream );
+                String md5Calculated = cacheStream( inputStream );
 
                 // compare the requested and received md5 checksums
-                if ( Arrays.equals( pm.getMd5Sum(), md5Calculated ) )
+                if ( pm.getMd5Sum().equalsIgnoreCase( md5Calculated ) )
                 {
                     return cache.get( md5Calculated );
                 }
@@ -221,6 +220,36 @@ class RemoteAptRepository extends RemoteRepositoryBase
 
     @Override
     public List<SerializableMetadata> listPackages()
+    {
+        if ( this.md5Sum.equalsIgnoreCase( getMd5() ) )
+        {
+            return this.remoteIndexChache;
+        }
+
+        List<SerializableMetadata> result = new LinkedList<>();
+        Set<ReleaseFile> distributions = getDistributions();
+
+        if ( distributions != null )
+        {
+            for ( ReleaseFile distr : distributions )
+            {
+                PathBuilder pb = PathBuilder.instance().setRelease( distr );
+                for ( String component : distr.getComponents() )
+                {
+                    for ( Architecture arch : distr.getArchitectures() )
+                    {
+                        String path = pb.setResource( makePackagesIndexResource( component, arch ) ).build();
+                        List<SerializableMetadata> items = fetchPackagesMetadata( path, component );
+                        result.addAll( items );
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public List<SerializableMetadata> listPackages(String context , int type)
     {
         if ( this.md5Sum.equalsIgnoreCase( getMd5() ) )
         {
@@ -320,11 +349,11 @@ class RemoteAptRepository extends RemoteRepositoryBase
     }
 
 
-    private SerializableMetadata findByMd5( byte[] md5Sum, List<SerializableMetadata> items )
+    private SerializableMetadata findByMd5( String md5Sum, List<SerializableMetadata> items )
     {
         for ( SerializableMetadata item : items )
         {
-            if ( Arrays.equals( item.getMd5Sum(), md5Sum ) )
+            if ( item.getMd5Sum().equalsIgnoreCase( md5Sum ) )
             {
                 return item;
             }
@@ -379,7 +408,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
 
 
             @Override
-            public byte[] getChecksum( Checksum type )
+            public String getChecksum( Checksum type )
             {
                 throw new UnsupportedOperationException( "Not to be used." );
             }

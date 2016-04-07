@@ -4,6 +4,7 @@ package ai.subut.kurjun.web.filter;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 
+import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.web.service.IdentityManagerService;
 import ninja.Context;
@@ -57,23 +58,26 @@ public class SecurityFilter implements Filter
             if ( uSession != null )
             {
                 //--------------------------------------
-                if(!uSession.getUser().getKeyFingerprint().equals( identityManagerService.getPublicUserId())) // if not public user
+                User user = uSession.getUser();
+                if(!user.getKeyFingerprint().equals( identityManagerService.getPublicUserId())) // if not public user
                 {
                     session.put( USER_SESSION, uSession.getUserToken().getFullToken() );
                 }
                 //--------------------------------------
-                ctx.setAttribute( "USER_SESSION", uSession );
+                ctx.setAttribute( USER_SESSION, uSession );
                 //--------------------------------------
             }
             else
             {
                 session.remove(  USER_SESSION );
+                ctx.setAttribute( USER_SESSION, null );
+                throw new Exception( "Failed to authorize as public-user" );
             }
             //******************************
         }
         catch(Exception ex)
         {
-            LOGGER.error( "Not passed SecurityFilter: "+ex.getMessage() );
+            LOGGER.error( "Not passed SecurityFilter: "+ex.getMessage(), ex );
             return Results.forbidden().render( "Not allowed" ).text();
         }
 

@@ -2,12 +2,9 @@ package ai.subut.kurjun.metadata.common.apt;
 
 
 import java.net.URL;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.codec.binary.Hex;
 
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.metadata.Architecture;
@@ -19,12 +16,11 @@ import ai.subut.kurjun.model.metadata.apt.Priority;
 
 /**
  * Simple POJO implementing PackageMetadata.
- *
  */
 public class DefaultPackageMetadata implements PackageMetadata, SerializableMetadata
 {
 
-    private byte[] md5;
+    private String md5;
     private String component;
     private String filename;
     private String packageName;
@@ -49,25 +45,32 @@ public class DefaultPackageMetadata implements PackageMetadata, SerializableMeta
 
     private Map<String, String> extra = new HashMap<>();
 
-  
+
+    @Override
+    public String getOwner()
+    {
+        return null;
+    }
+
+
     @Override
     public Object getId()
     {
-        return md5 != null ? Hex.encodeHexString( md5 ) : null;
+        return md5;
     }
 
 
     @Override
-    public byte[] getMd5Sum()
+    public String getMd5Sum()
     {
-        return md5 != null ? Arrays.copyOf( md5, md5.length ) : null;
+        return md5;
     }
 
 
-    public void setMd5( byte[] md5 )
+    public void setMd5( String md5 )
     {
 
-        this.md5 = md5 != null ? Arrays.copyOf( md5, md5.length ) : null;
+        this.md5 = md5;
     }
 
 
@@ -353,8 +356,6 @@ public class DefaultPackageMetadata implements PackageMetadata, SerializableMeta
 
     /**
      * Gets extra meta data associated with this package.
-     *
-     * @return
      */
     public Map<String, String> getExtra()
     {
@@ -364,8 +365,6 @@ public class DefaultPackageMetadata implements PackageMetadata, SerializableMeta
 
     /**
      * Sets extra meta data for this package.
-     *
-     * @param extra
      */
     public void setExtra( Map<String, String> extra )
     {
@@ -384,7 +383,7 @@ public class DefaultPackageMetadata implements PackageMetadata, SerializableMeta
     public int hashCode()
     {
         int hash = 3;
-        hash = 79 * hash + Arrays.hashCode( this.md5 );
+        hash = 79 * hash + this.md5.hashCode();
         return hash;
     }
 
@@ -395,7 +394,7 @@ public class DefaultPackageMetadata implements PackageMetadata, SerializableMeta
         if ( obj instanceof PackageMetadata )
         {
             PackageMetadata p = ( PackageMetadata ) obj;
-            return Arrays.equals( md5, p.getMd5Sum() );
+            return md5.equalsIgnoreCase( p.getMd5Sum() );
         }
         return true;
     }
@@ -405,7 +404,7 @@ public class DefaultPackageMetadata implements PackageMetadata, SerializableMeta
     public String toString()
     {
         return "DefaultPackageMetadata{" +
-                "md5=" + Arrays.toString( md5 ) +
+                "md5=" + md5 +
                 ", component='" + component + '\'' +
                 ", filename='" + filename + '\'' +
                 ", packageName='" + packageName + '\'' +

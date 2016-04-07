@@ -9,6 +9,8 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -24,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.validator.routines.EmailValidator;
 
 
 /**
@@ -237,7 +240,7 @@ public class PGPKeyUtil
         }
         catch ( DecoderException ex )
         {
-            LOGGER.info( "Invalid hex formatted key id", ex );
+            LOGGER.info( "Invalid hex formatted key id: " +  keyId);
         }
         return false;
     }
@@ -479,6 +482,26 @@ public class PGPKeyUtil
 
         return null;
     }
+
+
+
+    //*************************
+    public static String parseEmailAddress( PGPPublicKey key )
+    {
+        Pattern uidEmailPattern = Pattern.compile( ".*?<(.*)>" );
+
+        Iterator it = key.getUserIDs();
+        while ( it.hasNext() )
+        {
+            Matcher matcher = uidEmailPattern.matcher( it.next().toString() );
+            if ( matcher.matches() && EmailValidator.getInstance().isValid( matcher.group( 1 ) ) )
+            {
+                return matcher.group( 1 );
+            }
+        }
+        return null;
+    }
+
 }
 
 

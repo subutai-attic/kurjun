@@ -30,6 +30,7 @@ public class PackageCache
     private FileStoreFactory fileStoreFactory;
 
     private final String LOG_MESSAGE = "Failed to check cache";
+
     private KurjunContext context = new CachingContext();
 
 
@@ -41,7 +42,7 @@ public class PackageCache
     }
 
 
-    public boolean contains( byte[] md5 )
+    public boolean contains( String md5 )
     {
         try
         {
@@ -55,7 +56,7 @@ public class PackageCache
     }
     
     
-    public boolean delete( byte[] md5 )
+    public boolean delete( String md5 )
     {
         try
         {
@@ -68,7 +69,7 @@ public class PackageCache
         }
     }
 
-    public InputStream get( byte[] md5 )
+    public InputStream get( String md5 )
     {
         try
         {
@@ -82,7 +83,7 @@ public class PackageCache
     }
 
 
-    public byte[] put( File file )
+    public String put( File file )
     {
         try
         {

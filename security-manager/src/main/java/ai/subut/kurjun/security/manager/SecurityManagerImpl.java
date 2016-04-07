@@ -56,6 +56,15 @@ public class SecurityManagerImpl implements SecurityManager
 
     /********** PGP Utils ************/
 
+
+    /*******************************************/
+    @Override
+    public String parseEmailAddress( PGPPublicKey pubKey) throws PGPException
+    {
+        return PGPKeyUtil.parseEmailAddress(pubKey);
+    }
+
+
     /*******************************************/
     @Override
     public PGPPublicKey readPGPKey( InputStream input ) throws PGPException
@@ -71,12 +80,22 @@ public class SecurityManagerImpl implements SecurityManager
         return PGPKeyUtil.readPublicKey ( key );
     }
 
+
+    /*******************************************/
+    @Override
+    public PGPPublicKeyRing readPGPKeyRing( String key ) throws PGPException
+    {
+        return PGPKeyUtil.readPublicKeyRing( key );
+    }
+
+
     /*******************************************/
     @Override
     public String exportPGPKeyAsASCII( PGPPublicKey key ) throws PGPException
     {
         return PGPKeyUtil.exportAscii( key );
     }
+
 
     /********** JWT Utils ************/
     /*******************************************/
@@ -134,9 +153,19 @@ public class SecurityManagerImpl implements SecurityManager
     {
         try
         {
-            byte[] exractedContent = PGPEncryptionUtil.extractContentFromClearSign( content.getBytes() );
+            byte[] exractedContent = PGPEncryptionUtil.extractContentFromClearSign( signedMessage.getBytes() );
 
-            if(!content.getBytes().equals( exractedContent ))
+
+            if( exractedContent != null )
+            {
+                String exContent = new String(exractedContent);
+
+                if(!content.toLowerCase().equals( exContent.trim().toLowerCase() ) )
+                {
+                    return false;
+                }
+            }
+            else
             {
                 return false;
             }
@@ -155,23 +184,31 @@ public class SecurityManagerImpl implements SecurityManager
 
     /*******************************************/
     @Override
+    public boolean verifyPGPSignatureAndContent( String signedMessage, String content, byte[] keyData )
+    {
+        try
+        {
+            PGPPublicKeyRing pubKeyRing = PGPKeyUtil.readPublicKeyRing( keyData );
+
+            return verifyPGPSignatureAndContent( signedMessage,content, pubKeyRing );
+        }
+        catch ( Exception e )
+        {
+            LOGGER.error( " ******* Error in SecurityManager" ,e );
+            return false;
+        }
+    }
+
+
+    /*******************************************/
+    @Override
     public boolean verifyPGPSignatureAndContent( String signedMessage, String content, String pubKeyASCII )
     {
         try
         {
             PGPPublicKeyRing pubKeyRing = PGPKeyUtil.readPublicKeyRing( pubKeyASCII );
 
-            byte[] exractedContent = PGPEncryptionUtil.extractContentFromClearSign( signedMessage.getBytes() );
-            String extCont = new String(exractedContent);
-
-            if(!content.toLowerCase().equals( extCont.trim().toLowerCase() ))
-            {
-                return false;
-            }
-
-            signedMessage = signedMessage.trim();
-
-            return PGPEncryptionUtil.verifyClearSign( signedMessage.getBytes(), pubKeyRing );
+            return verifyPGPSignatureAndContent( signedMessage,content, pubKeyRing );
         }
         catch ( Exception e )
         {

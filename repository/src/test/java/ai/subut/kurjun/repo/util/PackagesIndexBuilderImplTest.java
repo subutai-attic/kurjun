@@ -111,7 +111,7 @@ public class PackagesIndexBuilderImplTest
             if ( !skip )
             {
                 PackageMetadata pm = createPackageMetadata( file );
-                String md5hex = Hex.encodeHexString( pm.getMd5Sum() );
+                String md5hex = pm.getMd5Sum();
                 metadata.put( md5hex, MetadataUtils.serializablePackageMetadata( pm ) );
                 testPackageFiles.put( md5hex, file );
             }
@@ -131,7 +131,7 @@ public class PackagesIndexBuilderImplTest
         Mockito.when( listing.isTruncated() ).thenReturn( false );
 
         Mockito.when( metadataStore.list() ).thenReturn( listing );
-        Mockito.when( fileStore.contains( Matchers.any( byte[].class ) ) ).thenAnswer( new Answer<Boolean>()
+        Mockito.when( fileStore.contains( Matchers.any( String.class ) ) ).thenAnswer( new Answer<Boolean>()
         {
             @Override
             public Boolean answer( InvocationOnMock args ) throws Throwable
@@ -139,13 +139,13 @@ public class PackagesIndexBuilderImplTest
                 return metadata.containsKey( Hex.encodeHexString( ( byte[] ) args.getArguments()[0] ) );
             }
         } );
-        Mockito.when( fileStore.get( Matchers.any( byte[].class ) ) ).thenAnswer( new Answer<InputStream>()
+        Mockito.when( fileStore.get( Matchers.any( String.class ) ) ).thenAnswer( new Answer<InputStream>()
         {
             @Override
             public InputStream answer( InvocationOnMock args ) throws Throwable
             {
-                return new FileInputStream( testPackageFiles.get(
-                        Hex.encodeHexString( ( byte[] ) args.getArguments()[0] ) ) );
+                return new FileInputStream(
+                        testPackageFiles.get( Hex.encodeHexString( ( byte[] ) args.getArguments()[0] ) ) );
             }
         } );
 
@@ -155,7 +155,6 @@ public class PackagesIndexBuilderImplTest
         Mockito.when( metadataStoreFactory.create( context ) ).thenReturn( metadataStore );
         packagesProviderFactory.metadataStoreFactory = metadataStoreFactory;
         packagesProviderFactory.gson = MetadataUtils.JSON;
-
     }
 
 
@@ -168,8 +167,8 @@ public class PackagesIndexBuilderImplTest
     @Test
     public void testBuildIndex() throws Exception
     {
-        PackagesIndexBuilder.PackagesProvider packs = packagesProviderFactory.create( context, "main",
-                                                                                      Architecture.AMD64 );
+        PackagesIndexBuilder.PackagesProvider packs =
+                packagesProviderFactory.create( context, "main", Architecture.AMD64 );
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         indexBuilder.buildIndex( packs, os, CompressionType.NONE );
 
@@ -195,6 +194,5 @@ public class PackagesIndexBuilderImplTest
         DebAr deb = new DefaultDebAr( file );
         return cfParser.parse( map, deb.getControlFile() );
     }
-
 }
 

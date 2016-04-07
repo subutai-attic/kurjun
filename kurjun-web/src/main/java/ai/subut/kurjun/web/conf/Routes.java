@@ -58,9 +58,9 @@ public class Routes implements ApplicationRoutes
         router.GET().route( "/" ).with( TemplateController.class, "listTemplates" );
         router.GET().route( "/templates/upload" ).with( TemplateController.class, "getUploadTemplateForm" );
         router.POST().route( "/templates/upload" ).with( TemplateController.class, "uploadTemplate" );
-        router.GET().route( "/templates/{id}/info" ).with( TemplateController.class, "getTemplateInfo" );
-        router.GET().route( "/templates/{id}/download" ).with( TemplateController.class, "downloadTemplate" );
-        router.POST().route( "/templates/{id}/delete" ).with( TemplateController.class, "deleteTemplate" );
+        router.GET().route( "/templates/info" ).with( TemplateController.class, "getTemplateInfo" );
+        router.GET().route( "/templates/download" ).with( TemplateController.class, "downloadTemplate" );
+        router.GET().route( "/templates/delete" ).with( TemplateController.class, "deleteTemplate" );
 
         // -------------------------------------------------------------------------------------------------------------
         //  Apt
@@ -86,12 +86,12 @@ public class Routes implements ApplicationRoutes
         router.GET().route( "/relations" ).with( RelationController.class, "getRelations" );
         router.GET().route( "/relations/trust" ).with( RelationController.class, "getAddTrustRelationForm" );
         router.POST().route( "/relations/trust" ).with( RelationController.class, "addTrustRelation" );
-        router.GET().route( "/relations/by-source" ).with( RelationController.class, "getRelationsByOwner" );
-        router.GET().route( "/relations/by-target" ).with( RelationController.class, "getRelationsByTarget" );
-        router.GET().route( "/relations/by-object" ).with( RelationController.class, "getRelationsByObject" );
-        router.POST().route( "/relations/{id}/delete" ).with( RelationController.class, "delete" );
         router.GET().route( "/relations/{id}/change" ).with( RelationController.class, "getChangeForm" );
-        router.POST().route( "/relations/{id}/change" ).with( RelationController.class, "change" );
+        //router.GET().route( "/relations/by-source" ).with( RelationController.class, "getRelationsByOwner" );
+        //router.GET().route( "/relations/by-target" ).with( RelationController.class, "getRelationsByTarget" );
+        //router.GET().route( "/relations/by-object" ).with( RelationController.class, "getRelationsByObject" );
+        //router.POST().route( "/relations/{id}/delete" ).with( RelationController.class, "delete" );
+        //router.POST().route( "/relations/{id}/change" ).with( RelationController.class, "change" );
 
         // -------------------------------------------------------------------------------------------------------------
         //  Repositories
