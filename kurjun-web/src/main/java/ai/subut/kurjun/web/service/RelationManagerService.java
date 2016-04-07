@@ -26,5 +26,7 @@ public interface RelationManagerService extends BaseService {
     int addTrustRelation( UserSession uSession, String targeObjId, int targetObjType, String trustObjId,
                           int trustObjType, Set<Permission> permissions );
 
+    List<Relation> getRelationsByObject(String id, int objType );
+
 
 }

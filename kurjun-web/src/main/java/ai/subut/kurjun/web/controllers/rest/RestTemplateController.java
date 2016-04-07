@@ -7,6 +7,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -167,19 +169,17 @@ public class RestTemplateController extends BaseController
     }
 
 
-    public Result list( Context context, @Param( "repository" ) String repository, @Param( "search" ) String search)
+    public Result list( Context context, @Param( "repository" ) String repo, @Param( "node" ) String node)
     {
         try
         {
-            if ( search == null )
-            {
-                search = "local";
-            }
+            repo = StringUtils.isBlank( repo ) ? "public" : repo;
+            node = StringUtils.isBlank( node ) ? "local" : node;
 
             //*****************************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
             List<SerializableMetadata> defaultTemplateList =
-                    templateManagerService.list( uSession, repository, search, false );
+                    templateManagerService.list( uSession, repo, node, false );
             //*****************************************************
 
             return Results.ok().render( defaultTemplateList ).json();

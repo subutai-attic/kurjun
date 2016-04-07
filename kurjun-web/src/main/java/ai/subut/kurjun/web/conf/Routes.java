@@ -60,7 +60,7 @@ public class Routes implements ApplicationRoutes
         router.POST().route( "/templates/upload" ).with( TemplateController.class, "uploadTemplate" );
         router.GET().route( "/templates/info" ).with( TemplateController.class, "getTemplateInfo" );
         router.GET().route( "/templates/download" ).with( TemplateController.class, "downloadTemplate" );
-        router.GET().route( "/templates/delete" ).with( TemplateController.class, "deleteTemplate" );
+        router.POST().route( "/templates/delete" ).with( TemplateController.class, "deleteTemplate" );
 
         // -------------------------------------------------------------------------------------------------------------
         //  Apt
@@ -89,7 +89,7 @@ public class Routes implements ApplicationRoutes
         router.GET().route( "/relations/{id}/change" ).with( RelationController.class, "getChangeForm" );
         //router.GET().route( "/relations/by-source" ).with( RelationController.class, "getRelationsByOwner" );
         //router.GET().route( "/relations/by-target" ).with( RelationController.class, "getRelationsByTarget" );
-        //router.GET().route( "/relations/by-object" ).with( RelationController.class, "getRelationsByObject" );
+        router.GET().route( "/relations/by-object" ).with( RelationController.class, "getRelationsByObject" );
         //router.POST().route( "/relations/{id}/delete" ).with( RelationController.class, "delete" );
         //router.POST().route( "/relations/{id}/change" ).with( RelationController.class, "change" );
 
