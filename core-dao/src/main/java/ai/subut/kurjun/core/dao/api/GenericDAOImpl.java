@@ -4,6 +4,7 @@ package ai.subut.kurjun.core.dao.api;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,12 +25,19 @@ public abstract class GenericDAOImpl<T> implements GenericDAO<T>
 
     //**********************************
     @Inject
-    Provider<EntityManager> entityManagerProvider;
+    Provider<EntityManager> emp;
+
+    //**********************************
+    private EntityManagerFactory emf;
 
 
     public GenericDAOImpl()
     {
-        System.currentTimeMillis();
+    }
+
+    public GenericDAOImpl( EntityManagerFactory emf)
+    {
+        this.emf = emf;
     }
 
 
@@ -38,7 +46,7 @@ public abstract class GenericDAOImpl<T> implements GenericDAO<T>
     {
         try
         {
-            entityManagerProvider.get().persist( entity );
+            getEntityManager().persist( entity );
         }
         catch ( Exception e )
         {
@@ -53,7 +61,7 @@ public abstract class GenericDAOImpl<T> implements GenericDAO<T>
     {
         try
         {
-            return entityManagerProvider.get().merge( entity );
+            return getEntityManager().merge( entity );
         }
         catch ( Exception e )
         {
@@ -68,7 +76,7 @@ public abstract class GenericDAOImpl<T> implements GenericDAO<T>
     {
         try
         {
-            entityManagerProvider.get().remove( entity );
+            getEntityManager().remove( entity );
         }
         catch ( Exception e )
         {
@@ -82,7 +90,7 @@ public abstract class GenericDAOImpl<T> implements GenericDAO<T>
     {
         try
         {
-            return entityManagerProvider.get().createQuery( "Select t from " + entityName + " t" )
+            return getEntityManager().createQuery( "Select t from " + entityName + " t" )
                                       .getResultList();
         }
         catch ( Exception e )
@@ -92,26 +100,24 @@ public abstract class GenericDAOImpl<T> implements GenericDAO<T>
         }
     }
 
-    /*
-    @Override
-    @Transactional
-    public T find( Class<? extends T> clazz, ID id ) throws DAOException
-    {
-        try
-        {
-            return entityManagerProvider.get().find( clazz, id );
-        }
-        catch ( Exception e )
-        {
-            throw new DAOException( e );
-        }
-    }*/
 
     public EntityManager getEntityManager() throws DAOException
     {
         try
         {
-            return entityManagerProvider.get();
+            if(emp != null)
+            {
+                return emp.get();
+            }
+            else if(emf != null)
+            {
+                return emf.createEntityManager();
+            }
+            else
+            {
+                return null;
+            }
+
         }
         catch ( Exception e )
         {
@@ -119,6 +125,5 @@ public abstract class GenericDAOImpl<T> implements GenericDAO<T>
             throw new DAOException( e );
         }
     }
-
 
 }

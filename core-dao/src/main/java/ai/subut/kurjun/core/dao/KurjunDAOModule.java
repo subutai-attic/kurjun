@@ -1,13 +1,12 @@
-package ai.subut.kurjun.core.dao.service;
+package ai.subut.kurjun.core.dao;
 
 
 import com.google.inject.AbstractModule;
-import com.google.inject.persist.jpa.JpaPersistModule;
 
 import ai.subut.kurjun.core.dao.model.identity.RelationEntity;
 import ai.subut.kurjun.core.dao.model.identity.RelationObjectEntity;
-import ai.subut.kurjun.core.dao.model.identity.UserEntity;
-import ai.subut.kurjun.core.dao.model.identity.UserTokenEntity;
+import ai.subut.kurjun.core.dao.model.metadata.AptDataEntity;
+import ai.subut.kurjun.core.dao.model.metadata.RawDataEntity;
 import ai.subut.kurjun.core.dao.model.metadata.RepositoryArtifactEntity;
 import ai.subut.kurjun.core.dao.model.metadata.RepositoryArtifactId;
 import ai.subut.kurjun.core.dao.model.metadata.RepositoryDataEntity;
@@ -16,6 +15,8 @@ import ai.subut.kurjun.core.dao.service.identity.IdentityDataService;
 import ai.subut.kurjun.core.dao.service.identity.IdentityDataServiceImpl;
 import ai.subut.kurjun.core.dao.service.identity.RelationDataService;
 import ai.subut.kurjun.core.dao.service.identity.RelationDataServiceImpl;
+import ai.subut.kurjun.core.dao.model.identity.UserEntity;
+import ai.subut.kurjun.core.dao.model.identity.UserTokenEntity;
 import ai.subut.kurjun.core.dao.service.metadata.RepositoryDataService;
 import ai.subut.kurjun.core.dao.service.metadata.RepositoryDataServiceImpl;
 import ai.subut.kurjun.model.identity.Relation;
@@ -23,9 +24,10 @@ import ai.subut.kurjun.model.identity.RelationObject;
 import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.identity.UserToken;
 import ai.subut.kurjun.model.metadata.RepositoryData;
+import ai.subut.kurjun.model.metadata.apt.AptData;
+import ai.subut.kurjun.model.metadata.raw.RawData;
 import ai.subut.kurjun.model.metadata.template.TemplateData;
 import ai.subut.kurjun.model.repository.ArtifactId;
-import ai.subut.kurjun.model.repository.Repository;
 import ai.subut.kurjun.model.repository.RepositoryArtifact;
 
 
@@ -39,8 +41,8 @@ public class KurjunDAOModule extends AbstractModule
     protected void configure()
     {
         //****************
-        install( new JpaPersistModule( "PU_KURJUN" ) );
-        bind( KurjunJPAInitializer.class ).asEagerSingleton();
+        //install( new JpaPersistModule( "PU_KURJUN" ) );
+        //bind(KurjunJPAInitializer.class).asEagerSingleton();
         //****************
 
         // -------------------------------------------
@@ -51,10 +53,11 @@ public class KurjunDAOModule extends AbstractModule
 
         bind( ArtifactId.class ).to( RepositoryArtifactId.class );
         bind( TemplateData.class ).to( TemplateDataEntity.class );
+        bind( RawData.class ).to( RawDataEntity.class );
+        bind( AptData.class ).to( AptDataEntity.class );
 
         bind( RepositoryData.class ).to( RepositoryDataEntity.class );
         bind( RepositoryArtifact.class ).to( RepositoryArtifactEntity.class );
-
         // -------------------------------------------
 
 

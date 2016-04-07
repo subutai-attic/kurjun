@@ -21,6 +21,7 @@ import ai.subut.kurjun.model.metadata.apt.Dependency;
 import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
+import ai.subut.kurjun.model.repository.ArtifactId;
 
 
 public class MetadataUtils
@@ -168,24 +169,25 @@ public class MetadataUtils
     }
 
 
-    public static Map<String, String> makeParamsMap( Metadata metadata )
+    public static Map<String, String> makeParamsMap( ArtifactId metadata )
     {
         Map<String, String> params = new HashMap<>();
-        if ( metadata.getId() != null )
-        {
-            params.put( "id", String.valueOf( metadata.getId() ) );
-        }
+
         if ( metadata.getMd5Sum() != null )
         {
             params.put( "md5", metadata.getMd5Sum() );
         }
-        if ( metadata.getName() != null )
+        if ( metadata.getContext() != null )
         {
-            params.put( "name", metadata.getName() );
+            params.put( "repository", metadata.getContext() );
         }
         if ( metadata.getVersion() != null )
         {
             params.put( "version", metadata.getVersion() );
+        }
+        if ( metadata.getSearch() != null )
+        {
+            params.put( "search", metadata.getSearch() );
         }
         return params;
     }

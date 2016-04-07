@@ -41,6 +41,7 @@ import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.repository.ArtifactId;
 import ai.subut.kurjun.model.repository.RemoteRepository;
 import ai.subut.kurjun.repo.cache.PackageCache;
 import ai.subut.kurjun.repo.util.PathBuilder;
@@ -157,7 +158,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
 
 
     @Override
-    public SerializableMetadata getPackageInfo( Metadata metadata )
+    public SerializableMetadata getPackageInfo( ArtifactId metadata)
     {
         List<SerializableMetadata> items = listPackages();
 
@@ -167,13 +168,13 @@ class RemoteAptRepository extends RemoteRepositoryBase
         }
         else
         {
-            return findByName( metadata.getName(), metadata.getVersion(), items );
+            return findByName( metadata.getArtifactName(), metadata.getVersion(), items );
         }
     }
 
 
     @Override
-    public InputStream getPackageStream( Metadata metadata )
+    public InputStream getPackageStream( ArtifactId metadata )
     {
         SerializableMetadata m = getPackageInfo( metadata );
         if ( m == null )
@@ -181,7 +182,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
             return null;
         }
 
-        InputStream cachedStream = checkCache( m );
+        InputStream cachedStream = null; //checkCache( m );
         if ( cachedStream != null )
         {
             return cachedStream;

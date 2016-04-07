@@ -2,6 +2,7 @@ package ai.subut.kurjun.core.dao.api.metadata;
 
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,12 @@ public class RepositoryArtifactDAO   extends GenericDAOImpl<RepositoryArtifact>
     {
         super();
     }
+
+    public RepositoryArtifactDAO(EntityManagerFactory emf)
+    {
+        super(emf);
+    }
+
 
 
     @Transactional

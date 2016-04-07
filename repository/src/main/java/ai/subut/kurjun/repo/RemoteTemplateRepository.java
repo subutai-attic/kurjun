@@ -41,6 +41,7 @@ import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.repository.ArtifactId;
 import ai.subut.kurjun.repo.cache.PackageCache;
 import ai.subut.kurjun.repo.util.http.WebClientFactory;
 
@@ -144,10 +145,10 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
 
 
     @Override
-    public SerializableMetadata getPackageInfo( Metadata metadata )
+    public SerializableMetadata getPackageInfo( ArtifactId id )
     {
         WebClient webClient =
-                webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + INFO_PATH, makeParamsMap( metadata ) );
+                webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + INFO_PATH, makeParamsMap( id ) );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -174,17 +175,18 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     }
 
 
+
     @Override
-    public InputStream getPackageStream( Metadata metadata )
+    public InputStream getPackageStream( final ArtifactId id )
     {
-        InputStream cachedStream = checkCache( metadata );
+        InputStream cachedStream = checkCache( id );
         if ( cachedStream != null )
         {
             return cachedStream;
         }
 
         WebClient webClient =
-                webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + GET_PATH, makeParamsMap( metadata ) );
+                webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + GET_PATH, makeParamsMap( id ) );
         webClient.header( "Accept", "application/octet-stream" );
 
         if ( identity != null )
@@ -203,7 +205,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
                 String md5Calculated = cacheStream( inputStream );
 
                 // compare the requested and received md5 checksums
-                if ( metadata.getMd5Sum().equalsIgnoreCase( md5Calculated ) )
+                if ( id.getMd5Sum().equalsIgnoreCase( md5Calculated ) )
                 {
                     return cache.get( md5Calculated );
                 }
@@ -222,6 +224,8 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     }
 
 
+
+
     @Override
     public List<SerializableMetadata> listPackages()
     {
@@ -230,7 +234,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         {
             return this.remoteIndexChache;
         }
-        Map<String, String> params = makeParamsMap( new DefaultMetadata() );
+        Map<String, String> params = null; //makeParamsMap( new DefaultMetadata() );
         params.put( "repository", "local" );
 
         //get only public Kurjun local packages
@@ -271,7 +275,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         {
             return this.remoteIndexChache;
         }
-        Map<String, String> params = makeParamsMap( new DefaultMetadata() );
+        Map<String, String> params = null; // makeParamsMap( new DefaultMetadata() );
         params.put( "repository", "local" );
 
         //get only public Kurjun local packages
@@ -371,9 +375,9 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     }
 
 
-    private Map<String, String> makeParamsMap( Metadata metadata )
+    private Map<String, String> makeParamsMap( ArtifactId id )
     {
-        Map<String, String> params = MetadataUtils.makeParamsMap( metadata );
+        Map<String, String> params = MetadataUtils.makeParamsMap( id );
 
         if ( token != null )
         {

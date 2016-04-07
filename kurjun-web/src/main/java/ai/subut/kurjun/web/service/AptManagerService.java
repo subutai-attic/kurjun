@@ -1,7 +1,6 @@
 package ai.subut.kurjun.web.service;
 
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
@@ -16,26 +15,38 @@ public interface AptManagerService extends BaseService
 
     String md5();
 
+
     String getRelease( String release, String component, String arch );
 
-    String getPackageInfo( String md5, String name, String version );
 
-    URI upload(UserSession userSession, InputStream is );
+    URI upload( UserSession userSession, String repository, InputStream is );
 
-    List<SerializableMetadata> list(String repository);
 
-    boolean delete(UserSession userSession, String md5 ) throws IOException;
+    List<SerializableMetadata> list( String repository, String search );
+
+
+    boolean delete( UserSession userSession, String repository, String md5 );
+
 
     boolean isCompressionTypeSupported( String packagesIndex );
 
+
     String getSerializedPackageInfoByFilename( String filename ) throws IllegalArgumentException;
+
 
     String getSerializedPackageInfoByMd5( String md5 ) throws IllegalArgumentException;
 
+
     Renderable getPackagesIndex( String release, String component, String arch, String packagesIndex )
+
             throws IllegalArgumentException;
 
     Renderable  getPackageByFilename( String filename ) throws IllegalArgumentException;
 
+
+    String getPackageInfo( String repository, String md5, String name, String version );
+
+
     Renderable getPackage( String md5 );
+
 }

@@ -28,6 +28,9 @@ public class RepositoryArtifactEntity implements RepositoryArtifact
     @EmbeddedId
     RepositoryArtifactId id;
 
+    @Column (name = "name")
+    String  name;
+
     @Column(name = "version")
     private String version;
 
@@ -46,7 +49,7 @@ public class RepositoryArtifactEntity implements RepositoryArtifact
 
     public RepositoryArtifactEntity(String name, String owner, String md5Sum)
     {
-        id = new RepositoryArtifactId( name, owner ,md5Sum, "" ,0);
+        id = new RepositoryArtifactId( md5Sum, "" ,0);
     }
 
 
@@ -65,13 +68,21 @@ public class RepositoryArtifactEntity implements RepositoryArtifact
     @Override
     public String getName()
     {
-        return (this.id != null)?this.id.getName():"";
+        return name;
     }
+
+
+    @Override
+    public void setName( String name )
+    {
+        this.name= name;
+    }
+
 
     @Override
     public String getOwner()
     {
-        return (this.id != null)?this.id.getOwner():"";
+        return null;
     }
 
 

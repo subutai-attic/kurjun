@@ -38,8 +38,8 @@ public class RestAptController extends BaseAptController
 
 
     @FileProvider( SubutaiFileHandler.class )
-    public Result upload( Context context, @Param( "file" ) FileItem file,
-                          @Param( "global_kurjun_sptoken" ) String globalKurjunToken ) throws IOException
+    public Result upload( Context context, @Param( "repository" ) String repository, @Param( "file" ) FileItem file )
+            throws IOException
     {
 
         File filename = file.getFile();
@@ -47,7 +47,7 @@ public class RestAptController extends BaseAptController
         {
             //********************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            URI uri = managerService.upload( uSession, inputStream );
+            URI uri = managerService.upload( uSession, repository ,inputStream );
             //********************************************
 
             return Results.ok().render( uri ).text();
@@ -77,8 +77,7 @@ public class RestAptController extends BaseAptController
 
     public Result packageIndexes( Context context, @PathParam( "release" ) String release,
                                   @PathParam( "component" ) String component, @PathParam( "arch" ) String arch,
-                                  @PathParam( "packages" ) String packagesIndex,
-                                  @Param( "global_kurjun_sptoken" ) String globalKurjunToken )
+                                  @PathParam( "packages" ) String packagesIndex)
     {
         //        checkNotNull( release, "Release cannot be null" );
         //        checkNotNull( component, "Component cannot be null" );
@@ -105,7 +104,7 @@ public class RestAptController extends BaseAptController
     }
 
 
-    public Result info( @Param( "md5" ) String md5, @Param( "name" ) String name, @Param( "version" ) String version )
+    public Result info( @Param( "repository" ) String repository, @Param( "md5" ) String md5, @Param( "name" ) String name, @Param( "version" ) String version )
 
     {
         //        checkNotNull( md5, "MD5 cannot be null" );
@@ -113,7 +112,7 @@ public class RestAptController extends BaseAptController
         //        checkNotNull( version, "Version not found" );
 
         //********************************************
-        String metadata = managerService.getPackageInfo( md5, name, version );
+        String metadata = managerService.getPackageInfo(repository, md5, name, version );
         //********************************************
 
         if ( metadata != null )
@@ -140,7 +139,7 @@ public class RestAptController extends BaseAptController
     }
 
 
-    public Result list( @Param( "type" ) String type, @Param( "repository" ) String repository )
+    public Result list( @Param( "type" ) String type, @Param( "repository" ) String repository, @Param( "search" ) String search  )
     {
         if ( repository == null )
         {
@@ -148,7 +147,7 @@ public class RestAptController extends BaseAptController
         }
 
         //********************************************
-        List<SerializableMetadata> serializableMetadataList = managerService.list( repository );
+        List<SerializableMetadata> serializableMetadataList = managerService.list( repository, search );
         //********************************************
 
         if ( serializableMetadataList != null )
@@ -164,13 +163,13 @@ public class RestAptController extends BaseAptController
     }
 
 
-    public Result delete( Context context, @Param( "md5" ) String md5 )
+    public Result delete( Context context, @Param( "repository" ) String repository, @Param( "md5" ) String md5 )
     {
         //        checkNotNull( md5, "MD5 cannot be null" );
 
         //********************************************
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-        boolean success = managerService.delete( uSession, md5 );
+        boolean success = managerService.delete( uSession, repository, md5 );
         //********************************************
 
         if ( success )

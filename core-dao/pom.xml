@@ -11,6 +11,7 @@
 
   <groupId>ai.subut.kurjun</groupId>
   <artifactId>core-dao</artifactId>
+  <packaging>jar</packaging>
   <version>1.0</version>
 
 
@@ -73,5 +74,26 @@
     <!-- ******************** -->
 
   </dependencies>
+  <!--
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Export-Package>${project.groupId}.core.dao</Export-Package>
+            <Meta-Persistence>META-INF/OSGI/persistence.xml</Meta-Persistence>
+            <Bundle-SymbolicName>${project.groupId}.core.dao</Bundle-SymbolicName>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+-->
 </project>

@@ -32,6 +32,7 @@ import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.repository.ArtifactId;
 import ai.subut.kurjun.repo.cache.PackageCache;
 import ai.subut.kurjun.repo.util.http.WebClientFactory;
 
@@ -104,7 +105,7 @@ class RemoteSnapRepository extends RemoteRepositoryBase
 
 
     @Override
-    public SerializableMetadata getPackageInfo( Metadata metadata )
+    public SerializableMetadata getPackageInfo( ArtifactId metadata )
     {
         WebClient webClient = webClientFactory.makeSecure( this, INFO_PATH, MetadataUtils.makeParamsMap( metadata ) );
         if ( identity != null )
@@ -132,8 +133,10 @@ class RemoteSnapRepository extends RemoteRepositoryBase
     }
 
 
+
+    @Deprecated
     @Override
-    public InputStream getPackageStream( Metadata metadata )
+    public InputStream getPackageStream( ArtifactId metadata )
     {
         InputStream cachedStream = checkCache( metadata );
         if ( cachedStream != null )
@@ -174,6 +177,8 @@ class RemoteSnapRepository extends RemoteRepositoryBase
         }
         return null;
     }
+
+
 
 
     @Override

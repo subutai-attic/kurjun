@@ -3,6 +3,8 @@ package ai.subut.kurjun.core.dao.service.identity;
 
 import java.util.List;
 
+import javax.persistence.EntityManagerFactory;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -28,6 +30,12 @@ public class RelationDataServiceImpl implements RelationDataService
     {
         this.relationDAO = relationDAO;
         this.relationObjectDAO = relationObjectDAO;
+    }
+
+    public RelationDataServiceImpl(EntityManagerFactory emf)
+    {
+        this.relationDAO = new RelationDAO(emf);
+        this.relationObjectDAO = new RelationObjectDAO(emf);
     }
 
 

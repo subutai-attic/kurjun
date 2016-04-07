@@ -6,6 +6,10 @@ import java.util.List;
 import ai.subut.kurjun.core.dao.model.metadata.RepositoryArtifactId;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.RepositoryData;
+import ai.subut.kurjun.model.metadata.apt.AptData;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
+import ai.subut.kurjun.model.metadata.raw.RawData;
+import ai.subut.kurjun.model.metadata.template.TemplateData;
 import ai.subut.kurjun.model.repository.ArtifactId;
 
 
@@ -19,15 +23,15 @@ public interface RepositoryManager
 
 
     //*************************************************
-    RepositoryData  getRepository( String context, int type );
+    RepositoryData getRepository( String context, int type );
 
 
     //*************************************************
-    RepositoryData  persistRepositoryData( String context, int type, String ownerFingerprint );
+    RepositoryData persistRepositoryData( String context, int type, String ownerFingerprint );
 
 
     //*************************************************
-    RepositoryData  getRepositoryData( String context, int type, String ownerFingerprint, boolean create );
+    RepositoryData getRepositoryData( String context, int type, String ownerFingerprint, boolean create );
 
 
     //*************************************************
@@ -35,7 +39,7 @@ public interface RepositoryManager
 
 
     //*************************************************
-    Object  addArtifactToRepository( int repoType, RepositoryData repoData, Object metadata );
+    Object addArtifactToRepository( int repoType, RepositoryData repoData, Object metadata );
 
 
     //*************************************************
@@ -45,6 +49,31 @@ public interface RepositoryManager
     //*************************************************
     Object getArtifact( int repoType, ArtifactId id );
 
+
     //*************************************************
-    ArtifactId constructArtifactAd( RepositoryData repoData, Metadata metadata );
+    List<Object> getAllArtifacts( RepositoryData repoData );
+
+
+    //*************************************************
+    ArtifactId constructArtifactId( RepositoryData repoData, Metadata metadata );
+
+
+    //*************************************************
+    ArtifactId constructArtifactId( String context, int repoType, String md5 );
+
+
+    //*************************************************
+    TemplateData constructTemplateData( RepositoryData repoData, Object metadata );
+
+
+    //*************************************************
+    RawData constructRawData( RepositoryData repoData, String md5, String name, String owner );
+
+
+    //*************************************************
+    AptData constructAptData( RepositoryData repoData, String md5, String owner );
+
+
+    //*************************************************
+    AptData copyAptPackage( PackageMetadata source, AptData target );
 }

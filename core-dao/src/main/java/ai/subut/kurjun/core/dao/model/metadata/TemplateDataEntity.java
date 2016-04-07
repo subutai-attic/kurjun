@@ -8,14 +8,19 @@ import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
-import javax.persistence.Embedded;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.Lob;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
+
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.template.TemplateData;
+import ai.subut.kurjun.model.repository.ArtifactId;
 
 
 @Entity
@@ -25,9 +30,14 @@ public class TemplateDataEntity implements TemplateData
 {
     public static final String TABLE_NAME = "template_data";
 
-    @Embedded
+    @EmbeddedId
     RepositoryArtifactId id;
 
+    @Column (name = "owner" , nullable = false)
+    String owner;
+
+    @Column (name = "name", nullable = false)
+    String  name;
 
     @Column( name = "version" )
     private String version;
@@ -38,17 +48,21 @@ public class TemplateDataEntity implements TemplateData
     @Column( name = "package_name" )
     private String packageName;
 
+    @Enumerated( EnumType.STRING )
     @Column( name = "architecture" )
     private Architecture architecture;
 
+    @Lob
     @Column( name = "config_contents" )
     private String configContents;
 
+    @Lob
     @Column( name = "packages_contents" )
     private String packagesContents;
 
     @Column( name = "size" )
-    private long size;
+    private long size = 0;
+
 
     @MapKeyColumn
     @ElementCollection( fetch = FetchType.LAZY )
@@ -61,16 +75,29 @@ public class TemplateDataEntity implements TemplateData
 
     }
 
-    public TemplateDataEntity(String name, String owner, String md5Sum, String context , int type)
+    public TemplateDataEntity( String md5Sum, String context , int type)
     {
-        id = new RepositoryArtifactId( name ,owner , md5Sum , context , type );
+        id = new RepositoryArtifactId( md5Sum , context , type );
     }
 
 
     @Override
     public String getOwner()
     {
-        return ( this.id != null ) ? this.id.getOwner() : "";
+        return owner;
+    }
+
+
+    @Override
+    public void setOwner( String owner )
+    {
+        this.owner = owner;
+    }
+
+    @Override
+    public String getUniqId()
+    {
+        return ( this.id != null ) ? this.id.getContext() + "." + this.id.getMd5Sum() : "";
     }
 
 
@@ -88,13 +115,6 @@ public class TemplateDataEntity implements TemplateData
 
 
     @Override
-    public Object getId()
-    {
-        return id;
-    }
-
-
-    @Override
     public String getMd5Sum()
     {
         return ( this.id != null ) ? this.id.getMd5Sum() : "";
@@ -102,9 +122,29 @@ public class TemplateDataEntity implements TemplateData
 
 
     @Override
+    public Object getId()
+    {
+        return id;
+    }
+
+    @Override
+    public ArtifactId getArtifactId()
+    {
+        return id;
+    }
+
+
+    @Override
     public String getName()
     {
-        return ( this.id != null ) ? this.id.getName() : "";
+        return name;
+    }
+
+
+    @Override
+    public void setName( final String name )
+    {
+        this.name = name;
     }
 
 
@@ -188,7 +228,7 @@ public class TemplateDataEntity implements TemplateData
     @Override
     public String getOwnerFprint()
     {
-        return id.getOwner();
+        return owner;
     }
 
 

@@ -4,7 +4,6 @@ package ai.subut.kurjun.web.controllers;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import ai.subut.kurjun.metadata.common.raw.RawMetadata;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.web.filter.SecurityFilter;
@@ -36,14 +35,15 @@ public class RawFileController extends BaseController
     private RepositoryService repositoryService;
 
 
-    public Result list( @Param( "repository" ) String repository )
+    public Result list( @Param( "repository" ) String repository, @Param( "search" ) String search )
     {
-        if ( repository == null )
+        if ( search == null )
         {
-            repository = "all";
+            search = "all";
         }
 
-        return Results.html().template( "views/raw-files.ftl" ).render( "files", rawManagerService.list( repository ) );
+        return Results.html().template( "views/raw-files.ftl" )
+                      .render( "files", rawManagerService.list( repository, search ) );
     }
 
 
@@ -131,20 +131,10 @@ public class RawFileController extends BaseController
     }
 
 
-    public Result info( @Param( "id" ) String id, @Param( "name" ) String name, @Param( "md5" ) String md5,
-                        @Param( "type" ) String type, @Param( "fingerprint" ) String fingerprint )
+    public Result info( @Param( "repository" ) String repository, @Param( "md5" ) String md5,
+                        @Param( "search" ) String search )
     {
-        RawMetadata rawMetadata = new RawMetadata();
-
-        if ( fingerprint == null && md5 != null )
-        {
-            fingerprint = "raw";
-        }
-        rawMetadata.setName( name );
-        rawMetadata.setMd5Sum( md5 );
-        rawMetadata.setFingerprint( fingerprint );
-
-        Metadata metadata = rawManagerService.getInfo( rawMetadata );
+        Metadata metadata = rawManagerService.getInfo( repository, md5, search );
 
         if ( metadata != null )
         {

@@ -5,7 +5,7 @@ import java.util.Properties;
 
 import javax.inject.Singleton;
 
-import ai.subut.kurjun.core.dao.service.KurjunDAOModule;
+import ai.subut.kurjun.core.dao.KurjunDAOModule;
 import ai.subut.kurjun.core.dao.service.identity.IdentityDataService;
 import ai.subut.kurjun.core.dao.service.identity.IdentityDataServiceImpl;
 import ai.subut.kurjun.core.dao.service.identity.RelationDataService;

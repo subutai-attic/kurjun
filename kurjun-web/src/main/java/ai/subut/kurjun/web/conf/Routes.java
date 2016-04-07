@@ -58,9 +58,9 @@ public class Routes implements ApplicationRoutes
         router.GET().route( "/" ).with( TemplateController.class, "listTemplates" );
         router.GET().route( "/templates/upload" ).with( TemplateController.class, "getUploadTemplateForm" );
         router.POST().route( "/templates/upload" ).with( TemplateController.class, "uploadTemplate" );
-        router.GET().route( "/templates/{id}/info" ).with( TemplateController.class, "getTemplateInfo" );
-        router.GET().route( "/templates/{id}/download" ).with( TemplateController.class, "downloadTemplate" );
-        router.POST().route( "/templates/{id}/delete" ).with( TemplateController.class, "deleteTemplate" );
+        router.GET().route( "/templates/info" ).with( TemplateController.class, "getTemplateInfo" );
+        router.GET().route( "/templates/download" ).with( TemplateController.class, "downloadTemplate" );
+        router.GET().route( "/templates/delete" ).with( TemplateController.class, "deleteTemplate" );
 
         // -------------------------------------------------------------------------------------------------------------
         //  Apt

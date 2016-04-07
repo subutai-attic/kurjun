@@ -3,6 +3,7 @@ package ai.subut.kurjun.core.dao.api.identity;
 
 import java.util.List;
 
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 
 import com.google.inject.persist.Transactional;
@@ -22,6 +23,11 @@ public class RelationObjectDAO extends GenericDAOImpl<RelationObject>
     public RelationObjectDAO()
     {
         super();
+    }
+
+    public RelationObjectDAO(EntityManagerFactory emf)
+    {
+        super(emf);
     }
 
 

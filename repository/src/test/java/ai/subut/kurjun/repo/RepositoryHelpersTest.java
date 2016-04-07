@@ -23,7 +23,7 @@ public class RepositoryHelpersTest
     @Test
     public void testIsAptRepository() throws IOException
     {
-        Repository r1 = new LocalAptRepository( null, null, null, null, null );
+        Repository r1 = new LocalAptRepository( null, null, null, null );
         Assert.assertTrue( RepositoryHelpers.isAptRepository( r1 ) );
 
         Repository r2 = new LocalAptRepositoryWrapper( null, temporaryFolder.newFolder().toString() );

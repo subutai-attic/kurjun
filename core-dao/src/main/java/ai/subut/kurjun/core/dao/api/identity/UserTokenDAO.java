@@ -1,6 +1,8 @@
 package ai.subut.kurjun.core.dao.api.identity;
 
 
+import javax.persistence.EntityManagerFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +25,12 @@ public class UserTokenDAO  extends GenericDAOImpl<UserToken>
     {
         super();
     }
+
+    public UserTokenDAO(EntityManagerFactory emf)
+    {
+        super(emf);
+    }
+
 
     @Transactional
     public UserToken find(String token) throws DAOException

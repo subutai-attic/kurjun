@@ -1,16 +1,36 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+<blueprint xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.0.0"
+           default-activation="eager"
+           xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+    >
 
-  <bean id="repositoryDao" class="ai.subut.kurjun.core.dao.api.metadata.RepositoryDAO">
+    <!--*****************************************************************-->
+  <bean id="kurjunRepositoryDataService" class="ai.subut.kurjun.core.dao.service.metadata.RepositoryDataServiceImpl">
+    <jpa:unit unitname="PU-KURJUN" property="entityManagerFactory" />
   </bean>
+  <!--*****************************************************************-->
 
-  <bean id="repositoryArtifactDAO" class="ai.subut.kurjun.core.dao.api.metadata.RepositoryArtifactDAO">
-  </bean>
 
-  <bean id="repositoryDataService"
-           interface="ai.subut.kurjun.core.dao.service.metadata.RepositoryDataService">
-    <argument name ="repositoryDao"/>
-    <argument name ="repositoryArtifactDAO"/>
+  <!--*****************************************************************-->
+  <bean id="kurjunIdentityDataService" class="ai.subut.kurjun.core.dao.service.identity.IdentityDataServiceImpl">
+    <jpa:unit unitname="PU-KURJUN" property="entityManagerFactory" />
   </bean>
+  <!--*****************************************************************-->
+
+
+  <!--*****************************************************************-->
+  <bean id="kurjunRelationDataService" class="ai.subut.kurjun.core.dao.service.identity.RelationDataServiceImpl">
+    <jpa:unit unitname="PU-KURJUN" property="entityManagerFactory" />
+  </bean>
+  <!--*****************************************************************-->
+
+
+  <!--*****************************************************************-->
+  <service ref="kurjunIdentityDataService" activation="eager"
+           interface="ai.subut.kurjun.core.dao.service.identity.IdentityDataService" />
+  <service ref="kurjunRelationDataService" activation="eager"
+           interface="ai.subut.kurjun.core.dao.service.identity.RelationDataService" />
+  <service ref="kurjunRepositoryDataService" activation="eager"
+           interface="ai.subut.kurjun.core.dao.service.metadata.RepositoryDataService" />
+  <!--*****************************************************************-->
 
 </blueprint>

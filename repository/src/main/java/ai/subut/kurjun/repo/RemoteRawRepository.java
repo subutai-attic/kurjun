@@ -40,6 +40,7 @@ import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.repository.ArtifactId;
 import ai.subut.kurjun.repo.cache.PackageCache;
 import ai.subut.kurjun.repo.util.http.WebClientFactory;
 
@@ -103,7 +104,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
 
 
     @Override
-    public SerializableMetadata getPackageInfo( Metadata metadata )
+    public SerializableMetadata getPackageInfo( ArtifactId metadata)
     {
         WebClient webClient =
                 webClientFactory.makeSecure( this, FILE_PATH + INFO_PATH, MetadataUtils.makeParamsMap( metadata ) );
@@ -132,8 +133,11 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     }
 
 
+
+
+    @Deprecated
     @Override
-    public InputStream getPackageStream( Metadata metadata )
+    public InputStream getPackageStream( ArtifactId metadata )
     {
         InputStream cachedStream = checkCache( metadata );
         if ( cachedStream != null )
@@ -167,12 +171,13 @@ public class RemoteRawRepository extends RemoteRepositoryBase
                     deleteCache( md5Calculated );
 
                     LOGGER.error( "Md5 checksum mismatch after getting the package from remote host. "
-                            + "Requested with md5={}, name={}", metadata.getMd5Sum(), metadata.getName() );
+                            + "Requested with md5={}, name={}", metadata.getMd5Sum(), metadata.getArtifactName() );
                 }
             }
         }
         return null;
     }
+
 
 
     @Override
@@ -182,7 +187,8 @@ public class RemoteRawRepository extends RemoteRepositoryBase
         {
             return this.remoteIndexChache;
         }
-        Map<String, String> params = makeParamsMap( new RawMetadata() );
+        //Map<String, String> params = makeParamsMap( new RawMetadata() );
+        Map<String, String> params = makeParamsMap( null );
         params.put( "repository", "local" );
 
         WebClient webClient = webClientFactory.makeSecure( this, FILE_PATH + LIST_PATH, params );
@@ -324,7 +330,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     }
 
 
-    private Map<String, String> makeParamsMap( Metadata metadata )
+    private Map<String, String> makeParamsMap( ArtifactId metadata )
     {
         Map<String, String> params = MetadataUtils.makeParamsMap( metadata );
 
