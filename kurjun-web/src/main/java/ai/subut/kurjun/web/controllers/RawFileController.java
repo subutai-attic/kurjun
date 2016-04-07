@@ -1,6 +1,8 @@
 package ai.subut.kurjun.web.controllers;
 
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -37,10 +39,8 @@ public class RawFileController extends BaseController
 
     public Result list( Context context , @Param( "repository" ) String repository, @Param( "search" ) String search )
     {
-        if ( search == null )
-        {
-            search = "all";
-        }
+        search = StringUtils.isBlank( search )? "all":search;
+        repository = StringUtils.isBlank( repository )? "raw":repository;
 
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
         return Results.html().template( "views/raw-files.ftl" )
@@ -59,7 +59,6 @@ public class RawFileController extends BaseController
 
         Metadata metadata;
 
-        UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
         metadata = rawManagerService
                 .put( userSession, kurjunFileItem.getFile(), kurjunFileItem.getFileName(), fingerprint );
 
@@ -69,7 +68,6 @@ public class RawFileController extends BaseController
         }
         else
         {
-
             flashScope.error( "Failed to upload." );
         }
 
