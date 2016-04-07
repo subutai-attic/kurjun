@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,13 +34,11 @@ import com.google.inject.assistedinject.Assisted;
 import ai.subut.kurjun.common.service.KurjunConstants;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.utils.InetUtils;
-import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.annotation.Nullable;
 import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.index.ReleaseFile;
-import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.ArtifactId;
 import ai.subut.kurjun.repo.cache.PackageCache;
@@ -234,7 +233,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         {
             return this.remoteIndexChache;
         }
-        Map<String, String> params = null; //makeParamsMap( new DefaultMetadata() );
+        Map<String, String> params = new HashMap(); //makeParamsMap( new DefaultMetadata() );
         params.put( "repository", "local" );
 
         //get only public Kurjun local packages

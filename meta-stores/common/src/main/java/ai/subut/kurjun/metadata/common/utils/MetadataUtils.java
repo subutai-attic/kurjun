@@ -171,8 +171,13 @@ public class MetadataUtils
 
     public static Map<String, String> makeParamsMap( ArtifactId metadata )
     {
+
         Map<String, String> params = new HashMap<>();
 
+        if ( metadata == null )
+        {
+            return params;
+        }
         if ( metadata.getMd5Sum() != null )
         {
             params.put( "md5", metadata.getMd5Sum() );
