@@ -20,7 +20,6 @@ import ai.subut.kurjun.core.dao.model.metadata.AptDependencyEntity;
 import ai.subut.kurjun.core.dao.model.metadata.RawDataEntity;
 import ai.subut.kurjun.core.dao.model.metadata.RepositoryDataId;
 import ai.subut.kurjun.core.dao.model.metadata.TemplateDataEntity;
-import ai.subut.kurjun.metadata.common.apt.DefaultDependency;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
 import ai.subut.kurjun.model.identity.ObjectType;
 import ai.subut.kurjun.model.metadata.RepositoryData;

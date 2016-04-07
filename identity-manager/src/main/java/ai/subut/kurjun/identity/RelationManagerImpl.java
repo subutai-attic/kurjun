@@ -444,9 +444,7 @@ public class RelationManagerImpl implements RelationManager
     @Override
     public int setObjectOwner( User owner, String objectId, int objectType )
     {
-        Relation relation = null;
-
-        relation = getObjectOwner( objectId, objectType );
+        Relation relation = getObjectOwner( objectId, objectType );
 
         if ( relation == null )
         {
@@ -473,7 +471,7 @@ public class RelationManagerImpl implements RelationManager
         if ( !Strings.isNullOrEmpty( childId ) )
         {
 
-            if ( access == false )
+            if ( !access)
             {
                 if ( getUserPermissions( user, childId, childType ).contains( perm ) )
                 {

@@ -69,13 +69,11 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
     @Override
     public boolean contains( Object id ) throws IOException
     {
+        FileDb fileDb = null;
         try
         {
-            //return templateDataService.find( id ) != null;
-            //*
-            FileDb fileDb = new FileDb( fileDbPath.toString());
+            fileDb = new FileDb( fileDbPath.toString());
             boolean contains = fileDb.contains( MAP_NAME, id );
-            fileDb.close();
 
             return contains;
             //*/
@@ -83,6 +81,10 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
         catch(Exception ex)
         {
              return false;
+        }
+        finally
+        {
+            if ( fileDb != null ) fileDb.close();
         }
     }
 

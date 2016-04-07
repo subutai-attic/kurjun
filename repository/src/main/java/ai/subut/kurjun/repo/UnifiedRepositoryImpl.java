@@ -155,7 +155,7 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
 
         for ( Repository repo : repoList )
         {
-            List<SerializableMetadata> list = repo.listPackages();
+            List<SerializableMetadata> list = repo.listPackages(context , type);
 
             if(list != null)
             {

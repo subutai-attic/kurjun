@@ -19,11 +19,12 @@
         <div style="margin-left: 200px">
 
             <form method="get" actoin="${contextPath}/">
-                <label>Show by repo: </label>
-                <select name="repository" id="repo-filter">
+                <label>Show by repo: </label><select name="repository" id="repo-filter">
+                <#if sel_repo??>
                     <#list repos as repo >
-                        <option value="${repo}" <#if sel_repo==repo >selected</#if> >${repo}</option>
+                        <option value="${repo}" <#if sel_repo == repo >selected</#if> >${repo}</option>
                     </#list>
+                </#if>
                 </select>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <label><input type="radio" name="node" value="local" ${(node=="local")?string("checked","")}> Local node</label>

@@ -82,9 +82,14 @@ class FileSystemFileStore implements FileStore
     @Override
     public boolean contains( String md5 ) throws IOException
     {
-        try ( FileDb fileDb = new FileDb( makeDbFilePath() ) )
+        FileDb fileDb = null;
+        try
         {
             return fileDb.contains( MAP_NAME, md5 );
+        }
+        finally
+        {
+            if ( fileDb != null ) fileDb.close();
         }
     }
 
@@ -92,7 +97,8 @@ class FileSystemFileStore implements FileStore
     @Override
     public InputStream get( String md5 ) throws IOException
     {
-        try ( FileDb fileDb = new FileDb( makeDbFilePath() ) )
+        FileDb fileDb = null;
+        try
         {
             String path = fileDb.get( MAP_NAME, md5, String.class );
 
@@ -104,6 +110,10 @@ class FileSystemFileStore implements FileStore
             {
                 return null;
             }
+        }
+        finally
+        {
+            if ( fileDb != null ) fileDb.close();
         }
     }
 
@@ -157,8 +167,10 @@ class FileSystemFileStore implements FileStore
         Path target = Files.createTempFile( subDir, filename, "" );
         String md5 = copyStream( source, target );
 
-        try ( FileDb fileDb = new FileDb( makeDbFilePath() ) )
+        FileDb fileDb = null;
+        try
         {
+            fileDb = new FileDb( makeDbFilePath() );
             // check if we already have a file with the calculated md5 checksum, if so just replace the old file
             String existingPath = fileDb.get( MAP_NAME, md5, String.class );
             if ( existingPath != null )
@@ -172,6 +184,11 @@ class FileSystemFileStore implements FileStore
                 fileDb.put( MAP_NAME, md5, target.toAbsolutePath().toString() );
             }
         }
+        finally
+        {
+            if ( fileDb != null ) fileDb.close();
+        }
+
         return md5;
     }
 
@@ -180,8 +197,11 @@ class FileSystemFileStore implements FileStore
     public boolean remove( String md5 ) throws IOException
     {
         String hexMd5 = md5;
-        try ( FileDb fileDb = new FileDb( makeDbFilePath() ) )
+
+        FileDb fileDb = new FileDb( makeDbFilePath() );
+        try
         {
+            fileDb = new FileDb( makeDbFilePath() );
             String path = fileDb.get( MAP_NAME, hexMd5, String.class );
             if ( path != null )
             {
@@ -192,6 +212,11 @@ class FileSystemFileStore implements FileStore
                 return true;
             }
         }
+        finally
+        {
+            if ( fileDb != null ) fileDb.close();
+        }
+
         return false;
     }
 
@@ -229,7 +254,8 @@ class FileSystemFileStore implements FileStore
     @Override
     public long sizeOf( String md5 ) throws IOException
     {
-        try ( FileDb fileDb = new FileDb( makeDbFilePath() ) )
+        FileDb fileDb = null;
+        try
         {
             String path = fileDb.get( MAP_NAME, md5, String.class );
             if ( path != null )
@@ -237,6 +263,11 @@ class FileSystemFileStore implements FileStore
                 return Files.size( Paths.get( path ) );
             }
         }
+        finally
+        {
+            if ( fileDb != null ) fileDb.close();
+        }
+
         return 0;
     }
 
