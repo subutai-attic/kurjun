@@ -18,11 +18,10 @@ import ai.subut.kurjun.core.dao.api.DAOException;
 import ai.subut.kurjun.core.dao.api.GenericDAOImpl;
 import ai.subut.kurjun.core.dao.model.metadata.AptDataEntity;
 import ai.subut.kurjun.model.metadata.apt.AptData;
-import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.repository.ArtifactId;
 
 
-public class AptDAO extends GenericDAOImpl<PackageMetadata>
+public class AptDAO extends GenericDAOImpl<AptData>
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( AptDAO.class );
 

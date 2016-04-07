@@ -57,7 +57,6 @@ public class TemplateController extends BaseController
         List<SerializableMetadata> defaultTemplateList = new ArrayList<>();
         try
         {
-            repo = StringUtils.isBlank( repo ) ? "public" : repo;
             search = StringUtils.isBlank( search ) ? "all" : search;
             //*****************************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );

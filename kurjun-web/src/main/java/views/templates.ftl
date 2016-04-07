@@ -20,9 +20,11 @@
 
             <form method="get" actoin="${contextPath}/">
                 <label>Show by repo: </label><select name="repository" id="repo-filter">
+                <#if sel_repo??>
                     <#list repos as repo >
-                        <option value="${repo}" <#if sel_repo==repo >selected</#if> >${repo}</option>
+                        <option value="${repo}" <#if sel_repo == repo >selected</#if> >${repo}</option>
                     </#list>
+                </#if>
                 </select>
             </form>
         </div>

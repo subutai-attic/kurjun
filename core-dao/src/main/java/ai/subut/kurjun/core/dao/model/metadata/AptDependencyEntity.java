@@ -17,6 +17,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import ai.subut.kurjun.model.metadata.apt.Dependency;
 import ai.subut.kurjun.model.metadata.apt.RelationOperator;
@@ -41,7 +42,6 @@ public class AptDependencyEntity implements Dependency
 
 
     @OneToMany(cascade = { CascadeType.ALL}, fetch = FetchType.LAZY, targetEntity = AptDependencyEntity.class)
-    @Column( name = "alternatives" )
     private List<Dependency> alternatives = new ArrayList<>();
 
 

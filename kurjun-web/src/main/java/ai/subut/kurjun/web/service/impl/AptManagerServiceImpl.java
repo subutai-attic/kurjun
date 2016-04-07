@@ -68,8 +68,6 @@ public class AptManagerServiceImpl implements AptManagerService
 
     private KurjunContext kurjunContext;
 
-    public static final String REPO_NAME = "vapt";
-
     @Inject
     IdentityManagerService identityManagerService;
     @Inject
@@ -112,7 +110,7 @@ public class AptManagerServiceImpl implements AptManagerService
     //init local repos
     private void _local()
     {
-        this.kurjunContext = new KurjunContext( REPO_NAME, ObjectType.AptRepo.getId(), "system-owner" );
+        this.kurjunContext = new KurjunContext( "subutai", ObjectType.AptRepo.getId(), "system-owner" );
         this.localRepository = repositoryFactory.createLocalApt( kurjunContext );
     }
 
@@ -324,7 +322,7 @@ public class AptManagerServiceImpl implements AptManagerService
                 break;
         }
 
-        return list.stream().map( pkg -> ( DefaultPackageMetadata ) pkg ).collect( Collectors.toList() );
+        return list;
     }
 
 

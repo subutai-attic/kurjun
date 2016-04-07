@@ -23,7 +23,6 @@ import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import ai.subut.kurjun.metadata.common.apt.DefaultDependency;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.apt.AptData;
@@ -71,51 +70,35 @@ public class AptDataEntity implements AptData
     private int installedSize = 0;
 
 
-    //@ElementCollection (targetClass = AptDependencyEntity.class)
     @OneToMany(cascade = { CascadeType.ALL}, fetch = FetchType.LAZY, targetEntity = AptDependencyEntity.class)
-    @Column( name = "dependencies" )
     private List<Dependency> dependencies = new ArrayList<>();
 
 
-    //@ElementCollection (targetClass = AptDependencyEntity.class)
     @OneToMany(cascade = { CascadeType.ALL}, fetch = FetchType.LAZY, targetEntity = AptDependencyEntity.class)
-    @Column( name = "recommends" )
     private List<Dependency> recommends = new ArrayList<>();
 
 
-    //@ElementCollection (targetClass = AptDependencyEntity.class)
     @OneToMany(cascade = { CascadeType.ALL}, fetch = FetchType.LAZY, targetEntity = AptDependencyEntity.class)
-    @Column( name = "suggests" )
     private List<Dependency> suggests = new ArrayList<>();
 
 
-    //@ElementCollection (targetClass = AptDependencyEntity.class)
     @OneToMany(cascade = { CascadeType.ALL}, fetch = FetchType.LAZY, targetEntity = AptDependencyEntity.class)
-    @Column( name = "enhances" )
     private List<Dependency> enhances = new ArrayList<>();
 
 
-    //@ElementCollection (targetClass = AptDependencyEntity.class)
     @OneToMany(cascade = { CascadeType.ALL}, fetch = FetchType.LAZY, targetEntity = AptDependencyEntity.class)
-    @Column( name = "preDepends" )
     private List<Dependency> preDepends = new ArrayList<>();
 
 
-    //@ElementCollection (targetClass = AptDependencyEntity.class)
     @OneToMany(cascade = { CascadeType.ALL}, fetch = FetchType.LAZY, targetEntity = AptDependencyEntity.class)
-    @Column( name = "conflicts" )
     private List<Dependency> conflicts = new ArrayList<>();
 
 
-    //@ElementCollection (targetClass = AptDependencyEntity.class)
     @OneToMany(cascade = { CascadeType.ALL}, fetch = FetchType.LAZY, targetEntity = AptDependencyEntity.class)
-    @Column( name = "breaks" )
     private List<Dependency> breaks = new ArrayList<>();
 
 
-    //@ElementCollection (targetClass = AptDependencyEntity.class)
     @OneToMany(cascade = { CascadeType.ALL}, fetch = FetchType.LAZY, targetEntity = AptDependencyEntity.class)
-    @Column( name = "replaces" )
     private List<Dependency> replaces = new ArrayList<>();
 
     @ElementCollection

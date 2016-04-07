@@ -66,10 +66,6 @@ public class AptController extends BaseAptController
     {
         try ( InputStream inputStream = new FileInputStream( file.getFile() ) )
         {
-
-            if(repository == null)
-                repository = "vapt";
-
             //********************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
             URI uri = aptManagerService.upload( uSession, repository, inputStream );
