@@ -6,6 +6,7 @@ import java.util.List;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.web.controllers.BaseController;
 import ai.subut.kurjun.web.filter.SecurityFilter;
+import ai.subut.kurjun.web.security.AuthorizedUser;
 import ninja.Context;
 import ninja.session.FlashScope;
 import org.slf4j.Logger;
@@ -120,6 +121,23 @@ public class RestIdentityController extends BaseController
             LOGGER.error( "Failed to authorize user: "+e.getMessage() );
             return Results.badRequest().text().render( e.getMessage() );
         }
+    }
+
+
+    //*************************
+    public Result logout( @AuthorizedUser UserSession userSession, Context context )
+    {
+        User user = userSession.getUser();
+        if ( user != null )
+        {
+            context.setAttribute( SecurityFilter.USER_TOKEN, null );
+            context.setAttribute( SecurityFilter.USER_SESSION, null );
+            context.getSession().clear();
+
+            identityManagerService.logout( user );
+            return Results.ok();
+        }
+        else return Results.notFound();
     }
 
 

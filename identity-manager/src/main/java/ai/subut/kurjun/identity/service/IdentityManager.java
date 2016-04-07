@@ -86,4 +86,7 @@ public interface IdentityManager
 
     //********************************************
     boolean isPublicUser(User user);
+
+    //********************************************
+    void logout( User user );
 }

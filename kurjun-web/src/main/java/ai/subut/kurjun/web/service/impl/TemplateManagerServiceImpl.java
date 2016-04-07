@@ -300,6 +300,18 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     }
 
 
+    private void getMissingFiles()
+    {
+        List<SerializableMetadata> templateList = localPublicTemplateRepository.listPackages();
+
+        UnifiedRepository unifiedRepository = repositoryFactory.createUnifiedRepo();
+        unifiedRepository.getRepositories().addAll( artifactContext.getRemoteTemplateRepositories() );
+
+        List<SerializableMetadata> remoteTemplateList = unifiedRepository.listPackages();
+
+    }
+
+
     @Override
     public TemplateData getTemplate( UserSession userSession, String repository, final String md5, String version,
                                      String search )

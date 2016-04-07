@@ -38,7 +38,6 @@ import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.annotation.Nullable;
 import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.index.ReleaseFile;
-import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.ArtifactId;
 import ai.subut.kurjun.repo.cache.PackageCache;
@@ -70,19 +69,22 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     private String md5Sum = "";
     private List<SerializableMetadata> remoteIndexChache = new LinkedList<>();
 
-    private static final int CONN_TIMEOUT = 3000;
-    private static final int READ_TIMEOUT = 3000;
+    private static final int CONN_TIMEOUT = 15000;
+    private static final int READ_TIMEOUT = 1200000;
     private static final int CONN_TIMEOUT_FOR_URL_CHECK = 200;
+
+    private String fetchType;
 
 
     @Inject
     public RemoteRawRepository( PackageCache cache, WebClientFactory webClientFactory, @Assisted( "url" ) String url,
-                                @Assisted @Nullable User identity )
+                                @Assisted @Nullable User identity, String fetchType )
 
     {
         this.webClientFactory = webClientFactory;
         this.cache = cache;
         this.identity = identity;
+        this.fetchType = fetchType;
         try
         {
             this.url = new URL( url );

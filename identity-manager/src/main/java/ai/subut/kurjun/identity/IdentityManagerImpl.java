@@ -499,14 +499,19 @@ public class IdentityManagerImpl implements IdentityManager
     @Override
     public boolean isPublicUser( final User user )
     {
-        if(user == null)
-            return true;
+        if ( user == null ) return true;
         else
         {
-            if(user.getKeyFingerprint().toLowerCase().equals( PUBLIC_USER_ID ))
-                return true;
-            else
-                return false;
+            if ( user.getKeyFingerprint().toLowerCase().equals( PUBLIC_USER_ID ) ) return true;
+            else return false;
         }
+    }
+
+
+    //********************************************
+    @Override
+    public void logout( User user )
+    {
+        user.setUserToken( null );
     }
 }
