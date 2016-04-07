@@ -50,7 +50,7 @@
                         </div>
                         <div class="b-form__wrapper g-margin-bottom">
                             <label class="b-form-label">Signed message</label>
-                            <textarea name="message" id="subt-input__password" tabindex=2 class="b-form-input b-form-input_full" style="width: 370px; height: 160px"></textarea>
+                            <textarea name="message" id="subt-input__password" tabindex=2 class="b-form-input b-form-input_full e2e-sign-message" style="width: 370px; height: 160px"></textarea>
                         </div>
                         <div class="b-login-form-btn">
                             <button type="submit" tabindex="3" class="b-btn b-btn_green b-btn_full-width" id="subt-button__login">
