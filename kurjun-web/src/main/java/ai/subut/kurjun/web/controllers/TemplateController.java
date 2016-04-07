@@ -186,7 +186,7 @@ public class TemplateController extends BaseController
     }
 
 
-    public Result deleteTemplate( Context context, @PathParam( "id" ) String repository, @PathParam( "md5" ) String md5,
+    public Result deleteTemplate( Context context, @PathParam( "repository" ) String repository, @PathParam( "md5" ) String md5,
                                   FlashScope flashScope )
     {
         try

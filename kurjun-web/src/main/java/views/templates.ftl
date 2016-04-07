@@ -70,8 +70,8 @@
     function removeTemplate(templId)
     {
         var confirmed = confirm("Are you sure want to delete it?");
-        if (confirmed) {
-          alert('${contextPath}/templates/delete'+templId);
+        if (confirmed)
+        {
             $('#removeTemplForm').attr('action', '${contextPath}/templates/delete'+templId);
             $('#removeTemplForm').submit();
         }
