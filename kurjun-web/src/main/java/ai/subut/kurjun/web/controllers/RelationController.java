@@ -89,7 +89,7 @@ public class RelationController extends BaseController
         else
         {
             Map<String, String> map = ObjectType.getMap();
-            for ( Map.Entry<String, String> e : map.entrySet()) LOGGER.info( e.getKey()+" = "+e.getValue() );
+
             return Results.html().template( "views/relations.ftl" )
                           .render( "relations", rels )
                           .render( "relObjTypes", map );
@@ -99,8 +99,8 @@ public class RelationController extends BaseController
 
     //*************************************************
     public Result addTrustRelation( @AuthorizedUser UserSession userSession,
-                                    @Param( "target_obj_id" ) String sourceObjId,
-                                    @Param( "target_obj_type" ) int sourceObjType,
+                                    @Param( "target_obj_id" ) String targetObjId,
+                                    @Param( "target_obj_type" ) int targetObjType,
                                     @Param( "trust_obj_id" ) String trustObjId,
                                     @Param( "trust_obj_type" ) int trustObjType,
                                     @Params( "permission" ) String[] permissions, Context context,
@@ -111,7 +111,7 @@ public class RelationController extends BaseController
         Arrays.asList( permissions ).forEach( p -> objectPermissions.add( Permission.valueOf( p ) ) );
 
         int result = relationManagerService
-                .addTrustRelation( userSession, sourceObjId, sourceObjType, trustObjId, trustObjType,
+                .addTrustRelation( userSession, targetObjId, targetObjType, trustObjId, trustObjType,
                         objectPermissions );
 
 
@@ -133,7 +133,6 @@ public class RelationController extends BaseController
     }
 
     //*************************************************
-
     /*
     public Result getRelationsByOwner( @AuthorizedUser UserSession userSession,
                                        @Param( "fingerprint" ) String fingerprint )
@@ -141,7 +140,7 @@ public class RelationController extends BaseController
         return Results.html().metadata( "views/_popup-view-permissions.ftl" ).render( "relations",
                 relationManagerService.getTrustRelationsBySource(
                         relationManagerService.toSourceObject( identityManagerService.getUser( fingerprint ) ) ) );
-    }
+    }*/
 
     /*
     public Result getRelationsByTarget( @AuthorizedUser UserSession userSession,
@@ -150,26 +149,20 @@ public class RelationController extends BaseController
         return Results.html().metadata( "views/_popup-view-permissions.ftl" ).render( "relations",
                 relationManagerService
                         .getTrustRelationsByTarget( relationManagerService.toTargetObject( fingerprint ) ) );
-    }
+    }*/
+
 
 
     public Result getRelationsByObject( @AuthorizedUser UserSession userSession, @Param( "id" ) String id,
                                         @Param( "name" ) String name, @Param( "version" ) String version,
                                         @Param( "md5" ) String md5, @Param( "obj_type" ) int objType )
     {
-        RelationObjectType relObjType = RelationObjectType.valueOf( objType );
-        relObjType = ( relObjType == null ? RelationObjectType.RepositoryContent : relObjType );
-        List<Relation> rels = relationManagerService
-                .getTrustRelationsByObject( relationManagerService.toTrustObject(userSession, id, null, null, null,
-                relObjType ) );
-        //.stream().filter( r -> !r.getSource().getId().equals( r.getTarget().getId() ) ).collect Collectors.toList() );
-        return Results.html().metadata( "views/_popup-view-permissions.ftl" ).render( "relations", rels );
+        List<Relation> rels = relationManagerService.getRelationsByObject( id, objType );
+
+        return Results.html().template( "views/_popup-view-permissions.ftl" ).render( "relations", rels );
     }
 
-
-
-
-
+    /*
     public Result addTrustRelation( @AuthorizedUser UserSession userSession,
                                     @Param( "target_fprint" ) String targetFprint,
                                     @Param( "trust_obj_type" ) int trustObjType,
@@ -224,8 +217,10 @@ public class RelationController extends BaseController
             return Results.redirect( context.getContextPath() + "/relations" );
         }
     }
+    */
 
 
+    /*
     public Result delete( @PathParam( "id" ) String id, @Param( "source_id" ) String sourceId,
                           @Param( "target_id" ) String targetId, @Param( "object_id" ) String objectId, Context context,
                           FlashScope flashScope )
@@ -263,11 +258,11 @@ public class RelationController extends BaseController
 
         return Results.redirect( context.getContextPath() + "/relations" );
     }
+    */
 
 
 
-
-
+    /*
     public Result change( @PathParam( "id" ) String id, @Params( "permission" ) String[] permissions, Context context,
                           FlashScope flashScope )
     {

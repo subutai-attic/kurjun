@@ -13,6 +13,7 @@
                         <label class="b-form-label"><input type="radio" name="repo_type" value="new"/>New repository</label>
                         <br/>
                         <select name="repository" id="repository">
+                            <option value="" selected></option>
                             <#if repos?? && repos?has_content >
                                 <#list repos as repo>
                                 <option value="${repo}">${repo}</option>
@@ -24,7 +25,7 @@
                 </div>
                 <div class="b-workspace__content">
                     <div class="b-form__wrapper g-margin-bottom-half">
-                        <input type="file" name="file" id="fileinput" />
+                        <input type="file" name="file" id="fileinput" accept=".tar,.gz,.xz,.zip" />
                     </div>
                 </div>
                 <div class="b-popup__footer">

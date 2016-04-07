@@ -56,6 +56,9 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     @Inject
     RelationManager relationManager;
 
+    @Inject
+    RepositoryServiceImpl repositoryService;
+
     //------------------------------
 
     private RepositoryFactory repositoryFactory;
@@ -111,7 +114,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public List<SerializableMetadata> list( UserSession userSession, String repository, String search,
+    public List<SerializableMetadata> list( UserSession userSession, String repository, String node,
                                             final boolean isKurjunClient ) throws IOException
     {
         List<SerializableMetadata> results;
@@ -121,21 +124,27 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
             repository = userSession.getUser().getUserName();
         }
 
-        switch ( search )
+        switch ( node )
         {
             //return local list
             case "local":
-                results = localPublicTemplateRepository.listPackages( repository, ObjectType.TemplateRepo.getId() );
                 //return personal repository list
+                results = localPublicTemplateRepository.listPackages( repository, ObjectType.TemplateRepo.getId() );
                 break;
-            case "all":
-                results = unifiedTemplateRepository.listPackages( repository, ObjectType.TemplateRepo.getId() );
+            /*case "all":
                 //return unified repo list
-                break;
-            default:
                 results = unifiedTemplateRepository.listPackages( repository, ObjectType.TemplateRepo.getId() );
-                results.addAll(
-                        repositoryFactory.createLocalTemplate( new KurjunContext( repository ) ).listPackages() );
+                break;*/
+            default: // "all"
+                //return unified repo list
+                results = unifiedTemplateRepository.listPackages( repository, ObjectType.TemplateRepo.getId() );
+                // this is needed to find templates in other then 'public' repositories
+                if ( results.size() == 0 )
+                {
+                    LocalRepository localRepo = repositoryFactory.createLocalTemplate( new KurjunContext( repository ) );
+                    List<SerializableMetadata> metadataList = localRepo.listPackages();
+                    if ( metadataList != null ) results.addAll( localRepo.listPackages() );
+                }
                 break;
         }
 
@@ -380,4 +389,15 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
                         ObjectType.Artifact.getId(), perm );
     }
     //*******************************************************************
+
+
+    @Override
+    public List<String> getRepoList()
+    {
+        List<String> repoList = repositoryService.getRepositoryContextList();
+        repoList.remove( AptManagerServiceImpl.REPO_NAME );
+        repoList.remove( RawManagerServiceImpl.DEFAULT_RAW_REPO_NAME );
+
+        return repoList;
+    }
 }

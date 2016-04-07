@@ -32,7 +32,7 @@
                 <td><#--a href="${contextPath}/apt/${a.id}/info" class="js-colorbox"></a-->${a.name}</td>
                 <td>${a.architecture}</td>
                 <td>${a.version}</td>
-                <td><a href="${contextPath}/apt/${a.id}/download" target="_blank">download</a>  |  <a href="#" onclick="removeApt('${a.id}')">remove</a></td>
+                <td><a href="${contextPath}/apt/${a.id.md5Sum}/download" target="_blank">download</a>  |  <a href="#" onclick="removeApt('${a.id.md5Sum}')">remove</a></td>
             </tr>
             </#list>
             </#if>

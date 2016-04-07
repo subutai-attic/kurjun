@@ -26,6 +26,10 @@
                     </#list>
                 </#if>
                 </select>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <label><input type="radio" name="node" value="local" ${(node=="local")?string("checked","")}> Local node</label>
+                <label><input type="radio" name="node" value="all" ${(node=="all")?string("checked","")}> All nodes</label>
+              <button type="submit">Search</button>
             </form>
         </div>
         <table id="templates_tbl" class="b-data-table">
@@ -53,10 +57,10 @@
                 <td><#if t.version??>${t.version}</#if></td>
                 <td><#if t.size??>${t.size}</#if></td>
                 <td><a href="${contextPath}/templates/download?repository=${t.id.context}&md5=${t.id.md5Sum}" target="_blank">download</a>
-                    |  <a href="${contextPath}/relations/by-object?id=${t.id}&obj_type=3" class="js-colorbox">permissions</a>
+                    |  <a href="${contextPath}/relations/by-object?id=${t.id.context+"."+t.id.md5Sum}&obj_type=3" class="js-colorbox">permissions</a>
                     <#if !( isPublic?? && isPublic ) >
-                    |  <a href="#" onclick="removeTemplate('?repository=${t.id.context}&md5=${t.id.md5Sum}')">remove</a>
-                    |  <a href="#js-add-trust-rel" onclick="$('#template_id').val('${t.id}')" class="js-colorbox-inline">share</a>
+                    |  <a href="#" onclick="removeTemplate('repository=${t.id.context}&md5=${t.id.md5Sum}')">remove</a>
+                    |  <a href="#js-add-trust-rel" onclick="$('#template_id').val('${t.id.context+"."+t.id.md5Sum}')" class="js-colorbox-inline">share</a>
                     </#if>
                 </td>
             </tr>
@@ -74,7 +78,7 @@
         var confirmed = confirm("Are you sure want to delete it?");
         if (confirmed)
         {
-            $('#removeTemplForm').attr('action', '${contextPath}/templates/delete'+templId);
+            $('#removeTemplForm').attr('action', '${contextPath}/templates/delete?'+templId);
             $('#removeTemplForm').submit();
         }
     }
@@ -83,12 +87,10 @@
 
         $('li#hdr_templates_tab').addClass("b-tabs-menu__item_active");
 
-        //$('#add_tpl_btn').colorbox({href:"#js-add-tpl", inline: true});
-
         $('#templates_tbl').DataTable();
 
         $('#repo-filter').on('change', function(e){
-            $(this).parent().submit();
+            //$(this).parent().submit();
         });
 
         $('table.dataTable').on( 'page.dt', function () {

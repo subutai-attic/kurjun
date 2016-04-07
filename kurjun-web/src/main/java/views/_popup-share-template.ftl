@@ -12,12 +12,12 @@
             <div>
                 <div class="b-form__wrapper">
                     <label for="target_fprint" class="b-form-label">With</label>
-                    <input type="text" name="target_fprint" id="target_fprint" placeholder="target fingerprint" />
+                    <input type="text" name="target_obj_id" id="target_fprint" placeholder="target fingerprint" />
                 </div>
             </div>
             <div style="display: none;">
                 <input type="radio" name="trust_obj_type" value="3" checked />
-                <input type="text" name="template_id" id="template_id" />
+                <input type="text" name="trust_obj_id" id="template_id" />
             </div>
             <div>
                 <div class="b-form__wrapper g-margin-bottom-half">

@@ -107,4 +107,9 @@ public class RelationManagerServiceImpl implements RelationManagerService
         }
     }
 
+    public List<Relation> getRelationsByObject( String trustObjectId, int trustObjectType )
+    {
+        return  relationManager.getRelationsByObject( trustObjectId, trustObjectType );
+    }
+
 }
