@@ -57,6 +57,8 @@ public class AptManagerServiceImpl implements AptManagerService
 
     private static final Logger LOGGER = LoggerFactory.getLogger( AptManagerServiceImpl.class );
 
+    public static final String REPO_NAME = "apt";
+
     private RepositoryFactory repositoryFactory;
     private AptIndexBuilderFactory aptIndexBuilderFactory;
     private PackagesProviderFactory packagesProviderFactory;
