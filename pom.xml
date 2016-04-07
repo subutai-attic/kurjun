@@ -71,7 +71,7 @@
     <encoding>UTF-8</encoding>
 
     <!-- dependency versions -->
-    <openjpa.version>2.4.0</openjpa.version>
+    <openjpa.version>2.3.0</openjpa.version>
     <derby.version>10.12.1.1</derby.version>
     <!--  *************     -->
 

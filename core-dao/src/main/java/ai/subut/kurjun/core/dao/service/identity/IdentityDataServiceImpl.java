@@ -4,6 +4,8 @@ package ai.subut.kurjun.core.dao.service.identity;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.EntityManagerFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +37,12 @@ public class IdentityDataServiceImpl implements IdentityDataService
     {
         this.userDAO = userDAO;
         this.userTokenDAO = userTokenDAO;
+    }
+
+    public IdentityDataServiceImpl(EntityManagerFactory emf)
+    {
+        this.userDAO = new UserDAO(emf);
+        this.userTokenDAO = new UserTokenDAO(emf);
     }
 
 

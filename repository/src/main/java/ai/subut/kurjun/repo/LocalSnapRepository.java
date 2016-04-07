@@ -131,7 +131,7 @@ class LocalSnapRepository extends LocalRepositoryBase
 
 
     @Override
-    protected RepositoryData getRepositoryData( final String repoContext, final int type )
+    protected RepositoryData getRepositoryData( final String repoContext, final int type, String owner )
     {
         return null;
     }

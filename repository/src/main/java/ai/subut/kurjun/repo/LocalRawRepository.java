@@ -11,20 +11,20 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
-import ai.subut.kurjun.metadata.common.DefaultMetadata;
-import ai.subut.kurjun.metadata.common.raw.RawMetadata;
 import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
+import ai.subut.kurjun.model.identity.ObjectType;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
-import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.RepositoryData;
-import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.metadata.raw.RawData;
 import ai.subut.kurjun.model.storage.FileStore;
+import ai.subut.kurjun.repo.service.RepositoryManager;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 
@@ -39,6 +39,9 @@ public class LocalRawRepository extends LocalRepositoryBase
 
     private final KurjunContext context;
 
+    @Inject
+    RepositoryManager repositoryManager;
+
 
     @Inject
     public LocalRawRepository( PackageMetadataStoreFactory metadataStoreFactory, FileStoreFactory fileStoreFactory,
@@ -50,6 +53,7 @@ public class LocalRawRepository extends LocalRepositoryBase
     }
 
 
+    @Deprecated
     @Override
     public Metadata put( InputStream is, CompressionType compressionType ) throws IOException
     {
@@ -57,6 +61,7 @@ public class LocalRawRepository extends LocalRepositoryBase
     }
 
 
+    @Deprecated
     @Override
     public Metadata put( final InputStream is, final CompressionType compressionType, final String context, final String owner )
             throws IOException
@@ -67,51 +72,28 @@ public class LocalRawRepository extends LocalRepositoryBase
     }
 
 
+    @Deprecated
     @Override
     public Metadata put( final File file, final CompressionType compressionType, final String context,  final String owner ) throws IOException
     {
-        DefaultMetadata metadata = new DefaultMetadata();
-        metadata.setName( file.getName() );
-
-        SerializableMetadata oldmeta = getPackageInfo( metadata );
-
-        if ( oldmeta != null )
-        {
-            // delete old record having the same file name
-            //delete( oldmeta.getMd5Sum() );
-        }
-
-        String md5 = getFileStore().put( file );
-
-        RawMetadata meta = new RawMetadata( md5, file.getName(), file.length(), owner );
-        //getMetadataStore().put( meta );
-
-        return meta;
+        return null;
     }
 
 
-    public Metadata put( final File file, String name, final String owner )
+    public Metadata put( final File file, String name, final String context , String owner )
             throws IOException
     {
-        DefaultMetadata metadata = new DefaultMetadata();
 
-        metadata.setName( name );
-
-        SerializableMetadata oldmeta = getPackageInfo( metadata );
-
-        if ( oldmeta != null )
-        {
-            // delete old record having the same file name
-            //delete( oldmeta.getMd5Sum() );
-        }
+        //*******************
+        RepositoryData repoData = getRepositoryData( context, ObjectType.RawRepo.getId(), owner );
+        //*******************
 
         String md5 = getFileStore().put( file );
+        RawData rawData = repositoryManager.constructRawData ( repoData, md5 , name , owner );
 
-        RawMetadata meta = new RawMetadata( md5, name, file.length(), owner );
+        repositoryManager.addArtifactToRepository(repoData, rawData );
 
-        //getMetadataStore().put( meta );
-
-        return meta;
+        return rawData;
     }
 
 
@@ -123,9 +105,20 @@ public class LocalRawRepository extends LocalRepositoryBase
 
 
     @Override
-    protected RepositoryData getRepositoryData( final String repoContext, final int type )
+    protected RepositoryData getRepositoryData(String repoContext,int type, String owner )
     {
-        return null;
+
+        if( Strings.isNullOrEmpty( repoContext ))
+        {
+            repoContext = context.getName();
+        }
+
+        if( Strings.isNullOrEmpty(owner))
+        {
+            owner = context.getOwner();
+        }
+
+        return repositoryManager.getRepositoryData( repoContext, ObjectType.RawRepo.getId(), owner, true );
     }
 
 

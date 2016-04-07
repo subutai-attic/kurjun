@@ -16,8 +16,8 @@ import org.slf4j.LoggerFactory;
 
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.index.ReleaseFile;
-import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.repository.ArtifactId;
 import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.repository.Repository;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
@@ -80,6 +80,7 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
     }
 
 
+
     @Override
     public Set<Repository> getRepositories()
     {
@@ -88,12 +89,13 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
 
 
     @Override
-    public SerializableMetadata getPackageInfo( Metadata metadata )
+    public SerializableMetadata getPackageInfo( ArtifactId id )
     {
         Iterator<Repository> it = getAllRepositories().iterator();
         while ( it.hasNext() )
         {
-            SerializableMetadata m = it.next().getPackageInfo( metadata );
+            SerializableMetadata m = it.next().getPackageInfo( id );
+
             if ( m != null )
             {
                 return m;
@@ -103,12 +105,13 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
     }
 
 
+
     @Override
-    public InputStream getPackageStream( Metadata metadata )
+    public InputStream getPackageStream( ArtifactId id )
     {
         for ( final Repository repository : getAllRepositories() )
         {
-            InputStream is = repository.getPackageStream( metadata );
+            InputStream is = repository.getPackageStream( id );
             if ( is != null )
             {
                 return is;
@@ -117,22 +120,26 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
         return null;
     }
 
+
     @Override
     public List<SerializableMetadata> listPackages()
     {
         List<SerializableMetadata> result = new LinkedList<>();
-        List<Repository> repoList =getAllRepositories();
+        List<Repository> repoList = getAllRepositories();
         LOGGER.info( "repoList size: "+repoList.size() );
 
         for ( Repository repo : repoList )
         {
             List<SerializableMetadata> list = repo.listPackages();
 
-            for ( SerializableMetadata meta : list )
+            if(list != null)
             {
-                if ( !result.contains( meta ) )
+                for ( SerializableMetadata meta : list )
                 {
-                    result.add( meta );
+                    if ( !result.contains( meta ) )
+                    {
+                        result.add( meta );
+                    }
                 }
             }
         }
@@ -144,18 +151,21 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
     public List<SerializableMetadata> listPackages(String context , int type)
     {
         List<SerializableMetadata> result = new LinkedList<>();
-        List<Repository> repoList =getAllRepositories();
+        List<Repository> repoList = getAllRepositories();
         LOGGER.info( "repoList size: "+repoList.size() );
 
         for ( Repository repo : repoList )
         {
             List<SerializableMetadata> list = repo.listPackages();
 
-            for ( SerializableMetadata meta : list )
+            if(list != null)
             {
-                if ( !result.contains( meta ) )
+                for ( SerializableMetadata meta : list )
                 {
-                    result.add( meta );
+                    if ( !result.contains( meta ) )
+                    {
+                        result.add( meta );
+                    }
                 }
             }
         }

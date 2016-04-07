@@ -5,6 +5,7 @@ import com.google.inject.AbstractModule;
 
 import ai.subut.kurjun.core.dao.model.identity.RelationEntity;
 import ai.subut.kurjun.core.dao.model.identity.RelationObjectEntity;
+import ai.subut.kurjun.core.dao.model.metadata.AptDataEntity;
 import ai.subut.kurjun.core.dao.model.metadata.RawDataEntity;
 import ai.subut.kurjun.core.dao.model.metadata.RepositoryArtifactEntity;
 import ai.subut.kurjun.core.dao.model.metadata.RepositoryArtifactId;
@@ -23,6 +24,7 @@ import ai.subut.kurjun.model.identity.RelationObject;
 import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.model.identity.UserToken;
 import ai.subut.kurjun.model.metadata.RepositoryData;
+import ai.subut.kurjun.model.metadata.apt.AptData;
 import ai.subut.kurjun.model.metadata.raw.RawData;
 import ai.subut.kurjun.model.metadata.template.TemplateData;
 import ai.subut.kurjun.model.repository.ArtifactId;
@@ -52,10 +54,10 @@ public class KurjunDAOModule extends AbstractModule
         bind( ArtifactId.class ).to( RepositoryArtifactId.class );
         bind( TemplateData.class ).to( TemplateDataEntity.class );
         bind( RawData.class ).to( RawDataEntity.class );
+        bind( AptData.class ).to( AptDataEntity.class );
 
         bind( RepositoryData.class ).to( RepositoryDataEntity.class );
         bind( RepositoryArtifact.class ).to( RepositoryArtifactEntity.class );
-
         // -------------------------------------------
 
 

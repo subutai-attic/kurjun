@@ -3,52 +3,58 @@ package ai.subut.kurjun.core.dao.model.metadata;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.MapKeyColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import ai.subut.kurjun.metadata.common.apt.DefaultDependency;
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.metadata.Architecture;
-import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.metadata.apt.AptData;
 import ai.subut.kurjun.model.metadata.apt.Dependency;
-import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 import ai.subut.kurjun.model.metadata.apt.Priority;
+import ai.subut.kurjun.model.repository.ArtifactId;
 
 
 @Entity
 @Table( name = AptDataEntity.TABLE_NAME )
 @Access( AccessType.FIELD )
-public class AptDataEntity implements PackageMetadata, SerializableMetadata
+public class AptDataEntity implements AptData
 {
     public static final String TABLE_NAME = "debs";
 
-    @Id
-    @Column( name = "md5" )
-    private String md5;
+    @EmbeddedId
+    RepositoryArtifactId id;
+
+    @Column( name = "owner" )
+    private String owner;
 
     @Column( name = "component" )
     private String component;
 
-    @Column( name = "filename" )
+    @Column( name = "filename" , nullable = false)
     private String filename;
 
     @Column( name = "packageName" )
     private String packageName;
 
-    @Column( name = "    private String version;\n" )
+    @Column( name = "version" )
     private String version;
 
     @Column( name = "source" )
@@ -62,44 +68,59 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
     private Architecture architecture;
 
     @Column( name = "installedSize" )
-    private int installedSize;
+    private int installedSize = 0;
 
 
-    @ElementCollection
+    //@ElementCollection (targetClass = AptDependencyEntity.class)
+    @OneToMany(cascade = { CascadeType.ALL}, fetch = FetchType.LAZY, targetEntity = AptDependencyEntity.class)
     @Column( name = "dependencies" )
-    private List<Dependency> dependencies;
+    private List<Dependency> dependencies = new ArrayList<>();
 
-    @ElementCollection
+
+    //@ElementCollection (targetClass = AptDependencyEntity.class)
+    @OneToMany(cascade = { CascadeType.ALL}, fetch = FetchType.LAZY, targetEntity = AptDependencyEntity.class)
     @Column( name = "recommends" )
-    private List<Dependency> recommends;
+    private List<Dependency> recommends = new ArrayList<>();
 
-    @ElementCollection
+
+    //@ElementCollection (targetClass = AptDependencyEntity.class)
+    @OneToMany(cascade = { CascadeType.ALL}, fetch = FetchType.LAZY, targetEntity = AptDependencyEntity.class)
     @Column( name = "suggests" )
-    private List<Dependency> suggests;
+    private List<Dependency> suggests = new ArrayList<>();
 
-    @ElementCollection
+
+    //@ElementCollection (targetClass = AptDependencyEntity.class)
+    @OneToMany(cascade = { CascadeType.ALL}, fetch = FetchType.LAZY, targetEntity = AptDependencyEntity.class)
     @Column( name = "enhances" )
-    private List<Dependency> enhances;
+    private List<Dependency> enhances = new ArrayList<>();
 
-    @ElementCollection
+
+    //@ElementCollection (targetClass = AptDependencyEntity.class)
+    @OneToMany(cascade = { CascadeType.ALL}, fetch = FetchType.LAZY, targetEntity = AptDependencyEntity.class)
     @Column( name = "preDepends" )
-    private List<Dependency> preDepends;
+    private List<Dependency> preDepends = new ArrayList<>();
 
-    @ElementCollection
+
+    //@ElementCollection (targetClass = AptDependencyEntity.class)
+    @OneToMany(cascade = { CascadeType.ALL}, fetch = FetchType.LAZY, targetEntity = AptDependencyEntity.class)
     @Column( name = "conflicts" )
-    private List<Dependency> conflicts;
+    private List<Dependency> conflicts = new ArrayList<>();
 
-    @ElementCollection
+
+    //@ElementCollection (targetClass = AptDependencyEntity.class)
+    @OneToMany(cascade = { CascadeType.ALL}, fetch = FetchType.LAZY, targetEntity = AptDependencyEntity.class)
     @Column( name = "breaks" )
-    private List<Dependency> breaks;
+    private List<Dependency> breaks = new ArrayList<>();
 
-    @ElementCollection
+
+    //@ElementCollection (targetClass = AptDependencyEntity.class)
+    @OneToMany(cascade = { CascadeType.ALL}, fetch = FetchType.LAZY, targetEntity = AptDependencyEntity.class)
     @Column( name = "replaces" )
-    private List<Dependency> replaces;
+    private List<Dependency> replaces = new ArrayList<>();
 
     @ElementCollection
     @Column( name = "provides" )
-    private List<String> provides;
+    private List<String> provides = new ArrayList<>();
 
     @Column( name = "section" )
     private String section;
@@ -111,6 +132,7 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
     @Column( name = "homepage" )
     private String homepage;
 
+    @Lob
     @Column( name = "description" )
     private String description;
 
@@ -120,31 +142,48 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
     private Map<String, String> extra = new HashMap<>();
 
 
+    public AptDataEntity()
+    {
+
+    }
+
+    public AptDataEntity( String md5Sum, String context , int type)
+    {
+        id = new RepositoryArtifactId( md5Sum , context , type );
+    }
+
+
+
     @Override
     public String getOwner()
     {
-        return null;
+        return owner;
+    }
+
+    @Override
+    public void setOwner( String owner )
+    {
+        this.owner = owner;
     }
 
 
     @Override
-    public Object getId()
+    public ArtifactId getId()
     {
-        return md5;
+        return id;
+    }
+
+    @Override
+    public String getUniqId()
+    {
+        return ( this.id != null ) ? this.id.getContext() + "." + this.id.getMd5Sum() : "";
     }
 
 
     @Override
     public String getMd5Sum()
     {
-        return md5;
-    }
-
-
-    public void setMd5( String md5 )
-    {
-
-        this.md5 = md5;
+        return ( this.id != null ) ? this.id.getMd5Sum() : "";
     }
 
 
@@ -155,6 +194,7 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
     }
 
 
+    @Override
     public void setComponent( String component )
     {
         this.component = component;
@@ -168,6 +208,7 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
     }
 
 
+    @Override
     public void setFilename( String filename )
     {
         this.filename = filename;
@@ -181,6 +222,7 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
     }
 
 
+    @Override
     public void setPackage( String packageName )
     {
         this.packageName = packageName;
@@ -201,6 +243,7 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
     }
 
 
+    @Override
     public void setVersion( String version )
     {
         this.version = version;
@@ -214,6 +257,7 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
     }
 
 
+    @Override
     public void setSource( String source )
     {
         this.source = source;
@@ -227,6 +271,7 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
     }
 
 
+    @Override
     public void setMaintainer( String maintainer )
     {
         this.maintainer = maintainer;
@@ -240,6 +285,7 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
     }
 
 
+    @Override
     public void setArchitecture( Architecture architecture )
     {
         this.architecture = architecture;
@@ -253,6 +299,7 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
     }
 
 
+    @Override
     public void setInstalledSize( int installedSize )
     {
         this.installedSize = installedSize;
@@ -266,6 +313,7 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
     }
 
 
+    @Override
     public void setDependencies( List<Dependency> dependencies )
     {
         this.dependencies = dependencies;
@@ -279,6 +327,7 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
     }
 
 
+    @Override
     public void setRecommends( List<Dependency> recommends )
     {
         this.recommends = recommends;
@@ -292,6 +341,7 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
     }
 
 
+    @Override
     public void setSuggests( List<Dependency> suggests )
     {
         this.suggests = suggests;
@@ -305,6 +355,7 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
     }
 
 
+    @Override
     public void setEnhances( List<Dependency> enhances )
     {
         this.enhances = enhances;
@@ -318,6 +369,7 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
     }
 
 
+    @Override
     public void setPreDepends( List<Dependency> preDepends )
     {
         this.preDepends = preDepends;
@@ -331,6 +383,7 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
     }
 
 
+    @Override
     public void setConflicts( List<Dependency> conflicts )
     {
         this.conflicts = conflicts;
@@ -343,7 +396,7 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
         return breaks;
     }
 
-
+    @Override
     public void setBreaks( List<Dependency> breaks )
     {
         this.breaks = breaks;
@@ -357,6 +410,7 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
     }
 
 
+    @Override
     public void setReplaces( List<Dependency> replaces )
     {
         this.replaces = replaces;
@@ -370,6 +424,7 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
     }
 
 
+    @Override
     public void setProvides( List<String> provides )
     {
         this.provides = provides;
@@ -383,6 +438,7 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
     }
 
 
+    @Override
     public void setSection( String section )
     {
         this.section = section;
@@ -396,6 +452,7 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
     }
 
 
+    @Override
     public void setPriority( Priority priority )
     {
         this.priority = priority;
@@ -416,6 +473,7 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
     }
 
 
+    @Override
     public void setHomepage( URL homepage )
     {
         this.homepage = homepage.toString();
@@ -429,28 +487,21 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
     }
 
 
+    @Override
     public void setDescription( String description )
     {
         this.description = description;
     }
 
 
-    /**
-     * Gets extra meta data associated with this package.
-     *
-     * @return
-     */
+    @Override
     public Map<String, String> getExtra()
     {
         return extra;
     }
 
 
-    /**
-     * Sets extra meta data for this package.
-     *
-     * @param extra
-     */
+    @Override
     public void setExtra( Map<String, String> extra )
     {
         this.extra = extra;
@@ -465,31 +516,10 @@ public class AptDataEntity implements PackageMetadata, SerializableMetadata
 
 
     @Override
-    public int hashCode()
-    {
-        int hash = 3;
-        hash = 79 * hash + Arrays.hashCode( this.md5.getBytes() );
-        return hash;
-    }
-
-
-    @Override
-    public boolean equals( Object obj )
-    {
-        if ( obj instanceof PackageMetadata )
-        {
-            PackageMetadata p = ( PackageMetadata ) obj;
-            return Arrays.equals( md5.getBytes(), p.getMd5Sum().getBytes() );
-        }
-        return true;
-    }
-
-
-    @Override
     public String toString()
     {
         return "DefaultPackageMetadata{" +
-                "md5=" + md5 +
+                "md5=" + id.getMd5Sum() +
                 ", component='" + component + '\'' +
                 ", filename='" + filename + '\'' +
                 ", packageName='" + packageName + '\'' +

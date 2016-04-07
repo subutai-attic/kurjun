@@ -6,9 +6,14 @@ package ai.subut.kurjun.model.repository;
  */
 public interface ArtifactId
 {
-    String getName();
 
-    void setName( String name );
+    String getSearch();
+
+    void setSearch( String search );
+
+    String getVersion();
+
+    void setVersion( String version );
 
     String getContext();
 
@@ -18,11 +23,11 @@ public interface ArtifactId
 
     void setType( int type );
 
-    String getOwner();
-
-    void setOwner( String owner );
-
     String getMd5Sum();
 
     void setMd5Sum( String md5Sum );
+
+    String getArtifactName();
+
+    void setArtifactName( String artifactName );
 }

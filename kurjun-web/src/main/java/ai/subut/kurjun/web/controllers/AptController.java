@@ -44,16 +44,17 @@ public class AptController extends BaseAptController
     private RepositoryService repositoryService;
 
 
-    public Result list( @Param( "type" ) String type, @Param( "repository" ) String repository )
+    public Result list( @Param( "type" ) String type, @Param( "repository" ) String repository,
+                        @Param( "search" ) String search )
     {
-        if ( repository == null )
+        if ( search == null )
         {
-            repository = "all";
+            search = "all";
         }
 
         //********************************************
         //aptManagerService.setUserSession( ( UserSession) context.getAttribute( "USER_SESSION" ) );
-        List<SerializableMetadata> serializableMetadataList = aptManagerService.list( repository );
+        List<SerializableMetadata> serializableMetadataList = aptManagerService.list( repository, search );
         //********************************************
 
         return Results.html().template( "views/apts.ftl" ).render( "apts", serializableMetadataList );
@@ -61,13 +62,18 @@ public class AptController extends BaseAptController
 
 
     @FileProvider( SubutaiFileHandler.class )
-    public Result upload( Context context, @Param( "file" ) FileItem file, FlashScope flashScope ) throws IOException
+    public Result upload( Context context, @Param( "repository" ) String repository, @Param( "file" ) FileItem file,
+                          FlashScope flashScope ) throws IOException
     {
         try ( InputStream inputStream = new FileInputStream( file.getFile() ) )
         {
+
+            if(repository == null)
+                repository = "vapt";
+
             //********************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            URI uri = aptManagerService.upload( uSession, inputStream );
+            URI uri = aptManagerService.upload( uSession, repository, inputStream );
             //********************************************
 
             if ( uri != null )
@@ -131,7 +137,8 @@ public class AptController extends BaseAptController
     }
 
 
-    public Result info( @Param( "md5" ) String md5, @Param( "name" ) String name, @Param( "version" ) String version )
+    public Result info( @Param( "repository" ) String repository, @Param( "md5" ) String md5,
+                        @Param( "name" ) String name, @Param( "version" ) String version )
 
     {
         //        checkNotNull( md5, "MD5 cannot be null" );
@@ -139,7 +146,7 @@ public class AptController extends BaseAptController
         //        checkNotNull( version, "Version not found" );
 
         //********************************************
-        String metadata = aptManagerService.getPackageInfo( md5, name, version );
+        String metadata = aptManagerService.getPackageInfo( repository, md5, name, version );
         //********************************************
 
         if ( metadata != null )
@@ -166,13 +173,14 @@ public class AptController extends BaseAptController
     }
 
 
-    public Result delete( Context context, @PathParam( "id" ) String md5, FlashScope flashScope )
+    public Result delete( Context context, @PathParam( "repository" ) String repository, @PathParam( "id" ) String md5,
+                          FlashScope flashScope )
     {
         //        checkNotNull( md5, "MD5 cannot be null" );
 
         //********************************************
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-        boolean success = aptManagerService.delete( uSession, md5 );
+        boolean success = aptManagerService.delete( uSession, repository, md5 );
         //********************************************
 
         if ( success )

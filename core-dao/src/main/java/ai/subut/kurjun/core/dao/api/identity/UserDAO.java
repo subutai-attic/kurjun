@@ -4,6 +4,7 @@ package ai.subut.kurjun.core.dao.api.identity;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 
 import org.slf4j.Logger;
@@ -27,6 +28,11 @@ public class UserDAO extends GenericDAOImpl<User>
     public UserDAO()
     {
         super();
+    }
+
+    public UserDAO(EntityManagerFactory emf)
+    {
+        super(emf);
     }
 
     @Transactional

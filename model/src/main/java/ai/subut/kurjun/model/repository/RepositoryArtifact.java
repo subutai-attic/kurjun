@@ -12,6 +12,8 @@ public interface RepositoryArtifact extends Metadata
 {
     String getName();
 
+    void setName( String name );
+
     String getOwner();
 
     String getMd5Sum();

@@ -11,7 +11,6 @@ import com.google.inject.Injector;
 
 import ai.subut.kurjun.core.dao.api.DAOException;
 import ai.subut.kurjun.core.dao.api.GenericDAOImpl;
-import ai.subut.kurjun.core.dao.service.KurjunDAOModule;
 import ai.subut.kurjun.core.dao.model.identity.UserEntity;
 import ai.subut.kurjun.model.identity.User;
 

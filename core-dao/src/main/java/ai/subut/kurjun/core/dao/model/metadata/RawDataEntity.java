@@ -3,105 +3,125 @@ package ai.subut.kurjun.core.dao.model.metadata;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-
-import ai.subut.kurjun.model.metadata.Metadata;
-import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.metadata.raw.RawData;
+import ai.subut.kurjun.model.repository.ArtifactId;
 
 
 @Entity
 @Table( name = RawDataEntity.TABLE_NAME )
 @Access( AccessType.FIELD )
-public class RawDataEntity implements SerializableMetadata, Metadata
+public class RawDataEntity implements RawData
 {
 
     public static final String TABLE_NAME = "raw_file";
 
-    private String md5Sum;
-    private String name;
-    private long size;
-    private String fingerprint;
-    private long uploadDate;
-    private String version;
+    @EmbeddedId
+    RepositoryArtifactId id;
 
-    private String id;
+    @Column(name = "owner" ,nullable = false)
+    String owner;
+
+    @Column(name = "name" ,nullable = false)
+    private String name;
+
+    @Column(name = "size")
+    private long size = 0;
+
+    @Column(name = "upload_date")
+    private long uploadDate;
+
+    @Column(name = "version")
+    private String version;
 
 
     public RawDataEntity()
     {
+
     }
 
-
-    public RawDataEntity( final String md5Sum, final String name, final long size, final String fingerprint )
+    public RawDataEntity( String md5Sum, String context , int type)
     {
-        this.md5Sum = md5Sum;
-        this.name = name;
-        this.size = size;
-        this.fingerprint = fingerprint;
-    }
-
-
-    public long getUploadDate()
-    {
-        return uploadDate;
-    }
-
-
-    public void setUploadDate( final long uploadDate )
-    {
-        this.uploadDate = uploadDate;
-    }
-
-
-    public void setVersion( final String version )
-    {
-        this.version = version;
-    }
-
-
-    public long getSize()
-    {
-        return size;
-    }
-
-
-    public void setSize( final long size )
-    {
-        this.size = size;
+        id = new RepositoryArtifactId( md5Sum , context , type );
     }
 
 
     @Override
-    public String getOwner()
+    public ArtifactId getId()
     {
-        return null;
+        return id;
     }
 
 
     @Override
-    public Object getId()
+    public void setId( final ArtifactId id )
     {
-        if ( md5Sum == null || fingerprint == null )
-        {
-            return null;
-        }
+        this.id = (RepositoryArtifactId)id;
+    }
 
-        return fingerprint + "." + md5Sum;
+    @Override
+    public String getUniqId()
+    {
+        return ( this.id != null ) ? this.id.getContext() + "." + this.id.getMd5Sum() : "";
+    }
+
+
+    @Override
+    public String getContext()
+    {
+        return ( this.id != null ) ? this.id.getContext() : "";
+    }
+
+    @Override
+    public int getType()
+    {
+        return ( this.id != null ) ? this.id.getType() : 0;
     }
 
 
     @Override
     public String getMd5Sum()
     {
-
-        return md5Sum;
+        return ( this.id != null ) ? this.id.getMd5Sum() : "";
     }
 
 
-    public void setMd5Sum( String md5Sum )
+
+    @Override
+    public long getUploadDate()
     {
-        this.md5Sum = md5Sum;
+        return uploadDate;
+    }
+
+
+    @Override
+    public void setUploadDate( final long uploadDate )
+    {
+        this.uploadDate = uploadDate;
+    }
+
+
+    @Override
+    public void setVersion( final String version )
+    {
+        this.version = version;
+    }
+
+
+    @Override
+    public long getSize()
+    {
+        return size;
+    }
+
+
+    @Override
+    public void setSize( final long size )
+    {
+        this.size = size;
     }
 
 
@@ -112,6 +132,7 @@ public class RawDataEntity implements SerializableMetadata, Metadata
     }
 
 
+    @Override
     public void setName( String name )
     {
         this.name = name;
@@ -132,66 +153,18 @@ public class RawDataEntity implements SerializableMetadata, Metadata
     }
 
 
-    public String getFingerprint()
+    @Override
+    public void setOwner( final String owner )
     {
-        return fingerprint;
-    }
-
-
-    public void setFingerprint( final String fingerprint )
-
-    {
-        this.fingerprint = fingerprint;
+        this.owner = owner;
     }
 
 
     @Override
-    public boolean equals( final Object o )
+    public String getOwner()
     {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( !( o instanceof RawDataEntity ) )
-        {
-            return false;
-        }
-
-        final RawDataEntity rawEntity = ( RawDataEntity ) o;
-
-        if ( size != rawEntity.size )
-        {
-            return false;
-        }
-        if ( uploadDate != rawEntity.uploadDate )
-        {
-            return false;
-        }
-        if ( md5Sum != null ? !md5Sum.equals( rawEntity.md5Sum ) : rawEntity.md5Sum != null )
-        {
-            return false;
-        }
-        if ( name != null ? !name.equals( rawEntity.name ) : rawEntity.name != null )
-        {
-            return false;
-        }
-        if ( fingerprint != null ? !fingerprint.equals( rawEntity.fingerprint ) : rawEntity.fingerprint != null )
-        {
-            return false;
-        }
-        return !( version != null ? !version.equals( rawEntity.version ) : rawEntity.version != null );
+        return owner;
     }
 
 
-    @Override
-    public int hashCode()
-    {
-        int result = md5Sum != null ? md5Sum.hashCode() : 0;
-        result = 31 * result + ( name != null ? name.hashCode() : 0 );
-        result = 31 * result + ( int ) ( size ^ ( size >>> 32 ) );
-        result = 31 * result + ( fingerprint != null ? fingerprint.hashCode() : 0 );
-        result = 31 * result + ( int ) ( uploadDate ^ ( uploadDate >>> 32 ) );
-        result = 31 * result + ( version != null ? version.hashCode() : 0 );
-        return result;
-    }
 }

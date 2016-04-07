@@ -11,8 +11,11 @@ import ai.subut.kurjun.core.dao.model.metadata.RepositoryDataEntity;
 import ai.subut.kurjun.core.dao.service.metadata.RepositoryDataService;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.RepositoryData;
+import ai.subut.kurjun.model.metadata.apt.AptData;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
+import ai.subut.kurjun.model.metadata.raw.RawData;
+import ai.subut.kurjun.model.metadata.template.TemplateData;
 import ai.subut.kurjun.model.repository.ArtifactId;
-import ai.subut.kurjun.model.repository.RepositoryArtifact;
 import ai.subut.kurjun.repo.service.RepositoryManager;
 
 
@@ -111,11 +114,59 @@ public class RepositoryManagerImpl implements RepositoryManager
 
     //*************************************************
     @Override
-    public ArtifactId constructArtifactAd( RepositoryData repoData, Metadata metadata )
+    public List<Object> getAllArtifacts( RepositoryData repoData )
     {
-        ArtifactId id = new RepositoryArtifactId( metadata.getName(), metadata.getOwner(), metadata.getMd5Sum(),
-                repoData.getContext(), repoData.getType() ) ;
+        return repositoryDataService.getAllArtifacts( repoData );
+    }
+
+
+    //*************************************************
+    @Override
+    public ArtifactId constructArtifactId( RepositoryData repoData, Metadata metadata )
+    {
+        ArtifactId id = new RepositoryArtifactId( metadata.getMd5Sum(), repoData.getContext(), repoData.getType() ) ;
         return id;
+    }
+
+
+    //*************************************************
+    @Override
+    public ArtifactId constructArtifactId( String context , int repoType , String md5 )
+    {
+        ArtifactId id = new RepositoryArtifactId( md5, context, repoType ) ;
+        return id;
+    }
+
+
+    //*************************************************
+    @Override
+    public TemplateData constructTemplateData( RepositoryData repoData, Object metadata )
+    {
+        return repositoryDataService.createTemplateData( repoData, metadata  );
+    }
+
+
+    //*************************************************
+    @Override
+    public RawData constructRawData( RepositoryData repoData, String md5 , String name , String owner )
+    {
+        return repositoryDataService.createRawData( repoData, md5 , name ,owner );
+    }
+
+
+    //*************************************************
+    @Override
+    public AptData constructAptData( RepositoryData repoData, String md5, String owner )
+    {
+        return repositoryDataService.createAptData( repoData, md5, owner );
+    }
+
+
+    //*************************************************
+    @Override
+    public AptData copyAptPackage( PackageMetadata source, AptData target)
+    {
+        return repositoryDataService.copyPackageData(source ,target );
     }
 
 }

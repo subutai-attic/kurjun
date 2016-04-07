@@ -18,15 +18,12 @@ import com.google.inject.assistedinject.Assisted;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
-import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
-import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
-import ai.subut.kurjun.metadata.factory.PackageMetadataStoreFactory;
 import ai.subut.kurjun.model.identity.ObjectType;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
-import ai.subut.kurjun.model.metadata.PackageMetadataStore;
 import ai.subut.kurjun.model.metadata.RepositoryData;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
+import ai.subut.kurjun.model.metadata.template.TemplateData;
 import ai.subut.kurjun.model.storage.FileStore;
 import ai.subut.kurjun.repo.service.RepositoryManager;
 import ai.subut.kurjun.storage.factory.FileStoreFactory;
@@ -80,11 +77,19 @@ public class LocalTemplateRepository extends LocalRepositoryBase
     }
 
 
+    @Deprecated
     @Override
+    public Metadata put( final File file, final CompressionType compressionType,final String context,  final String owner ) throws IOException
+    {
+        return null;
+    }
+
+    @Override
+    @Deprecated
     public Metadata put( InputStream is, CompressionType compressionType ) throws IOException
     {
         //*******************
-        RepositoryData repoData = getRepositoryData( "", ObjectType.TemplateRepo.getId(), "public-user" );
+        RepositoryData repoData = getRepositoryData( "", ObjectType.TemplateRepo.getId(), "" );
         //*******************
 
         FileStore fileStore = getFileStore();
@@ -138,7 +143,12 @@ public class LocalTemplateRepository extends LocalRepositoryBase
             if ( md5.equalsIgnoreCase( meta.getMd5Sum() ) )
             {
                 //***********************************
-                repositoryManager.addArtifactToRepository( repoData ,meta );
+                TemplateData templateData = repositoryManager.constructTemplateData( repoData, meta);
+                templateData.setOwner( owner );
+                templateData.getArtifactId().setMd5Sum( md5 );
+                templateData.setSize( temp.length() );
+
+                repositoryManager.addArtifactToRepository( repoData, templateData );
                 //***********************************
 
                 return meta;
@@ -156,40 +166,6 @@ public class LocalTemplateRepository extends LocalRepositoryBase
     }
 
 
-    @Override
-    public Metadata put( final File file, final CompressionType compressionType,final String context,  final String owner ) throws IOException
-    {
-        //*******************
-        RepositoryData repoData = getRepositoryData( context, ObjectType.TemplateRepo.getId(), owner );
-        //*******************
-
-        FileStore fileStore = getFileStore();
-        SubutaiTemplateMetadata meta = templateParser.parseTemplate( file );
-
-        try
-        {
-            String md5 = fileStore.put( file );
-
-            if ( md5.equalsIgnoreCase( meta.getMd5Sum() ) )
-            {
-                //***********************************
-                repositoryManager.addArtifactToRepository( repoData ,meta );
-                //***********************************
-
-                return meta;
-            }
-            else
-            {
-                fileStore.remove( md5 );
-                throw new IOException( "Package integrity failure" );
-            }
-        }
-        finally
-        {
-            file.delete();
-        }
-    }
-
 
     public KurjunContext getContext()
     {
@@ -205,14 +181,19 @@ public class LocalTemplateRepository extends LocalRepositoryBase
 
 
     @Override
-    protected RepositoryData getRepositoryData(String repoContext, int type )
+    protected RepositoryData getRepositoryData(String repoContext,int type, String owner )
     {
         if( Strings.isNullOrEmpty(repoContext))
         {
             repoContext = context.getName();
         }
 
-        return repositoryManager.getRepository( repoContext, ObjectType.TemplateRepo.getId() );
+        if( Strings.isNullOrEmpty(owner))
+        {
+            owner = context.getOwner();
+        }
+
+        return repositoryManager.getRepositoryData( repoContext, ObjectType.TemplateRepo.getId(), owner, true );
     }
 
 
@@ -222,15 +203,6 @@ public class LocalTemplateRepository extends LocalRepositoryBase
     {
         return fileStoreFactory.create( context );
     }
-
-
-
-    //******************************************
-    public RepositoryData getRepositoryData(String context, int type, String ownerFingerprint)
-    {
-        return repositoryManager.getRepositoryData( context, type, ownerFingerprint, true );
-    }
-
 
 }
 

@@ -15,6 +15,7 @@ import ai.subut.kurjun.metadata.common.subutai.TemplateId;
 import ai.subut.kurjun.metadata.common.utils.IdValidators;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.metadata.template.TemplateData;
 import ai.subut.kurjun.web.controllers.BaseController;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
 import ai.subut.kurjun.web.model.KurjunFileItem;
@@ -81,41 +82,30 @@ public class RestTemplateController extends BaseController
     }
 
 
-    public Result info( Context context, @Param( "id" ) String id, @Param( "name" ) String name,
-                        @Param( "version" ) String version, @Param( "md5" ) String md5, @Param( "type" ) String type )
+    public Result info( Context context, @Param( "repository" ) String repository,
+                                         @Param( "version" ) String version,
+                                         @Param( "md5" ) String md5,
+                                         @Param( "search" ) String search)
+
     {
-        TemplateId tid = null;
-        DefaultTemplate defaultTemplate = null;
+        TemplateData templateData = null;
 
         //*****************************************************
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
         //*****************************************************
 
-        if ( id != null )
+        if ( md5 != null )
         {
-            tid = IdValidators.Template.validate( id );
-            defaultTemplate = templateManagerService.getTemplate( uSession, tid, md5, name, version );
+            templateData = templateManagerService.getTemplate( uSession, repository, md5, version, search );
         }
-        else
-        {
-            defaultTemplate = templateManagerService.getTemplate( uSession, null, md5, name, version );
-        }
-        if ( defaultTemplate == null )
+
+        if ( templateData == null )
         {
             return Results.noContent();
         }
-        if ( type != null && !type.isEmpty() )
-        {
-            switch ( type )
-            {
-                case "text":
-                    return Results.ok().render( defaultTemplate.getId() ).text();
-                default:
-                    return Results.ok().render( defaultTemplate.getId() ).json();
-            }
-        }
 
-        return Results.ok().render( defaultTemplate ).json();
+
+        return Results.ok().render( templateData ).json();
     }
 
 
@@ -145,7 +135,7 @@ public class RestTemplateController extends BaseController
     }
 
 
-    public Result delete( Context context, @Param( "id" ) String templateId )
+    public Result delete( Context context, @Param( "repository" ) String templateId , @Param( "md5" ) String md5 )
     {
         checkNotNull( templateId, "Template ID cannot be null" );
 
@@ -157,7 +147,7 @@ public class RestTemplateController extends BaseController
         {
             //*****************************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            result = templateManagerService.delete( uSession, tid );
+            result = templateManagerService.delete( uSession, templateId, md5 );
             //*****************************************************
         }
         catch ( IOException e )
@@ -166,32 +156,33 @@ public class RestTemplateController extends BaseController
 
             throw new InternalServerErrorException( "Error while deleting artifact" );
         }
-        switch ( result ){
+        switch ( result )
+        {
             case 0:
                 return Results.ok().render( String.format( "Deleted: %b", result ) ).text();
             case 1:
-                return Results.internalServerError().render("Template was not found").text();
+                return Results.internalServerError().render( "Template was not found" ).text();
             case 2:
                 return Results.ok().render( "Not allowed" ).text();
             default:
-                return Results.internalServerError().render("Template was not found").text();
+                return Results.internalServerError().render( "Template was not found" ).text();
         }
-
     }
 
 
-    public Result list( Context context, @Param( "repository" ) String repository )
+    public Result list( Context context, @Param( "repository" ) String repository, @Param( "search" ) String search)
     {
         try
         {
-            if ( repository == null )
+            if ( search == null )
             {
-                repository = "local";
+                search = "local";
             }
 
             //*****************************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            List<SerializableMetadata> defaultTemplateList = templateManagerService.list( uSession, repository, false );
+            List<SerializableMetadata> defaultTemplateList =
+                    templateManagerService.list( uSession, repository, search, false );
             //*****************************************************
 
             return Results.ok().render( defaultTemplateList ).json();

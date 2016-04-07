@@ -87,16 +87,15 @@ public interface Repository
     Set<ReleaseFile> getDistributions();
 
 
+
     /**
      * Gets package info identified by supplied meta data. Refer to
-     * {@link Repository#getPackageStream(ai.subut.kurjun.model.metadata.Metadata)} for more info about package
      * identification.
      *
-     * @param metadata meta data used to lookup for package
      * @return package meta data if found; {@code null} otherwise
-     * @see Repository#getPackageStream(ai.subut.kurjun.model.metadata.Metadata)
      */
-    SerializableMetadata getPackageInfo( Metadata metadata );
+    SerializableMetadata getPackageInfo( ArtifactId id );
+
 
 
     /**
@@ -108,11 +107,9 @@ public interface Repository
      * <p>
      * When supplied meta data does not contain enough identifying information, this method should return {@code null}.
      *
-     * @param metadata meta data used to lookup for package
      * @return package stream if found; {@code null} otherwise
-     * @see Repository#getPackageInfo(ai.subut.kurjun.model.metadata.Metadata)
      */
-    InputStream getPackageStream( Metadata metadata );
+    InputStream getPackageStream( ArtifactId id );
 
 
     /**

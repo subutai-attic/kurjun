@@ -5,6 +5,7 @@ import java.util.Map;
 
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
+import ai.subut.kurjun.model.repository.ArtifactId;
 
 
 /**
@@ -12,9 +13,17 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
  */
 public interface TemplateData extends SerializableMetadata, SubutaiTemplateMetadata
 {
+    void setOwner( String owner );
+
+    String getUniqId();
+
     String getContext();
 
     int getType();
+
+    ArtifactId getArtifactId();
+
+    void setName( String name );
 
     void setVersion( String version );
 

@@ -10,14 +10,14 @@
             <div class="b-form__wrapper g-margin-bottom-half">
             <#if templ_info??>
                 <table>
-                    <tr><td>ID</td><td>${templ_info.id}</td></tr>
+                    <tr><td>ID</td><td>${templ_info.id.md5Sum}</td></tr>
                     <tr><td>name</td><td>${templ_info.name}</td></tr>
-                    <tr><td>version</td><td>${templ_info.version}</td></tr>
+                    <tr><td>version</td><td><#if templ_info.version??>${templ_info.version}</#if></td></tr>
                     <#--<tr><td>md5</td><td>${templ_info.md5Sum}</td></tr>-->
-                    <tr><td>parent</td><td>${templ_info.parent}</td></tr>
-                    <tr><td>package name</td><td>${templ_info.package}</td></tr>
-                    <tr><td>architecture</td><td>${templ_info.architecture}</td></tr>
-                    <tr><td>owner fingerprint</td><td>${templ_info.ownerFprint}</td></tr>
+                    <tr><td>parent</td><td><#if templ_info.parent??>${templ_info.parent}</#if></td></tr>
+                    <tr><td>package name</td><td><#if templ_info.package??>${templ_info.package}</#if></td></tr>
+                    <tr><td>architecture</td><td><#if templ_info.architecture??>${templ_info.architecture}</#if></td></tr>
+                    <tr><td>owner fingerprint</td><td><#if templ_info.ownerFprint??>${templ_info.ownerFprint}</#if></td></tr>
                     <tr><td>size</td><td>${templ_info.size}</td></tr>
                     <#--<tr><td>extra</td><td>${templ_info.extra}</td></tr>-->
                     <#--<tr><td>config contents</td><td>${templ_info.configContents}</td></tr>-->

@@ -5,6 +5,7 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.Transient;
 
 import ai.subut.kurjun.model.repository.ArtifactId;
 
@@ -16,12 +17,6 @@ import ai.subut.kurjun.model.repository.ArtifactId;
 public class RepositoryArtifactId implements ArtifactId,Serializable
 {
 
-    @Column (name = "name")
-    String  name;
-
-    @Column (name = "owner")
-    String owner;
-
     @Column (name = "md5sum")
     private String md5Sum;
 
@@ -31,33 +26,55 @@ public class RepositoryArtifactId implements ArtifactId,Serializable
     @Column (name = "type")
     private int type;
 
+    @Transient
+    private String artifactName;
+
+    @Transient
+    private String version;
+
+    @Transient
+    private String search;
+
 
     public  RepositoryArtifactId()
     {
 
     }
 
-    @Override
-    public String getName()
+
+    public  RepositoryArtifactId( String md5Sum , String context , int type )
     {
-        return name;
-    }
-
-
-    @Override
-    public void setName( final String name )
-    {
-        this.name = name;
-    }
-
-
-    public  RepositoryArtifactId(String  name, String owner ,String md5Sum , String context , int type )
-    {
-        this.name = name;
-        this.owner = owner;
         this.md5Sum = md5Sum;
         this.context = context;
         this.type = type;
+    }
+
+
+    @Override
+    public String getSearch()
+    {
+        return search;
+    }
+
+
+    @Override
+    public void setSearch( final String search )
+    {
+        this.search = search;
+    }
+
+
+    @Override
+    public String getVersion()
+    {
+        return version;
+    }
+
+
+    @Override
+    public void setVersion( final String version )
+    {
+        this.version = version;
     }
 
 
@@ -90,20 +107,6 @@ public class RepositoryArtifactId implements ArtifactId,Serializable
 
 
     @Override
-    public String getOwner()
-    {
-        return owner;
-    }
-
-
-    @Override
-    public void setOwner( final String owner )
-    {
-        this.owner = owner;
-    }
-
-
-    @Override
     public String getMd5Sum()
     {
         return md5Sum;
@@ -117,10 +120,26 @@ public class RepositoryArtifactId implements ArtifactId,Serializable
     }
 
 
+    @Override
+    public String getArtifactName()
+    {
+        return artifactName;
+    }
+
+
+    @Override
+    public void setArtifactName( final String artifactName )
+    {
+        this.artifactName = artifactName;
+    }
+
+
     private String getUniqId()
     {
-        return name + "." + owner + "." + md5Sum + "." + context + "." + type;
+        return  context +"." + md5Sum + "." + type;
     }
+
+
 
 
 
@@ -129,8 +148,6 @@ public class RepositoryArtifactId implements ArtifactId,Serializable
     {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ( ( name == null ) ? 0 : name.hashCode() );
-        result = prime * result + ( ( owner == null ) ? 0 : owner.hashCode() );
         result = prime * result + ( ( md5Sum == null ) ? 0 : md5Sum.hashCode() );
         result = prime * result + ( ( context == null ) ? 0 : context.hashCode() );
         result = prime * result + type;

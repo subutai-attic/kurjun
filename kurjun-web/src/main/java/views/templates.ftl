@@ -19,7 +19,7 @@
         <div style="margin-left: 200px">
 
             <form method="get" actoin="${contextPath}/">
-                <label>Show by repo: </label><select name="repo" id="repo-filter">
+                <label>Show by repo: </label><select name="repository" id="repo-filter">
                     <#list repos as repo >
                         <option value="${repo}" <#if sel_repo==repo >selected</#if> >${repo}</option>
                     </#list>
@@ -43,21 +43,17 @@
             <#if templates?? && templates?has_content >
             <#list templates as t >
             <tr>
-                <td><a href="${contextPath}/templates/${t.id}/info" class="js-colorbox">${t.name}</a></td>
-                <td>
-                <#if owners??>
-                    ${(owners[t.id]??)?then(owners[t.id],"")}
-                </#if>
-                </td>
+                <td><a href="${contextPath}/templates/info?repository=${t.id.context}&md5=${t.id.md5Sum}" class="js-colorbox">${t.name}</a></td>
+                <td><#if t.owner??>${t.owner}</#if></td>
                 <td>${t.id?split(".")[0]}</td>
                 <td>${t.architecture}</td>
                 <td>${t.parent}</td>
-                <td>${t.version}</td>
-                <td>${t.size}</td>
-                <td><a href="${contextPath}/templates/${t.id}/download" target="_blank">download</a>
+                <td><#if t.version??>${t.version}</#if></td>
+                <td><#if t.size??>${t.size}</#if></td>
+                <td><a href="${contextPath}/templates/download?repository=${t.id.context}&md5=${t.id.md5Sum}" target="_blank">download</a>
                     |  <a href="${contextPath}/relations/by-object?id=${t.id}&obj_type=3" class="js-colorbox">permissions</a>
                     <#if !( isPublic?? && isPublic ) >
-                    |  <a href="#" onclick="removeTemplate('${t.id}')">remove</a>
+                    |  <a href="#" onclick="removeTemplate('?repository=${t.id.context}&md5=${t.id.md5Sum}')">remove</a>
                     |  <a href="#js-add-trust-rel" onclick="$('#template_id').val('${t.id}')" class="js-colorbox-inline">share</a>
                     </#if>
                 </td>
@@ -75,7 +71,8 @@
     {
         var confirmed = confirm("Are you sure want to delete it?");
         if (confirmed) {
-            $('#removeTemplForm').attr('action', '${contextPath}/templates/' + templId + '/delete');
+          alert('${contextPath}/templates/delete'+templId);
+            $('#removeTemplForm').attr('action', '${contextPath}/templates/delete'+templId);
             $('#removeTemplForm').submit();
         }
     }

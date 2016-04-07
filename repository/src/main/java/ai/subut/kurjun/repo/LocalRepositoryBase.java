@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,10 +38,11 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
 
 
     @Override
-    public SerializableMetadata getPackageInfo( Metadata metadata )
+    public SerializableMetadata getPackageInfo( ArtifactId id)
     {
-        RepositoryData repoData = getRepositoryData( "" , 0 );
-        ArtifactId id = repositoryManager.constructArtifactAd( repoData, metadata );
+        RepositoryData repoData = getRepositoryData( "" , 0, "public-user" );
+
+        //ArtifactId id = repositoryManager.constructArtifactId( repoData, metadata );
 
         try
         {
@@ -59,9 +61,9 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
 
 
     @Override
-    public InputStream getPackageStream( Metadata metadata )
+    public InputStream getPackageStream( ArtifactId id )
     {
-        SerializableMetadata m = getPackageInfo( metadata );
+        SerializableMetadata m = getPackageInfo( id );
 
         if ( m == null )
         {
@@ -91,25 +93,23 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
     public List<SerializableMetadata> listPackages()
     {
         LOGGER.info( "listing packages " );
-        RepositoryData repoData = getRepositoryData( "", 0 );
+        RepositoryData repoData = getRepositoryData( "", 0 , "");
         List<SerializableMetadata> result = new LinkedList<>();
         try
         {
-            //MetadataListing list = metadataStore.list();
-            //result.addAll( list.getPackageMetadata() );
+            List<Object> items = repositoryManager.getAllArtifacts(repoData);
 
-            //while ( list.isTruncated() )
-            //{
-                //MetadataListing next = metadataStore.listNextBatch( list );
-                //result.addAll( next.getPackageMetadata() );
-            //}
-            //repositoryManager.
+            if(!items.isEmpty())
+            {
+                return (List<SerializableMetadata>)(Object)items;
+            }
         }
         catch ( Exception ex )
         {
             getLogger().error( "Failed to list package in metadata store", ex );
         }
         LOGGER.info( " returning listing packages " );
+
         return null;
     }
 
@@ -119,21 +119,18 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
     {
         LOGGER.info( "listing packages " );
 
-        RepositoryData repoData = getRepositoryData(context, type );
+        RepositoryData repoData = getRepositoryData(context, type , "" );
 
         List<SerializableMetadata> result = new LinkedList<>();
 
         try
         {
-           // MetadataListing list = metadataStore.list();
-            //result.addAll( list.getPackageMetadata() );
+            List<Object> items = repositoryManager.getAllArtifacts(repoData);
 
-            //while ( list.isTruncated() )
-            //{
-            //MetadataListing next = metadataStore.listNextBatch( list );
-            //result.addAll( next.getPackageMetadata() );
-            //}
-            //repositoryManager.
+            if(!items.isEmpty())
+            {
+                return (List<SerializableMetadata>)(Object)items;
+            }
         }
         catch ( Exception ex )
         {
@@ -154,7 +151,7 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
     @Override
     public boolean delete( ArtifactId id ) throws IOException
     {
-        RepositoryData repoData = getRepositoryData( id.getContext(), id.getType() );
+        RepositoryData repoData = getRepositoryData( id.getContext(), id.getType(), "" );
 
         FileStore fileStore = getFileStore();
 
@@ -166,6 +163,7 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
             repositoryManager.removeArtifact(repoData.getType(), artifact );
             return true;
         }
+
         return false;
     }
 
@@ -186,7 +184,7 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
     //protected abstract PackageMetadataStore getMetadataStore();
 
 
-    protected abstract RepositoryData getRepositoryData( String repoContext , int type );
+    protected abstract RepositoryData getRepositoryData( String repoContext, int type, String owner );
 
     /**
      * Gets file store to be used in implementations classes of this abstract class.

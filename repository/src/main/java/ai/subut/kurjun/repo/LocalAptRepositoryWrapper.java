@@ -157,16 +157,17 @@ class LocalAptRepositoryWrapper extends RepositoryBase implements LocalRepositor
 
 
     @Override
-    public SerializableMetadata getPackageInfo( Metadata metadata )
+    public SerializableMetadata getPackageInfo( final ArtifactId id )
     {
-        throw new UnsupportedOperationException( "Not supported yet." );
+        return null;
     }
 
 
+
     @Override
-    public InputStream getPackageStream( Metadata metadata )
+    public InputStream getPackageStream( final ArtifactId id )
     {
-        throw new UnsupportedOperationException( "Not supported yet." );
+        return null;
     }
 
 

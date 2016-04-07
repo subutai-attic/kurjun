@@ -240,7 +240,7 @@ public class PGPKeyUtil
         }
         catch ( DecoderException ex )
         {
-            LOGGER.info( "Invalid hex formatted key id", ex );
+            LOGGER.info( "Invalid hex formatted key id: " +  keyId);
         }
         return false;
     }
