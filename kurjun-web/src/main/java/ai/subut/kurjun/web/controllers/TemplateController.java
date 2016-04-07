@@ -96,21 +96,7 @@ public class TemplateController extends BaseController
                 repository = repoName;
             }
 
-            if ( StringUtils.isBlank( repository ) )
-            {
-                repository = "public";
-            }
-
             KurjunFileItem fileItem = ( KurjunFileItem ) file;
-            /*
-            if (md5 != null && !md5.isEmpty()) {
-                if (!fileItem.md5().equals(md5)) {
-                    fileItem.cleanup();
-                    flashScope.error( "Failed: MD5 checksum mismatch.");
-                    return Results.redirect( context.getContextPath()+"/" );
-                }
-            }
-            */
             //*****************************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
             String id = templateManagerService.upload( uSession, repository, fileItem.getInputStream() );

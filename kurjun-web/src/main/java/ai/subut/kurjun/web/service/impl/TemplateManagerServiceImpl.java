@@ -9,6 +9,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -110,11 +111,15 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public List<SerializableMetadata> list( UserSession userSession, final String repository, String search,
+    public List<SerializableMetadata> list( UserSession userSession, String repository, String search,
                                             final boolean isKurjunClient ) throws IOException
     {
         List<SerializableMetadata> results;
 
+        if( Strings.isNullOrEmpty( repository ))
+        {
+            repository = userSession.getUser().getUserName();
+        }
 
         switch ( search )
         {
@@ -139,14 +144,20 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public String upload( UserSession userSession, final String repository, final InputStream inputStream )
+    public String upload( UserSession userSession, String repository, final InputStream inputStream )
             throws IOException
     {
 
-        if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
+        if ( identityManagerService.isPublicUser( userSession.getUser() ) )
         {
             return null;
         }
+
+        if( Strings.isNullOrEmpty( repository ))
+        {
+            repository = userSession.getUser().getUserName();
+        }
+
 
         // *******CheckRepoOwner ***************
         relationManager.setObjectOwner( userSession.getUser(), repository, ObjectType.TemplateRepo.getId() );

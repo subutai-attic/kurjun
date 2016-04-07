@@ -110,14 +110,14 @@ public class RestAliquaController extends BaseController
     }
 
 
-    public Result list( @Param( "repository" ) String repository,@Param( "search" ) String search )
+    public Result list( Context context , @Param( "repository" ) String repository, @Param( "search" ) String search )
     {
         if ( search == null )
         {
             search = "local";
         }
-
-        return Results.ok().render( rawManagerService.list( repository, search ) ).json();
+        UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+        return Results.ok().render( rawManagerService.list(uSession, repository, search ) ).json();
     }
 
 

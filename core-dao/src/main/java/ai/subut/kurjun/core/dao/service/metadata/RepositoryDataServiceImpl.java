@@ -16,6 +16,7 @@ import ai.subut.kurjun.core.dao.api.metadata.RawDAO;
 import ai.subut.kurjun.core.dao.api.metadata.RepositoryDAO;
 import ai.subut.kurjun.core.dao.api.metadata.TemplateDAO;
 import ai.subut.kurjun.core.dao.model.metadata.AptDataEntity;
+import ai.subut.kurjun.core.dao.model.metadata.AptDependencyEntity;
 import ai.subut.kurjun.core.dao.model.metadata.RawDataEntity;
 import ai.subut.kurjun.core.dao.model.metadata.RepositoryDataId;
 import ai.subut.kurjun.core.dao.model.metadata.TemplateDataEntity;
@@ -342,28 +343,35 @@ public class RepositoryDataServiceImpl implements RepositoryDataService
     @Override
     public AptData copyPackageData( PackageMetadata source, AptData target )
     {
-        target.setComponent( source.getComponent() );
-        target.setFilename( source.getFilename() );
-        target.setPackage( source.getPackage() );
-        target.setVersion( source.getVersion() );
-        target.setSource( source.getSource() );
-        target.setMaintainer( source.getMaintainer() );
-        target.setArchitecture( source.getArchitecture() );
-        target.setInstalledSize( source.getInstalledSize() );
-        target.setDependencies( cloneDependencies( source.getDependencies() ) );
-        target.setRecommends( cloneDependencies( source.getRecommends() ) );
-        target.setSuggests( cloneDependencies( source.getSuggests() ) );
-        target.setEnhances( cloneDependencies( source.getEnhances() ) );
-        target.setPreDepends( cloneDependencies( source.getPreDepends() ) );
-        target.setConflicts( cloneDependencies( source.getConflicts() ) );
-        target.setBreaks( cloneDependencies( source.getBreaks() ) );
-        target.setReplaces( cloneDependencies( source.getReplaces() ) );
-        target.setProvides( source.getProvides() != null ? new ArrayList<>( source.getProvides() ) : null );
-        target.setSection( source.getSection() );
-        target.setPriority( source.getPriority() );
-        target.setHomepage( source.getHomepage() );
-        target.setDescription( source.getDescription() );
-        target.getExtra().putAll( ( ( DefaultPackageMetadata ) source ).getExtra() );
+        try
+        {
+            target.setComponent( source.getComponent() );
+            target.setFilename( source.getFilename() );
+            target.setPackage( source.getPackage() );
+            target.setVersion( source.getVersion() );
+            target.setSource( source.getSource() );
+            target.setMaintainer( source.getMaintainer() );
+            target.setArchitecture( source.getArchitecture() );
+            target.setInstalledSize( source.getInstalledSize() );
+            target.setDependencies( cloneDependencies( source.getDependencies() ) );
+            target.setRecommends( cloneDependencies( source.getRecommends() ) );
+            target.setSuggests( cloneDependencies( source.getSuggests() ) );
+            target.setEnhances( cloneDependencies( source.getEnhances() ) );
+            target.setPreDepends( cloneDependencies( source.getPreDepends() ) );
+            target.setConflicts( cloneDependencies( source.getConflicts() ) );
+            target.setBreaks( cloneDependencies( source.getBreaks() ) );
+            target.setReplaces( cloneDependencies( source.getReplaces() ) );
+            target.setProvides( source.getProvides() != null ? new ArrayList<>( source.getProvides() ) : null );
+            target.setSection( source.getSection() );
+            target.setPriority( source.getPriority() );
+            target.setHomepage( source.getHomepage() );
+            target.setDescription( source.getDescription() );
+            target.getExtra().putAll( ( ( DefaultPackageMetadata ) source ).getExtra() );
+        }
+        catch(Exception ignore)
+        {
+            //ignore
+        }
 
         return target;
 
@@ -380,7 +388,7 @@ public class RepositoryDataServiceImpl implements RepositoryDataService
         List<Dependency> result = new ArrayList<>();
         for ( Dependency dependency : dependencies )
         {
-            DefaultDependency dep = new DefaultDependency();
+            AptDependencyEntity dep = new AptDependencyEntity();
             dep.setPackage( dependency.getPackage() );
             dep.setVersion( dependency.getVersion() );
             dep.setDependencyOperator( dependency.getDependencyOperator() );

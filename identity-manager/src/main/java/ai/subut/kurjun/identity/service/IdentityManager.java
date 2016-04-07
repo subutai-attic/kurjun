@@ -29,6 +29,9 @@ public interface IdentityManager
 
 
     //********************************************
+    String getPublicUserName();
+
+    //********************************************
     UserSession loginPublicUser();
 
 
@@ -76,6 +79,11 @@ public interface IdentityManager
     //********************************************
     boolean hasPermmission( User user, RelationObject relationObject, Permission permission );
 
+
     //********************************************
     int checkUserName( String userName );
+
+
+    //********************************************
+    boolean isPublicUser(User user);
 }

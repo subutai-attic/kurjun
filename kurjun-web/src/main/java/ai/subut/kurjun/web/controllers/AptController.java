@@ -40,11 +40,9 @@ public class AptController extends BaseAptController
     @Inject
     private AptManagerServiceImpl aptManagerService;
 
-    @Inject
-    private RepositoryService repositoryService;
 
-
-    public Result list( @Param( "type" ) String type, @Param( "repository" ) String repository,
+    //****************************************************************************
+    public Result list( Context context ,@Param( "type" ) String type, @Param( "repository" ) String repository,
                         @Param( "search" ) String search )
     {
         if ( search == null )
@@ -53,14 +51,15 @@ public class AptController extends BaseAptController
         }
 
         //********************************************
-        //aptManagerService.setUserSession( ( UserSession) context.getAttribute( "USER_SESSION" ) );
-        List<SerializableMetadata> serializableMetadataList = aptManagerService.list( repository, search );
+        UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+        List<SerializableMetadata> serializableMetadataList = aptManagerService.list(uSession, repository, search );
         //********************************************
 
         return Results.html().template( "views/apts.ftl" ).render( "apts", serializableMetadataList );
     }
 
 
+    //****************************************************************************
     @FileProvider( SubutaiFileHandler.class )
     public Result upload( Context context, @Param( "repository" ) String repository, @Param( "file" ) FileItem file,
                           FlashScope flashScope ) throws IOException
@@ -92,6 +91,7 @@ public class AptController extends BaseAptController
     }
 
 
+    //****************************************************************************
     public Result release( @PathParam( "release" ) String release )
     {
         //        checkNotNull( release, "Release cannot be null" );
@@ -109,14 +109,10 @@ public class AptController extends BaseAptController
     }
 
 
+    //****************************************************************************
     public Result packageIndexes( @PathParam( "release" ) String release, @PathParam( "component" ) String component,
                                   @PathParam( "arch" ) String arch, @PathParam( "packages" ) String packagesIndex )
     {
-        //        checkNotNull( release, "Release cannot be null" );
-        //        checkNotNull( component, "Component cannot be null" );
-        //        checkNotNull( arch, "Arch cannot be null" );
-        //        checkNotNull( packagesIndex, "Package Index cannot be null" );
-
         //********************************************
         Renderable renderable = aptManagerService.getPackagesIndex( release, component, arch, packagesIndex );
         //********************************************
@@ -125,10 +121,9 @@ public class AptController extends BaseAptController
     }
 
 
+    //****************************************************************************
     public Result getPackageByFileName( Context context, @PathParam( "filename" ) String filename )
     {
-        //        checkNotNull( filename, "File name cannot be null" );
-
         //********************************************
         Renderable renderable = aptManagerService.getPackageByFilename( filename );
         //********************************************
@@ -137,16 +132,15 @@ public class AptController extends BaseAptController
     }
 
 
-    public Result info( @Param( "repository" ) String repository, @Param( "md5" ) String md5,
+    //****************************************************************************
+    public Result info( Context context, @Param( "repository" ) String repository, @Param( "md5" ) String md5,
                         @Param( "name" ) String name, @Param( "version" ) String version )
 
     {
-        //        checkNotNull( md5, "MD5 cannot be null" );
-        //        checkNotNull( name, "Name cannot be null" );
-        //        checkNotNull( version, "Version not found" );
 
         //********************************************
-        String metadata = aptManagerService.getPackageInfo( repository, md5, name, version );
+        UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+        String metadata = aptManagerService.getPackageInfo(uSession, repository, md5, name, version );
         //********************************************
 
         if ( metadata != null )
@@ -157,12 +151,11 @@ public class AptController extends BaseAptController
     }
 
 
-    public Result download( @PathParam( "id" ) String md5, FlashScope flashScope )
+    public Result download(Context context, @PathParam( "id" ) String md5, FlashScope flashScope )
     {
-        //        checkNotNull( md5, "MD5 cannot be null" );
-
         //********************************************
-        Renderable renderable = aptManagerService.getPackage( md5 );
+        UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+        Renderable renderable = aptManagerService.getPackage( uSession ,md5 );
         //********************************************
 
         if ( renderable != null )

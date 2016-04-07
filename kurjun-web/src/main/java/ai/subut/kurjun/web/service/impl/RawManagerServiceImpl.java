@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
+import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -152,6 +153,11 @@ public class RawManagerServiceImpl implements RawManagerService
     public boolean delete( UserSession userSession, String repository, final String md5 )
     {
 
+        if ( identityManagerService.isPublicUser( userSession.getUser() ) )
+        {
+            return false;
+        }
+
         ArtifactId id = repositoryManager.constructArtifactId( repository, ObjectType.RawRepo.getId(), md5 );
 
         try
@@ -190,13 +196,19 @@ public class RawManagerServiceImpl implements RawManagerService
 
 
     @Override
-    public Metadata put( UserSession userSession, final File file, final String filename, final String repository )
+    public Metadata put( UserSession userSession, final File file, final String filename, String repository )
     {
 
-        if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
+        if ( identityManagerService.isPublicUser( userSession.getUser() ) )
         {
             return null;
         }
+
+        if( Strings.isNullOrEmpty( repository ))
+        {
+            repository = userSession.getUser().getUserName();
+        }
+
 
         Metadata metadata = null;
         try
@@ -239,8 +251,13 @@ public class RawManagerServiceImpl implements RawManagerService
 
 
     @Override
-    public List<SerializableMetadata> list( String repository, String search )
+    public List<SerializableMetadata> list( UserSession userSession, String repository, String search )
     {
+        if( Strings.isNullOrEmpty( repository ))
+        {
+            repository = userSession.getUser().getUserName();
+        }
+
         switch ( search )
         {
             //return local list

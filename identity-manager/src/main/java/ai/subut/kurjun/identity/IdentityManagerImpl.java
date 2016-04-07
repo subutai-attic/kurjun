@@ -109,6 +109,14 @@ public class IdentityManagerImpl implements IdentityManager
 
     //********************************************
     @Override
+    public String getPublicUserName()
+    {
+        return PUBLIC_USER_NAME;
+    }
+
+
+    //********************************************
+    @Override
     public UserSession loginPublicUser()
     {
         try
@@ -466,7 +474,6 @@ public class IdentityManagerImpl implements IdentityManager
     {
         return true;
     }
-    //********************************************
 
 
     //********************************************
@@ -486,5 +493,20 @@ public class IdentityManagerImpl implements IdentityManager
 
         }
     }
+
+
     //********************************************
+    @Override
+    public boolean isPublicUser( final User user )
+    {
+        if(user == null)
+            return true;
+        else
+        {
+            if(user.getKeyFingerprint().toLowerCase().equals( PUBLIC_USER_ID ))
+                return true;
+            else
+                return false;
+        }
+    }
 }

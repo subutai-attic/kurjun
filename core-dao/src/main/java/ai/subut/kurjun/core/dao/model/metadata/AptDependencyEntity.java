@@ -4,9 +4,10 @@ package ai.subut.kurjun.core.dao.model.metadata;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -15,7 +16,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.Transient;
+import javax.persistence.Table;
 
 import ai.subut.kurjun.model.metadata.apt.Dependency;
 import ai.subut.kurjun.model.metadata.apt.RelationOperator;
@@ -25,6 +26,8 @@ import ai.subut.kurjun.model.metadata.apt.RelationOperator;
  *
  */
 @Entity
+@Table( name = "apt_dependencies" )
+@Access( AccessType.FIELD )
 public class AptDependencyEntity implements Dependency
 {
 
@@ -48,6 +51,30 @@ public class AptDependencyEntity implements Dependency
 
     @Enumerated( EnumType.STRING )
     private RelationOperator dependencyOperator;
+
+
+    public long getId()
+    {
+        return id;
+    }
+
+
+    public void setId( final long id )
+    {
+        this.id = id;
+    }
+
+
+    public String getPackageName()
+    {
+        return packageName;
+    }
+
+
+    public void setPackageName( final String packageName )
+    {
+        this.packageName = packageName;
+    }
 
 
     @Override

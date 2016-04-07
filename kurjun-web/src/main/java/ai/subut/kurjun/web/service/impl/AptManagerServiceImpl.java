@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -196,7 +197,8 @@ public class AptManagerServiceImpl implements AptManagerService
 
 
     @Override
-    public String getPackageInfo( String repository, final String md5, final String name, final String version )
+    public String getPackageInfo( UserSession userSession, String repository, final String md5, final String name,
+                                  final String version )
     {
         if ( md5 == null && name == null && version == null )
         {
@@ -217,7 +219,7 @@ public class AptManagerServiceImpl implements AptManagerService
 
 
     @Override
-    public Renderable getPackage( final String md5 )
+    public Renderable getPackage( UserSession userSession, final String md5 )
     {
         ArtifactId id = repositoryManager.constructArtifactId( "", ObjectType.AptRepo.getId(), md5 );
 
@@ -254,13 +256,19 @@ public class AptManagerServiceImpl implements AptManagerService
     public URI upload( UserSession userSession, String repository, final InputStream is )
     {
 
-        if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
+        if ( identityManagerService.isPublicUser( userSession.getUser() ) )
         {
             return null;
         }
 
         try
         {
+            if( Strings.isNullOrEmpty(repository))
+            {
+                repository = userSession.getUser().getUserName();
+            }
+
+
             // *******CheckRepoOwner ***************
             relationManager.setObjectOwner( userSession.getUser(), repository, ObjectType.AptRepo.getId() );
             //**************************************
@@ -268,7 +276,7 @@ public class AptManagerServiceImpl implements AptManagerService
             //***** Check permissions (WRITE) *****************
             if ( checkRepoPermissions( userSession, repository, null, Permission.Write ) )
             {
-                Metadata meta = localRepository.put( is );
+                Metadata meta = localRepository.put( is ,CompressionType.NONE,repository, userSession.getUser().getKeyFingerprint() );
                 if ( meta != null )
                 {
                     //***** Build Relation ****************
@@ -290,9 +298,14 @@ public class AptManagerServiceImpl implements AptManagerService
 
 
     @Override
-    public List<SerializableMetadata> list( String repository, String search )
+    public List<SerializableMetadata> list( UserSession userSession, String repository, String search )
     {
         List<SerializableMetadata> list;
+
+        if( Strings.isNullOrEmpty(repository))
+        {
+            repository = userSession.getUser().getUserName();
+        }
 
         switch ( search )
         {
@@ -318,6 +331,13 @@ public class AptManagerServiceImpl implements AptManagerService
     @Override
     public boolean delete( UserSession userSession, String repository, final String md5 )
     {
+
+        if ( identityManagerService.isPublicUser( userSession.getUser() ) )
+        {
+            return false;
+        }
+
+
         try
         {
             ArtifactId artId = repositoryManager.constructArtifactId( repository, ObjectType.AptRepo.getId(), md5 );

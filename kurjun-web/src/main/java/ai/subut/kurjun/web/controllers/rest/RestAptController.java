@@ -79,11 +79,6 @@ public class RestAptController extends BaseAptController
                                   @PathParam( "component" ) String component, @PathParam( "arch" ) String arch,
                                   @PathParam( "packages" ) String packagesIndex)
     {
-        //        checkNotNull( release, "Release cannot be null" );
-        //        checkNotNull( component, "Component cannot be null" );
-        //        checkNotNull( arch, "Arch cannot be null" );
-        //        checkNotNull( packagesIndex, "Package Index cannot be null" );
-
         //********************************************
         Renderable renderable = managerService.getPackagesIndex( release, component, arch, packagesIndex );
         //********************************************
@@ -94,7 +89,6 @@ public class RestAptController extends BaseAptController
 
     public Result getPackageByFileName( @PathParam( "filename" ) String filename )
     {
-        //        checkNotNull( filename, "File name cannot be null" );
 
         //********************************************
         Renderable renderable = managerService.getPackageByFilename( filename );
@@ -104,15 +98,13 @@ public class RestAptController extends BaseAptController
     }
 
 
-    public Result info( @Param( "repository" ) String repository, @Param( "md5" ) String md5, @Param( "name" ) String name, @Param( "version" ) String version )
+    public Result info( Context context , @Param( "repository" ) String repository, @Param( "md5" ) String md5, @Param( "name" ) String name, @Param( "version" ) String version )
 
     {
-        //        checkNotNull( md5, "MD5 cannot be null" );
-        //        checkNotNull( name, "Name cannot be null" );
-        //        checkNotNull( version, "Version not found" );
 
         //********************************************
-        String metadata = managerService.getPackageInfo(repository, md5, name, version );
+        UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+        String metadata = managerService.getPackageInfo(uSession , repository, md5, name, version );
         //********************************************
 
         if ( metadata != null )
@@ -123,12 +115,13 @@ public class RestAptController extends BaseAptController
     }
 
 
-    public Result download( @Param( "md5" ) String md5 )
+    public Result download( Context context , @Param( "md5" ) String md5 )
     {
         //        checkNotNull( md5, "MD5 cannot be null" );
 
         //********************************************
-        Renderable renderable = managerService.getPackage( md5 );
+        UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+        Renderable renderable = managerService.getPackage( uSession, md5 );
         //********************************************
 
         if ( renderable != null )
@@ -139,15 +132,16 @@ public class RestAptController extends BaseAptController
     }
 
 
-    public Result list( @Param( "type" ) String type, @Param( "repository" ) String repository, @Param( "search" ) String search  )
+    public Result list( Context context , @Param( "type" ) String type, @Param( "repository" ) String repository, @Param( "search" ) String search  )
     {
-        if ( repository == null )
+        if ( search == null )
         {
-            repository = "local";
+            search = "local";
         }
 
         //********************************************
-        List<SerializableMetadata> serializableMetadataList = managerService.list( repository, search );
+        UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+        List<SerializableMetadata> serializableMetadataList = managerService.list( uSession, repository, search );
         //********************************************
 
         if ( serializableMetadataList != null )

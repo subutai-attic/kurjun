@@ -35,15 +35,16 @@ public class RawFileController extends BaseController
     private RepositoryService repositoryService;
 
 
-    public Result list( @Param( "repository" ) String repository, @Param( "search" ) String search )
+    public Result list( Context context , @Param( "repository" ) String repository, @Param( "search" ) String search )
     {
         if ( search == null )
         {
             search = "all";
         }
 
+        UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
         return Results.html().template( "views/raw-files.ftl" )
-                      .render( "files", rawManagerService.list( repository, search ) );
+                      .render( "files", rawManagerService.list( uSession, repository, search ) );
     }
 
 
@@ -53,11 +54,6 @@ public class RawFileController extends BaseController
         UserSession userSession = ( UserSession ) context.getAttribute( SecurityFilter.USER_SESSION );
         String fingerprint = "raw";
 
-        //checkNotNull( fileItem, "MD5 cannot be null" );
-        //if ( userSession != null && userSession.getUser() != null )
-        //{
-        //  fingerprint = userSession.getUser().getKeyFingerprint();
-        //}
 
         KurjunFileItem kurjunFileItem = ( KurjunFileItem ) fileItem;
 

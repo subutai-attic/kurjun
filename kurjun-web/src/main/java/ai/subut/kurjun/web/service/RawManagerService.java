@@ -31,6 +31,5 @@ public interface RawManagerService extends BaseService
     Metadata put(UserSession userSession, final File file, final String filename, final String repository );
 
 
-    List<SerializableMetadata> list( String repository, String search );
-
+    List<SerializableMetadata> list( UserSession userSession, String repository, String search );
 }

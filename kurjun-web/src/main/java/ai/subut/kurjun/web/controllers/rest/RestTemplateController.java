@@ -7,6 +7,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -50,10 +51,6 @@ public class RestTemplateController extends BaseController
     public Result upload( Context context, @Param( "repository" ) String repository, @Param( "file" ) FileItem file,
                           @Param( "md5" ) String md5 ) throws Exception
     {
-        if ( repository == null )
-        {
-            repository = "public";
-        }
 
         KurjunFileItem fileItem = ( KurjunFileItem ) file;
 
