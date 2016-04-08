@@ -88,12 +88,12 @@ public class Routes implements ApplicationRoutes
         router.GET().route( "/permissions" ).with( RelationController.class, "getRelations" );
         router.GET().route( "/permissions/trust" ).with( RelationController.class, "getAddTrustRelationForm" );
         router.POST().route( "/permissions/trust" ).with( RelationController.class, "addTrustRelation" );
-        router.GET().route( "/permissions/{id}/change" ).with( RelationController.class, "getChangeForm" );
         //router.GET().route( "/permissions/by-source" ).with( RelationController.class, "getRelationsByOwner" );
         //router.GET().route( "/permissions/by-target" ).with( RelationController.class, "getRelationsByTarget" );
         router.GET().route( "/permissions/by-object" ).with( RelationController.class, "getRelationsByObject" );
-        //router.POST().route( "/permissions/{id}/delete" ).with( RelationController.class, "delete" );
-        //router.POST().route( "/permissions/{id}/change" ).with( RelationController.class, "change" );
+        router.GET().route( "/permissions/{id}/change" ).with( RelationController.class, "getChangeForm" );
+        router.POST().route( "/permissions/{id}/change" ).with( RelationController.class, "change" );
+        router.POST().route( "/permissions/{id}/delete" ).with( RelationController.class, "delete" );
 
         // -------------------------------------------------------------------------------------------------------------
         //  Repositories

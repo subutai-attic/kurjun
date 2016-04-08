@@ -4,6 +4,7 @@ import java.util.List;
 
 import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.web.controllers.BaseController;
+import ai.subut.kurjun.web.security.AuthorizedUser;
 import ninja.Context;
 import ninja.Result;
 import ninja.Results;
@@ -14,12 +15,15 @@ import ai.subut.kurjun.model.identity.*;
 import ai.subut.kurjun.web.service.RelationManagerService;
 import ninja.params.Param;
 import ninja.params.Params;
+import ninja.params.PathParam;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.persistence.EntityNotFoundException;
 
 
 /**
@@ -95,24 +99,18 @@ public class RestRelationController extends BaseController
         return Results.ok().json().render( relationManagerService.getTrustRelationsByTarget(
                 relationManagerService.toTargetObject(fingerprint) ) );
     }
+    */
 
-
-    public Result getRelationsByObject( Context context, @PathParam( "id" ) String id,
+    public Result getRelationsByObject( Context context, @Param( "id" ) String id,
                                         @Param( "name" ) String name, @Param( "version" ) String version,
-                                        @Param( "md5" ) String md5, @Param( "rel_obj_type" ) int relObjType )
+                                        @Param( "md5" ) String md5, @Param( "obj_type" ) int objType )
     {
-        UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+        List<Relation> rels = relationManagerService.getRelationsByObject( id, objType );
 
-
-        RelationObjectType objType = RelationObjectType.valueOf( relObjType );
-        if ( objType == null ) {
-            objType = RelationObjectType.RepositoryContent;
-        }
-        return Results.ok().json().render( relationManagerService.getTrustRelationsByObject(
-                relationManagerService.toTrustObject(uSession, id, name, md5, version, objType)));
+        return Results.ok().json().render( rels );
     }
 
-
+    /*
     public Result addTrustRelation( @AuthorizedUser UserSession userSession, @Param( "fingerprint" ) String fingerprint,
                                     @Param( "id" ) String id, @Params( "permission" ) String[] permissions,
                                     @Param("trust_obj_type") int trustObjType )
@@ -160,65 +158,37 @@ public class RestRelationController extends BaseController
             }
         }
     }
+    */
 
     public Result delete( @AuthorizedUser UserSession userSession, @PathParam("id") String id )
     {
-        boolean deleted = false;
-        Relation rel = null;
-        if ( StringUtils.isNotBlank(id ) )
+        Relation relation  = relationManagerService.getRelation( userSession, Long.valueOf( id ) );
+        try
         {
-            rel = relationManagerService.getRelation( id );
+            relationManagerService.removeRelation( userSession, relation );
+            return Results.ok().json().render( "Deleted successfully" );
         }
-
-        if ( rel != null )
+        catch ( IllegalAccessError e )
         {
-            if( relationManagerService.checkUserPermissions( userSession, rel.getTrustObject().getId(),
-                    rel.getTrustObject().getType() ).contains( Permission.Delete ) )
-            {
-                relationManagerService.removeRelation( rel );
-                deleted = true;
-            }
-            else {
-                return Results.forbidden().json().render( "You don't have permissions to this object" );
-            }
+            return Results.forbidden().json().render( "Access denied" );
         }
-        else
-        {
-            return Results.notFound().json().render( "Relation not found" );
-        }
-
-        if ( deleted )
-            return Results.ok().json().render( "OK" );
-        else
-            return Results.badRequest().text().render( "Failed to delete." );
-
-
     }
 
     public Result change( @AuthorizedUser UserSession userSession, @PathParam( "id" ) String id,
                           @Params( "permission" ) String[] permissions )
     {
-        Relation rel = relationManagerService.getRelation( id );
-        if ( rel != null ) {
-            if ( relationManagerService
-                    .checkUserPermissions( userSession, rel.getTrustObject().getId(), rel.getTrustObject().getType() )
-                    .contains( Permission.Update ) )
-            {
-                Set<Permission> objectPermissions = new HashSet<>();
-                Arrays.asList( permissions ).forEach( p -> objectPermissions.add( Permission.valueOf( p ) ) );
-                rel.setPermissions( objectPermissions );
-                relationManagerService.saveRelation( rel );
-                return Results.ok().json().render( "OK" );
-            }
-            else
-            {
-                return Results.forbidden().json().render( "You don't have access to this object" );
-            }
-        }
-        else
+        try
         {
-            return Results.notFound().json().render( "Object not found." );
+            relationManagerService.changePermissions( userSession, Long.valueOf( id ), permissions );
+            return Results.ok().json().render( "Updated successfully" );
+        }
+        catch ( EntityNotFoundException e )
+        {
+            return Results.notFound().json().render( "Trust relation not found" );
+        }
+        catch ( IllegalAccessError e )
+        {
+            return Results.forbidden().json().render( "You don't have access to edit permissions for this trust relation" );
         }
     }
-    */
 }

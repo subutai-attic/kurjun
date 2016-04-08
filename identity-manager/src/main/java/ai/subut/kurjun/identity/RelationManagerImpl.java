@@ -482,4 +482,10 @@ public class RelationManagerImpl implements RelationManager
         return access;
     }
 
+
+    @Override
+    public void saveRelation( final Relation relation )
+    {
+        relationDataService.mergeRelation( relation );
+    }
 }
