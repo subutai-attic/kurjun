@@ -2,7 +2,7 @@
 
 <div id="js-add-trust-rel">
     <div class="b-popup__header">
-        <span>Share template</span>
+        <span>Share</span>
         <span onclick="$.colorbox.close();">
             <img src="${contextPath}/assets/img/icons/b-icon-close.svg" class="b-icon g-right">
         </span>
@@ -15,9 +15,9 @@
                     <input type="text" name="target_obj_id" id="target_fprint" placeholder="target fingerprint" />
                 </div>
             </div>
-            <div style="display: none;">
-                <input type="radio" name="trust_obj_type" value="3" checked />
-                <input type="text" name="trust_obj_id" id="template_id" />
+            <div style="display: block;">
+                <input type="radio" name="trust_obj_type" id="js-trust-obj-type" value="3" checked />
+                <input type="text" name="trust_obj_id" id="js-trust-obj-id" />
             </div>
             <div>
                 <div class="b-form__wrapper g-margin-bottom-half">
@@ -38,6 +38,11 @@
     </div>
 </div>
 <script type="text/javascript">
+    function openSharePopup(type, context, md5) {
+        $('#js-trust-obj-type').val(type);
+        $('#js-trust-obj-id').val(context+"."+md5);
+    }
+
     $(document).ready(function(){
         $('input[name=trust_obj_type][type=radio]').change(function(e){
             if (e.target.value=="3") {

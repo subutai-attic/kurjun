@@ -46,7 +46,9 @@
                 <td><#--a href="${contextPath}/apt/${a.id}/info" class="js-colorbox"></a-->${a.name}</td>
                 <td>${a.architecture}</td>
                 <td>${a.version}</td>
-                <td><a href="${contextPath}/apt/download?repository=${a.id.context}&md5=${a.id.md5Sum}" target="_blank">download</a>  |  <a href="#" onclick="removeApt('${a.id.context}','${a.id.md5Sum}')">remove</a></td>
+                <td><a href="${contextPath}/apt/download?repository=${a.id.context}&md5=${a.id.md5Sum}" target="_blank">download</a>
+                    |  <a href="#" onclick="removeApt('${a.id.context}','${a.id.md5Sum}')">remove</a>
+                    |  <a href="#js-add-trust-rel" onclick="openSharePopup(3, '${a.id.context}', '${a.id.md5Sum}')" class="js-colorbox-inline">share</a></td>
             </tr>
             </#list>
             </#if>
@@ -85,5 +87,6 @@
 </script>
 
 <#include "_popup-upload-apt.ftl"/>
+<#include "_popup-share-metadata.ftl"/>
 
 </@layout.parentLayout>
