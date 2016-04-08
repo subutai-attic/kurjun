@@ -25,6 +25,7 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
     private String configContents;
     private String packagesContents;
     private String ownerFprint;
+    private String filePath;
     private long size;
 
     private Map<String, String> extra = new HashMap<>();
@@ -88,6 +89,13 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
     public String getVersion()
     {
         return version;
+    }
+
+
+    @Override
+    public String getFilePath()
+    {
+        return filePath;
     }
 
 

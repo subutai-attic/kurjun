@@ -63,24 +63,17 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
     @Override
     public InputStream getPackageStream( ArtifactId id )
     {
-        SerializableMetadata m = getPackageInfo( id );
+        SerializableMetadata artifact = getPackageInfo(  id );
 
-        if ( m == null )
+        if ( artifact == null )
         {
             return null;
         }
         try
         {
             FileStore fileStore = getFileStore();
-            if ( fileStore.contains( m.getMd5Sum() ) )
-            {
-                return fileStore.get( m.getMd5Sum() );
-            }
-            else
-            {
-                throw new IllegalStateException( "File not found for metadata" );
-            }
-        }
+                return fileStore.get( artifact.getMd5Sum() ,artifact.getFilePath() );
+         }
         catch ( IOException ex )
         {
             getLogger().error( "Failed to get package", ex );
@@ -161,8 +154,8 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
 
         if ( artifact != null )
         {
-            fileStore.remove( id.getMd5Sum() );  // TODO
-            repositoryManager.removeArtifact( repoData.getType(), artifact );
+            fileStore.remove( id.getMd5Sum() , ((SerializableMetadata) artifact).getFilePath() );  // TODO
+            repositoryManager.removeArtifact( id );
             return true;
         }
 

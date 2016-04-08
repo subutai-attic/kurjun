@@ -127,6 +127,13 @@ public class DefaultPackageMetadata implements PackageMetadata, SerializableMeta
     }
 
 
+    @Override
+    public String getFilePath()
+    {
+        return null;
+    }
+
+
     public void setVersion( String version )
     {
         this.version = version;

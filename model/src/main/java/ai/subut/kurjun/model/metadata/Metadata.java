@@ -50,5 +50,13 @@ public interface Metadata
     String getVersion();
 
 
+    /**
+     * Gets package version.
+     *
+     * @return filePath of the package
+     */
+    String getFilePath();
+
+
 }
 

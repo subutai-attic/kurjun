@@ -32,6 +32,8 @@ public interface FileStore
     InputStream get( String md5 ) throws IOException;
 
 
+    InputStream get( String md5, String path ) throws IOException;
+
     /**
      * Gets the contents of a file from the store and dumps it into local file.
      *
@@ -43,15 +45,10 @@ public interface FileStore
     boolean get( String md5, File target ) throws IOException;
 
 
-    /**
-     * Puts a source file into the store.
-     *
-     * @param source the source file
-     * @return the md5 sum of the file
-     * @throws IOException if there are problems accessing the store or the source file
-     */
     String put( File source ) throws IOException;
 
+
+    String[] put( File source, int type ) throws IOException;
 
     /**
      * Puts a source file specified by a URL into the store.
@@ -62,17 +59,10 @@ public interface FileStore
      */
     String put( URL source ) throws IOException;
 
+    public String put( String filename, InputStream source ) throws IOException;
 
-    /**
-     * Puts a source file into the store.
-     *
-     * @param filename the name of the file
-     * @param source the source content stream
-     * @return the md5 sum of the file
-     * @throws IOException if there are problems accessing the store or the source content
-     */
-    String put( String filename, InputStream source ) throws IOException;
 
+    String[] put( String filename, InputStream source, int type ) throws IOException;
 
     /**
      * Removes a file from the store.
@@ -83,6 +73,8 @@ public interface FileStore
      */
     boolean remove( String md5 ) throws IOException;
 
+
+    boolean remove( String md5, String path ) throws IOException;
 
     /**
      * Returns total size (in bytes) of the files stored in this store.
@@ -102,5 +94,7 @@ public interface FileStore
      */
     long sizeOf( String md5 ) throws IOException;
 
+
+    long sizeOf( String md5, String path ) throws IOException;
 }
 

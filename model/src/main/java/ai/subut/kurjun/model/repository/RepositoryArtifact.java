@@ -20,7 +20,8 @@ public interface RepositoryArtifact extends Metadata
 
     String getVersion();
 
+    void setFilePath( String filePath );
+
     void setVersion( String version );
 
-    void setTemplateMetada( Object templateMetada );
 }

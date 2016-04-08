@@ -96,6 +96,13 @@ public class RawMetadata implements Metadata, SerializableMetadata
 
 
     @Override
+    public String getFilePath()
+    {
+        return null;
+    }
+
+
+    @Override
     public String serialize()
     {
         return MetadataUtils.JSON.toJson( this );

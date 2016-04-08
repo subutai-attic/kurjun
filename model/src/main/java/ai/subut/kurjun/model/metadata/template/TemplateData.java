@@ -15,6 +15,10 @@ public interface TemplateData extends SerializableMetadata, SubutaiTemplateMetad
 {
     void setOwner( String owner );
 
+    String getFilePath();
+
+    void setFilePath( String filePath );
+
     String getUniqId();
 
     String getContext();

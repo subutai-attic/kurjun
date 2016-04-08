@@ -212,6 +212,31 @@ public class RepositoryDataServiceImpl implements RepositoryDataService
         }
     }
 
+    //***************************
+    @Override
+    public void removeArtifact( ArtifactId id )
+    {
+        try
+        {
+            if ( id.getType() == ObjectType.TemplateRepo.getId() )
+            {
+                templateDAO.remove( templateDAO.find( id ) );
+            }
+            else if ( id.getType() == ObjectType.RawRepo.getId() )
+            {
+                rawDAO.remove( rawDAO.find( id ) );
+            }
+            else if ( id.getType() == ObjectType.AptRepo.getId() )
+            {
+                aptDAO.remove( aptDAO.find( id ) );
+            }
+
+        }
+        catch ( Exception ex )
+        {
+        }
+    }
+
 
     //***************************
     @Override
@@ -229,7 +254,7 @@ public class RepositoryDataServiceImpl implements RepositoryDataService
             }
             else if ( repoType == ObjectType.AptRepo.getId() )
             {
-                return aptDAO.find( id );
+                return aptDAO.findByDetails( id );
             }
         }
         catch ( Exception ex )

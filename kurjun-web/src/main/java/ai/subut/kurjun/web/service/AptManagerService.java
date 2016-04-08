@@ -19,7 +19,7 @@ public interface AptManagerService extends BaseService
     String getRelease( String release, String component, String arch );
 
 
-    Renderable getPackage( UserSession userSession, String md5 );
+    Renderable getPackage( UserSession userSession, String repository, String md5 );
 
 
     URI upload( UserSession userSession, String repository, InputStream is );

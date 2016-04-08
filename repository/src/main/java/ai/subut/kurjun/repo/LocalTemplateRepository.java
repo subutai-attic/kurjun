@@ -86,8 +86,8 @@ public class LocalTemplateRepository extends LocalRepositoryBase
     }
 
 
-    @Override
     @Deprecated
+    @Override
     public Metadata put( InputStream is, CompressionType compressionType ) throws IOException
     {
         //*******************
@@ -142,14 +142,15 @@ public class LocalTemplateRepository extends LocalRepositoryBase
             Files.copy( is, temp.toPath(), StandardCopyOption.REPLACE_EXISTING );
             SubutaiTemplateMetadata meta = templateParser.parseTemplate( temp );
 
-            String md5 = fileStore.put( temp );
-            if ( md5.equalsIgnoreCase( meta.getMd5Sum() ) )
+            String data[] = fileStore.put( temp , 1 );
+            if ( data[0].equalsIgnoreCase( meta.getMd5Sum() ) )
             {
                 //***********************************
                 TemplateData templateData = repositoryManager.constructTemplateData( repoData, meta );
                 templateData.setOwner( owner );
-                templateData.getArtifactId().setMd5Sum( md5 );
+                templateData.getArtifactId().setMd5Sum( data[0] );
                 templateData.setSize( temp.length() );
+                templateData.setFilePath( data[1] );
 
                 repositoryManager.addArtifactToRepository( repoData, templateData );
                 //***********************************
@@ -158,7 +159,7 @@ public class LocalTemplateRepository extends LocalRepositoryBase
             }
             else
             {
-                fileStore.remove( md5 );
+                fileStore.remove( data[0] );
                 throw new IOException( "Package integrity failure" );
             }
         }
