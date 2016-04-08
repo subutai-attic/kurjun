@@ -4,6 +4,7 @@ package ai.subut.kurjun.web.service.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -23,11 +24,13 @@ import ai.subut.kurjun.identity.service.RelationManager;
 import ai.subut.kurjun.model.identity.ObjectType;
 import ai.subut.kurjun.model.identity.Permission;
 import ai.subut.kurjun.model.identity.UserSession;
+import ai.subut.kurjun.model.metadata.RepositoryData;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 import ai.subut.kurjun.model.metadata.template.TemplateData;
 import ai.subut.kurjun.model.repository.ArtifactId;
 import ai.subut.kurjun.model.repository.LocalRepository;
+import ai.subut.kurjun.model.repository.Repository;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
 import ai.subut.kurjun.repo.LocalTemplateRepository;
 import ai.subut.kurjun.repo.RepositoryFactory;
@@ -163,7 +166,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         results.addAll( localUserRepo.listPackages() );
 
 
-        return results;
+        return results == null ? new ArrayList<>() : results;
     }
 
 
@@ -409,10 +412,17 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     @Override
     public List<String> getRepoList()
     {
-        List<String> repoList = repositoryService.getRepositoryContextList();
-        repoList.remove( AptManagerServiceImpl.REPO_NAME );
-        repoList.remove( RawManagerServiceImpl.DEFAULT_RAW_REPO_NAME );
+        List<RepositoryData> repoList = repositoryService.getRepositoryList();
+        List<String> repoNamesList = new ArrayList<>();
+        repoList.forEach( r -> {
+            if (r.getType() == ObjectType.TemplateRepo.getId())
+                repoNamesList.add( r.getContext() );
+        } );
 
-        return repoList;
+//        List<String> repoList = repositoryService.getRepositoryContextList();
+//        repoList.remove( AptManagerServiceImpl.REPO_NAME );
+//        repoList.remove( RawManagerServiceImpl.DEFAULT_RAW_REPO_NAME );
+
+        return repoNamesList;
     }
 }

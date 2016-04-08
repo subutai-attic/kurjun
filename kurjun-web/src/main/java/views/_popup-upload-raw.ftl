@@ -8,11 +8,11 @@
     </div>
         <div class="b-form__wrapper g-margin-bottom-half">
             <form method="POST" enctype="multipart/form-data" action="${contextPath}/raw-files/upload">
-                <#--
                 <div class="b-workspace__content">
                     <div class="b-form__wrapper g-margin-bottom-half">
                         <label for="repository" class="b-form-label">Repository</label>
                         <select name="repository" id="repository">
+                            <option value="" selected></option>
                             <#if repos?? && repos?has_content >
                                 <#list repos as repo>
                                 <option value="${repo}">${repo}</option>
@@ -21,7 +21,6 @@
                         </select>
                     </div>
                 </div>
-                -->
                 <div class="b-workspace__content">
                     <div class="b-form__wrapper g-margin-bottom-half">
                         <input type="file" name="file" id="fileinput" />

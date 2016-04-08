@@ -10,6 +10,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -43,19 +45,19 @@ public class AptController extends BaseAptController
 
     //****************************************************************************
     public Result list( Context context ,@Param( "type" ) String type, @Param( "repository" ) String repository,
-                        @Param( "search" ) String search )
+                        @Param( "node" ) String node )
     {
-        if ( search == null )
-        {
-            search = "all";
-        }
+        node = StringUtils.isBlank( node ) ? "local" : node;
+        repository = StringUtils.isBlank( repository )? AptManagerServiceImpl.REPO_NAME:repository;
 
         //********************************************
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-        List<SerializableMetadata> serializableMetadataList = aptManagerService.list(uSession, repository, search );
+        List<SerializableMetadata> serializableMetadataList = aptManagerService.list(uSession, repository, node );
         //********************************************
 
-        return Results.html().template( "views/apts.ftl" ).render( "apts", serializableMetadataList );
+        return Results.html().template( "views/apts.ftl" ).render( "apts", serializableMetadataList )
+                .render( "repos", aptManagerService.getRepoList() ).render( "sel_repo", repository)
+                      .render( "node", node);
     }
 
 

@@ -32,4 +32,6 @@ public interface RawManagerService extends BaseService
 
 
     List<SerializableMetadata> list( UserSession userSession, String repository, String search );
+
+    List<String> getRepoList();
 }

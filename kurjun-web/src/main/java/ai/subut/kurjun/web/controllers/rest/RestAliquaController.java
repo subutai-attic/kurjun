@@ -1,6 +1,8 @@
 package ai.subut.kurjun.web.controllers.rest;
 
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -10,6 +12,7 @@ import ai.subut.kurjun.web.controllers.BaseController;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
 import ai.subut.kurjun.web.model.KurjunFileItem;
 import ai.subut.kurjun.web.service.RawManagerService;
+import ai.subut.kurjun.web.service.impl.RawManagerServiceImpl;
 import ninja.Context;
 import ninja.Renderable;
 import ninja.Result;
@@ -110,21 +113,20 @@ public class RestAliquaController extends BaseController
     }
 
 
-    public Result list( Context context , @Param( "repository" ) String repository, @Param( "search" ) String search )
+    public Result list( Context context , @Param( "repository" ) String repository, @Param( "node" ) String node )
     {
-        if ( search == null )
-        {
-            search = "local";
-        }
+        node = StringUtils.isBlank( node ) ? "local" : node;
+        repository = StringUtils.isBlank( repository ) ? RawManagerServiceImpl.DEFAULT_RAW_REPO_NAME : repository;
+
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-        return Results.ok().render( rawManagerService.list(uSession, repository, search ) ).json();
+        return Results.ok().render( rawManagerService.list(uSession, repository, node ) ).json();
     }
 
 
 
-    public Result info( @Param( "repository" ) String repository, @Param( "md5" ) String md5, @Param( "search" ) String search )
+    public Result info( @Param( "repository" ) String repository, @Param( "md5" ) String md5, @Param( "node" ) String node )
     {
-        Metadata metadata = rawManagerService.getInfo( repository , md5 , search );
+        Metadata metadata = rawManagerService.getInfo( repository , md5 , node );
 
         if ( metadata != null )
         {
