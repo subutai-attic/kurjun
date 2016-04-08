@@ -16,7 +16,7 @@ public class RestRoutes implements ApplicationRoutes
 
     private static final String baseUrl = "/rest/";
 
-    private static final String baseTemplateUrl = baseUrl + "metadata/";
+    private static final String baseTemplateUrl = baseUrl + "template/";
 
     private static final String baseDebUrl = baseUrl + "deb/";
 
