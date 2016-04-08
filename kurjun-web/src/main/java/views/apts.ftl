@@ -47,6 +47,7 @@
                 <td>${a.architecture}</td>
                 <td>${a.version}</td>
                 <td><a href="${contextPath}/apt/download?repository=${a.id.context}&md5=${a.id.md5Sum}" target="_blank">download</a>
+                    |  <a href="${contextPath}/permissions/by-object?id=${a.id.context+"."+a.id.md5Sum}&obj_type=3" class="js-colorbox">permissions</a>
                     |  <a href="#" onclick="removeApt('${a.id.context}','${a.id.md5Sum}')">remove</a>
                     |  <a href="#js-add-trust-rel" onclick="openSharePopup(3, '${a.id.context}', '${a.id.md5Sum}')" class="js-colorbox-inline">share</a></td>
             </tr>

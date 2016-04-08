@@ -45,6 +45,7 @@
                 <td><#--a href="${contextPath}/raw-files/info" class="js-colorbox"></a-->${f.name}</td>
                 <td>${f.size}</td>
                 <td><a href="${contextPath}/raw-files/download?repository=${f.id.context}&md5=${f.id.md5Sum}" target="_blank">download</a>
+                    |  <a href="${contextPath}/permissions/by-object?id=${f.id.context+"."+f.id.md5Sum}&obj_type=3" class="js-colorbox">permissions</a>
                     |  <a href="#" onclick="removeFile('${f.id.context}','${f.id.md5Sum}')">remove</a>
                     |  <a href="#js-add-trust-rel" onclick="openSharePopup(3, '${f.id.context}', '${f.id.md5Sum}')" class="js-colorbox-inline">share</a></td>
             </tr>
