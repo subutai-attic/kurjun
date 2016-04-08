@@ -313,6 +313,9 @@ public class AptManagerServiceImpl implements AptManagerService
         List<SerializableMetadata> results = null;
 
         node = StringUtils.isBlank( node ) ? "local" : node;
+        //if repository is blank
+        repository = StringUtils.isBlank( repository ) ? userSession.getUser().getUserName() : repository;
+
         switch ( node )
         {
             //get local list
@@ -331,9 +334,6 @@ public class AptManagerServiceImpl implements AptManagerService
         {
             return results == null? new ArrayList<>() : results;
         }
-
-        //if repository is blank
-        repository = StringUtils.isBlank( repository ) ? userSession.getUser().getUserName() : repository;
 
 
         //get personal repository list
