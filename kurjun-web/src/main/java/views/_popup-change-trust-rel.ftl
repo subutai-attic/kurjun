@@ -7,7 +7,7 @@
     </div>
     <div class="b-form__wrapper g-margin-bottom-half">
         <#if relation?? >
-        <form method="POST" action="${contextPath}/relations/${relation.id}/change">
+        <form method="POST" action="${contextPath}/permissions/${relation.id}/change">
             <div>
                 <div class="b-form__wrapper g-margin-bottom-half">
                     <label class="b-form-label">Permissions</label><br/>

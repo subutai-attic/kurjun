@@ -8,7 +8,7 @@
         </span>
     </div>
     <div class="b-form__wrapper g-margin-bottom-half">
-        <form method="POST" action="${contextPath}/relations/trust">
+        <form method="POST" action="${contextPath}/permissions/trust">
             <div>
                 <div class="b-form__wrapper">
                     <label for="target_fprint" class="b-form-label">With</label>

@@ -13,7 +13,7 @@
 
 <div class="b-workspace__content">
     <div class="b-workspace-content__row">
-        <a href="${contextPath}/relations/trust" id="add_trust_btn" class="b-btn b-btn_green b-btn_search-field-level js-colorbox">
+        <a href="${contextPath}/permissions/trust" id="add_trust_btn" class="b-btn b-btn_green b-btn_search-field-level js-colorbox">
             <i class="fa fa-plus"></i> Add permissions
         </a>
         <table id="relations_tbl" class="b-data-table">
@@ -41,7 +41,7 @@
                      ${(r.perms?contains("Write"))?then("W"," ")}
                      ${(r.perms?contains("Delete"))?then("D"," ")}
                     </td>
-                    <td><a href="${contextPath}/relations/${r.id}/change" class="js-colorbox">change</a> | <a href="#" onclick="removeRelation('${r.id}')">remove</a></td>
+                    <td><a href="${contextPath}/permissions/${r.id}/change" class="js-colorbox">change</a> | <a href="#" onclick="removeRelation('${r.id}')">remove</a></td>
                 </tr>
                 </#list>
             </#if>
@@ -56,7 +56,7 @@
     {
         var confirmed = confirm("Are you sure want to delete it?");
         if (confirmed) {
-            $('#removeRelationForm').attr('action', '${contextPath}/relations/' + id + '/delete');
+            $('#removeRelationForm').attr('action', '${contextPath}/permissions/' + id + '/delete');
             $('#removeRelationForm').submit();
         }
     }

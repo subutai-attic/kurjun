@@ -77,11 +77,10 @@ public class RestAliquaController extends BaseController
     }
 
 
-    public Result delete( Context context, @Param( "id" ) String id,
+    public Result delete( Context context, @Param("repository") String repo, @Param( "md5" ) String md5,
                           @Param( "global_kurjun_sptoken" ) String globalKurjunToken )
     {
-        checkNotNull( id, "ID cannot be null" );
-        String[] temp = id.split( "\\." );
+        //checkNotNull( id, "ID cannot be null" );
         String sptoken = "";
 
         if ( globalKurjunToken != null )
@@ -90,17 +89,14 @@ public class RestAliquaController extends BaseController
         }
         boolean success = false;
 
-        if ( temp.length == 2 )
-        {
-            //********************************************
-            UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            success = rawManagerService.delete( uSession, temp[0], temp[1] );
-            //********************************************
-        }
+        //********************************************
+        UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+        success = rawManagerService.delete( uSession, repo, md5 );
+        //********************************************
 
         if ( success )
         {
-            return Results.ok().render( id + " deleted" ).text();
+            return Results.ok().render( repo+"."+md5 + " deleted" ).text();
         }
 
         return Results.notFound().render( "Not found" ).text();

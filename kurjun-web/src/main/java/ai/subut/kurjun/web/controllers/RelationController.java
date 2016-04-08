@@ -84,13 +84,13 @@ public class RelationController extends BaseController
 
         if ( rels.isEmpty() )
         {
-            return Results.html().template( "views/relations.ftl" ).render( "relations", null );
+            return Results.html().template( "views/permissions.ftl" ).render( "relations", null );
         }
         else
         {
             Map<String, String> map = ObjectType.getMap();
 
-            return Results.html().template( "views/relations.ftl" )
+            return Results.html().template( "views/permissions.ftl" )
                           .render( "relations", rels )
                           .render( "relObjTypes", map );
         }
@@ -129,7 +129,7 @@ public class RelationController extends BaseController
         }
 
 
-        return Results.redirect( context.getContextPath() + "/relations" );
+        return Results.redirect( context.getContextPath() + "/permissions" );
     }
 
     //*************************************************
@@ -214,7 +214,7 @@ public class RelationController extends BaseController
                 flashScope.error( "Access denied. You don't have permissions to this object." );
             }
             
-            return Results.redirect( context.getContextPath() + "/relations" );
+            return Results.redirect( context.getContextPath() + "/permissions" );
         }
     }
     */
@@ -256,7 +256,7 @@ public class RelationController extends BaseController
             flashScope.error( "Relation not found." );
         }
 
-        return Results.redirect( context.getContextPath() + "/relations" );
+        return Results.redirect( context.getContextPath() + "/permissions" );
     }
     */
 
@@ -292,6 +292,6 @@ public class RelationController extends BaseController
             flashScope.error( "Relation not found." );
         }
 
-        return Results.redirect( context.getContextPath() + "/relations" );
+        return Results.redirect( context.getContextPath() + "/permissions" );
     }*/
 }

@@ -55,9 +55,9 @@
                 <td><#if t.version??>${t.version}</#if></td>
                 <td><#if t.size??>${t.size}</#if></td>
                 <td><a href="${contextPath}/templates/download?repository=${t.id.context}&md5=${t.id.md5Sum}" target="_blank">download</a>
-                    |  <a href="${contextPath}/relations/by-object?id=${t.id.context+"."+t.id.md5Sum}&obj_type=3" class="js-colorbox">permissions</a>
+                    |  <a href="${contextPath}/permissions/by-object?id=${t.id.context+"."+t.id.md5Sum}&obj_type=3" class="js-colorbox">permissions</a>
                     <#if !( isPublic?? && isPublic ) >
-                    |  <a href="#" onclick="removeTemplate('repository=${t.id.context}&md5=${t.id.md5Sum}')">remove</a>
+                    |  <a href="#" onclick="removeTemplate('${t.id.context}','${t.id.md5Sum}')">remove</a>
                     |  <a href="#js-add-trust-rel" onclick="$('#template_id').val('${t.id.context+"."+t.id.md5Sum}')" class="js-colorbox-inline">share</a>
                     </#if>
                 </td>
@@ -71,12 +71,12 @@
 </div>
 
 <script>
-    function removeTemplate(templId)
+    function removeTemplate(context, templId)
     {
         var confirmed = confirm("Are you sure want to delete it?");
         if (confirmed)
         {
-            $('#removeTemplForm').attr('action', '${contextPath}/templates/delete?'+templId);
+            $('#removeTemplForm').attr('action', '${contextPath}/templates/delete?repository='+context+'&md5='+templId);
             $('#removeTemplForm').submit();
         }
     }
