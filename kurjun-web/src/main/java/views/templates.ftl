@@ -58,7 +58,7 @@
                     |  <a href="${contextPath}/permissions/by-object?id=${t.id.context+"."+t.id.md5Sum}&obj_type=3" class="js-colorbox">permissions</a>
                     <#if !( isPublic?? && isPublic ) >
                     |  <a href="#" onclick="removeTemplate('${t.id.context}','${t.id.md5Sum}')">remove</a>
-                    |  <a href="#js-add-trust-rel" onclick="$('#template_id').val('${t.id.context+"."+t.id.md5Sum}')" class="js-colorbox-inline">share</a>
+                    |  <a href="#js-add-trust-rel" onclick="openSharePopup(3, '${t.id.context}', '${t.id.md5Sum}')" class="js-colorbox-inline">share</a>
                     </#if>
                 </td>
             </tr>
@@ -101,6 +101,6 @@
 
 </script>
 
-<#include "_popup-share-template.ftl"/>
+<#include "_popup-share-metadata.ftl"/>
 
 </@layout.parentLayout>

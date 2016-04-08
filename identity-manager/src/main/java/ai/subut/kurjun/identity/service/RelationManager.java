@@ -115,4 +115,6 @@ public interface RelationManager
     //*******************************************************************
     boolean checkObjectPermissions( User user, String parentId, int parentType, String childId, int childType,
                                     Permission perm );
+
+    void saveRelation( Relation relation );
 }

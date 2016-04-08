@@ -28,5 +28,7 @@ public interface RelationManagerService extends BaseService {
 
     List<Relation> getRelationsByObject(String id, int objType );
 
+    void changePermissions( UserSession userSession, long relationId, String[] permissions );
+
 
 }

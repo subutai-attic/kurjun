@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.apache.commons.lang3.StringUtils;
 
 
@@ -61,7 +63,7 @@ public class RelationController extends BaseController
             //rel = relationManagerService.getRelation( sourceId, targetId, objectId, 0 );
         }
 
-        return Results.html().template( "views/_popup-change-trust-rel.ftl" ).render( "relation", rel );
+        return Results.html().template( "views/_popup-change-permissions.ftl" ).render( "relation", rel );
     }
 
 
@@ -220,78 +222,42 @@ public class RelationController extends BaseController
     */
 
 
-    /*
-    public Result delete( @PathParam( "id" ) String id, @Param( "source_id" ) String sourceId,
-                          @Param( "target_id" ) String targetId, @Param( "object_id" ) String objectId, Context context,
+    public Result delete( @AuthorizedUser UserSession userSession, @PathParam( "id" ) String id, Context context,
                           FlashScope flashScope )
     {
-        UserSession userSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-        Relation rel;
-
-        if ( !StringUtils.isBlank( id ) )
+        Relation relation  = relationManagerService.getRelation( userSession, Long.valueOf( id ) );
+        try
         {
-            rel = relationManagerService.getRelation( id );
+            relationManagerService.removeRelation( userSession, relation );
+            flashScope.success( "Deleted successfully" );
         }
-        else
+        catch ( IllegalAccessError e )
         {
-            rel = relationManagerService.getRelation( sourceId, targetId, objectId, 0 );
-        }
-
-        if ( rel != null )
-        {
-            if ( relationManagerService
-                    .checkUserPermissions( userSession, rel.getTrustObject().getId(), rel.getTrustObject().getType() )
-                    .contains( Permission.Delete ) )
-            {
-                relationManagerService.removeRelation( rel );
-                flashScope.success( "Deleted successfully." );
-            }
-            else
-            {
-                flashScope.error( "Access denied." );
-            }
-        }
-        else
-        {
-            flashScope.error( "Relation not found." );
+            flashScope.error( "Access denied" );
         }
 
         return Results.redirect( context.getContextPath() + "/permissions" );
     }
-    */
 
 
-
-    /*
-    public Result change( @PathParam( "id" ) String id, @Params( "permission" ) String[] permissions, Context context,
-                          FlashScope flashScope )
+    public Result change( @AuthorizedUser UserSession userSession, @PathParam( "id" ) String id,
+                          @Params( "permission" ) String[] permissions, Context context, FlashScope flashScope )
     {
-        UserSession userSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-        Relation rel = relationManagerService.getRelation( id );
-
-        if ( rel != null )
+        //UserSession userSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+        try
         {
-            if ( relationManagerService
-                    .checkUserPermissions( userSession, rel.getTrustObject().getId(), rel.getTrustObject().getType() )
-                    .contains( Permission.Update ) )
-
-            {
-                Set<Permission> objectPermissions = new HashSet<>();
-                Arrays.asList( permissions ).forEach( p -> objectPermissions.add( Permission.valueOf( p ) ) );
-                rel.setPermissions( objectPermissions );
-                relationManagerService.saveRelation( rel );
-                flashScope.success( "Saved successfully." );
-            }
-            else
-            {
-                flashScope.error( "Access denied." );
-            }
+            relationManagerService.changePermissions( userSession, Long.valueOf( id ), permissions );
+            flashScope.success( "Permissions changed." );
         }
-        else
+        catch ( EntityNotFoundException e )
         {
-            flashScope.error( "Relation not found." );
+            flashScope.error( "Permission not found" );
+        }
+        catch ( IllegalAccessError e )
+        {
+            flashScope.error( "You don't have access to edit permissions for this trust relation" );
         }
 
         return Results.redirect( context.getContextPath() + "/permissions" );
-    }*/
+    }
 }
