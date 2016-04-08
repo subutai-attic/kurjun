@@ -13,6 +13,7 @@ import ai.subut.kurjun.web.handler.SubutaiFileHandler;
 import ai.subut.kurjun.web.model.KurjunFileItem;
 import ai.subut.kurjun.web.service.RawManagerService;
 import ai.subut.kurjun.web.service.RepositoryService;
+import ai.subut.kurjun.web.service.impl.RawManagerServiceImpl;
 import ninja.Context;
 import ninja.Renderable;
 import ninja.Result;
@@ -33,34 +34,31 @@ public class RawFileController extends BaseController
     @Inject
     private RawManagerService rawManagerService;
 
-    @Inject
-    private RepositoryService repositoryService;
-
-
-    public Result list( Context context , @Param( "repository" ) String repository, @Param( "search" ) String search )
+    public Result list( Context context , @Param( "repository" ) String repository, @Param( "node" ) String node )
     {
-        search = StringUtils.isBlank( search )? "all":search;
-        repository = StringUtils.isBlank( repository )? "raw":repository;
+        node = StringUtils.isBlank( node )? "local":node;
+        repository = StringUtils.isBlank( repository ) ? RawManagerServiceImpl.DEFAULT_RAW_REPO_NAME: repository;
 
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
         return Results.html().template( "views/raw-files.ftl" )
-                      .render( "files", rawManagerService.list( uSession, repository, search ) );
+                      .render( "files", rawManagerService.list( uSession, repository, node ) )
+                .render( "repos", rawManagerService.getRepoList() ).render( "sel_repo", repository)
+                      .render( "node", node);
     }
 
 
     @FileProvider( SubutaiFileHandler.class )
-    public Result upload( Context context, @Param( "file" ) FileItem fileItem, FlashScope flashScope )
+    public Result upload( Context context, @Param( "file" ) FileItem fileItem, @Param("repository") String repo,
+                          FlashScope flashScope )
     {
         UserSession userSession = ( UserSession ) context.getAttribute( SecurityFilter.USER_SESSION );
-        String fingerprint = "raw";
-
 
         KurjunFileItem kurjunFileItem = ( KurjunFileItem ) fileItem;
 
         Metadata metadata;
 
         metadata = rawManagerService
-                .put( userSession, kurjunFileItem.getFile(), kurjunFileItem.getFileName(), fingerprint );
+                .put( userSession, kurjunFileItem.getFile(), kurjunFileItem.getFileName(), repo );
 
         if ( metadata != null )
         {

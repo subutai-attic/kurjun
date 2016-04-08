@@ -16,6 +16,22 @@
         <a href="#js-upload-apt" class="b-btn b-btn_green b-btn_search-field-level js-colorbox-inline">
             <i class="fa fa-plus"></i> Upload
         </a>
+      <div style="margin-left: 200px">
+
+        <form method="get" actoin="${contextPath}/apt">
+          <label>Show by repo: </label><select name="repository" id="repo-filter">
+            <#if sel_repo??>
+                <#list repos as repo >
+                  <option value="${repo}" <#if sel_repo == repo >selected</#if> >${repo}</option>
+                </#list>
+            </#if>
+        </select>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <label><input type="radio" name="node" value="local" ${(node=="local")?string("checked","")}> Local node</label>
+          <label><input type="radio" name="node" value="all" ${(node=="all")?string("checked","")}> All nodes</label>
+          <button type="submit">Search</button>
+        </form>
+      </div>
         <table id="apt_tbl" class="b-data-table">
             <thead>
             <tr>
