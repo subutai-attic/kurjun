@@ -327,7 +327,7 @@ public class AptManagerServiceImpl implements AptManagerService
         //public user, return results
         if ( identityManagerService.isPublicUser( userSession.getUser() ) )
         {
-            return results;
+            return results == null? new ArrayList<>() : results;
         }
 
         //if repository is blank
@@ -352,12 +352,7 @@ public class AptManagerServiceImpl implements AptManagerService
 
         results.addAll( localUserRepo.listPackages() );
 
-        return results;
-
-<<<<<<< HEAD
-        return list == null? new ArrayList<>() : list;
-=======
->>>>>>> d6cfe175427daf992079526111e9f29f063f7153
+        return results == null? new ArrayList<>() : results;
     }
 
 
