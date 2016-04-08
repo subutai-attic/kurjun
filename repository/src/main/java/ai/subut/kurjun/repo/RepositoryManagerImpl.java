@@ -111,6 +111,13 @@ public class RepositoryManagerImpl implements RepositoryManager
         repositoryDataService.removeArtifact( repoType, artifact );
     }
 
+    //*************************************************
+    @Override
+    public void removeArtifact( ArtifactId id )
+    {
+        repositoryDataService.removeArtifact( id);
+    }
+
 
     //*************************************************
     @Override

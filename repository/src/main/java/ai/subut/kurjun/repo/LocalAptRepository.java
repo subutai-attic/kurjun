@@ -163,10 +163,14 @@ class LocalAptRepository extends LocalRepositoryBase
             addExtraData( metadata, target );
             addSubutaiData( metadata, target );
 
+            String data[] = fileStore.put( target.toFile() , 1 );
+
+            //*****************************
             AptData aptData = repositoryManager.constructAptData( repoData, Hex.encodeHexString( md5 ), owner );
             aptData = repositoryManager.copyAptPackage( metadata, aptData );
+            aptData.setFilePath( data[1] );
             repositoryManager.addArtifactToRepository( repoData, aptData );
-            fileStore.put( target.toFile() );
+            //*****************************
 
 
             return meta;

@@ -90,25 +90,25 @@ public class TemplateDAO extends GenericDAOImpl<TemplateData>
         {
             String querySTR = "select e from TemplateDataEntity e where e.id.type=:repoType ";
 
-            if( Strings.isNullOrEmpty( id.getContext() ))
+            if( !Strings.isNullOrEmpty( id.getContext() ))
                 querySTR += " and e.id.context=:repoContext ";
-            if( Strings.isNullOrEmpty(id.getMd5Sum() ))
+            if( !Strings.isNullOrEmpty(id.getMd5Sum() ))
                 querySTR += " and e.id.md5Sum=:md5Sum ";
-            if( Strings.isNullOrEmpty(id.getArtifactName() ))
+            if( !Strings.isNullOrEmpty(id.getArtifactName() ))
                 querySTR += " and e.name=:name ";
-            if( Strings.isNullOrEmpty(id.getVersion() ))
+            if( !Strings.isNullOrEmpty(id.getVersion() ))
                 querySTR += " and e.version=:version ";
 
             querySTR += " order by e.version ";
             Query qr = getEntityManager().createQuery(querySTR,AptDataEntity.class );
 
-            if( Strings.isNullOrEmpty(id.getContext()))
+            if( !Strings.isNullOrEmpty(id.getContext()))
                 qr.setParameter( "repoContext" ,id.getContext() );
-            if( Strings.isNullOrEmpty(id.getMd5Sum() ))
+            if( !Strings.isNullOrEmpty(id.getMd5Sum() ))
                 qr.setParameter( "md5Sum" ,id.getMd5Sum() );
-            if( Strings.isNullOrEmpty(id.getArtifactName() ))
+            if( !Strings.isNullOrEmpty(id.getArtifactName() ))
                 qr.setParameter( "name" ,id.getArtifactName() );
-            if( Strings.isNullOrEmpty(id.getVersion() ))
+            if( !Strings.isNullOrEmpty(id.getVersion() ))
                 qr.setParameter( "version" ,id.getVersion() );
 
             List<TemplateData>  items = qr.getResultList();

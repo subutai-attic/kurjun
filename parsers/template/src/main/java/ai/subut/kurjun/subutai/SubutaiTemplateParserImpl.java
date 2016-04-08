@@ -168,6 +168,13 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
 
 
             @Override
+            public String getFilePath()
+            {
+                return null;
+            }
+
+
+            @Override
             public String getConfigContents()
             {
                 return prop.getProperty( CONFIG_FILE_CONTENTS_KEY );

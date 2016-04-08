@@ -70,6 +70,13 @@ class BinaryPackageMetadata extends AbstractPackageMetadata
 
 
     @Override
+    public String getFilePath()
+    {
+        return null;
+    }
+
+
+    @Override
     public String getSource()
     {
         return controlFile.get( SOURCE_FIELD );

@@ -39,6 +39,9 @@ public class TemplateDataEntity implements TemplateData
     @Column (name = "name", nullable = false)
     String  name;
 
+    @Column( name = "file_path" )
+    private String filePath = "";
+
     @Column( name = "version" )
     private String version;
 
@@ -93,6 +96,20 @@ public class TemplateDataEntity implements TemplateData
     {
         this.owner = owner;
     }
+
+    @Override
+    public String getFilePath()
+    {
+        return filePath;
+    }
+
+
+    @Override
+    public void setFilePath( final String filePath )
+    {
+        this.filePath = filePath;
+    }
+
 
     @Override
     public String getUniqId()

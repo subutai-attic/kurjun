@@ -88,9 +88,10 @@ public class LocalRawRepository extends LocalRepositoryBase
         RepositoryData repoData = getRepositoryData( context, ObjectType.RawRepo.getId(), owner );
         //*******************
 
-        String md5 = getFileStore().put( file );
-        RawData rawData = repositoryManager.constructRawData ( repoData, md5 , name , owner );
+        String data[] = getFileStore().put( file , 1 );
+        RawData rawData = repositoryManager.constructRawData ( repoData, data[0] , name , owner );
         rawData.setSize( file.length() );
+        rawData.setFilePath( data[1] );
 
         repositoryManager.addArtifactToRepository( repoData, rawData );
 

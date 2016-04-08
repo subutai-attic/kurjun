@@ -44,6 +44,9 @@ public class AptDataEntity implements AptData
     @Column( name = "owner" )
     private String owner;
 
+    @Column( name = "file_path" )
+    private String filePath = "";
+
     @Column( name = "component" )
     private String component;
 
@@ -68,6 +71,7 @@ public class AptDataEntity implements AptData
 
     @Column( name = "installedSize" )
     private int installedSize = 0;
+
 
 
     @OneToMany(cascade = { CascadeType.ALL}, fetch = FetchType.LAZY, targetEntity = AptDependencyEntity.class)
@@ -176,6 +180,19 @@ public class AptDataEntity implements AptData
         return component;
     }
 
+
+    @Override
+    public String getFilePath()
+    {
+        return filePath;
+    }
+
+
+    @Override
+    public void setFilePath( final String filePath )
+    {
+        this.filePath = filePath;
+    }
 
     @Override
     public void setComponent( String component )
