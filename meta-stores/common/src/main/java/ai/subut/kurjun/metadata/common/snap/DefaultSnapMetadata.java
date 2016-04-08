@@ -74,6 +74,13 @@ public class DefaultSnapMetadata implements SnapMetadata, SerializableMetadata
     }
 
 
+    @Override
+    public String getFilePath()
+    {
+        return null;
+    }
+
+
     public void setVersion( String version )
     {
         this.version = version;

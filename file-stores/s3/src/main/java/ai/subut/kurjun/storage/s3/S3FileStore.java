@@ -150,6 +150,13 @@ class S3FileStore implements FileStore
 
 
     @Override
+    public InputStream get( final String md5, final String path ) throws IOException
+    {
+        return null;
+    }
+
+
+    @Override
     public boolean get( String md5, File target ) throws IOException
     {
         Objects.requireNonNull( target, "Target file" );
@@ -206,6 +213,13 @@ class S3FileStore implements FileStore
 
 
     @Override
+    public String[] put( final File source, final int type ) throws IOException
+    {
+        return new String[0];
+    }
+
+
+    @Override
     public String put( URL source ) throws IOException
     {
         Objects.requireNonNull( source, "Source URL" );
@@ -242,6 +256,13 @@ class S3FileStore implements FileStore
 
 
     @Override
+    public String[] put( final String filename, final InputStream source, final int type ) throws IOException
+    {
+        return new String[0];
+    }
+
+
+    @Override
     public boolean remove( String md5 ) throws IOException
     {
         Objects.requireNonNull( md5, "Checksum" );
@@ -256,6 +277,13 @@ class S3FileStore implements FileStore
         {
             return false;
         }
+    }
+
+
+    @Override
+    public boolean remove( final String md5, final String path ) throws IOException
+    {
+        return false;
     }
 
 
@@ -299,6 +327,13 @@ class S3FileStore implements FileStore
         ObjectListing listing = s3client.listObjects( lor );
         List<S3ObjectSummary> items = listing.getObjectSummaries();
         return items.isEmpty() ? 0 : items.get( 0 ).getSize();
+    }
+
+
+    @Override
+    public long sizeOf( final String md5, final String path ) throws IOException
+    {
+        return 0;
     }
 
 

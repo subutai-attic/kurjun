@@ -89,24 +89,26 @@ public class AptDAO extends GenericDAOImpl<AptData>
         {
             String querySTR = "select e from AptDataEntity e where e.id.type=:repoType ";
 
-            if( Strings.isNullOrEmpty(id.getContext()))
+            if( !Strings.isNullOrEmpty(id.getContext()))
                 querySTR += " and e.id.context=:repoContext ";
-            if( Strings.isNullOrEmpty(id.getMd5Sum() ))
+            if( !Strings.isNullOrEmpty(id.getMd5Sum() ))
                 querySTR += " and e.id.md5Sum=:md5Sum ";
-            if( Strings.isNullOrEmpty(id.getArtifactName() ))
+            if( !Strings.isNullOrEmpty(id.getArtifactName() ))
                 querySTR += " and e.packageName=:packageName ";
-            if( Strings.isNullOrEmpty(id.getVersion() ))
+            if( !Strings.isNullOrEmpty(id.getVersion() ))
                 querySTR += " and e.version=:version ";
 
             Query qr = getEntityManager().createQuery(querySTR,AptDataEntity.class );
 
-            if( Strings.isNullOrEmpty(id.getContext()))
+            qr.setParameter( "repoType" ,id.getType());
+
+            if( !Strings.isNullOrEmpty(id.getContext()))
                 qr.setParameter( "repoContext" ,id.getContext() );
-            if( Strings.isNullOrEmpty(id.getMd5Sum() ))
+            if( !Strings.isNullOrEmpty(id.getMd5Sum() ))
                 qr.setParameter( "md5Sum" ,id.getMd5Sum() );
-            if( Strings.isNullOrEmpty(id.getArtifactName() ))
+            if( !Strings.isNullOrEmpty(id.getArtifactName() ))
                 qr.setParameter( "packageName" ,id.getArtifactName() );
-            if( Strings.isNullOrEmpty(id.getVersion() ))
+            if( !Strings.isNullOrEmpty(id.getVersion() ))
                 qr.setParameter( "version" ,id.getVersion() );
 
             List<AptData>  items = qr.getResultList();

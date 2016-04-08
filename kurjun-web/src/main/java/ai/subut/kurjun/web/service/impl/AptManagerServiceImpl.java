@@ -225,9 +225,9 @@ public class AptManagerServiceImpl implements AptManagerService
 
 
     @Override
-    public Renderable getPackage( UserSession userSession, final String md5 )
+    public Renderable getPackage( UserSession userSession,String repository, final String md5 )
     {
-        ArtifactId id = repositoryManager.constructArtifactId( "", ObjectType.AptRepo.getId(), md5 );
+        ArtifactId id = repositoryManager.constructArtifactId( repository, ObjectType.AptRepo.getId(), md5 );
 
         AptData md = ( AptData ) unifiedRepository.getPackageInfo( id );
 

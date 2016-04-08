@@ -28,7 +28,6 @@ import com.google.inject.assistedinject.Assisted;
 import ai.subut.kurjun.common.service.KurjunConstants;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.common.service.KurjunProperties;
-import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.model.storage.FileStore;
 
 
@@ -40,9 +39,6 @@ import ai.subut.kurjun.model.storage.FileStore;
 @SuppressWarnings( "JavadocReference" )
 class FileSystemFileStore implements FileStore
 {
-
-    private static final String FILEDB_NAME = "checksum.db";
-    private static final String MAP_NAME = "checksum-to-filepath";
 
     private Path rootLocation;
 
@@ -79,29 +75,27 @@ class FileSystemFileStore implements FileStore
     }
 
 
+    @Deprecated
     @Override
-    public boolean contains( String md5 ) throws IOException
+    public boolean contains( final String md5 ) throws IOException
     {
-        FileDb fileDb = null;
-        try
-        {
-            return fileDb.contains( MAP_NAME, md5 );
-        }
-        finally
-        {
-            if ( fileDb != null ) fileDb.close();
-        }
+        return false;
+    }
+
+
+    @Deprecated
+    @Override
+    public InputStream get( final String md5 ) throws IOException
+    {
+        return null;
     }
 
 
     @Override
-    public InputStream get( String md5 ) throws IOException
+    public InputStream get( String md5, String path ) throws IOException
     {
-        FileDb fileDb = null;
         try
         {
-            String path = fileDb.get( MAP_NAME, md5, String.class );
-
             if ( path != null )
             {
                 return new FileInputStream( path );
@@ -111,17 +105,18 @@ class FileSystemFileStore implements FileStore
                 return null;
             }
         }
-        finally
+        catch(Exception ex)
         {
-            if ( fileDb != null ) fileDb.close();
+            throw new IOException( ex );
         }
     }
+
 
 
     @Override
     public boolean get( String md5, File target ) throws IOException
     {
-        try ( InputStream is = get( md5 ) )
+        try ( InputStream is = get( md5 ,target.getAbsolutePath() ) )
         {
             if ( is != null )
             {
@@ -143,6 +138,16 @@ class FileSystemFileStore implements FileStore
         }
     }
 
+    @Override
+    public String[] put( File source, int type  ) throws IOException
+    {
+        try ( InputStream is = new FileInputStream( source ) )
+        {
+            String filename = UUID.randomUUID().toString().replace( "-", "" );
+            return put( filename, is ,type );
+        }
+    }
+
 
     @Override
     public String put( URL source ) throws IOException
@@ -155,38 +160,25 @@ class FileSystemFileStore implements FileStore
     }
 
 
+
     @Override
     public String put( String filename, InputStream source ) throws IOException
     {
         Objects.requireNonNull( filename, "Filename" );
 
-        // distribute files into subdirectories by their first letter(s)
         Path subDir = rootLocation.resolve( filename.substring( 0, 2 ) );
         Files.createDirectories( subDir );
 
         Path target = Files.createTempFile( subDir, filename, "" );
         String md5 = copyStream( source, target );
 
-        FileDb fileDb = null;
         try
         {
-            fileDb = new FileDb( makeDbFilePath() );
-            // check if we already have a file with the calculated md5 checksum, if so just replace the old file
-            String existingPath = fileDb.get( MAP_NAME, md5, String.class );
-            if ( existingPath != null )
-            {
-                Files.move( target, Paths.get( existingPath ), StandardCopyOption.REPLACE_EXISTING );
-                // clean up
                 deleteDirIfEmpty( subDir );
-            }
-            else
-            {
-                fileDb.put( MAP_NAME, md5, target.toAbsolutePath().toString() );
-            }
         }
-        finally
+        catch(Exception ex)
         {
-            if ( fileDb != null ) fileDb.close();
+            throw new IOException( ex );
         }
 
         return md5;
@@ -194,27 +186,58 @@ class FileSystemFileStore implements FileStore
 
 
     @Override
-    public boolean remove( String md5 ) throws IOException
+    public String[] put( String filename, InputStream source, int type ) throws IOException
+    {
+        Objects.requireNonNull( filename, "Filename" );
+        String[] data = {"","",""};
+
+        Path subDir = rootLocation.resolve( filename.substring( 0, 2 ) );
+        Files.createDirectories( subDir );
+
+        Path target = Files.createTempFile( subDir, filename, "" );
+        data[0] = copyStream( source, target );
+        data[1] = target.toAbsolutePath().toString();
+
+
+        try
+        {
+            deleteDirIfEmpty( subDir );
+        }
+        catch(Exception ex)
+        {
+            throw new IOException( ex );
+        }
+
+        return data;
+    }
+
+
+
+    @Override
+    public boolean remove( final String md5 ) throws IOException
+    {
+        return false;
+    }
+
+
+    @Override
+    public boolean remove( String md5, String path ) throws IOException
     {
         String hexMd5 = md5;
 
-        FileDb fileDb = new FileDb( makeDbFilePath() );
         try
         {
-            fileDb = new FileDb( makeDbFilePath() );
-            String path = fileDb.get( MAP_NAME, hexMd5, String.class );
             if ( path != null )
             {
                 Path p = Paths.get( path );
                 Files.deleteIfExists( p );
                 deleteDirIfEmpty( p.getParent() );
-                fileDb.remove( MAP_NAME, hexMd5 );
                 return true;
             }
         }
-        finally
+        catch(Exception ex)
         {
-            if ( fileDb != null ) fileDb.close();
+            throw new IOException( ex );
         }
 
         return false;
@@ -231,8 +254,7 @@ class FileSystemFileStore implements FileStore
             @Override
             public FileVisitResult visitFile( Path file, BasicFileAttributes attrs ) throws IOException
             {
-                // sum sizes of only package files, ignore db files
-                if ( !file.getFileName().toString().startsWith( FILEDB_NAME ) )
+                if ( !file.getFileName().toString().startsWith( "derbyDb" ) )
                 {
                     total.addAndGet( attrs.size() );
                 }
@@ -252,20 +274,25 @@ class FileSystemFileStore implements FileStore
 
 
     @Override
-    public long sizeOf( String md5 ) throws IOException
+    public long sizeOf( final String md5 ) throws IOException
     {
-        FileDb fileDb = null;
+        return 0;
+    }
+
+
+    @Override
+    public long sizeOf( String md5, String path ) throws IOException
+    {
         try
         {
-            String path = fileDb.get( MAP_NAME, md5, String.class );
             if ( path != null )
             {
                 return Files.size( Paths.get( path ) );
             }
         }
-        finally
+        catch(Exception ex)
         {
-            if ( fileDb != null ) fileDb.close();
+            throw new IOException( ex );
         }
 
         return 0;
@@ -307,9 +334,5 @@ class FileSystemFileStore implements FileStore
     }
 
 
-    private String makeDbFilePath()
-    {
-        return rootLocation.resolve( FILEDB_NAME ).toString();
-    }
 }
 

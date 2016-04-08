@@ -14,6 +14,10 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
  */
 public interface AptData extends PackageMetadata, SerializableMetadata
 {
+    String getFilePath();
+
+    void setFilePath( String filePath );
+
     void setOwner( String owner );
 
     String getUniqId();

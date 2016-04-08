@@ -167,7 +167,7 @@ public class AptController extends BaseAptController
     {
         //********************************************
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-        Renderable renderable = aptManagerService.getPackage( uSession ,md5 );
+        Renderable renderable = aptManagerService.getPackage( uSession ,repo,md5 );
         //********************************************
 
         if ( renderable != null )

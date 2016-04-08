@@ -84,6 +84,13 @@ public class DefaultMetadata implements SerializableMetadata
     }
 
 
+    @Override
+    public String getFilePath()
+    {
+        return null;
+    }
+
+
     public void setVersion( String version )
     {
         this.version = version;

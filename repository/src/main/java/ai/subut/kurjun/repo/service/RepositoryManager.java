@@ -50,6 +50,9 @@ public interface RepositoryManager
 
 
     //*************************************************
+    void removeArtifact( ArtifactId id );
+
+    //*************************************************
     Object getArtifact( int repoType, ArtifactId id );
 
 

@@ -34,12 +34,13 @@ public class RepositoryArtifactEntity implements RepositoryArtifact
     @Column(name = "version")
     private String version;
 
+    @Column(name = "version")
+    private String filePath;
+
     //@ManyToOne(targetEntity = RepositoryDataEntity.class)
     //private RepositoryData repositoryData;
 
     //@Embedded
-    @Transient
-    DefaultTemplate templateMetada;
 
 
     public RepositoryArtifactEntity()
@@ -101,28 +102,23 @@ public class RepositoryArtifactEntity implements RepositoryArtifact
 
 
     @Override
-    public void setVersion( final String version )
+    public String getFilePath()
     {
-        this.version = version;
-    }
-
-
-    public DefaultTemplate getTemplateMetada()
-    {
-        return templateMetada;
-    }
-
-
-    public void setTemplateMetada( final DefaultTemplate templateMetada )
-    {
-        this.templateMetada = templateMetada;
+        return filePath;
     }
 
 
     @Override
-    public void setTemplateMetada( final Object templateMetada )
+    public void setFilePath( final String filePath )
     {
-        this.templateMetada = (DefaultTemplate)templateMetada;
+        this.filePath = filePath;
+    }
+
+
+    @Override
+    public void setVersion( final String version )
+    {
+        this.version = version;
     }
 
 

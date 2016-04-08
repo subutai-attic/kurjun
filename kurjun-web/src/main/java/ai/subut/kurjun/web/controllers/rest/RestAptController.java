@@ -123,7 +123,7 @@ public class RestAptController extends BaseAptController
 
         //********************************************
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-        Renderable renderable = managerService.getPackage( uSession, md5 );
+        Renderable renderable = managerService.getPackage( uSession,repo, md5 );
         //********************************************
 
         if ( renderable != null )

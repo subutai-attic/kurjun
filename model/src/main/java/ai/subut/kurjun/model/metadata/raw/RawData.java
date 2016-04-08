@@ -14,6 +14,10 @@ public interface RawData extends Metadata, SerializableMetadata
 
     void setId( ArtifactId id );
 
+    String getFilePath();
+
+    void setFilePath( String filePath );
+
     String getUniqId();
 
     String getContext();
