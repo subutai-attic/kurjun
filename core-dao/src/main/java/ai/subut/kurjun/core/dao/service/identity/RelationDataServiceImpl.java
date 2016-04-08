@@ -240,8 +240,6 @@ public class RelationDataServiceImpl implements RelationDataService
         }
         catch ( Exception ex )
         {
-            org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( this.getClass() );
-            log.error( "Failed: "+ex.getMessage() );
         }
 
     }

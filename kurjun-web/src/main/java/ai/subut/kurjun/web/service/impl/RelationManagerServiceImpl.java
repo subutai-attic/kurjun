@@ -84,7 +84,6 @@ public class RelationManagerServiceImpl implements RelationManagerService
             Set<Permission> permissoins = relationManager.getUserPermissions( user, object.getObjectId(), object.getType() );
             if ( permissoins.contains( Permission.Delete ) && !user.equals( identityManagerService.getPublicUser() ))
             {
-                LOGGER.info( "-------------------- deleting -----------------" );
                 relationManager.removeRelation( relation.getId() );
             }
             else
