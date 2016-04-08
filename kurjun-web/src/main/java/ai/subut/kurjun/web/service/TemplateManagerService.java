@@ -15,7 +15,7 @@ import ninja.Renderable;
 
 public interface TemplateManagerService extends BaseService
 {
-
+    String DEFAULT_SUBUTAI_CONTEXT = "subutai";
 
     List<SerializableMetadata> list( UserSession userSession, String repository, String search,
                                      boolean isKurjunClient ) throws IOException;

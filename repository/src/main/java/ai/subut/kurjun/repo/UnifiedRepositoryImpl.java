@@ -28,7 +28,6 @@ import ai.subut.kurjun.model.repository.UnifiedRepository;
  * Unified repository implementation. This implementation does not differentiate repository package types. It is just a
  * wrapper to a collection of repository instances. All repository instances have suitable operations and so there is no
  * need to differentiate package types. Package type related flags or operations maybe added in future.
- *
  */
 class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
 {
@@ -81,7 +80,6 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
     }
 
 
-
     @Override
     public Set<Repository> getRepositories()
     {
@@ -104,7 +102,6 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
         }
         return null;
     }
-
 
 
     @Override
@@ -132,7 +129,7 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
         {
             List<SerializableMetadata> list = repo.listPackages();
 
-            if(list != null)
+            if ( list != null )
             {
                 for ( SerializableMetadata meta : list )
                 {
@@ -148,16 +145,16 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
 
 
     @Override
-    public List<SerializableMetadata> listPackages(String context , int type)
+    public List<SerializableMetadata> listPackages( String context, int type )
     {
         List<SerializableMetadata> result = new ArrayList<>();
         List<Repository> repoList = getAllRepositories();
 
         for ( Repository repo : repoList )
         {
-            List<SerializableMetadata> list = repo.listPackages(context , type);
+            List<SerializableMetadata> list = repo.listPackages( context, type );
 
-            if(list != null)
+            if ( list != null )
             {
                 for ( SerializableMetadata meta : list )
                 {
@@ -174,8 +171,7 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
 
     private Comparator<Repository> makeLocalsFirstComparator()
     {
-        return (Repository r1, Repository r2) ->
-        {
+        return ( Repository r1, Repository r2 ) -> {
             // local repo shall go first so it shall have lesser value
             int i1 = r1 instanceof LocalRepository ? 0 : 1;
             int i2 = r2 instanceof LocalRepository ? 0 : 1;

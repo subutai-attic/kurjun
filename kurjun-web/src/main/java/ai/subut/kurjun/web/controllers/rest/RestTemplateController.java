@@ -9,11 +9,9 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.subutai.TemplateId;
 import ai.subut.kurjun.metadata.common.utils.IdValidators;
 import ai.subut.kurjun.model.identity.UserSession;
@@ -81,10 +79,8 @@ public class RestTemplateController extends BaseController
     }
 
 
-    public Result info( Context context, @Param( "repository" ) String repository,
-                                         @Param( "version" ) String version,
-                                         @Param( "md5" ) String md5,
-                                         @Param( "search" ) String search)
+    public Result info( Context context, @Param( "repository" ) String repository, @Param( "version" ) String version,
+                        @Param( "md5" ) String md5, @Param( "search" ) String search )
 
     {
         TemplateData templateData = null;
@@ -134,7 +130,7 @@ public class RestTemplateController extends BaseController
     }
 
 
-    public Result delete( Context context, @Param( "repository" ) String templateId , @Param( "md5" ) String md5 )
+    public Result delete( Context context, @Param( "repository" ) String templateId, @Param( "md5" ) String md5 )
     {
         checkNotNull( templateId, "Template ID cannot be null" );
 
@@ -169,17 +165,14 @@ public class RestTemplateController extends BaseController
     }
 
 
-    public Result list( Context context, @Param( "repository" ) String repo, @Param( "node" ) String node)
+    public Result list( Context context, @Param( "repository" ) String repo, @Param( "search" ) String node )
     {
         try
         {
-            repo = StringUtils.isBlank( repo ) ? "public" : repo;
-            node = StringUtils.isBlank( node ) ? "local" : node;
-
             //*****************************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            List<SerializableMetadata> defaultTemplateList =
-                    templateManagerService.list( uSession, repo, node, false );
+
+            List<SerializableMetadata> defaultTemplateList = templateManagerService.list( uSession, repo, node, false );
             //*****************************************************
 
             return Results.ok().render( defaultTemplateList ).json();

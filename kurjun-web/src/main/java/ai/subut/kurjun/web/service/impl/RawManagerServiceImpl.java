@@ -284,6 +284,35 @@ public class RawManagerServiceImpl implements RawManagerService
             default:
                 result = repositoryFactory.createLocalApt( new KurjunContext( repository ) ).listPackages();
         }
+/*
+        //public user, return results
+        if ( identityManagerService.isPublicUser( userSession.getUser() ) )
+        {
+            return results;
+        }
+
+        //if repository is blank
+        repository = StringUtils.isBlank( repository ) ? userSession.getUser().getUserName() : repository;
+
+
+        //get personal repository list
+        LocalRepository localUserRepo =
+                repositoryFactory.createLocalRaw( new KurjunContext( userSession.getUser().getUserName() ) );
+
+        //user trying to get other repository that was shared with him
+        //TODO:put security check here if user has permission for this repo
+        if ( !repository.equalsIgnoreCase( userSession.getUser().getUserName() ) )
+        {
+            //create repo instance based on repository name
+            LocalRepository privateSharedRepository =
+                    repositoryFactory.createLocalRaw( new KurjunContext( repository ) );
+
+            //TODO:object level security check required?
+            results.addAll( privateSharedRepository.listPackages() );
+        }
+
+        results.addAll( localUserRepo.listPackages() );
+*/
 
         return result == null? new ArrayList<>(  ) : result;
     }

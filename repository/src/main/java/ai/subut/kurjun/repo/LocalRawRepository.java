@@ -63,8 +63,8 @@ public class LocalRawRepository extends LocalRepositoryBase
 
     @Deprecated
     @Override
-    public Metadata put( final InputStream is, final CompressionType compressionType, final String context, final String owner )
-            throws IOException
+    public Metadata put( final InputStream is, final CompressionType compressionType, final String context,
+                         final String owner ) throws IOException
     {
         Objects.requireNonNull( is, "InputStream cannot be null" );
 
@@ -74,14 +74,14 @@ public class LocalRawRepository extends LocalRepositoryBase
 
     @Deprecated
     @Override
-    public Metadata put( final File file, final CompressionType compressionType, final String context,  final String owner ) throws IOException
+    public Metadata put( final File file, final CompressionType compressionType, final String context,
+                         final String owner ) throws IOException
     {
         return null;
     }
 
 
-    public Metadata put( final File file, String name, final String context , String owner )
-            throws IOException
+    public Metadata put( final File file, String name, final String context, String owner ) throws IOException
     {
 
         //*******************
@@ -92,7 +92,7 @@ public class LocalRawRepository extends LocalRepositoryBase
         RawData rawData = repositoryManager.constructRawData ( repoData, md5 , name , owner );
         rawData.setSize( file.length() );
 
-        repositoryManager.addArtifactToRepository(repoData, rawData );
+        repositoryManager.addArtifactToRepository( repoData, rawData );
 
         return rawData;
     }
@@ -106,15 +106,15 @@ public class LocalRawRepository extends LocalRepositoryBase
 
 
     @Override
-    protected RepositoryData getRepositoryData(String repoContext,int type, String owner )
+    protected RepositoryData getRepositoryData( String repoContext, int type, String owner )
     {
 
-        if( Strings.isNullOrEmpty( repoContext ))
+        if ( Strings.isNullOrEmpty( repoContext ) )
         {
             repoContext = context.getName();
         }
 
-        if( Strings.isNullOrEmpty(owner))
+        if ( Strings.isNullOrEmpty( owner ) )
         {
             owner = context.getOwner();
         }
@@ -154,6 +154,13 @@ public class LocalRawRepository extends LocalRepositoryBase
     @Override
     public KurjunContext getContext()
     {
-        return null;
+        return this.context;
+    }
+
+
+    @Override
+    public int type()
+    {
+        return ObjectType.RawRepo.getId();
     }
 }
