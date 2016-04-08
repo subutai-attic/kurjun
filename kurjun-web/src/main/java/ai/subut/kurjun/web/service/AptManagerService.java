@@ -51,5 +51,6 @@ public interface AptManagerService extends BaseService
 
     String getPackageInfo( UserSession userSession, String repository, String md5, String name, String version );
 
+    List<String> getRepoList();
 
 }

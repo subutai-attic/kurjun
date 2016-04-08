@@ -5,9 +5,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
@@ -21,10 +23,10 @@ import ai.subut.kurjun.model.identity.Permission;
 import ai.subut.kurjun.model.identity.ObjectType;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.Metadata;
+import ai.subut.kurjun.model.metadata.RepositoryData;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.metadata.raw.RawData;
 import ai.subut.kurjun.model.repository.ArtifactId;
-import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
 import ai.subut.kurjun.repo.LocalRawRepository;
 import ai.subut.kurjun.repo.RepositoryFactory;
@@ -32,6 +34,7 @@ import ai.subut.kurjun.repo.service.RepositoryManager;
 import ai.subut.kurjun.web.context.ArtifactContext;
 import ai.subut.kurjun.web.service.IdentityManagerService;
 import ai.subut.kurjun.web.service.RawManagerService;
+import ai.subut.kurjun.web.service.RepositoryService;
 import ninja.Renderable;
 import ninja.lifecycle.Dispose;
 import ninja.lifecycle.Start;
@@ -42,6 +45,8 @@ import ninja.utils.ResponseStreams;
 public class RawManagerServiceImpl implements RawManagerService
 {
     public static final String DEFAULT_RAW_REPO_NAME = "raw";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( RawManagerServiceImpl.class );
 
     private RepositoryFactory repositoryFactory;
     private LocalRawRepository localPublicRawRepository;
@@ -57,6 +62,9 @@ public class RawManagerServiceImpl implements RawManagerService
     @Inject
     RepositoryManager repositoryManager;
 
+    @Inject
+    RepositoryService repositoryService;
+
 
     @Inject
     public RawManagerServiceImpl( final RepositoryFactory repositoryFactory, final ArtifactContext artifactContext )
@@ -69,7 +77,7 @@ public class RawManagerServiceImpl implements RawManagerService
     private void _local()
     {
         this.localPublicRawRepository = this.repositoryFactory.createLocalRaw(
-                new KurjunContext( DEFAULT_RAW_REPO_NAME, ObjectType.RawRepo.getId(), "system-owner" ) );
+                new KurjunContext( DEFAULT_RAW_REPO_NAME, ObjectType.RawRepo.getId(), "system-owner"  ) );
     }
 
 
@@ -168,7 +176,7 @@ public class RawManagerServiceImpl implements RawManagerService
             String objectId = repository + "." + md5;
 
             //***** Check permissions (DELETE) *****************
-            if ( checkRepoPermissions( userSession, repository, objectId, Permission.Delete ) )
+            if ( checkRepoPermissions( userSession,repository , objectId, Permission.Delete ) )
             {
                 relationManager.removeRelationsByTrustObject( objectId, ObjectType.Artifact.getId() );
                 return localPublicRawRepository.delete( id );
@@ -207,7 +215,7 @@ public class RawManagerServiceImpl implements RawManagerService
             return null;
         }
 
-        if ( Strings.isNullOrEmpty( repository ) )
+        if( Strings.isNullOrEmpty( repository ))
         {
             repository = userSession.getUser().getUserName();
         }
@@ -254,24 +262,29 @@ public class RawManagerServiceImpl implements RawManagerService
 
 
     @Override
-    public List<SerializableMetadata> list( UserSession userSession, String repository, String node )
+    public List<SerializableMetadata> list( UserSession userSession, String repository, String search )
     {
-
-        List<SerializableMetadata> results = null;
-        node = StringUtils.isBlank( node ) ? "local" : node;
-        switch ( node )
+        List<SerializableMetadata> result;
+        if( Strings.isNullOrEmpty( repository ))
         {
-            //get local list
-            case "local":
-                //add local public artifacts
-                results = localPublicRawRepository.listPackages();
-                break;
-
-            default: // "all"
-                //get unified repo list
-                results = unifiedRepository.listPackages();
-                break;
+            repository = userSession.getUser().getUserName();
         }
+
+        switch ( search )
+        {
+            //return local list
+            case "local":
+                result = localPublicRawRepository.listPackages( repository, ObjectType.RawRepo.getId() );
+                break;
+            //return unified repo list
+            case "all":
+                result = unifiedRepository.listPackages( repository, ObjectType.RawRepo.getId() );
+                break;
+            //return personal repository list
+            default:
+                result = repositoryFactory.createLocalApt( new KurjunContext( repository ) ).listPackages();
+        }
+/*
         //public user, return results
         if ( identityManagerService.isPublicUser( userSession.getUser() ) )
         {
@@ -299,8 +312,9 @@ public class RawManagerServiceImpl implements RawManagerService
         }
 
         results.addAll( localUserRepo.listPackages() );
+*/
 
-        return results;
+        return result == null? new ArrayList<>(  ) : result;
     }
 
 
@@ -312,4 +326,17 @@ public class RawManagerServiceImpl implements RawManagerService
                         ObjectType.Artifact.getId(), perm );
     }
     //*******************************************************************
+
+    @Override
+    public List<String> getRepoList()
+    {
+        List<RepositoryData> repoList = repositoryService.getRepositoryList();
+        List<String> repoNamesList = new ArrayList<>();
+        repoList.forEach( r -> {
+            if (r.getType() == ObjectType.RawRepo.getId())
+                repoNamesList.add( r.getContext() );
+        } );
+
+        return repoNamesList;
+    }
 }
