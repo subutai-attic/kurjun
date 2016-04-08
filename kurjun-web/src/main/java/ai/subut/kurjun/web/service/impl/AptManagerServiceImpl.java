@@ -329,7 +329,7 @@ public class AptManagerServiceImpl implements AptManagerService
         //public user, return results
         if ( identityManagerService.isPublicUser( userSession.getUser() ) )
         {
-            return results;
+            return results == null? new ArrayList<>() : results;
         }
 
         //if repository is blank
