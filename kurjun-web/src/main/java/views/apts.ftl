@@ -20,11 +20,9 @@
 
         <form method="get" actoin="${contextPath}/apt">
           <label>Show by repo: </label><select name="repository" id="repo-filter">
-            <#if sel_repo??>
-                <#list repos as repo >
-                  <option value="${repo}" <#if sel_repo == repo >selected</#if> >${repo}</option>
-                </#list>
-            </#if>
+            <#list repos as repo >
+              <option value="${repo}" ${(sel_repo?? && sel_repo == repo)?string("selected", "")}>${repo}</option>
+            </#list>
         </select>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <label><input type="radio" name="node" value="local" ${(node=="local")?string("checked","")}> Local node</label>

@@ -58,7 +58,7 @@ public class TemplateController extends BaseController
         List<SerializableMetadata> defaultTemplateList = new ArrayList<>();
         try
         {
-            repo = StringUtils.isBlank( repo ) ? "public" : repo;
+            //repo = StringUtils.isBlank( repo ) ? "public" : repo;
             node = StringUtils.isBlank( node ) ? "local" : node;
             //*****************************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
@@ -86,16 +86,10 @@ public class TemplateController extends BaseController
 
     @FileProvider( SubutaiFileHandler.class )
     public Result uploadTemplate( Context context, @Param( "repository" ) String repository,
-                                  @Param( "repo_name" ) String repoName, @Param( "repo_type" ) String repoType,
                                   @Param( "file" ) FileItem file, FlashScope flashScope )
     {
         try
         {
-            if ( repoType.equals( "new" ) )
-            {
-                repository = repoName;
-            }
-
             KurjunFileItem fileItem = ( KurjunFileItem ) file;
             //*****************************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
