@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -132,16 +134,14 @@ public class RestAptController extends BaseAptController
     }
 
 
-    public Result list( Context context , @Param( "type" ) String type, @Param( "repository" ) String repository, @Param( "search" ) String search  )
+    public Result list( Context context , @Param( "type" ) String type, @Param( "repository" ) String repository, @Param( "node" ) String node )
     {
-        if ( search == null )
-        {
-            search = "local";
-        }
+        node = StringUtils.isBlank( node ) ? "local" : node;
+        repository = StringUtils.isBlank( repository )? AptManagerServiceImpl.REPO_NAME:repository;
 
         //********************************************
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-        List<SerializableMetadata> serializableMetadataList = managerService.list( uSession, repository, search );
+        List<SerializableMetadata> serializableMetadataList = managerService.list( uSession, repository, node );
         //********************************************
 
         if ( serializableMetadataList != null )

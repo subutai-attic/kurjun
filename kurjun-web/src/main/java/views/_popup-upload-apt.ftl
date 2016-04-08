@@ -8,21 +8,19 @@
     </div>
     <div class="b-form__wrapper g-margin-bottom-half">
         <form method="POST" enctype="multipart/form-data" action="${contextPath}/apt/upload">
-          <div class="b-workspace__content">
-            <div class="b-form__wrapper g-margin-bottom-half">
-              <label class="b-form-label"><input type="radio" name="repo_type" value="existing" checked />Select repository</label>
-              <label class="b-form-label"><input type="radio" name="repo_type" value="new"/>User repository</label>
-              <br/>
-              <select name="repository" id="repository">
-                <option value="" selected></option>
-              <#if repos?? && repos?has_content >
-                  <#list repos as repo>
-                    <option value="${repo}">${repo}</option>
-                  </#list>
-              </#if>
-              </select>
+            <div class="b-workspace__content">
+                <div class="b-form__wrapper g-margin-bottom-half">
+                    <label for="repository" class="b-form-label">Repository</label>
+                    <select name="repository" id="repository">
+                        <option value="" selected></option>
+                        <#if repos?? && repos?has_content >
+                            <#list repos as repo>
+                            <option value="${repo}">${repo}</option>
+                            </#list>
+                        </#if>
+                    </select>
+                </div>
             </div>
-          </div>
             <div class="b-workspace__content">
                 <div class="b-form__wrapper g-margin-bottom-half">
                     <input type="file" name="file" id="fileinput" accept=".deb" />

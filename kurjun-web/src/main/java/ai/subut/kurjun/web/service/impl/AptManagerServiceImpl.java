@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +31,7 @@ import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.Metadata;
+import ai.subut.kurjun.model.metadata.RepositoryData;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.metadata.apt.AptData;
 import ai.subut.kurjun.model.repository.ArtifactId;
@@ -45,6 +47,7 @@ import ai.subut.kurjun.repo.util.ReleaseIndexBuilder;
 import ai.subut.kurjun.web.context.ArtifactContext;
 import ai.subut.kurjun.web.service.AptManagerService;
 import ai.subut.kurjun.web.service.IdentityManagerService;
+import ai.subut.kurjun.web.service.RepositoryService;
 import ninja.Renderable;
 import ninja.lifecycle.Dispose;
 import ninja.lifecycle.Start;
@@ -77,6 +80,9 @@ public class AptManagerServiceImpl implements AptManagerService
 
     @Inject
     RepositoryManager repositoryManager;
+
+    @Inject
+    RepositoryService repositoryService;
 
 
     @Inject
@@ -280,9 +286,11 @@ public class AptManagerServiceImpl implements AptManagerService
                         .put( is, CompressionType.NONE, repository, userSession.getUser().getKeyFingerprint() );
                 if ( meta != null )
                 {
+
+                    String uniqId = repository + "." + meta.getMd5Sum();
                     //***** Build Relation ****************
                     relationManager
-                            .buildTrustRelation( userSession.getUser(), userSession.getUser(), meta.getId().toString(),
+                            .buildTrustRelation( userSession.getUser(), userSession.getUser(),uniqId ,
                                     ObjectType.Artifact.getId(), relationManager.buildPermissions( 4 ) );
                     //*************************************
 
@@ -498,4 +506,10 @@ public class AptManagerServiceImpl implements AptManagerService
                         ObjectType.Artifact.getId(), perm );
     }
     //*******************************************************************
+
+    @Override
+    public List<String> getRepoList()
+    {
+        return repositoryService.getRepositoryContextList( ObjectType.AptRepo.getId() );
+    }
 }

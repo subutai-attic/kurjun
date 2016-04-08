@@ -4,6 +4,7 @@ package ai.subut.kurjun.web.service.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ import ai.subut.kurjun.identity.service.RelationManager;
 import ai.subut.kurjun.model.identity.ObjectType;
 import ai.subut.kurjun.model.identity.Permission;
 import ai.subut.kurjun.model.identity.UserSession;
+import ai.subut.kurjun.model.metadata.RepositoryData;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 import ai.subut.kurjun.model.metadata.template.TemplateData;
@@ -163,7 +165,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         results.addAll( localUserRepo.listPackages() );
 
 
-        return results;
+        return results == null ? new ArrayList<>() : results;
     }
 
 
@@ -405,4 +407,10 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     }
     //*******************************************************************
 
+
+    @Override
+    public List<String> getRepoList()
+    {
+        return repositoryService.getRepositoryContextList( ObjectType.TemplateRepo.getId() );
+    }
 }
