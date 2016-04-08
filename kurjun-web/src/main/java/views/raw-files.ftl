@@ -44,7 +44,7 @@
             <tr>
                 <td><#--a href="${contextPath}/raw-files/info" class="js-colorbox"></a-->${f.name}</td>
                 <td>${f.size}</td>
-                <td><a href="${contextPath}/raw-files/${f.id.context+"."+f.id.md5Sum}/download" target="_blank">download</a>  |  <a href="#" onclick="removeFile('${f.id}')">remove</a></td>
+                <td><a href="${contextPath}/raw-files/download?repository=${f.id.context}&md5=${f.id.md5Sum}" target="_blank">download</a>  |  <a href="#" onclick="removeFile('${f.id.context}','${f.id.md5Sum}')">remove</a></td>
             </tr>
             </#list>
             </#if>
@@ -55,11 +55,11 @@
 </div>
 
 <script>
-    function removeFile(fileId)
+    function removeFile(context, md5)
     {
         var confirmed = confirm("Are you sure want to delete it?");
         if (confirmed) {
-            $('#removeRawFileForm').attr('action', '${contextPath}/raw-files/' + fileId + '/delete');
+            $('#removeRawFileForm').attr('action', '${contextPath}/raw-files/delete?repository='+context+'&md5='+md5);
             $('#removeRawFileForm').submit();
         }
     }

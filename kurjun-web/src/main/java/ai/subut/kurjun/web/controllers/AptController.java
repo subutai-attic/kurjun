@@ -163,7 +163,7 @@ public class AptController extends BaseAptController
     }
 
 
-    public Result download(Context context, @PathParam( "id" ) String md5, FlashScope flashScope )
+    public Result download(Context context, @Param("repository") String repo, @Param( "md5" ) String md5 )
     {
         //********************************************
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
@@ -178,7 +178,7 @@ public class AptController extends BaseAptController
     }
 
 
-    public Result delete( Context context, @PathParam( "repository" ) String repository, @PathParam( "id" ) String md5,
+    public Result delete( Context context, @Param( "repository" ) String repository, @Param( "md5" ) String md5,
                           FlashScope flashScope )
     {
         //        checkNotNull( md5, "MD5 cannot be null" );

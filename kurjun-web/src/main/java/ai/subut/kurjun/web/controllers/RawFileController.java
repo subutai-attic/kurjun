@@ -85,18 +85,15 @@ public class RawFileController extends BaseController
 
 
 
-    public Result download( @PathParam( "id" ) String id )
+    public Result download( @Param("repository") String repo, @Param( "md5" ) String md5 )
     {
-        checkNotNull( id, "ID cannot be null" );
+        //checkNotNull( id, "ID cannot be null" );
 
-        String[] temp = id.split( "\\." );
 
         Renderable renderable = null;
         //temp contains [fprint].[md5]
-        if ( temp.length == 2 )
-        {
-            renderable = rawManagerService.getFile( temp[0], temp[1] );
-        }
+        renderable = rawManagerService.getFile( repo, md5 );
+
         if ( renderable != null )
         {
             return Results.ok().render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
@@ -105,18 +102,14 @@ public class RawFileController extends BaseController
     }
 
 
-    public Result delete( Context context, @PathParam( "id" ) String id, FlashScope flashScope )
+    public Result delete( Context context, @Param("repository") String repo, @Param( "md5" ) String md5, FlashScope flashScope )
     {
-        checkNotNull( id, "ID cannot be null" );
-        String[] temp = id.split( "\\." );
+        //checkNotNull( id, "ID cannot be null" );
 
         boolean success = false;
 
-        if ( temp.length == 2 )
-        {
-            UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            success = rawManagerService.delete( uSession, temp[0], temp[1] );
-        }
+        UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+        success = rawManagerService.delete( uSession, repo, md5 );
 
         if ( success )
         {

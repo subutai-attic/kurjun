@@ -68,8 +68,8 @@ public class Routes implements ApplicationRoutes
         router.GET().route( "/apt" ).with( AptController.class, "list" );
         //router.GET().route( "/apt/{id}/info" ).with( AptController.class, "getTemplateInfo" );
         router.POST().route( "/apt/upload" ).with( AptController.class, "upload" );
-        router.GET().route( "/apt/{id}/download" ).with( AptController.class, "download" );
-        router.POST().route( "/apt/{id}/delete" ).with( AptController.class, "delete" );
+        router.GET().route( "/apt/download" ).with( AptController.class, "download" );
+        router.POST().route( "/apt/delete" ).with( AptController.class, "delete" );
         router.GET().route( "/apt/upload" ).with( AptController.class, "getUploadAptForm" );
 
         // -------------------------------------------------------------------------------------------------------------
@@ -78,22 +78,22 @@ public class Routes implements ApplicationRoutes
         router.GET().route( "/raw-files" ).with( RawFileController.class, "list" );
         //router.GET().route( "/raw-files/info" ).with( RawFileController.class, "info" );
         router.POST().route( "/raw-files/upload" ).with( RawFileController.class, "upload" );
-        router.GET().route( "/raw-files/{id}/download" ).with( RawFileController.class, "download" );
-        router.POST().route( "/raw-files/{id}/delete" ).with( RawFileController.class, "delete" );
+        router.GET().route( "/raw-files/download" ).with( RawFileController.class, "download" );
+        router.POST().route( "/raw-files/delete" ).with( RawFileController.class, "delete" );
         router.GET().route( "/raw-files/upload" ).with( RawFileController.class, "getUploadRawFileForm" );
 
         // -------------------------------------------------------------------------------------------------------------
         //  Relations
         // -------------------------------------------------------------------------------------------------------------
-        router.GET().route( "/relations" ).with( RelationController.class, "getRelations" );
-        router.GET().route( "/relations/trust" ).with( RelationController.class, "getAddTrustRelationForm" );
-        router.POST().route( "/relations/trust" ).with( RelationController.class, "addTrustRelation" );
-        router.GET().route( "/relations/{id}/change" ).with( RelationController.class, "getChangeForm" );
-        //router.GET().route( "/relations/by-source" ).with( RelationController.class, "getRelationsByOwner" );
-        //router.GET().route( "/relations/by-target" ).with( RelationController.class, "getRelationsByTarget" );
-        router.GET().route( "/relations/by-object" ).with( RelationController.class, "getRelationsByObject" );
-        //router.POST().route( "/relations/{id}/delete" ).with( RelationController.class, "delete" );
-        //router.POST().route( "/relations/{id}/change" ).with( RelationController.class, "change" );
+        router.GET().route( "/permissions" ).with( RelationController.class, "getRelations" );
+        router.GET().route( "/permissions/trust" ).with( RelationController.class, "getAddTrustRelationForm" );
+        router.POST().route( "/permissions/trust" ).with( RelationController.class, "addTrustRelation" );
+        router.GET().route( "/permissions/{id}/change" ).with( RelationController.class, "getChangeForm" );
+        //router.GET().route( "/permissions/by-source" ).with( RelationController.class, "getRelationsByOwner" );
+        //router.GET().route( "/permissions/by-target" ).with( RelationController.class, "getRelationsByTarget" );
+        router.GET().route( "/permissions/by-object" ).with( RelationController.class, "getRelationsByObject" );
+        //router.POST().route( "/permissions/{id}/delete" ).with( RelationController.class, "delete" );
+        //router.POST().route( "/permissions/{id}/change" ).with( RelationController.class, "change" );
 
         // -------------------------------------------------------------------------------------------------------------
         //  Repositories

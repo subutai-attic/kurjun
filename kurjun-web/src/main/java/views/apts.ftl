@@ -46,7 +46,7 @@
                 <td><#--a href="${contextPath}/apt/${a.id}/info" class="js-colorbox"></a-->${a.name}</td>
                 <td>${a.architecture}</td>
                 <td>${a.version}</td>
-                <td><a href="${contextPath}/apt/${a.id.md5Sum}/download" target="_blank">download</a>  |  <a href="#" onclick="removeApt('${a.id.md5Sum}')">remove</a></td>
+                <td><a href="${contextPath}/apt/download?repository=${a.id.context}&md5=${a.id.md5Sum}" target="_blank">download</a>  |  <a href="#" onclick="removeApt('${a.id.context}','${a.id.md5Sum}')">remove</a></td>
             </tr>
             </#list>
             </#if>
@@ -57,11 +57,11 @@
 </div>
 
 <script>
-    function removeApt(md5sum)
+    function removeApt(context, md5sum)
     {
         var confirmed = confirm("Are you sure want to delete it?");
         if (confirmed) {
-            $('#removeAptForm').attr('action', '${contextPath}/apt/' + md5sum + '/delete');
+            $('#removeAptForm').attr('action', '${contextPath}/apt/delete?repository='+context+'&md5='+md5sum);
             $('#removeAptForm').submit();
         }
     }

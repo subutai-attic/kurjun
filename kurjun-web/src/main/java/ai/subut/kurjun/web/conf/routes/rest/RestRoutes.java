@@ -28,7 +28,7 @@ public class RestRoutes implements ApplicationRoutes
 
     private static final String baseRepositoryUrl = baseUrl + "repository/";
 
-    private static final String baseRelationsUrl = baseUrl + "relations/";
+    private static final String baseRelationsUrl = baseUrl + "permissions/";
 
 
     @Override

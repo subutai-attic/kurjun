@@ -117,7 +117,7 @@ public class RestAptController extends BaseAptController
     }
 
 
-    public Result download( Context context , @Param( "md5" ) String md5 )
+    public Result download( Context context , @Param("repository") String repo, @Param( "md5" ) String md5 )
     {
         //        checkNotNull( md5, "MD5 cannot be null" );
 
