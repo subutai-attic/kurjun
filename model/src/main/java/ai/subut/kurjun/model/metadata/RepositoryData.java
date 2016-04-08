@@ -12,6 +12,8 @@ public interface RepositoryData
 
     int getType();
 
+    String getTypeName();
+
     String getOwner();
 
     void setOwner( String owner );

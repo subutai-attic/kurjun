@@ -30,7 +30,6 @@ import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 import ai.subut.kurjun.model.metadata.template.TemplateData;
 import ai.subut.kurjun.model.repository.ArtifactId;
 import ai.subut.kurjun.model.repository.LocalRepository;
-import ai.subut.kurjun.model.repository.Repository;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
 import ai.subut.kurjun.repo.LocalTemplateRepository;
 import ai.subut.kurjun.repo.RepositoryFactory;
@@ -412,17 +411,6 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     @Override
     public List<String> getRepoList()
     {
-        List<RepositoryData> repoList = repositoryService.getRepositoryList();
-        List<String> repoNamesList = new ArrayList<>();
-        repoList.forEach( r -> {
-            if (r.getType() == ObjectType.TemplateRepo.getId())
-                repoNamesList.add( r.getContext() );
-        } );
-
-//        List<String> repoList = repositoryService.getRepositoryContextList();
-//        repoList.remove( AptManagerServiceImpl.REPO_NAME );
-//        repoList.remove( RawManagerServiceImpl.DEFAULT_RAW_REPO_NAME );
-
-        return repoNamesList;
+        return repositoryService.getRepositoryContextList( ObjectType.TemplateRepo.getId() );
     }
 }

@@ -4,6 +4,8 @@ package ai.subut.kurjun.core.dao.model.metadata;
 import java.io.Serializable;
 import javax.persistence.Embeddable;
 
+import ai.subut.kurjun.model.identity.ObjectType;
+
 
 /**
  *
@@ -49,6 +51,11 @@ public class RepositoryDataId implements Serializable
     public void setType( final int type )
     {
         this.type = type;
+    }
+
+    public String getTypeName()
+    {
+        return ObjectType.values()[this.type].getName();
     }
 
 

@@ -27,7 +27,7 @@
                 <a href="${contextPath}/repositories">Repositories</a>
             </li>
             <li id="hdr_relations_tab" class="b-tabs-menu__item">
-                <a href="${contextPath}/relations">Relations</a>
+                <a href="${contextPath}/relations">Permissions</a>
             </li>
             <li id="hdr_users_tab" class="b-tabs-menu__item">
                 <a href="${contextPath}/users">Users</a>

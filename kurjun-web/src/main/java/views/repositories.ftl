@@ -20,6 +20,7 @@
             <thead>
             <tr>
                 <th>Repo name</th>
+                <th>Repo Type</th>
                 <th>Owner</th>
                 <th>Actions</th>
             </tr>
@@ -29,6 +30,7 @@
                 <#list repos as r >
                 <tr>
                     <td><#if r.id.context??>${r.id.context}</#if></td>
+                    <td><#if r.id.type??>${r.getTypeName()}</#if></td>
                     <td><#if r.owner??>${r.owner}</#if></td>
                     <td><a href="${contextPath}/relations/by-object?id=${r.id.context}&obj_type=4" class="js-colorbox">permissions</a>
                 </tr>

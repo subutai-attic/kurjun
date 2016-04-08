@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 public class RepositoryServiceImpl implements RepositoryService
 {
 
-
     //@Inject KurjunProperties kurjunProperties;
 
     @Inject
@@ -28,37 +27,18 @@ public class RepositoryServiceImpl implements RepositoryService
 
     private static final Logger LOGGER = LoggerFactory.getLogger( RepositoryService.class );
 
+
     @Override
-    public synchronized List<RepositoryData> getRepositoryList()
+    public synchronized List<RepositoryData> getRepositoryList( int repoType )
     {
-        /*
-        String fileDbDirectory = kurjunProperties.get( DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME );
-
-        File fileDirectory = new File( fileDbDirectory );
-        File[] files = fileDirectory.listFiles();
-
-        List<String> results = new ArrayList<>();
-
-        for ( File file : files )
-        {
-            if ( file.isDirectory() )
-            {
-                results.add( file.getName() );
-            }
-        }
-
-        results.remove( AptManagerServiceImpl.REPO_NAME );
-        results.remove( RawManagerServiceImpl.DEFAULT_RAW_REPO_NAME );
-        */
-
-        return repositoryManager.getRepositoryList();
+        return repositoryManager.getRepositoryList(repoType);
     }
 
 
     @Override
-    public synchronized List<String> getRepositoryContextList()
+    public synchronized List<String> getRepositoryContextList( int repoType )
     {
-        List<RepositoryData> repoDataList = repositoryManager.getRepositoryList();
+        List<RepositoryData> repoDataList = repositoryManager.getRepositoryList(repoType);
 
         if(repoDataList.isEmpty())
         {

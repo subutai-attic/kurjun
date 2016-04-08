@@ -57,5 +57,4 @@ public interface TemplateManagerService extends BaseService
 
 
     List<String> getRepoList();
-
 }

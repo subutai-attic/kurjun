@@ -69,6 +69,12 @@ public class RepositoryDataEntity implements RepositoryData
         return ( this.id != null ) ? this.id.getType() : 0;
     }
 
+    @Override
+    public String getTypeName()
+    {
+        return ( this.id != null ) ? this.id.getTypeName() : "";
+    }
+
 
     @Override
     public String getOwner()
@@ -82,6 +88,7 @@ public class RepositoryDataEntity implements RepositoryData
     {
         this.owner = owner;
     }
+
 
     /*
     @Override

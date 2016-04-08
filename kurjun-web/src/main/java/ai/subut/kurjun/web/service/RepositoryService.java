@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface RepositoryService extends BaseService
 {
-    List<RepositoryData> getRepositoryList();
+    List<RepositoryData> getRepositoryList( int repoType );
 
-    List<String> getRepositoryContextList();
+    List<String> getRepositoryContextList( int repoType );
 }

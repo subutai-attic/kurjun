@@ -18,7 +18,8 @@ import ai.subut.kurjun.model.repository.ArtifactId;
 public interface RepositoryDataService
 {
 
-    List<RepositoryData> getRepositoryList();
+    //***************************
+    List<RepositoryData> getRepositoryList( int repoType );
 
 
     RepositoryData getRepositoryData( String context, int type );

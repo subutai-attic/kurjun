@@ -51,7 +51,7 @@
             <tr>
                 <td><a href="${contextPath}/templates/info?repository=${t.id.context}&md5=${t.id.md5Sum}" class="js-colorbox">${t.name}</a></td>
                 <td><#if t.owner??>${t.owner}</#if></td>
-                <td>${t.id?split(".")[0]}</td>
+                <td>${t.id.context}</td>
                 <td>${t.architecture}</td>
                 <td>${t.parent}</td>
                 <td><#if t.version??>${t.version}</#if></td>

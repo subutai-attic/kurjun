@@ -236,9 +236,11 @@ public class RawManagerServiceImpl implements RawManagerService
                 metadata =
                         localRawRepository.put( file, filename, repository, userSession.getUser().getKeyFingerprint() );
 
+                String uniqId = repository + "." + metadata.getMd5Sum();
+
                 //***** Build Relation ****************
                 relationManager
-                        .buildTrustRelation( userSession.getUser(), userSession.getUser(), metadata.getId().toString(),
+                        .buildTrustRelation( userSession.getUser(), userSession.getUser(), uniqId,
                                 ObjectType.Artifact.getId(), relationManager.buildPermissions( 4 ) );
                 //*************************************
             }
@@ -330,13 +332,6 @@ public class RawManagerServiceImpl implements RawManagerService
     @Override
     public List<String> getRepoList()
     {
-        List<RepositoryData> repoList = repositoryService.getRepositoryList();
-        List<String> repoNamesList = new ArrayList<>();
-        repoList.forEach( r -> {
-            if (r.getType() == ObjectType.RawRepo.getId())
-                repoNamesList.add( r.getContext() );
-        } );
-
-        return repoNamesList;
+        return repositoryService.getRepositoryContextList( ObjectType.RawRepo.getId());
     }
 }
