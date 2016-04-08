@@ -135,7 +135,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
                 break;
         }
         //public user, return results
-        if ( identityManagerService.isPublicUser( userSession.getUser() ) )
+        if ( identityManagerService.isPublicUser( userSession.getUser() ) || repository.equalsIgnoreCase( "public" ) )
         {
             return results;
         }

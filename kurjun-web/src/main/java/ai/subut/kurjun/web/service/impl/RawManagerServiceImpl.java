@@ -273,7 +273,7 @@ public class RawManagerServiceImpl implements RawManagerService
                 break;
         }
         //public user, return results
-        if ( identityManagerService.isPublicUser( userSession.getUser() ) )
+        if ( identityManagerService.isPublicUser( userSession.getUser() ) || repository.equalsIgnoreCase( "public" ) )
         {
             return results;
         }

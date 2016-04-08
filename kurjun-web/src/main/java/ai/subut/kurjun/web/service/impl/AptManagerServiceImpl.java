@@ -319,7 +319,7 @@ public class AptManagerServiceImpl implements AptManagerService
                 break;
         }
         //public user, return results
-        if ( identityManagerService.isPublicUser( userSession.getUser() ) )
+        if ( identityManagerService.isPublicUser( userSession.getUser() ) || repository.equalsIgnoreCase( "public" ) )
         {
             return results;
         }
