@@ -10,10 +10,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
@@ -23,9 +24,8 @@ import com.google.inject.Singleton;
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.identity.service.RelationManager;
-import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
-import ai.subut.kurjun.model.identity.Permission;
 import ai.subut.kurjun.model.identity.ObjectType;
+import ai.subut.kurjun.model.identity.Permission;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Architecture;
@@ -263,7 +263,7 @@ public class AptManagerServiceImpl implements AptManagerService
 
         try
         {
-            if( Strings.isNullOrEmpty(repository))
+            if ( Strings.isNullOrEmpty( repository ) )
             {
                 repository = userSession.getUser().getUserName();
             }
@@ -276,7 +276,8 @@ public class AptManagerServiceImpl implements AptManagerService
             //***** Check permissions (WRITE) *****************
             if ( checkRepoPermissions( userSession, repository, null, Permission.Write ) )
             {
-                Metadata meta = localRepository.put( is ,CompressionType.NONE,repository, userSession.getUser().getKeyFingerprint() );
+                Metadata meta = localRepository
+                        .put( is, CompressionType.NONE, repository, userSession.getUser().getKeyFingerprint() );
                 if ( meta != null )
                 {
                     //***** Build Relation ****************
@@ -298,33 +299,55 @@ public class AptManagerServiceImpl implements AptManagerService
 
 
     @Override
-    public List<SerializableMetadata> list( UserSession userSession, String repository, String search )
+    public List<SerializableMetadata> list( UserSession userSession, String repository, String node )
     {
-        List<SerializableMetadata> list;
 
-        if( Strings.isNullOrEmpty(repository))
-        {
-            repository = userSession.getUser().getUserName();
-        }
+        List<SerializableMetadata> results = null;
 
-        switch ( search )
+        node = StringUtils.isBlank( node ) ? "local" : node;
+        switch ( node )
         {
-            //return local list
+            //get local list
             case "local":
-                list = localRepository.listPackages( repository, ObjectType.AptRepo.getId() );
+                //add local public artifacts
+                results = localRepository.listPackages();
                 break;
-            //return unified repo list
-            case "all":
-                list = unifiedRepository.listPackages( repository, ObjectType.AptRepo.getId() );
-                break;
-            //return personal repository list
-            default:
-                list = repositoryFactory.createLocalApt( new KurjunContext( repository ) )
-                                        .listPackages( repository, ObjectType.AptRepo.getId() );
+
+            default: // "all"
+                //get unified repo list
+                results = unifiedRepository.listPackages();
                 break;
         }
+        //public user, return results
+        if ( identityManagerService.isPublicUser( userSession.getUser() ) )
+        {
+            return results;
+        }
 
-        return list;
+        //if repository is blank
+        repository = StringUtils.isBlank( repository ) ? userSession.getUser().getUserName() : repository;
+
+
+        //get personal repository list
+        LocalRepository localUserRepo =
+                repositoryFactory.createLocalApt( new KurjunContext( userSession.getUser().getUserName() ) );
+
+        //user trying to get other repository that was shared with him
+        //TODO:put security check here if user has permission for this repo
+        if ( !repository.equalsIgnoreCase( userSession.getUser().getUserName() ) )
+        {
+            //create repo instance based on repository name
+            LocalRepository privateSharedRepository =
+                    repositoryFactory.createLocalApt( new KurjunContext( repository ) );
+
+            //TODO:object level security check required?
+            results.addAll( privateSharedRepository.listPackages() );
+        }
+
+        results.addAll( localUserRepo.listPackages() );
+
+        return results;
+
     }
 
 

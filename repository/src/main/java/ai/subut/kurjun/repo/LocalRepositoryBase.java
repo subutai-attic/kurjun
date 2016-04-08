@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -38,9 +37,9 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
 
 
     @Override
-    public SerializableMetadata getPackageInfo( ArtifactId id)
+    public SerializableMetadata getPackageInfo( ArtifactId id )
     {
-        RepositoryData repoData = getRepositoryData( "" , 0, "public-user" );
+        RepositoryData repoData = getRepositoryData( "", 0, "public-user" );
 
         //ArtifactId id = repositoryManager.constructArtifactId( repoData, metadata );
 
@@ -48,9 +47,10 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
         {
             Object artifact = repositoryManager.getArtifact( repoData.getType(), id );
 
-            if(artifact != null)
-                return (SerializableMetadata) artifact;
-
+            if ( artifact != null )
+            {
+                return ( SerializableMetadata ) artifact;
+            }
         }
         catch ( Exception ex )
         {
@@ -92,15 +92,21 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
     @Override
     public List<SerializableMetadata> listPackages()
     {
-        RepositoryData repoData = getRepositoryData( "", 0 , "");
+        String context = getContext().getName();
+
+        int type = type();
+
+        RepositoryData repoData = repositoryManager.getRepository( context, type );
+
         List<SerializableMetadata> result = new LinkedList<>();
+
         try
         {
-            List<Object> items = repositoryManager.getAllArtifacts(repoData);
+            List<Object> items = repositoryManager.getAllArtifacts( repoData );
 
-            if(!items.isEmpty())
+            if ( !items.isEmpty() )
             {
-                return (List<SerializableMetadata>)(Object)items;
+                return ( List<SerializableMetadata> ) ( Object ) items;
             }
         }
         catch ( Exception ex )
@@ -108,24 +114,24 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
             getLogger().error( "Failed to list package in metadata store", ex );
         }
 
-        return null;
+        return result;
     }
 
 
     @Override
-    public List<SerializableMetadata> listPackages(String context, int type)
+    public List<SerializableMetadata> listPackages( String context, int type )
     {
-        RepositoryData repoData = getRepositoryData(context, type , "" );
+        RepositoryData repoData = getRepositoryData( context, type, "" );
 
         List<SerializableMetadata> result = new LinkedList<>();
 
         try
         {
-            List<Object> items = repositoryManager.getAllArtifacts(repoData);
+            List<Object> items = repositoryManager.getAllArtifacts( repoData );
 
-            if(!items.isEmpty())
+            if ( !items.isEmpty() )
             {
-                return (List<SerializableMetadata>)(Object)items;
+                return ( List<SerializableMetadata> ) ( Object ) items;
             }
         }
         catch ( Exception ex )
@@ -153,10 +159,10 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
 
         Object artifact = repositoryManager.getArtifact( repoData.getType(), id );
 
-        if ( artifact != null)
+        if ( artifact != null )
         {
             fileStore.remove( id.getMd5Sum() );  // TODO
-            repositoryManager.removeArtifact(repoData.getType(), artifact );
+            repositoryManager.removeArtifact( repoData.getType(), artifact );
             return true;
         }
 
@@ -178,8 +184,6 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
      * @return meta data store
      */
     //protected abstract PackageMetadataStore getMetadataStore();
-
-
     protected abstract RepositoryData getRepositoryData( String repoContext, int type, String owner );
 
     /**
@@ -188,7 +192,6 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
      * @return file store
      */
     protected abstract FileStore getFileStore();
-
 
 
     @Override

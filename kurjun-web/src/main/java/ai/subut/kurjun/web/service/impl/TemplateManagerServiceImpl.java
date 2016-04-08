@@ -9,6 +9,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
@@ -18,8 +20,8 @@ import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.ErrorCode;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.identity.service.RelationManager;
-import ai.subut.kurjun.model.identity.Permission;
 import ai.subut.kurjun.model.identity.ObjectType;
+import ai.subut.kurjun.model.identity.Permission;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
@@ -95,8 +97,8 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     //init local repo
     private void _local()
     {
-        this.localPublicTemplateRepository = ( LocalTemplateRepository ) repositoryFactory.createLocalTemplate(
-                new KurjunContext( "public", ObjectType.TemplateRepo.getId(),"system-owner" ));
+        this.localPublicTemplateRepository = ( LocalTemplateRepository ) repositoryFactory
+                .createLocalTemplate( new KurjunContext( "public", ObjectType.TemplateRepo.getId(), "system-owner" ) );
     }
 
 
@@ -117,44 +119,56 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     public List<SerializableMetadata> list( UserSession userSession, String repository, String node,
                                             final boolean isKurjunClient ) throws IOException
     {
-        List<SerializableMetadata> results;
-
-        if( Strings.isNullOrEmpty( repository ))
-        {
-            repository = userSession.getUser().getUserName();
-        }
-
+        List<SerializableMetadata> results = null;
+        node = StringUtils.isBlank( node ) ? "local" : node;
         switch ( node )
         {
-            //return local list
+            //get local list
             case "local":
-                //return personal repository list
-                results = localPublicTemplateRepository.listPackages( repository, ObjectType.TemplateRepo.getId() );
+                //add local public artifacts
+                results = localPublicTemplateRepository.listPackages();
                 break;
-            /*case "all":
-                //return unified repo list
-                results = unifiedTemplateRepository.listPackages( repository, ObjectType.TemplateRepo.getId() );
-                break;*/
+
             default: // "all"
-                //return unified repo list
-                results = unifiedTemplateRepository.listPackages( repository, ObjectType.TemplateRepo.getId() );
-                // this is needed to find templates in other then 'public' repositories
-                if ( results.size() == 0 )
-                {
-                    LocalRepository localRepo = repositoryFactory.createLocalTemplate( new KurjunContext( repository ) );
-                    List<SerializableMetadata> metadataList = localRepo.listPackages();
-                    if ( metadataList != null ) results.addAll( localRepo.listPackages() );
-                }
+                //get unified repo list
+                results = unifiedTemplateRepository.listPackages();
                 break;
         }
+        //public user, return results
+        if ( identityManagerService.isPublicUser( userSession.getUser() ) )
+        {
+            return results;
+        }
+
+        //if repository is blank
+        repository = StringUtils.isBlank( repository ) ? userSession.getUser().getUserName() : repository;
+
+
+        //get personal repository list
+        LocalRepository localUserRepo =
+                repositoryFactory.createLocalTemplate( new KurjunContext( userSession.getUser().getUserName() ) );
+
+        //user trying to get other repository that was shared with him
+        //TODO:put security check here if user has permission for this repo
+        if ( !repository.equalsIgnoreCase( userSession.getUser().getUserName() ) )
+        {
+            //create repo instance based on repository name
+            LocalRepository privateSharedRepository =
+                    repositoryFactory.createLocalTemplate( new KurjunContext( repository ) );
+            //TODO:object level security check required?
+            results.addAll( privateSharedRepository.listPackages() );
+        }
+
+
+        results.addAll( localUserRepo.listPackages() );
+
 
         return results;
     }
 
 
     @Override
-    public String upload( UserSession userSession, String repository, final InputStream inputStream )
-            throws IOException
+    public String upload( UserSession userSession, String repository, final InputStream inputStream ) throws IOException
     {
 
         if ( identityManagerService.isPublicUser( userSession.getUser() ) )
@@ -162,7 +176,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
             return null;
         }
 
-        if( Strings.isNullOrEmpty( repository ))
+        if ( Strings.isNullOrEmpty( repository ) )
         {
             repository = userSession.getUser().getUserName();
         }
@@ -241,6 +255,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         return repositoryFactory.createLocalTemplate( userName );
     }
 
+
     @Override
     public Renderable renderableTemplate( UserSession userSession, final String repository, String md5,
                                           final boolean isKurjunClient ) throws IOException
@@ -265,7 +280,8 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
             {
                 return ( Context context, Result result ) -> {
 
-                    result.addHeader( "Content-Disposition", "attachment;filename=" + makeTemplateName( templateData ) );
+                    result.addHeader( "Content-Disposition",
+                            "attachment;filename=" + makeTemplateName( templateData ) );
                     result.addHeader( "Content-Type", "application/octet-stream" );
                     result.addHeader( "Content-Length", String.valueOf( templateData.getSize() ) );
 
@@ -288,7 +304,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     private InputStream getTemplateData( UserSession userSession, final String repository, final String md5,
-                                        final boolean isKurjunClient ) throws IOException
+                                         final boolean isKurjunClient ) throws IOException
     {
         ArtifactId id = repositoryManager.constructArtifactId( repository, ObjectType.TemplateRepo.getId(), md5 );
 
@@ -301,8 +317,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         {
             if ( checkRepoPermissions( userSession, repository, toId( md5, repository ), Permission.Read ) )
             {
-                return repositoryFactory.createLocalTemplate( new KurjunContext( repository ) )
-                                        .getPackageStream( id );
+                return repositoryFactory.createLocalTemplate( new KurjunContext( repository ) ).getPackageStream( id );
             }
         }
         return null;
@@ -317,7 +332,6 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         unifiedRepository.getRepositories().addAll( artifactContext.getRemoteTemplateRepositories() );
 
         List<SerializableMetadata> remoteTemplateList = unifiedRepository.listPackages();
-
     }
 
 
@@ -337,8 +351,9 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
             //if not public, check for permissions
             if ( !templateData.getOwnerFprint().equals( "public" ) )
             {
-                allowed = checkRepoPermissions( userSession, templateData.getOwnerFprint(),
-                        ( templateData.getUniqId()  ), Permission.Read );
+                allowed =
+                        checkRepoPermissions( userSession, templateData.getOwnerFprint(), ( templateData.getUniqId() ),
+                                Permission.Read );
             }
 
             if ( allowed )

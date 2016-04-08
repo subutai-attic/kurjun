@@ -47,8 +47,8 @@ public class LocalTemplateRepository extends LocalRepositoryBase
 
 
     @Inject
-    public LocalTemplateRepository( FileStoreFactory fileStoreFactory,
-                                    SubutaiTemplateParser templateParser, @Assisted KurjunContext context )
+    public LocalTemplateRepository( FileStoreFactory fileStoreFactory, SubutaiTemplateParser templateParser,
+                                    @Assisted KurjunContext context )
     {
         this.fileStoreFactory = fileStoreFactory;
         this.templateParser = templateParser;
@@ -79,10 +79,12 @@ public class LocalTemplateRepository extends LocalRepositoryBase
 
     @Deprecated
     @Override
-    public Metadata put( final File file, final CompressionType compressionType,final String context,  final String owner ) throws IOException
+    public Metadata put( final File file, final CompressionType compressionType, final String context,
+                         final String owner ) throws IOException
     {
         return null;
     }
+
 
     @Override
     @Deprecated
@@ -105,7 +107,7 @@ public class LocalTemplateRepository extends LocalRepositoryBase
             if ( md5.equalsIgnoreCase( meta.getMd5Sum() ) )
             {
                 //***********************************
-                repositoryManager.addArtifactToRepository( repoData ,meta );
+                repositoryManager.addArtifactToRepository( repoData, meta );
                 //***********************************
             }
             else
@@ -123,7 +125,8 @@ public class LocalTemplateRepository extends LocalRepositoryBase
 
 
     //TODO files is copied to temp file and gets copied again in put(File)
-    public Metadata put( InputStream is, CompressionType compressionType, String context , String owner ) throws IOException
+    public Metadata put( InputStream is, CompressionType compressionType, String context, String owner )
+            throws IOException
     {
         //*******************
         RepositoryData repoData = getRepositoryData( context, ObjectType.TemplateRepo.getId(), owner );
@@ -143,7 +146,7 @@ public class LocalTemplateRepository extends LocalRepositoryBase
             if ( md5.equalsIgnoreCase( meta.getMd5Sum() ) )
             {
                 //***********************************
-                TemplateData templateData = repositoryManager.constructTemplateData( repoData, meta);
+                TemplateData templateData = repositoryManager.constructTemplateData( repoData, meta );
                 templateData.setOwner( owner );
                 templateData.getArtifactId().setMd5Sum( md5 );
                 templateData.setSize( temp.length() );
@@ -166,10 +169,16 @@ public class LocalTemplateRepository extends LocalRepositoryBase
     }
 
 
-
     public KurjunContext getContext()
     {
         return context;
+    }
+
+
+    @Override
+    public int type()
+    {
+        return ObjectType.TemplateRepo.getId();
     }
 
 
@@ -181,14 +190,14 @@ public class LocalTemplateRepository extends LocalRepositoryBase
 
 
     @Override
-    protected RepositoryData getRepositoryData(String repoContext,int type, String owner )
+    protected RepositoryData getRepositoryData( String repoContext, int type, String owner )
     {
-        if( Strings.isNullOrEmpty(repoContext))
+        if ( Strings.isNullOrEmpty( repoContext ) )
         {
             repoContext = context.getName();
         }
 
-        if( Strings.isNullOrEmpty(owner))
+        if ( Strings.isNullOrEmpty( owner ) )
         {
             owner = context.getOwner();
         }
@@ -203,6 +212,5 @@ public class LocalTemplateRepository extends LocalRepositoryBase
     {
         return fileStoreFactory.create( context );
     }
-
 }
 

@@ -150,5 +150,12 @@ class LocalSnapRepository extends LocalRepositoryBase
     {
         return context;
     }
+
+
+    @Override
+    public int type()
+    {
+        return 0;
+    }
 }
 
