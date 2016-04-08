@@ -80,7 +80,7 @@ public class TemplateController extends BaseController
     public Result getUploadTemplateForm()
     {
         return Results.html().template( "views/_popup-upload-templ.ftl" )
-                      .render( "repos", templateManagerService.getRepoList() );
+                      .render( "repos", repositoryService.getRepositoryContextList( ObjectType.TemplateRepo.getId() ) );
     }
 
 

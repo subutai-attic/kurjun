@@ -13,8 +13,8 @@
 
 <div class="b-workspace__content">
     <div class="b-workspace-content__row">
-      <a href="#js-upload-apt" class="b-btn b-btn_green b-btn_search-field-level js-colorbox-inline">
-            <i class="fa fa-plus"></i> Upload Deb.
+      <a href="${contextPath}/apt/upload" class="b-btn b-btn_green b-btn_search-field-level js-colorbox">
+        <i class="fa fa-plus"></i> Upload Deb.package
       </a>
       <div style="margin-left: 200px">
 
@@ -89,6 +89,5 @@
 
 </script>
 
-<#include "_popup-upload-apt.ftl"/>
 
 </@layout.parentLayout>

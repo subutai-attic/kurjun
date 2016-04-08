@@ -405,14 +405,4 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     }
     //*******************************************************************
 
-
-    @Override
-    public List<String> getRepoList()
-    {
-        List<String> repoList = repositoryService.getRepositoryContextList();
-        repoList.remove( AptManagerServiceImpl.REPO_NAME );
-        repoList.remove( RawManagerServiceImpl.DEFAULT_RAW_REPO_NAME );
-
-        return repoList;
-    }
 }

@@ -56,6 +56,4 @@ public interface TemplateManagerService extends BaseService
     TemplateData getTemplate(UserSession userSession, String repository, String md5, String name, String version );
 
 
-    List<String> getRepoList();
-
 }

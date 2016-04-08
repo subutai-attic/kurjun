@@ -13,9 +13,9 @@
 
 <div class="b-workspace__content">
     <div class="b-workspace-content__row">
-        <a href="#js-upload-raw" class="b-btn b-btn_green b-btn_search-field-level js-colorbox-inline">
-            <i class="fa fa-plus"></i> Upload file
-        </a>
+      <a href="${contextPath}/raw-files/upload" class="b-btn b-btn_green b-btn_search-field-level js-colorbox">
+        <i class="fa fa-plus"></i> Upload File
+      </a>
       <div style="margin-left: 200px">
 
         <form method="get" actoin="${contextPath}/">
@@ -87,6 +87,7 @@
 
 </script>
 
-<#include "_popup-upload-raw.ftl"/>
+    <#include "_popup-upload-raw.ftl"/>
+
 
 </@layout.parentLayout>

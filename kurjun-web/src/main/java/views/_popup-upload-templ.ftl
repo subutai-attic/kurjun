@@ -10,7 +10,7 @@
                 <div class="b-workspace__content">
                     <div class="b-form__wrapper g-margin-bottom-half">
                         <label class="b-form-label"><input type="radio" name="repo_type" value="existing" checked />Select repository</label>
-                        <label class="b-form-label"><input type="radio" name="repo_type" value="new"/>New repository</label>
+                        <label class="b-form-label"><input type="radio" name="repo_type" value="new"/>User repository</label>
                         <br/>
                         <select name="repository" id="repository">
                             <option value="" selected></option>
@@ -20,7 +20,6 @@
                                 </#list>
                             </#if>
                         </select>
-                        <input type="text" name="repo_name" id="repo_name" placeholder="Enter name for new repo..." style="display:none" />
                     </div>
                 </div>
                 <div class="b-workspace__content">

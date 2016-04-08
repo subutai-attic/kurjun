@@ -70,6 +70,7 @@ public class Routes implements ApplicationRoutes
         router.POST().route( "/apt/upload" ).with( AptController.class, "upload" );
         router.GET().route( "/apt/{id}/download" ).with( AptController.class, "download" );
         router.POST().route( "/apt/{id}/delete" ).with( AptController.class, "delete" );
+        router.GET().route( "/apt/upload" ).with( AptController.class, "getUploadAptForm" );
 
         // -------------------------------------------------------------------------------------------------------------
         //  Raw Files
@@ -79,6 +80,7 @@ public class Routes implements ApplicationRoutes
         router.POST().route( "/raw-files/upload" ).with( RawFileController.class, "upload" );
         router.GET().route( "/raw-files/{id}/download" ).with( RawFileController.class, "download" );
         router.POST().route( "/raw-files/{id}/delete" ).with( RawFileController.class, "delete" );
+        router.GET().route( "/raw-files/upload" ).with( RawFileController.class, "getUploadRawFileForm" );
 
         // -------------------------------------------------------------------------------------------------------------
         //  Relations

@@ -68,7 +68,7 @@ public class RelationController extends BaseController
     //*************form *********************
     public Result getAddTrustRelationForm( @AuthorizedUser UserSession userSession )
     {
-        List<String> repos = repositoryService.getRepositoryContextList();
+        List<String> repos = repositoryService.getRepositoryContextList(ObjectType.All.getId());
 
         return Results.html().template( "views/_popup-add-trust-rel.ftl" ).render( "repos", repos );
     }

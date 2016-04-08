@@ -45,9 +45,9 @@ public class RawFileController extends BaseController
 
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
         return Results.html().template( "views/raw-files.ftl" )
-                      .render( "files", rawManagerService.list( uSession, repository, node ))
+                      .render( "files", rawManagerService.list( uSession, repository, node ) )
             .render( "repos", repositoryService.getRepositoryContextList( ObjectType.RawRepo.getId() ) )
-            .render( "sel_repo", repository ).render( "node", node);
+            .render( "sel_repo", repository ).render( "node", node );
     }
 
 
@@ -76,6 +76,13 @@ public class RawFileController extends BaseController
 
         return Results.redirect( context.getContextPath() + "/raw-files" );
     }
+
+    public Result getUploadRawFileForm()
+    {
+        return Results.html().template( "views/_popup-upload-raw.ftl" )
+                      .render( "repos", repositoryService.getRepositoryContextList( ObjectType.RawRepo.getId() ) );
+    }
+
 
 
     public Result download( @PathParam( "id" ) String id )

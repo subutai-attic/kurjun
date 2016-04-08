@@ -30,7 +30,7 @@ public class RepositoryController extends BaseController
     {
         int repoTypeID = ObjectType.All.getId();
 
-        if( Strings.isNullOrEmpty( repoType ))
+        if( !Strings.isNullOrEmpty( repoType ))
         {
             if(repoType.toLowerCase().equals( "apt" ))
                 repoTypeID = ObjectType.AptRepo.getId();

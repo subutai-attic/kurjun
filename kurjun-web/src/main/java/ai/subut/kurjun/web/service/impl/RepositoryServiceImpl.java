@@ -50,7 +50,7 @@ public class RepositoryServiceImpl implements RepositoryService
 
             for(RepositoryData repodata:repoDataList)
             {
-                contexList.add( repodata.getContext() );
+                contexList.add( repodata.getContext() + "-" + repodata.getTypeName() );
             }
 
             return contexList;

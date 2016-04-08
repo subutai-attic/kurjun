@@ -64,6 +64,12 @@ public class AptController extends BaseAptController
 
     }
 
+    //****************************************************************************
+    public Result getUploadAptForm()
+    {
+        return Results.html().template( "views/_popup-upload-apt.ftl" )
+                      .render( "repos", repositoryService.getRepositoryContextList( ObjectType.AptRepo.getId() ) );
+    }
 
     //****************************************************************************
     @FileProvider( SubutaiFileHandler.class )
