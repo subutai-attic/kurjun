@@ -10,9 +10,12 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import ai.subut.kurjun.model.identity.ObjectType;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
@@ -40,22 +43,25 @@ public class AptController extends BaseAptController
     @Inject
     private AptManagerServiceImpl aptManagerService;
 
+    @Inject
+    private RepositoryService repositoryService;
+
 
     //****************************************************************************
     public Result list( Context context ,@Param( "type" ) String type, @Param( "repository" ) String repository,
-                        @Param( "search" ) String search )
+                        @Param( "node" ) String node )
     {
-        if ( search == null )
-        {
-            search = "all";
-        }
 
+        node = StringUtils.isBlank( node )? "all":node;
         //********************************************
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-        List<SerializableMetadata> serializableMetadataList = aptManagerService.list(uSession, repository, search );
+        List<SerializableMetadata> serializableMetadataList = aptManagerService.list(uSession, repository, node );
         //********************************************
 
-        return Results.html().template( "views/apts.ftl" ).render( "apts", serializableMetadataList );
+        return Results.html().template( "views/apts.ftl" ).render( "apts", serializableMetadataList )
+                      .render( "repos", repositoryService.getRepositoryContextList( ObjectType.AptRepo.getId() ) )
+                      .render( "sel_repo", repository ).render( "node", node);
+
     }
 
 

@@ -65,11 +65,16 @@ public class RepositoryDataServiceImpl implements RepositoryDataService
 
     //***************************
     @Override
-    public List<RepositoryData> getRepositoryList()
+    public List<RepositoryData> getRepositoryList( int repoType )
     {
         try
         {
-            return repositoryDAO.findAll( "RepositoryDataEntity" );
+            if(repoType == ObjectType.All.getId())
+                return repositoryDAO.findAll( "RepositoryDataEntity" );
+            else
+            {
+                return repositoryDAO.findByRepository( repoType );
+            }
         }
         catch ( DAOException e )
         {

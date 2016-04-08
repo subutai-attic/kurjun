@@ -25,11 +25,11 @@ public interface RawManagerService extends BaseService
     boolean delete(UserSession userSession, String repository, String md5 );
 
 
-    SerializableMetadata getInfo( String repository, String md5, String search );
+    SerializableMetadata getInfo( String repository, String md5, String node );
 
 
     Metadata put(UserSession userSession, final File file, final String filename, final String repository );
 
 
-    List<SerializableMetadata> list( UserSession userSession, String repository, String search );
+    List<SerializableMetadata> list( UserSession userSession, String repository, String node );
 }

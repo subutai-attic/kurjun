@@ -23,6 +23,9 @@ public interface RepositoryManager
 
 
     //*************************************************
+    List<RepositoryData> getRepositoryList( int repoType );
+
+    //*************************************************
     RepositoryData getRepository( String context, int type );
 
 

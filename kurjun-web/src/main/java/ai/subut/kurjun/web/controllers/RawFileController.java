@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import ai.subut.kurjun.model.identity.ObjectType;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.web.filter.SecurityFilter;
@@ -37,14 +38,16 @@ public class RawFileController extends BaseController
     private RepositoryService repositoryService;
 
 
-    public Result list( Context context , @Param( "repository" ) String repository, @Param( "search" ) String search )
+    public Result list( Context context , @Param( "repository" ) String repository, @Param( "node" ) String node )
     {
-        search = StringUtils.isBlank( search )? "all":search;
+        node = StringUtils.isBlank( node )? "all":node;
         repository = StringUtils.isBlank( repository )? "raw":repository;
 
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
         return Results.html().template( "views/raw-files.ftl" )
-                      .render( "files", rawManagerService.list( uSession, repository, search ) );
+                      .render( "files", rawManagerService.list( uSession, repository, node ))
+            .render( "repos", repositoryService.getRepositoryContextList( ObjectType.RawRepo.getId() ) )
+            .render( "sel_repo", repository ).render( "node", node);
     }
 
 

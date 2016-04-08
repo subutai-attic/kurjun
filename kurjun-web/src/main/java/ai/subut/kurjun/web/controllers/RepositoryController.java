@@ -1,16 +1,15 @@
 package ai.subut.kurjun.web.controllers;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
+import ai.subut.kurjun.model.identity.ObjectType;
 import ai.subut.kurjun.model.metadata.RepositoryData;
 import ai.subut.kurjun.web.service.RepositoryService;
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-
 import ninja.Result;
 import ninja.Results;
+import ninja.params.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,14 +26,22 @@ public class RepositoryController extends BaseController
     private RepositoryService repositoryService;
 
 
-    public Result getRepoList()
+    public Result getRepoList(@Param( "type" ) String repoType)
     {
-        //List<RepositoryData> repos = repositoryService.getRepositoryList();
-        List<RepositoryData> repos = repositoryService.getRepositoryList();
+        int repoTypeID = ObjectType.All.getId();
 
+        if( Strings.isNullOrEmpty( repoType ))
+        {
+            if(repoType.toLowerCase().equals( "apt" ))
+                repoTypeID = ObjectType.AptRepo.getId();
+            if(repoType.toLowerCase().equals( "template" ))
+                repoTypeID = ObjectType.TemplateRepo.getId();
+            if(repoType.toLowerCase().equals( "raw" ))
+                repoTypeID = ObjectType.RawRepo.getId();
+        }
 
-        Map<String, String> ownerMap = new HashMap<>();
-        return Results.html().template("views/repositories.ftl").render( "repos", repos )
-                .render( "owners", ownerMap );
+        List<RepositoryData> repos = repositoryService.getRepositoryList(repoTypeID);
+
+        return Results.html().template("views/repositories.ftl").render( "repos", repos );
     }
 }

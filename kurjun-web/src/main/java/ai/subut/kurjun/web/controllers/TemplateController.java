@@ -16,6 +16,7 @@ import com.google.inject.Singleton;
 
 import ai.subut.kurjun.metadata.common.subutai.TemplateId;
 import ai.subut.kurjun.metadata.common.utils.IdValidators;
+import ai.subut.kurjun.model.identity.ObjectType;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.metadata.template.TemplateData;
@@ -71,7 +72,7 @@ public class TemplateController extends BaseController
         }
 
         return Results.html().template( "views/templates.ftl" ).render( "templates", defaultTemplateList )
-                      .render( "repos", templateManagerService.getRepoList() )
+                      .render( "repos", repositoryService.getRepositoryContextList( ObjectType.TemplateRepo.getId() ) )
                       .render( "sel_repo", repo ).render( "node", node);
     }
 

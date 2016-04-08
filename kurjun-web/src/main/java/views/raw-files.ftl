@@ -16,10 +16,28 @@
         <a href="#js-upload-raw" class="b-btn b-btn_green b-btn_search-field-level js-colorbox-inline">
             <i class="fa fa-plus"></i> Upload file
         </a>
-        <table id="raw_files_tbl" class="b-data-table">
+      <div style="margin-left: 200px">
+
+        <form method="get" actoin="${contextPath}/">
+          <label>Show by repo: </label><select name="repository" id="repo-filter">
+            <#if sel_repo??>
+                <#list repos as repo >
+                  <option value="${repo}" <#if sel_repo == repo >selected</#if> >${repo}</option>
+                </#list>
+            </#if>
+        </select>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <label><input type="radio" name="node" value="local" ${(node=="local")?string("checked","")}> Local node</label>
+          <label><input type="radio" name="node" value="all" ${(node=="all")?string("checked","")}> All nodes</label>
+          <button type="submit">Search</button>
+        </form>
+      </div>
+
+      <table id="raw_files_tbl" class="b-data-table">
             <thead>
             <tr>
                 <th>Name</th>
+                <th>Owner</th>
                 <th>Size</th>
                 <th>Actions</th>
             </tr>
@@ -29,6 +47,7 @@
             <#list files as f >
             <tr>
                 <td><#--a href="${contextPath}/raw-files/info" class="js-colorbox"></a-->${f.name}</td>
+                <td>${f.owner}</td>
                 <td>${f.size}</td>
                 <td><a href="${contextPath}/raw-files/${f.id.context+"."+f.id.md5Sum}/download" target="_blank">download</a>  |  <a href="#" onclick="removeFile('${f.id}')">remove</a></td>
             </tr>

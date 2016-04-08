@@ -25,10 +25,6 @@
 
 
   <!--*****************************************************************-->
-  <service ref="kurjunIdentityDataService" activation="eager"
-           interface="ai.subut.kurjun.core.dao.service.identity.IdentityDataService" />
-  <service ref="kurjunRelationDataService" activation="eager"
-           interface="ai.subut.kurjun.core.dao.service.identity.RelationDataService" />
   <service ref="kurjunRepositoryDataService" activation="eager"
            interface="ai.subut.kurjun.core.dao.service.metadata.RepositoryDataService" />
   <!--*****************************************************************-->
