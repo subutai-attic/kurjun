@@ -69,6 +69,8 @@ public class Module extends AbstractModule
 
         bind( RawManagerService.class ).to( RawManagerServiceImpl.class );
 
+        bind( AptManagerService.class ).to( AptManagerServiceImpl.class );
+
         bind( FileItemProvider.class ).to( SubutaiFileHandler.class );
 
         bind( RepositoryService.class ).to( RepositoryServiceImpl.class );

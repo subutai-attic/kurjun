@@ -26,7 +26,7 @@
 
     <properties>
       <property name="openjpa.ConnectionDriverName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
-      <property name="openjpa.ConnectionURL" value="jdbc:derby:/tmp/var/lib/kurjun/derbyDb;create=true"/>
+      <property name="openjpa.ConnectionURL" value="jdbc:derby:/var/lib/kurjun/derbyDb;create=true"/>
       <property name="openjpa.ConnectionUserName" value="sa"/>
       <property name="openjpa.ConnectionPassword" value=""/>
 

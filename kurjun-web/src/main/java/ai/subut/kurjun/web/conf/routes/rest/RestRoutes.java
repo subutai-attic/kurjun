@@ -80,7 +80,7 @@ public class RestRoutes implements ApplicationRoutes
         router.GET().route( baseRelationsUrl + "owner/get" ).with( RestIdentityController.class, "getSystemOwner" );
 
         //REST Repository Controller
-        router.GET().route( baseRepositoryUrl + "list" ).with( RestRepositoryController.class, "list" );
+        router.GET().route( baseRepositoryUrl + "list" ).with( RestRepositoryController.class, "getRepoList" );
 
         //REST Relation Controller
         router.GET().route( baseRelationsUrl + "list" ).with( RestRelationController.class, "getAllRelations" );

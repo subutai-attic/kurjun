@@ -11,10 +11,12 @@ import javax.persistence.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.inject.persist.Transactional;
 
 import ai.subut.kurjun.core.dao.api.DAOException;
 import ai.subut.kurjun.core.dao.api.GenericDAOImpl;
+import ai.subut.kurjun.core.dao.model.metadata.AptDataEntity;
 import ai.subut.kurjun.core.dao.model.metadata.TemplateDataEntity;
 import ai.subut.kurjun.model.metadata.template.TemplateData;
 import ai.subut.kurjun.model.repository.ArtifactId;
@@ -76,5 +78,54 @@ public class TemplateDAO extends GenericDAOImpl<TemplateData>
         return Collections.emptyList();
 
     }
+
+
+
+
+    //***********************************************
+    @Transactional
+    public TemplateData findByDetails( ArtifactId id ) throws DAOException
+    {
+        try
+        {
+            String querySTR = "select e from TemplateDataEntity e where e.id.type=:repoType ";
+
+            if( Strings.isNullOrEmpty( id.getContext() ))
+                querySTR += " and e.id.context=:repoContext ";
+            if( Strings.isNullOrEmpty(id.getMd5Sum() ))
+                querySTR += " and e.id.md5Sum=:md5Sum ";
+            if( Strings.isNullOrEmpty(id.getArtifactName() ))
+                querySTR += " and e.name=:name ";
+            if( Strings.isNullOrEmpty(id.getVersion() ))
+                querySTR += " and e.version=:version ";
+
+            querySTR += " order by e.version ";
+            Query qr = getEntityManager().createQuery(querySTR,AptDataEntity.class );
+
+            if( Strings.isNullOrEmpty(id.getContext()))
+                qr.setParameter( "repoContext" ,id.getContext() );
+            if( Strings.isNullOrEmpty(id.getMd5Sum() ))
+                qr.setParameter( "md5Sum" ,id.getMd5Sum() );
+            if( Strings.isNullOrEmpty(id.getArtifactName() ))
+                qr.setParameter( "name" ,id.getArtifactName() );
+            if( Strings.isNullOrEmpty(id.getVersion() ))
+                qr.setParameter( "version" ,id.getVersion() );
+
+            List<TemplateData>  items = qr.getResultList();
+
+            if(!items.isEmpty())
+            {
+                return items.get( 0 );
+            }
+        }
+        catch ( Exception e )
+        {
+            throw new DAOException( e );
+        }
+
+        return null;
+
+    }
+
 
 }

@@ -9,6 +9,7 @@ import com.google.inject.Singleton;
 import ai.subut.kurjun.core.dao.model.metadata.RepositoryArtifactId;
 import ai.subut.kurjun.core.dao.model.metadata.RepositoryDataEntity;
 import ai.subut.kurjun.core.dao.service.metadata.RepositoryDataService;
+import ai.subut.kurjun.model.identity.ObjectType;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.RepositoryData;
 import ai.subut.kurjun.model.metadata.apt.AptData;
@@ -40,7 +41,14 @@ public class RepositoryManagerImpl implements RepositoryManager
     @Override
     public List<RepositoryData> getRepositoryList()
     {
-        return repositoryDataService.getRepositoryList();
+        return repositoryDataService.getRepositoryList( ObjectType.All.getId());
+    }
+
+    //*************************************************
+    @Override
+    public List<RepositoryData> getRepositoryList( int repoType )
+    {
+        return repositoryDataService.getRepositoryList(repoType);
     }
 
 

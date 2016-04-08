@@ -15,9 +15,11 @@ import org.apache.commons.lang.StringUtils;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import ai.subut.kurjun.model.identity.ObjectType;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
+import ai.subut.kurjun.web.service.AptManagerService;
 import ai.subut.kurjun.web.service.RepositoryService;
 import ai.subut.kurjun.web.service.impl.AptManagerServiceImpl;
 import ninja.Context;
@@ -40,7 +42,10 @@ public class AptController extends BaseAptController
     private static final Logger LOGGER = LoggerFactory.getLogger( AptController.class );
 
     @Inject
-    private AptManagerServiceImpl aptManagerService;
+    private AptManagerService aptManagerService;
+
+    @Inject
+    private RepositoryService repositoryService;
 
 
     //****************************************************************************
@@ -56,9 +61,18 @@ public class AptController extends BaseAptController
         //********************************************
 
         return Results.html().template( "views/apts.ftl" ).render( "apts", serializableMetadataList )
-                .render( "repos", aptManagerService.getRepoList() ).render( "sel_repo", repository)
+                .render( "repos", aptManagerService.getRepoList() ).render( "sel_repo", repository )
                       .render( "node", node);
     }
+
+
+    //****************************************************************************
+    public Result getUploadAptForm()
+    {
+        return Results.html().template( "views/_popup-upload-apt.ftl" )
+                      .render( "repos", repositoryService.getRepositoryContextList( ObjectType.AptRepo.getId() ) );
+    }
+
 
 
     //****************************************************************************

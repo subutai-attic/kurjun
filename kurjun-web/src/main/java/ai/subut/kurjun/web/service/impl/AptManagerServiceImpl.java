@@ -286,9 +286,11 @@ public class AptManagerServiceImpl implements AptManagerService
                         .put( is, CompressionType.NONE, repository, userSession.getUser().getKeyFingerprint() );
                 if ( meta != null )
                 {
+
+                    String uniqId = repository + "." + meta.getMd5Sum();
                     //***** Build Relation ****************
                     relationManager
-                            .buildTrustRelation( userSession.getUser(), userSession.getUser(), meta.getId().toString(),
+                            .buildTrustRelation( userSession.getUser(), userSession.getUser(),uniqId ,
                                     ObjectType.Artifact.getId(), relationManager.buildPermissions( 4 ) );
                     //*************************************
 
@@ -352,7 +354,8 @@ public class AptManagerServiceImpl implements AptManagerService
 
         results.addAll( localUserRepo.listPackages() );
 
-        return results == null? new ArrayList<>() : results;
+        return results;
+
     }
 
 
@@ -507,13 +510,6 @@ public class AptManagerServiceImpl implements AptManagerService
     @Override
     public List<String> getRepoList()
     {
-        List<RepositoryData> repoList = repositoryService.getRepositoryList();
-        List<String> repoNamesList = new ArrayList<>();
-        repoList.forEach( r -> {
-            if (r.getType() == ObjectType.AptRepo.getId())
-                repoNamesList.add( r.getContext() );
-        } );
-
-        return repoNamesList;
+        return repositoryService.getRepositoryContextList( ObjectType.AptRepo.getId() );
     }
 }

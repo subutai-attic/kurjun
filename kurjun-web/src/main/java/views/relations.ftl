@@ -14,7 +14,7 @@
 <div class="b-workspace__content">
     <div class="b-workspace-content__row">
         <a href="${contextPath}/relations/trust" id="add_trust_btn" class="b-btn b-btn_green b-btn_search-field-level js-colorbox">
-            <i class="fa fa-plus"></i> Add trust relation
+            <i class="fa fa-plus"></i> Add permissions
         </a>
         <table id="relations_tbl" class="b-data-table">
             <thead>
