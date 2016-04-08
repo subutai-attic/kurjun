@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
@@ -22,6 +24,7 @@ import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.metadata.raw.RawData;
 import ai.subut.kurjun.model.repository.ArtifactId;
+import ai.subut.kurjun.model.repository.LocalRepository;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
 import ai.subut.kurjun.repo.LocalRawRepository;
 import ai.subut.kurjun.repo.RepositoryFactory;
@@ -66,7 +69,7 @@ public class RawManagerServiceImpl implements RawManagerService
     private void _local()
     {
         this.localPublicRawRepository = this.repositoryFactory.createLocalRaw(
-                new KurjunContext( DEFAULT_RAW_REPO_NAME, ObjectType.RawRepo.getId(), "system-owner"  ) );
+                new KurjunContext( DEFAULT_RAW_REPO_NAME, ObjectType.RawRepo.getId(), "system-owner" ) );
     }
 
 
@@ -165,7 +168,7 @@ public class RawManagerServiceImpl implements RawManagerService
             String objectId = repository + "." + md5;
 
             //***** Check permissions (DELETE) *****************
-            if ( checkRepoPermissions( userSession,repository , objectId, Permission.Delete ) )
+            if ( checkRepoPermissions( userSession, repository, objectId, Permission.Delete ) )
             {
                 relationManager.removeRelationsByTrustObject( objectId, ObjectType.Artifact.getId() );
                 return localPublicRawRepository.delete( id );
@@ -204,7 +207,7 @@ public class RawManagerServiceImpl implements RawManagerService
             return null;
         }
 
-        if( Strings.isNullOrEmpty( repository ))
+        if ( Strings.isNullOrEmpty( repository ) )
         {
             repository = userSession.getUser().getUserName();
         }
@@ -251,25 +254,53 @@ public class RawManagerServiceImpl implements RawManagerService
 
 
     @Override
-    public List<SerializableMetadata> list( UserSession userSession, String repository, String search )
+    public List<SerializableMetadata> list( UserSession userSession, String repository, String node )
     {
-        if( Strings.isNullOrEmpty( repository ))
+
+        List<SerializableMetadata> results = null;
+        node = StringUtils.isBlank( node ) ? "local" : node;
+        switch ( node )
         {
-            repository = userSession.getUser().getUserName();
+            //get local list
+            case "local":
+                //add local public artifacts
+                results = localPublicRawRepository.listPackages();
+                break;
+
+            default: // "all"
+                //get unified repo list
+                results = unifiedRepository.listPackages();
+                break;
+        }
+        //public user, return results
+        if ( identityManagerService.isPublicUser( userSession.getUser() ) )
+        {
+            return results;
         }
 
-        switch ( search )
+        //if repository is blank
+        repository = StringUtils.isBlank( repository ) ? userSession.getUser().getUserName() : repository;
+
+
+        //get personal repository list
+        LocalRepository localUserRepo =
+                repositoryFactory.createLocalRaw( new KurjunContext( userSession.getUser().getUserName() ) );
+
+        //user trying to get other repository that was shared with him
+        //TODO:put security check here if user has permission for this repo
+        if ( !repository.equalsIgnoreCase( userSession.getUser().getUserName() ) )
         {
-            //return local list
-            case "local":
-                return localPublicRawRepository.listPackages( repository, ObjectType.RawRepo.getId() );
-            //return unified repo list
-            case "all":
-                return unifiedRepository.listPackages( repository, ObjectType.RawRepo.getId() );
-            //return personal repository list
-            default:
-                return repositoryFactory.createLocalApt( new KurjunContext( repository ) ).listPackages();
+            //create repo instance based on repository name
+            LocalRepository privateSharedRepository =
+                    repositoryFactory.createLocalRaw( new KurjunContext( repository ) );
+
+            //TODO:object level security check required?
+            results.addAll( privateSharedRepository.listPackages() );
         }
+
+        results.addAll( localUserRepo.listPackages() );
+
+        return results;
     }
 
 

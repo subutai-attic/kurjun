@@ -243,5 +243,12 @@ class LocalAptRepositoryWrapper extends RepositoryBase implements LocalRepositor
     {
         return "";
     }
+
+
+    @Override
+    public int type()
+    {
+        return 0;
+    }
 }
 

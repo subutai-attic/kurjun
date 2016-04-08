@@ -131,10 +131,9 @@ class LocalAptRepository extends LocalRepositoryBase
     }
 
 
-
-
     @Override
-    public PackageMetadata put( InputStream is, CompressionType compressionType, String repoContext, String owner) throws IOException
+    public PackageMetadata put( InputStream is, CompressionType compressionType, String repoContext, String owner )
+            throws IOException
     {
         //*******************
         RepositoryData repoData = getRepositoryData( repoContext, ObjectType.AptRepo.getId(), owner );
@@ -164,9 +163,9 @@ class LocalAptRepository extends LocalRepositoryBase
             addExtraData( metadata, target );
             addSubutaiData( metadata, target );
 
-            AptData aptData = repositoryManager.constructAptData( repoData , Hex.encodeHexString( md5 ),owner  );
-            aptData = repositoryManager.copyAptPackage( metadata,aptData );
-            repositoryManager.addArtifactToRepository( repoData , aptData);
+            AptData aptData = repositoryManager.constructAptData( repoData, Hex.encodeHexString( md5 ), owner );
+            aptData = repositoryManager.copyAptPackage( metadata, aptData );
+            repositoryManager.addArtifactToRepository( repoData, aptData );
             fileStore.put( target.toFile() );
 
 
@@ -186,8 +185,7 @@ class LocalAptRepository extends LocalRepositoryBase
 
     @Deprecated
     @Override
-    public Metadata put( final InputStream is, final CompressionType compressionType )
-            throws IOException
+    public Metadata put( final InputStream is, final CompressionType compressionType ) throws IOException
     {
         return null;
     }
@@ -195,7 +193,8 @@ class LocalAptRepository extends LocalRepositoryBase
 
     @Deprecated
     @Override
-    public Metadata put( final File file, final CompressionType compressionType,final String context,  final String owner ) throws IOException
+    public Metadata put( final File file, final CompressionType compressionType, final String context,
+                         final String owner ) throws IOException
     {
         return null;
     }
@@ -209,14 +208,14 @@ class LocalAptRepository extends LocalRepositoryBase
 
 
     @Override
-    protected RepositoryData getRepositoryData(String repoContext,int type, String owner )
+    protected RepositoryData getRepositoryData( String repoContext, int type, String owner )
     {
-        if( Strings.isNullOrEmpty( repoContext ))
+        if ( Strings.isNullOrEmpty( repoContext ) )
         {
             repoContext = context.getName();
         }
 
-        if( Strings.isNullOrEmpty(owner))
+        if ( Strings.isNullOrEmpty( owner ) )
         {
             owner = context.getOwner();
         }
@@ -290,6 +289,13 @@ class LocalAptRepository extends LocalRepositoryBase
     public KurjunContext getContext()
     {
         return context;
+    }
+
+
+    @Override
+    public int type()
+    {
+        return ObjectType.AptRepo.getId();
     }
 }
 
