@@ -33,6 +33,8 @@
                     <td><#if r.id.type??>${r.getTypeName()}</#if></td>
                     <td><#if r.owner??>${r.owner}</#if></td>
                     <td><a href="${contextPath}/permissions/by-object?id=${r.id.context}&obj_type=4" class="js-colorbox">permissions</a>
+                        |  <a href="#js-add-trust-rel" onclick="openSharePopup(${r.type}, '${r.id.context}', '')" class="js-colorbox-inline">share</a>
+                    </td>
                 </tr>
                 </#list>
             </#if>
@@ -60,5 +62,7 @@
     } );
 
 </script>
+
+<#include "_popup-share-metadata.ftl"/>
 
 </@layout.parentLayout>
