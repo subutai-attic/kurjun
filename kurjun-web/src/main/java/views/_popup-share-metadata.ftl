@@ -15,7 +15,7 @@
                     <input type="text" name="target_obj_id" id="target_fprint" placeholder="target fingerprint" />
                 </div>
             </div>
-            <div style="display: block;">
+            <div style="display: none;">
                 <input type="text" name="trust_obj_type" id="js-trust-obj-type" value="3" />
                 <br/>
                 <input type="text" name="trust_obj_id" id="js-trust-obj-id" />
