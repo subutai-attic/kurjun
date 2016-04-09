@@ -2,6 +2,7 @@ package ai.subut.kurjun.web.controllers;
 
 
 import ai.subut.kurjun.model.identity.User;
+import ai.subut.kurjun.security.manager.utils.pgp.PGPKeyUtil;
 import ai.subut.kurjun.web.filter.SecurityFilter;
 import ai.subut.kurjun.web.service.IdentityManagerService;
 
@@ -14,6 +15,7 @@ import ninja.Results;
 import ninja.params.Param;
 import ninja.session.FlashScope;
 
+import org.bouncycastle.openpgp.PGPPublicKeyRing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,17 +61,36 @@ public class IdentityController extends BaseController
     public Result createUser( @Param( "username" ) String userName, @Param( "key" ) String publicKey, Context context,
                               FlashScope flashScope )
     {
-        User user = identityManagerService.addUser(userName, publicKey );
+        try
+        {
+            User user = identityManagerService.addUser( userName, publicKey );
 
-        if ( user != null )
-        {
-            return Results.html().template( "views/token.ftl" ).render( "token", user.getSignature() );
+            if ( user == null )
+            {
+                PGPPublicKeyRing key = PGPKeyUtil.readPublicKeyRing( publicKey );
+                if ( key != null )
+                {
+                    String fprint = PGPKeyUtil.getFingerprint( key.getPublicKey().getFingerprint() );
+                    user = identityManagerService.getUser( fprint );
+                }
+            }
+
+            if ( user != null )
+            {
+                return Results.html().template( "views/token.ftl" ).render( "token", user.getSignature() );
+            }
+            else
+            {
+                flashScope.error( "Failed to create user." );
+            }
         }
-        else
+        catch ( Exception e )
         {
+            LOGGER.error( "Failed to add user: "+e.getMessage() );
             flashScope.error( "Failed to create user." );
-            return Results.redirect( context.getContextPath() + "/users" );
         }
+
+        return Results.redirect( context.getContextPath() + "/users" );
     }
 
 

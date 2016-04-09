@@ -4,11 +4,15 @@ package ai.subut.kurjun.web.controllers.rest;
 import java.util.List;
 
 import ai.subut.kurjun.model.identity.UserSession;
+import ai.subut.kurjun.security.manager.utils.pgp.PGPKeyUtil;
 import ai.subut.kurjun.web.controllers.BaseController;
 import ai.subut.kurjun.web.filter.SecurityFilter;
 import ai.subut.kurjun.web.security.AuthorizedUser;
 import ninja.Context;
 import ninja.session.FlashScope;
+
+import org.bouncycastle.openpgp.PGPPublicKey;
+import org.bouncycastle.openpgp.PGPPublicKeyRing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,6 +84,16 @@ public class RestIdentityController extends BaseController
         try
         {
             User user = identityManagerService.addUser( userName,publicKey );
+
+            if ( user == null )
+            {
+                PGPPublicKeyRing key = PGPKeyUtil.readPublicKeyRing( publicKey );
+                if ( key != null )
+                {
+                    String fprint = PGPKeyUtil.getFingerprint( key.getPublicKey().getFingerprint() );
+                    user = identityManagerService.getUser( fprint );
+                }
+            }
 
             if ( user != null )
             {
