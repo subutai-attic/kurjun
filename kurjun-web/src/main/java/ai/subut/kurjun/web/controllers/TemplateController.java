@@ -14,8 +14,6 @@ import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import ai.subut.kurjun.metadata.common.subutai.TemplateId;
-import ai.subut.kurjun.metadata.common.utils.IdValidators;
 import ai.subut.kurjun.model.identity.ObjectType;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
@@ -30,7 +28,6 @@ import ninja.Renderable;
 import ninja.Result;
 import ninja.Results;
 import ninja.params.Param;
-import ninja.params.PathParam;
 import ninja.session.FlashScope;
 import ninja.uploads.FileItem;
 import ninja.uploads.FileProvider;
@@ -124,16 +121,15 @@ public class TemplateController extends BaseController
 
     public Result getTemplateInfo( Context context, @Param( "repository" ) String repoContext,
                                    @Param( "version" ) String version, @Param( "md5" ) String md5,
-                                   @Param( "search" ) String search )
+                                   @Param( "node" ) String node,
+                                   @Param( "name" ) String name)
     {
         if ( !StringUtils.isBlank( md5 ) )
         {
-            //TemplateId tid = IdValidators.Template.validate( id );
-
             //*****************************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
             TemplateData templateData =
-                    templateManagerService.getTemplate( uSession, repoContext, md5, version, search );
+                    templateManagerService.getTemplate( uSession, repoContext, md5,name, version, node );
             //*****************************************************
 
             if ( templateData != null )

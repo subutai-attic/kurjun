@@ -12,11 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
-import com.google.inject.persist.Transactional;
-
 import ai.subut.kurjun.core.dao.api.DAOException;
 import ai.subut.kurjun.core.dao.api.GenericDAOImpl;
-import ai.subut.kurjun.core.dao.model.metadata.AptDataEntity;
 import ai.subut.kurjun.core.dao.model.metadata.TemplateDataEntity;
 import ai.subut.kurjun.model.metadata.template.TemplateData;
 import ai.subut.kurjun.model.repository.ArtifactId;
@@ -36,7 +33,7 @@ public class TemplateDAO extends GenericDAOImpl<TemplateData>
         super(emf);
     }
 
-    @Transactional
+    //***********************************************
     public TemplateData find( ArtifactId id ) throws DAOException
     {
         try
@@ -54,16 +51,14 @@ public class TemplateDAO extends GenericDAOImpl<TemplateData>
 
 
     //***********************************************
-    @Transactional
-    public List<TemplateData> findByRepository( String repoContext, int repoType ) throws DAOException
+    public List<TemplateData> findByRepository( String repoContext) throws DAOException
     {
         try
         {
             Query qr = getEntityManager().createQuery(
-                    " select e from TemplateDataEntity e where e.id.context=:repoContext and e.id.type=:repoType",
+                    " select e from TemplateDataEntity e where e.id.context=:repoContext ",
                     TemplateDataEntity.class );
             qr.setParameter( "repoContext" ,repoContext );
-            qr.setParameter( "repoType" ,repoType );
 
             List<TemplateData>  templates = qr.getResultList();
 
@@ -83,12 +78,11 @@ public class TemplateDAO extends GenericDAOImpl<TemplateData>
 
 
     //***********************************************
-    @Transactional
     public TemplateData findByDetails( ArtifactId id ) throws DAOException
     {
         try
         {
-            String querySTR = "select e from TemplateDataEntity e where e.id.type=:repoType ";
+            String querySTR = "select e from TemplateDataEntity e where (e.id.md5Sum is not null) ";
 
             if( !Strings.isNullOrEmpty( id.getContext() ))
                 querySTR += " and e.id.context=:repoContext ";
@@ -100,7 +94,7 @@ public class TemplateDAO extends GenericDAOImpl<TemplateData>
                 querySTR += " and e.version=:version ";
 
             querySTR += " order by e.version ";
-            Query qr = getEntityManager().createQuery(querySTR,AptDataEntity.class );
+            Query qr = getEntityManager().createQuery(querySTR,TemplateDataEntity.class );
 
             if( !Strings.isNullOrEmpty(id.getContext()))
                 qr.setParameter( "repoContext" ,id.getContext() );

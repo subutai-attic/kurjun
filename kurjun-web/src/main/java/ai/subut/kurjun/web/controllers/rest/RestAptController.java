@@ -58,12 +58,8 @@ public class RestAptController extends BaseAptController
 
 
     public Result release( Context context, @PathParam( "release" ) String release,
-                           @PathParam( "repository" ) String repository,
-
-                           @Param( "global_kurjun_sptoken" ) String globalKurjunToken )
+                           @PathParam( "repository" ) String repository )
     {
-        //        checkNotNull( release, "Release cannot be null" );
-
         //********************************************
         String rel = managerService.getRelease( release, null, null );
         //********************************************
@@ -159,8 +155,6 @@ public class RestAptController extends BaseAptController
 
     public Result delete( Context context, @Param( "repository" ) String repository, @Param( "md5" ) String md5 )
     {
-        //        checkNotNull( md5, "MD5 cannot be null" );
-
         //********************************************
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
         boolean success = managerService.delete( uSession, repository, md5 );

@@ -231,13 +231,13 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         {
             LocalTemplateRepository _repository = ( LocalTemplateRepository ) getRepo( repository );
 
-            // remove Relation
-            relationManager.removeRelationsByTrustObject( atifactId, ObjectType.Artifact.getId() );
 
             boolean success = _repository.delete( id );
 
             if ( success )
             {
+                // remove Relation
+                relationManager.removeRelationsByTrustObject( atifactId, ObjectType.Artifact.getId() );
                 return ErrorCode.Success.getId();
             }
 
@@ -337,12 +337,14 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public TemplateData getTemplate( UserSession userSession, String repository, final String md5, String version,
-                                     String search )
+    public TemplateData getTemplate( UserSession userSession, String repository, final String md5, String name,
+                                     String version, String node )
     {
         //************ CheckPermissions ************************************
 
         ArtifactId id = repositoryManager.constructArtifactId( repository, ObjectType.TemplateRepo.getId(), md5 );
+        id.setVersion( version );
+        id.setArtifactName( name );
 
         TemplateData templateData = ( TemplateData ) unifiedTemplateRepository.getPackageInfo( id );
 

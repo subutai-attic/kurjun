@@ -48,19 +48,19 @@ public class AptDataEntity implements AptData
     private String filePath = "";
 
     @Column( name = "component" )
-    private String component;
+    private String component = "";
 
     @Column( name = "filename" , nullable = false)
-    private String filename;
+    private String filename = "";
 
     @Column( name = "packageName" )
-    private String packageName;
+    private String packageName = "";
 
     @Column( name = "version" )
-    private String version;
+    private String version = "";
 
     @Column( name = "source" )
-    private String source;
+    private String source = "";
 
     @Column( name = "maintainer" )
     private String maintainer;

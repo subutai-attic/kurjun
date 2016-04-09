@@ -39,17 +39,17 @@ public class TemplateDataEntity implements TemplateData
     @Column (name = "name", nullable = false)
     String  name;
 
-    @Column( name = "file_path" )
+    @Column( name = "file_path" , nullable = false)
     private String filePath = "";
 
     @Column( name = "version" )
-    private String version;
+    private String version = "";
 
     @Column( name = "parent" )
     private String parent;
 
     @Column( name = "package_name" )
-    private String packageName;
+    private String packageName = "";
 
     @Enumerated( EnumType.STRING )
     @Column( name = "architecture" )

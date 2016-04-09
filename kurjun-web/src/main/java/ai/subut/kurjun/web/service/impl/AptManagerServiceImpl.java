@@ -225,7 +225,7 @@ public class AptManagerServiceImpl implements AptManagerService
 
 
     @Override
-    public Renderable getPackage( UserSession userSession,String repository, final String md5 )
+    public Renderable getPackage( UserSession userSession, String repository, final String md5 )
     {
         ArtifactId id = repositoryManager.constructArtifactId( repository, ObjectType.AptRepo.getId(), md5 );
 
@@ -372,16 +372,16 @@ public class AptManagerServiceImpl implements AptManagerService
         try
         {
             ArtifactId artId = repositoryManager.constructArtifactId( repository, ObjectType.AptRepo.getId(), md5 );
-
-            String uniqId = repository + "." + md5;
+            String uniqId = artId.getUniqueId();
 
             if ( checkRepoPermissions( userSession, repository, uniqId, Permission.Delete ) )
             {
-                // remove relation
-                relationManager.removeRelationsByTrustObject( uniqId, ObjectType.Artifact.getId() );
-
-                //return localRepository.delete( md5 );
-                return localRepository.delete( artId );
+                if(localRepository.delete( artId ))
+                {
+                    // remove relation
+                    relationManager.removeRelationsByTrustObject( uniqId, ObjectType.Artifact.getId() );
+                    return true;
+                }
             }
         }
         catch ( IOException ex )

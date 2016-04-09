@@ -56,19 +56,12 @@ public class RestAliquaController extends BaseController
     }
 
 
-    public Result getFile( Context context, @Param( "id" ) String id )
+    public Result getFile( Context context, @Param( "repository" ) String repo, @Param( "md5" ) String md5 )
     {
-        checkNotNull( id, "ID cannot be null" );
+        checkNotNull( md5, "ID cannot be null" );
 
+        Renderable renderable = rawManagerService.getFile( repo, md5 );
 
-        String[] temp = id.split( "\\." );
-
-        Renderable renderable = null;
-        //temp contains [fprint].[md5]
-        if ( temp.length == 2 )
-        {
-            renderable = rawManagerService.getFile( temp[0], temp[1] );
-        }
         if ( renderable != null )
         {
             return Results.ok().render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
@@ -77,26 +70,16 @@ public class RestAliquaController extends BaseController
     }
 
 
-    public Result delete( Context context, @Param("repository") String repo, @Param( "md5" ) String md5,
-                          @Param( "global_kurjun_sptoken" ) String globalKurjunToken )
+    public Result delete( Context context, @Param( "repository" ) String repo, @Param( "md5" ) String md5 )
     {
-        //checkNotNull( id, "ID cannot be null" );
-        String sptoken = "";
-
-        if ( globalKurjunToken != null )
-        {
-            sptoken = globalKurjunToken;
-        }
-        boolean success = false;
-
         //********************************************
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-        success = rawManagerService.delete( uSession, repo, md5 );
+        boolean success = rawManagerService.delete( uSession, repo, md5 );
         //********************************************
 
         if ( success )
         {
-            return Results.ok().render( repo+"."+md5 + " deleted" ).text();
+            return Results.ok().render( repo + "." + md5 + " deleted" ).text();
         }
 
         return Results.notFound().render( "Not found" ).text();
@@ -109,20 +92,20 @@ public class RestAliquaController extends BaseController
     }
 
 
-    public Result list( Context context , @Param( "repository" ) String repository, @Param( "node" ) String node )
+    public Result list( Context context, @Param( "repository" ) String repository, @Param( "node" ) String node )
     {
         node = StringUtils.isBlank( node ) ? "local" : node;
         repository = StringUtils.isBlank( repository ) ? RawManagerServiceImpl.DEFAULT_RAW_REPO_NAME : repository;
 
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-        return Results.ok().render( rawManagerService.list(uSession, repository, node ) ).json();
+        return Results.ok().render( rawManagerService.list( uSession, repository, node ) ).json();
     }
 
 
-
-    public Result info( @Param( "repository" ) String repository, @Param( "md5" ) String md5, @Param( "node" ) String node )
+    public Result info( @Param( "repository" ) String repository, @Param( "md5" ) String md5,
+                        @Param( "name" ) String name, @Param( "node" ) String node )
     {
-        Metadata metadata = rawManagerService.getInfo( repository , md5 , node );
+        Metadata metadata = rawManagerService.getInfo( repository, md5, name, node );
 
         if ( metadata != null )
         {
@@ -130,5 +113,4 @@ public class RestAliquaController extends BaseController
         }
         return Results.notFound().render( "Not found" ).text();
     }
-
 }

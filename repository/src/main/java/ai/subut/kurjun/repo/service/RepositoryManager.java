@@ -3,7 +3,6 @@ package ai.subut.kurjun.repo.service;
 
 import java.util.List;
 
-import ai.subut.kurjun.core.dao.model.metadata.RepositoryArtifactId;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.RepositoryData;
 import ai.subut.kurjun.model.metadata.apt.AptData;
@@ -46,11 +45,12 @@ public interface RepositoryManager
 
 
     //*************************************************
-    void removeArtifact( int repoType, Object artifact );
+    boolean removeArtifact( int repoType, Object artifact );
 
 
     //*************************************************
-    void removeArtifact( ArtifactId id );
+    boolean removeArtifact( ArtifactId id );
+
 
     //*************************************************
     Object getArtifact( int repoType, ArtifactId id );

@@ -38,7 +38,7 @@ public class AptDAO extends GenericDAOImpl<AptData>
 
 
 
-    @Transactional
+    //***********************************************
     public AptData find( ArtifactId id ) throws DAOException
     {
         try
@@ -54,17 +54,15 @@ public class AptDAO extends GenericDAOImpl<AptData>
     }
 
 
+
     //***********************************************
-    @Transactional
-    public List<AptData> findByRepository( String repoContext, int repoType ) throws DAOException
+    public List<AptData> findByRepository( String repoContext) throws DAOException
     {
         try
         {
-            Query qr = getEntityManager().createQuery(
-                    " select e from AptDataEntity e where e.id.context=:repoContext and e.id.type=:repoType",
+            Query qr = getEntityManager().createQuery(" select e from AptDataEntity e where e.id.context=:repoContext ",
                     AptDataEntity.class );
             qr.setParameter( "repoContext" ,repoContext );
-            qr.setParameter( "repoType" ,repoType );
 
             List<AptData>  items = qr.getResultList();
 
@@ -80,14 +78,12 @@ public class AptDAO extends GenericDAOImpl<AptData>
 
     }
 
-
     //***********************************************
-    @Transactional
     public AptData findByDetails( ArtifactId id ) throws DAOException
     {
         try
         {
-            String querySTR = "select e from AptDataEntity e where e.id.type=:repoType ";
+            String querySTR = "select e from AptDataEntity e where (e.id.md5Sum is not null) ";
 
             if( !Strings.isNullOrEmpty(id.getContext()))
                 querySTR += " and e.id.context=:repoContext ";
@@ -98,9 +94,8 @@ public class AptDAO extends GenericDAOImpl<AptData>
             if( !Strings.isNullOrEmpty(id.getVersion() ))
                 querySTR += " and e.version=:version ";
 
+            querySTR += " order by e.version ";
             Query qr = getEntityManager().createQuery(querySTR,AptDataEntity.class );
-
-            qr.setParameter( "repoType" ,id.getType());
 
             if( !Strings.isNullOrEmpty(id.getContext()))
                 qr.setParameter( "repoContext" ,id.getContext() );

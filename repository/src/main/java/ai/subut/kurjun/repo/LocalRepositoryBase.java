@@ -146,6 +146,7 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
     @Override
     public boolean delete( ArtifactId id ) throws IOException
     {
+
         RepositoryData repoData = getRepositoryData( id.getContext(), id.getType(), "" );
 
         FileStore fileStore = getFileStore();
@@ -154,9 +155,10 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
 
         if ( artifact != null )
         {
-            fileStore.remove( id.getMd5Sum() , ((SerializableMetadata) artifact).getFilePath() );  // TODO
-            repositoryManager.removeArtifact( id );
-            return true;
+            if(fileStore.remove( id.getMd5Sum() , ((SerializableMetadata) artifact).getFilePath() ))
+            {
+                return repositoryManager.removeArtifact( id );
+            }
         }
 
         return false;

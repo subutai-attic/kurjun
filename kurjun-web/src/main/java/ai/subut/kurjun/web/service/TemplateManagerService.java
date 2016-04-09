@@ -50,10 +50,11 @@ public interface TemplateManagerService extends BaseService
     Renderable renderableTemplate(UserSession userSession, String repository, String md5, boolean isKurjunClient ) throws IOException;
 
 
+
+    TemplateData getTemplate( UserSession userSession, String repository, String md5, String name, String version,
+                              String node );
+
     String md5();
-
-
-    TemplateData getTemplate(UserSession userSession, String repository, String md5, String name, String version );
 
 
     List<String> getRepoList();

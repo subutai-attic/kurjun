@@ -79,7 +79,7 @@ class FileSystemFileStore implements FileStore
     @Override
     public boolean contains( final String md5 ) throws IOException
     {
-        return false;
+        return true;
     }
 
 

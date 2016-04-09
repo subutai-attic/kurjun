@@ -22,12 +22,15 @@ public interface RepositoryDataService
     List<RepositoryData> getRepositoryList( int repoType );
 
 
+    //***************************
     RepositoryData getRepositoryData( String context, int type );
 
 
+    //***************************
     RepositoryData mergeRepositoryData( RepositoryData repoData );
 
 
+    //***************************
     void persistRepositoryData( RepositoryData repoData );
 
 
@@ -40,11 +43,12 @@ public interface RepositoryDataService
 
 
     //***************************
-    void removeArtifact( int repoType, Object artifact );
+    boolean removeArtifact( int repoType, Object artifact );
 
 
     //***************************
-    void removeArtifact( ArtifactId id );
+    boolean removeArtifact( ArtifactId id );
+
 
     //***************************
     Object getArtifact( int repoType, ArtifactId id );

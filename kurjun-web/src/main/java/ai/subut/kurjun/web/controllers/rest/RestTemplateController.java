@@ -7,8 +7,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.commons.lang3.StringUtils;
-
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -68,19 +67,19 @@ public class RestTemplateController extends BaseController
         String id = templateManagerService.upload( uSession, repository, fileItem.getInputStream() );
         //*****************************************************
 
-        String[] temp = id.split( "\\." );
-        //temp contains [fprint].[md5]
-        if ( temp.length == 2 )
+        if ( !Strings.isNullOrEmpty( id ) )
         {
             return Results.ok().render( id ).text();
         }
-
-        return Results.internalServerError().render( "Server error" ).text();
+        else
+        {
+            return Results.internalServerError().render( "Server error" ).text();
+        }
     }
 
 
-    public Result info( Context context, @Param( "repository" ) String repository, @Param( "version" ) String version,
-                        @Param( "md5" ) String md5, @Param( "search" ) String search )
+    public Result info( Context context, @Param( "repository" ) String repository, @Param( "name" ) String name,
+                        @Param( "version" ) String version, @Param( "md5" ) String md5, @Param( "node" ) String node )
 
     {
         TemplateData templateData = null;
@@ -89,10 +88,7 @@ public class RestTemplateController extends BaseController
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
         //*****************************************************
 
-        if ( md5 != null )
-        {
-            templateData = templateManagerService.getTemplate( uSession, repository, md5, version, search );
-        }
+        templateData = templateManagerService.getTemplate( uSession, repository, md5, name, version, node );
 
         if ( templateData == null )
         {
@@ -104,19 +100,14 @@ public class RestTemplateController extends BaseController
     }
 
 
-    public Result download( Context context, @Param( "id" ) String templateId ) throws InternalServerErrorException
+    public Result download( Context context, @Param( "repository" ) String repository, @Param( "md5" ) String md5 )
     {
-        checkNotNull( templateId, "Template ID cannot be null" );
-
-        TemplateId tid = IdValidators.Template.validate( templateId );
-
         Renderable renderable = null;
         try
         {
             //*****************************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            renderable =
-                    templateManagerService.renderableTemplate( uSession, tid.getOwnerFprint(), tid.getMd5(), false );
+            renderable = templateManagerService.renderableTemplate( uSession, repository, md5, false );
             //*****************************************************
         }
         catch ( IOException e )
@@ -130,11 +121,9 @@ public class RestTemplateController extends BaseController
     }
 
 
-    public Result delete( Context context, @Param( "repository" ) String templateId, @Param( "md5" ) String md5 )
+    public Result delete( Context context, @Param( "repository" ) String repository, @Param( "md5" ) String md5 )
     {
-        checkNotNull( templateId, "Template ID cannot be null" );
-
-        TemplateId tid = IdValidators.Template.validate( templateId );
+        checkNotNull( md5, "md5 cannot be null" );
 
         Integer result;
 
@@ -142,7 +131,7 @@ public class RestTemplateController extends BaseController
         {
             //*****************************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            result = templateManagerService.delete( uSession, templateId, md5 );
+            result = templateManagerService.delete( uSession, repository, md5 );
             //*****************************************************
         }
         catch ( IOException e )
@@ -165,7 +154,7 @@ public class RestTemplateController extends BaseController
     }
 
 
-    public Result list( Context context, @Param( "repository" ) String repo, @Param( "search" ) String node )
+    public Result list( Context context, @Param( "repository" ) String repo, @Param( "node" ) String node )
     {
         try
         {

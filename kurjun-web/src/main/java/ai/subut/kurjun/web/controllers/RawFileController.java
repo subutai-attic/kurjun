@@ -20,12 +20,9 @@ import ninja.Renderable;
 import ninja.Result;
 import ninja.Results;
 import ninja.params.Param;
-import ninja.params.PathParam;
 import ninja.session.FlashScope;
 import ninja.uploads.FileItem;
 import ninja.uploads.FileProvider;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 
 @Singleton
@@ -87,11 +84,7 @@ public class RawFileController extends BaseController
 
     public Result download( @Param("repository") String repo, @Param( "md5" ) String md5 )
     {
-        //checkNotNull( id, "ID cannot be null" );
-
-
         Renderable renderable = null;
-        //temp contains [fprint].[md5]
         renderable = rawManagerService.getFile( repo, md5 );
 
         if ( renderable != null )
@@ -104,8 +97,6 @@ public class RawFileController extends BaseController
 
     public Result delete( Context context, @Param("repository") String repo, @Param( "md5" ) String md5, FlashScope flashScope )
     {
-        //checkNotNull( id, "ID cannot be null" );
-
         boolean success = false;
 
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
@@ -129,9 +120,10 @@ public class RawFileController extends BaseController
 
 
     public Result info( @Param( "repository" ) String repository, @Param( "md5" ) String md5,
-                        @Param( "search" ) String search )
+                        @Param( "node" ) String node,
+                        @Param( "name" ) String name)
     {
-        Metadata metadata = rawManagerService.getInfo( repository, md5, search );
+        Metadata metadata = rawManagerService.getInfo( repository, md5, name, node);
 
         if ( metadata != null )
         {
