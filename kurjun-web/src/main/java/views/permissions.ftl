@@ -42,7 +42,8 @@
                      ${(r.perms?contains("Delete"))?then("D"," ")}
                     </td>
                     <td><a href="${contextPath}/permissions/${r.id}/change" class="js-colorbox">change</a>
-                        | <a href="#" onclick="removeRelation('${r.id}')">remove</a></td>
+                        | <a href="#" onclick="removeRelation('${r.id}')">remove</a>
+                    </td>
                 </tr>
                 </#list>
             </#if>

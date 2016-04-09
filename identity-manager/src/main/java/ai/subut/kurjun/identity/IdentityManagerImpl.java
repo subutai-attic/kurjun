@@ -198,7 +198,7 @@ public class IdentityManagerImpl implements IdentityManager
                 //identityDataService.mergeUser(  user );
 
                 //*****************************************
-                LOGGER.info( " ******* Successfully authenticated user:" ,user.getKeyFingerprint() );
+                LOGGER.info( " ******* Successfully authenticated user: {}", user.getKeyFingerprint() );
                 //*****************************************
 
 
