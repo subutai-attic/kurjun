@@ -16,7 +16,8 @@
                 </div>
             </div>
             <div style="display: none;">
-                <input type="radio" name="trust_obj_type" id="js-trust-obj-type" value="3" checked />
+                <input type="text" name="trust_obj_type" id="js-trust-obj-type" value="3" />
+                <br/>
                 <input type="text" name="trust_obj_id" id="js-trust-obj-id" />
             </div>
             <div>
@@ -40,21 +41,11 @@
 <script type="text/javascript">
     function openSharePopup(type, context, md5) {
         $('#js-trust-obj-type').val(type);
-        $('#js-trust-obj-id').val(context+"."+md5);
+        if (md5 != null && md5.length > 0)
+            $('#js-trust-obj-id').val(context+"."+md5);
+        else
+            $('#js-trust-obj-id').val(context);
     }
-
-    $(document).ready(function(){
-        $('input[name=trust_obj_type][type=radio]').change(function(e){
-            if (e.target.value=="3") {
-                $('#trust_obj_template').show();
-                $('#trust_obj_repo').hide();
-            }
-            else {
-                $('#trust_obj_template').hide();
-                $('#trust_obj_repo').show();
-            }
-        });
-    });
 </script>
 
 </div>
