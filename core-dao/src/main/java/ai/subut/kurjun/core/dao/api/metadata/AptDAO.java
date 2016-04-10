@@ -78,6 +78,7 @@ public class AptDAO extends GenericDAOImpl<AptData>
 
     }
 
+
     //***********************************************
     public AptData findByDetails( ArtifactId id ) throws DAOException
     {

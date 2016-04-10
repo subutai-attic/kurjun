@@ -3,6 +3,7 @@ package ai.subut.kurjun.core.dao;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.inject.Guice;
@@ -18,6 +19,7 @@ import ai.subut.kurjun.model.identity.User;
 /**
  *
  */
+@Ignore
 public class GenericDAOTest
 {
     @Inject

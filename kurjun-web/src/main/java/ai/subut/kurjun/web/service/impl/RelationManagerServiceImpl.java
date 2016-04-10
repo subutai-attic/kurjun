@@ -15,6 +15,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.identity.service.RelationManager;
+import ai.subut.kurjun.model.identity.ObjectType;
 import ai.subut.kurjun.model.identity.Permission;
 import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.model.identity.RelationObject;
@@ -74,27 +75,25 @@ public class RelationManagerServiceImpl implements RelationManagerService
 
     //*************************************
     @Override
-    public int removeRelation( UserSession uSession, long relationId)
+    public int removeRelation( UserSession uSession, long relationId )
     {
         Relation relation = relationManager.getRelation( relationId );
 
         if ( relation != null )
         {
-            // ---------- Check permissions ---------------
-            Relation owner = relationManager.getObjectOwner( relation.getTrustObject().getObjectId(), relation.getTrustObject().getType() );
-
-            if(owner != null)
+            if(!uSession.getUser().getKeyFingerprint().equals( relation.getSource().getObjectId() ))
             {
-                String ownerId = owner.getSource().getObjectId();
-
-                if(!uSession.getUser().getKeyFingerprint().equals( ownerId ))
-                {
-                    return ErrorCode.AccessPermissionError.getId();
-                }
+                return ErrorCode.AccessPermissionError.getId();
             }
 
-            relationManager.removeRelation( relationId );
+            if(relation.getSource().getObjectId().equals( relation.getTarget().getObjectId())
+                    && relation.getSource().getType() == relation.getTarget().getType())
+            {
+                return ErrorCode.AccessPermissionError.getId();
+            }
 
+
+            relationManager.removeRelation( relationId );
             return ErrorCode.Success.getId();
         }
         else
@@ -122,7 +121,13 @@ public class RelationManagerServiceImpl implements RelationManagerService
                     return ErrorCode.AccessPermissionError.getId();
                 }
             }
+            else
+            {
+                return ErrorCode.AccessPermissionError.getId();
+            }
             // ------------------------------------------
+
+            targetObjType = ObjectType.User.getId();
 
             RelationObject targetObj = relationManager.createRelationObject( targeObjId ,targetObjType  ) ;
             RelationObject trustObj  = relationManager.createRelationObject( trustObjId ,trustObjType  ) ;
@@ -165,10 +170,6 @@ public class RelationManagerServiceImpl implements RelationManagerService
                 {
                     permissionSet.add( Permission.valueOf( s ) );
                 }
-
-//                LOGGER.info( "------------ user {} sets following permissions to object {}  -------------------",
-//                        owner.getKeyFingerprint(), relation.getTrustObject().getObjectId() );
-//                permissionSet.forEach( p -> LOGGER.info( p.getName() ) );
 
                 relation.setPermissions( permissionSet );
                 relationManager.saveRelation( relation );

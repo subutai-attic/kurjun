@@ -17,6 +17,7 @@ import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -49,6 +50,7 @@ import ai.subut.kurjun.repo.service.PackageFilenameBuilder;
 import ai.subut.kurjun.repo.service.PackagesIndexBuilder;
 
 
+@Ignore
 @RunWith( MockitoJUnitRunner.class )
 public class PackagesIndexBuilderImplTest
 {

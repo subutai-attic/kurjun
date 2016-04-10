@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -12,7 +13,7 @@ import org.junit.rules.TemporaryFolder;
 import ai.subut.kurjun.model.repository.Repository;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
 
-
+@Ignore
 public class RepositoryHelpersTest
 {
 

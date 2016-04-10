@@ -97,7 +97,7 @@ public class RestRelationController extends BaseController
         return Results.ok().json().render( rels );
     }
 
-    public Result delete( @PathParam( "id" ) String id, Context context )
+    public Result delete( @Param( "id" ) String id, Context context )
     {
         try
         {
