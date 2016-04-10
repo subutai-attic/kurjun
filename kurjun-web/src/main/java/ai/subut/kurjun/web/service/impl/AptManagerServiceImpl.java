@@ -225,7 +225,7 @@ public class AptManagerServiceImpl implements AptManagerService
 
 
     @Override
-    public Renderable getPackage( UserSession userSession,String repository, final String md5 )
+    public Renderable getPackage( UserSession userSession, String repository, final String md5 )
     {
         ArtifactId id = repositoryManager.constructArtifactId( repository, ObjectType.AptRepo.getId(), md5 );
 
@@ -321,12 +321,12 @@ public class AptManagerServiceImpl implements AptManagerService
             //get local list
             case "local":
                 //add local public artifacts
-                results = localRepository.listPackages();
+                results = localRepository.listPackages(repository , ObjectType.AptRepo.getId());
                 break;
 
             default: // "all"
                 //get unified repo list
-                results = unifiedRepository.listPackages();
+                results = unifiedRepository.listPackages(repository , ObjectType.AptRepo.getId());
                 break;
         }
         //public user, return results
@@ -336,23 +336,33 @@ public class AptManagerServiceImpl implements AptManagerService
         }
 
 
-        //get personal repository list
-        LocalRepository localUserRepo =
-                repositoryFactory.createLocalApt( new KurjunContext( userSession.getUser().getUserName() ) );
-
-        //user trying to get other repository that was shared with him
-        //TODO:put security check here if user has permission for this repo
-        if ( !repository.equalsIgnoreCase( userSession.getUser().getUserName() ) )
+        if(results != null)
         {
-            //create repo instance based on repository name
-            LocalRepository privateSharedRepository =
-                    repositoryFactory.createLocalApt( new KurjunContext( repository ) );
+            //get personal repository list
+            LocalRepository localUserRepo =
+                    repositoryFactory.createLocalApt( new KurjunContext( userSession.getUser().getUserName() ) );
 
-            //TODO:object level security check required?
-            results.addAll( privateSharedRepository.listPackages() );
+            //user trying to get other repository that was shared with him
+            //TODO:put security check here if user has permission for this repo
+            if ( !repository.equalsIgnoreCase( userSession.getUser().getUserName() ) )
+            {
+                //create repo instance based on repository name
+                LocalRepository privateSharedRepository =
+                        repositoryFactory.createLocalApt( new KurjunContext( repository ) );
+
+                //TODO:object level security check required?
+                if ( privateSharedRepository.listPackages().size() > 0 )
+                {
+                    results.addAll( privateSharedRepository.listPackages() );
+                }
+            }
+
+            results.addAll( localUserRepo.listPackages() );
         }
-
-        results.addAll( localUserRepo.listPackages() );
+        else
+        {
+            results = new ArrayList<>();
+        }
 
         return results;
 
@@ -372,16 +382,16 @@ public class AptManagerServiceImpl implements AptManagerService
         try
         {
             ArtifactId artId = repositoryManager.constructArtifactId( repository, ObjectType.AptRepo.getId(), md5 );
-
-            String uniqId = repository + "." + md5;
+            String uniqId = artId.getUniqueId();
 
             if ( checkRepoPermissions( userSession, repository, uniqId, Permission.Delete ) )
             {
-                // remove relation
-                relationManager.removeRelationsByTrustObject( uniqId, ObjectType.Artifact.getId() );
-
-                //return localRepository.delete( md5 );
-                return localRepository.delete( artId );
+                if(localRepository.delete( artId ))
+                {
+                    // remove relation
+                    relationManager.removeRelationsByTrustObject( uniqId, ObjectType.Artifact.getId() );
+                    return true;
+                }
             }
         }
         catch ( IOException ex )

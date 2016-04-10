@@ -15,6 +15,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.identity.service.RelationManager;
+import ai.subut.kurjun.model.identity.ObjectType;
 import ai.subut.kurjun.model.identity.Permission;
 import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.model.identity.RelationObject;
@@ -74,22 +75,30 @@ public class RelationManagerServiceImpl implements RelationManagerService
 
     //*************************************
     @Override
-    public void removeRelation( UserSession uSession, Relation relation )
+    public int removeRelation( UserSession uSession, long relationId )
     {
-        User user = uSession.getUser();
+        Relation relation = relationManager.getRelation( relationId );
 
-        if ( user != null && relation != null )
+        if ( relation != null )
         {
-            RelationObject object = relation.getTrustObject();
-            Set<Permission> permissoins = relationManager.getUserPermissions( user, object.getObjectId(), object.getType() );
-            if ( permissoins.contains( Permission.Delete ) && !user.equals( identityManagerService.getPublicUser() ))
+            if(!uSession.getUser().getKeyFingerprint().equals( relation.getSource().getObjectId() ))
             {
-                relationManager.removeRelation( relation.getId() );
+                return ErrorCode.AccessPermissionError.getId();
             }
-            else
+
+            if(relation.getSource().getObjectId().equals( relation.getTarget().getObjectId())
+                    && relation.getSource().getType() == relation.getTarget().getType())
             {
-                throw new IllegalAccessError( "Access denied" );
+                return ErrorCode.AccessPermissionError.getId();
             }
+
+
+            relationManager.removeRelation( relationId );
+            return ErrorCode.Success.getId();
+        }
+        else
+        {
+            return ErrorCode.AccessPermissionError.getId();
         }
     }
 
@@ -101,9 +110,27 @@ public class RelationManagerServiceImpl implements RelationManagerService
     {
         if ( !uSession.getUser().equals( identityManagerService.getPublicUser() ) )
         {
+            // ---------- Check permissions ---------------
+            Relation owner = relationManager.getObjectOwner( trustObjId , trustObjType );
+            if(owner != null)
+            {
+                String ownerId = owner.getSource().getObjectId();
+
+                if(!uSession.getUser().getKeyFingerprint().equals( ownerId ))
+                {
+                    return ErrorCode.AccessPermissionError.getId();
+                }
+            }
+            else
+            {
+                return ErrorCode.AccessPermissionError.getId();
+            }
+            // ------------------------------------------
+
+            targetObjType = ObjectType.User.getId();
+
             RelationObject targetObj = relationManager.createRelationObject( targeObjId ,targetObjType  ) ;
             RelationObject trustObj  = relationManager.createRelationObject( trustObjId ,trustObjType  ) ;
-
 
             Relation rel = relationManager.buildTrustRelation( uSession.getUser(), targetObj, trustObj, permissions );
 
@@ -118,7 +145,7 @@ public class RelationManagerServiceImpl implements RelationManagerService
         }
         else
         {
-            return 2; //Permission Denied
+            return ErrorCode.AccessPermissionError.getId();
         }
     }
 
@@ -143,10 +170,6 @@ public class RelationManagerServiceImpl implements RelationManagerService
                 {
                     permissionSet.add( Permission.valueOf( s ) );
                 }
-
-//                LOGGER.info( "------------ user {} sets following permissions to object {}  -------------------",
-//                        owner.getKeyFingerprint(), relation.getTrustObject().getObjectId() );
-//                permissionSet.forEach( p -> LOGGER.info( p.getName() ) );
 
                 relation.setPermissions( permissionSet );
                 relationManager.saveRelation( relation );

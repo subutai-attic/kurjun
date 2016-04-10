@@ -25,36 +25,44 @@ public class UserDAO extends GenericDAOImpl<User>
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( UserDAO.class );
 
+
     public UserDAO()
     {
         super();
     }
 
-    public UserDAO(EntityManagerFactory emf)
+
+    public UserDAO( EntityManagerFactory emf )
     {
-        super(emf);
+        super( emf );
     }
 
-    @Transactional
-    public User find(String fingerprint) throws DAOException
+
+    public User find( String fingerprint ) throws DAOException
     {
         try
         {
-            EntityManager em = getEntityManager();
-            return em.find( UserEntity.class, fingerprint );
+            Query q = getEntityManager()
+                    .createQuery( " select u from UserEntity u where u.keyFingerprint = :fprint ", UserEntity.class );
+            q.setParameter( "fprint", fingerprint );
+            List<User> users = q.getResultList();
+
+            return users.size() > 0 ? users.get( 0 ) : null;
         }
         catch ( Exception e )
         {
-            LOGGER.error( "****** Error in UserDAO find :"+ e, e );
+            LOGGER.error( "\"******************  Error in UserDAO.findByUserFingerprint", e );
             throw new DAOException( e );
         }
     }
 
-    @Transactional
-    public User findByUsername(String username) throws DAOException
+
+    public User findByUsername( String username ) throws DAOException
     {
         try
-        {   Query q = getEntityManager().createQuery(" select u from UserEntity u where u.userName = :uname ", UserEntity.class);
+        {
+            Query q = getEntityManager()
+                    .createQuery( " select u from UserEntity u where u.userName = :uname ", UserEntity.class );
             q.setParameter( "uname", username );
             List<User> users = q.getResultList();
 
@@ -66,5 +74,4 @@ public class UserDAO extends GenericDAOImpl<User>
             throw new DAOException( e );
         }
     }
-
 }

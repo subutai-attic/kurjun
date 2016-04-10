@@ -39,7 +39,7 @@ public class RepositoryDAO  extends GenericDAOImpl<RepositoryData>
     }
 
 
-    @Transactional
+    //***********************************************
     public RepositoryData find( RepositoryDataId id ) throws DAOException
     {
         try
@@ -56,7 +56,6 @@ public class RepositoryDAO  extends GenericDAOImpl<RepositoryData>
 
 
     //***********************************************
-    @Transactional
     public List<RepositoryData> findByRepository( int repoType ) throws DAOException
     {
         try

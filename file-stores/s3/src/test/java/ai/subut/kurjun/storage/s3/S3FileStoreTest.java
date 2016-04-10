@@ -19,6 +19,7 @@ import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -31,7 +32,7 @@ import com.amazonaws.auth.PropertiesCredentials;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 
-
+@Ignore
 public class S3FileStoreTest
 {
     @Rule
@@ -98,6 +99,7 @@ public class S3FileStoreTest
     }
 
 
+    @Ignore
     @Test
     public void testContains() throws Exception
     {
@@ -109,6 +111,7 @@ public class S3FileStoreTest
     }
 
 
+    @Ignore
     @Test
     public void testGet() throws Exception
     {
@@ -120,6 +123,7 @@ public class S3FileStoreTest
     }
 
 
+    @Ignore
     @Test
     public void testGetWithInvalidKey() throws IOException, NoSuchAlgorithmException
     {
@@ -129,6 +133,7 @@ public class S3FileStoreTest
     }
 
 
+    @Ignore
     @Test
     public void testGetWithTarget() throws Exception
     {

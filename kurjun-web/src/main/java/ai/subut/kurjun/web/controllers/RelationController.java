@@ -2,6 +2,7 @@ package ai.subut.kurjun.web.controllers;
 
 
 import ai.subut.kurjun.model.identity.*;
+import ai.subut.kurjun.model.metadata.RepositoryData;
 import ai.subut.kurjun.web.security.AuthorizedUser;
 import ai.subut.kurjun.web.service.RelationManagerService;
 
@@ -70,7 +71,7 @@ public class RelationController extends BaseController
     //*************form *********************
     public Result getAddTrustRelationForm( @AuthorizedUser UserSession userSession )
     {
-        List<String> repos = repositoryService.getRepositoryContextList(ObjectType.All.getId());
+        List<RepositoryData> repos = repositoryService.getRepositoryList(ObjectType.All.getId());
 
         return Results.html().template( "views/_popup-add-trust-rel.ftl" ).render( "repos", repos );
     }
@@ -116,7 +117,6 @@ public class RelationController extends BaseController
                 .addTrustRelation( userSession, targetObjId, targetObjType, trustObjId, trustObjType,
                         objectPermissions );
 
-
         if ( result == 0 )
         {
             flashScope.success( "Trust relation added." );
@@ -134,25 +134,6 @@ public class RelationController extends BaseController
         return Results.redirect( context.getContextPath() + "/permissions" );
     }
 
-    //*************************************************
-    /*
-    public Result getRelationsByOwner( @AuthorizedUser UserSession userSession,
-                                       @Param( "fingerprint" ) String fingerprint )
-    {
-        return Results.html().metadata( "views/_popup-view-permissions.ftl" ).render( "relations",
-                relationManagerService.getTrustRelationsBySource(
-                        relationManagerService.toSourceObject( identityManagerService.getUser( fingerprint ) ) ) );
-    }*/
-
-    /*
-    public Result getRelationsByTarget( @AuthorizedUser UserSession userSession,
-                                        @Param( "fingerprint" ) String fingerprint )
-    {
-        return Results.html().metadata( "views/_popup-view-permissions.ftl" ).render( "relations",
-                relationManagerService
-                        .getTrustRelationsByTarget( relationManagerService.toTargetObject( fingerprint ) ) );
-    }*/
-
 
 
     public Result getRelationsByObject( @AuthorizedUser UserSession userSession, @Param( "id" ) String id,
@@ -164,72 +145,28 @@ public class RelationController extends BaseController
         return Results.html().template( "views/_popup-view-permissions.ftl" ).render( "relations", rels );
     }
 
-    /*
-    public Result addTrustRelation( @AuthorizedUser UserSession userSession,
-                                    @Param( "target_fprint" ) String targetFprint,
-                                    @Param( "trust_obj_type" ) int trustObjType,
-                                    @Param( "template_id" ) String templateId, @Param( "repo" ) String repo,
-                                    @Params( "permission" ) String[] permissions, Context context,
-                                    FlashScope flashScope )
-    {
-
-        if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
-        {
-            return Results.notFound();
-        }
-        else
-        {
-            //UserSession userSession = (UserSession ) context.getAttribute( "USER_SESSION" );
-            RelationObject owner = relationManagerService.toSourceObject( userSession.getUser() );
-            RelationObject target = relationManagerService.toTargetObject( targetFprint );
-            RelationObject trustObject = null;
-
-            if ( trustObjType == RelationObjectType.RepositoryContent.getId() )
-            {
-                trustObject = new DefaultRelationObject();
-                trustObject.setId( templateId );
-                trustObject.setType( RelationObjectType.RepositoryContent.getId() );
-            }
-            else
-            {
-                trustObject = new DefaultRelationObject();
-                trustObject.setId( repo );
-                trustObject.setType( RelationObjectType.RepositoryTemplate.getId() );
-            }
-            //trustObject = relationManagerService.toTrustObject( templateId, null, null, null );
-            Set<Permission> objectPermissions = new HashSet<>();
-            Arrays.asList( permissions ).forEach( p -> objectPermissions.add( Permission.valueOf( p ) ) );
-
-            Set<Permission> userPermissions = relationManagerService.checkUserPermissions( userSession,
-                    trustObject.getId(), trustObject.getType() );
-
-            if ( userPermissions.containsAll( objectPermissions ) )
-            {
-                Relation relation = relationManagerService.addTrustRelation( owner, target, trustObject,
-                objectPermissions );
-                if ( relation != null )
-                {
-                    flashScope.success( "Trust relation added." );
-                }
-            }
-            else {
-                flashScope.error( "Access denied. You don't have permissions to this object." );
-            }
-            
-            return Results.redirect( context.getContextPath() + "/permissions" );
-        }
-    }
-    */
 
 
     public Result delete( @AuthorizedUser UserSession userSession, @PathParam( "id" ) String id, Context context,
                           FlashScope flashScope )
     {
-        Relation relation  = relationManagerService.getRelation( userSession, Long.valueOf( id ) );
         try
         {
-            relationManagerService.removeRelation( userSession, relation );
-            flashScope.success( "Deleted successfully" );
+            long relationID = Long.parseLong( id );
+            int result = relationManagerService.removeRelation( userSession, relationID );
+
+            if ( result == 0 )
+            {
+                flashScope.success( "Deleted successfully" );
+            }
+            else if ( result == 1 )
+            {
+                flashScope.error( "Internal System error." );
+            }
+            else if ( result == 2 )
+            {
+                flashScope.error( "Access denied. You don't have permissions to this object." );
+            }
         }
         catch ( IllegalAccessError e )
         {

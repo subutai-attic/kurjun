@@ -30,4 +30,6 @@ public interface ArtifactId
     String getArtifactName();
 
     void setArtifactName( String artifactName );
+
+    String getUniqueId();
 }

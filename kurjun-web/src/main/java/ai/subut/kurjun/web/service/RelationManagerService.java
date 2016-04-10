@@ -16,17 +16,21 @@ public interface RelationManagerService extends BaseService {
     //*************************************
     List<Relation> getAllRelations( UserSession userSession );
 
+
     //*************************************
     Relation getRelation( UserSession uSession, long relationId );
 
+
     //*************************************
-    void removeRelation( UserSession uSession, Relation relation );
+    int removeRelation( UserSession uSession, long relationId );
+
 
     //*************************************
     int addTrustRelation( UserSession uSession, String targeObjId, int targetObjType, String trustObjId,
                           int trustObjType, Set<Permission> permissions );
 
     List<Relation> getRelationsByObject(String id, int objType );
+
 
     void changePermissions( UserSession userSession, long relationId, String[] permissions );
 

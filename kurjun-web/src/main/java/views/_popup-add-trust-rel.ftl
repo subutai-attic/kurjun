@@ -28,7 +28,7 @@
                         <select name="repo" id="repository">
                         <#if repos?? && repos?has_content >
                           <#list repos as repo>
-                            <option value="${repo}">${repo}</option>
+                            <option value="${repo.id.context}">${repo.id.context} - ${repo.id.getTypeName()}</option>
                           </#list>
                         </#if>
                         </select>

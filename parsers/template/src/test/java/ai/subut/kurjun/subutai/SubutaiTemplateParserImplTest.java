@@ -29,7 +29,6 @@ public class SubutaiTemplateParserImplTest
         }
 
         Assert.assertEquals( "hadoop", metadata.getName() );
-        Assert.assertEquals( "2.1.2", metadata.getVersion() );
         Assert.assertEquals( Architecture.AMD64, metadata.getArchitecture() );
         Assert.assertFalse( metadata.getExtra().isEmpty() );
     }

@@ -131,12 +131,12 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
             //get local list
             case "local":
                 //add local public artifacts
-                results = localPublicTemplateRepository.listPackages();
+                results = localPublicTemplateRepository.listPackages(repository , ObjectType.AptRepo.getId());
                 break;
 
             default: // "all"
                 //get unified repo list
-                results = unifiedTemplateRepository.listPackages();
+                results = unifiedTemplateRepository.listPackages(repository , ObjectType.AptRepo.getId());
                 break;
         }
         //public user, return results
@@ -149,20 +149,22 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         LocalRepository localUserRepo =
                 repositoryFactory.createLocalTemplate( new KurjunContext( userSession.getUser().getUserName() ) );
 
-        //user trying to get other repository that was shared with him
-        //TODO:put security check here if user has permission for this repo
-        if ( !repository.equalsIgnoreCase( userSession.getUser().getUserName() ) )
+        if( results != null )
         {
-            //create repo instance based on repository name
-            LocalRepository privateSharedRepository =
-                    repositoryFactory.createLocalTemplate( new KurjunContext( repository ) );
-            //TODO:object level security check required?
-            results.addAll( privateSharedRepository.listPackages() );
+
+            //user trying to get other repository that was shared with him
+            //TODO:put security check here if user has permission for this repo
+            if ( !repository.equalsIgnoreCase( userSession.getUser().getUserName() ) )
+            {
+                //create repo instance based on repository name
+                LocalRepository privateSharedRepository = repositoryFactory.createLocalTemplate( new KurjunContext( repository ) );
+                //TODO:object level security check required?
+                results.addAll( privateSharedRepository.listPackages() );
+            }
+
+
+            results.addAll( localUserRepo.listPackages() );
         }
-
-
-        results.addAll( localUserRepo.listPackages() );
-
 
         return results == null ? new ArrayList<>() : results;
     }
@@ -231,13 +233,13 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         {
             LocalTemplateRepository _repository = ( LocalTemplateRepository ) getRepo( repository );
 
-            // remove Relation
-            relationManager.removeRelationsByTrustObject( atifactId, ObjectType.Artifact.getId() );
 
             boolean success = _repository.delete( id );
 
             if ( success )
             {
+                // remove Relation
+                relationManager.removeRelationsByTrustObject( atifactId, ObjectType.Artifact.getId() );
                 return ErrorCode.Success.getId();
             }
 
@@ -337,12 +339,14 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
 
 
     @Override
-    public TemplateData getTemplate( UserSession userSession, String repository, final String md5, String version,
-                                     String search )
+    public TemplateData getTemplate( UserSession userSession, String repository, final String md5, String name,
+                                     String version, String node )
     {
         //************ CheckPermissions ************************************
 
         ArtifactId id = repositoryManager.constructArtifactId( repository, ObjectType.TemplateRepo.getId(), md5 );
+        id.setVersion( version );
+        id.setArtifactName( name );
 
         TemplateData templateData = ( TemplateData ) unifiedTemplateRepository.getPackageInfo( id );
 
@@ -352,9 +356,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
             //if not public, check for permissions
             if ( !templateData.getOwnerFprint().equals( "public" ) )
             {
-                allowed =
-                        checkRepoPermissions( userSession, templateData.getOwnerFprint(), ( templateData.getUniqId() ),
-                                Permission.Read );
+                allowed = checkRepoPermissions( userSession, templateData.getContext(), (templateData.getUniqId()), Permission.Read );
             }
 
             if ( allowed )
@@ -365,12 +367,6 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         return null;
     }
 
-
-    @Override
-    public String md5()
-    {
-        return getPublicRepository().md5();
-    }
 
 
     private String toId( final String md5, String repo )
@@ -384,11 +380,6 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         return repositoryFactory.createLocalTemplate( new KurjunContext( repo ) );
     }
 
-
-    private LocalRepository getPublicRepository()
-    {
-        return repositoryFactory.createLocalTemplate( new KurjunContext( "public" ) );
-    }
 
 
     private String makeTemplateName( SerializableMetadata metadata )

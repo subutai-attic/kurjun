@@ -34,6 +34,7 @@
             <thead>
             <tr>
                 <th>Name</th>
+                <th>Context</th>
                 <th>Size</th>
                 <th>Actions</th>
             </tr>
@@ -43,6 +44,7 @@
             <#list files as f >
             <tr>
                 <td><#--a href="${contextPath}/raw-files/info" class="js-colorbox"></a-->${f.name}</td>
+                <td>${f.id.context}</td>
                 <td>${f.size}</td>
                 <td><a href="${contextPath}/raw-files/download?repository=${f.id.context}&md5=${f.id.md5Sum}" target="_blank">download</a>
                     |  <a href="${contextPath}/permissions/by-object?id=${f.id.context+"."+f.id.md5Sum}&obj_type=3" class="js-colorbox">permissions</a>

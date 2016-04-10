@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -21,7 +22,7 @@ import org.junit.rules.TemporaryFolder;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 
-
+@Ignore
 public class FileSystemFileStoreTest
 {
     @Rule

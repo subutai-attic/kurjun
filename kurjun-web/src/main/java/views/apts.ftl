@@ -34,6 +34,7 @@
             <thead>
             <tr>
                 <th>Name</th>
+                <th>Context</th>
                 <th>Arch</th>
                 <th>Version</th>
                 <th>Actions</th>
@@ -43,7 +44,8 @@
             <#if apts?? && apts?has_content >
             <#list apts as a >
             <tr>
-                <td><#--a href="${contextPath}/apt/${a.id}/info" class="js-colorbox"></a-->${a.name}</td>
+                <td>${a.name}</td>
+                <td>${a.id.context}</td>
                 <td>${a.architecture}</td>
                 <td>${a.version}</td>
                 <td><a href="${contextPath}/apt/download?repository=${a.id.context}&md5=${a.id.md5Sum}" target="_blank">download</a>

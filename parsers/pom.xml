@@ -16,7 +16,6 @@
   <modules>
     <module>release</module>
     <module>control</module>
-    <module>contents</module>
     <module>packages</module>
     <module>template</module>
     <module>snap</module>

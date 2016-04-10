@@ -106,16 +106,16 @@ public class RepositoryManagerImpl implements RepositoryManager
 
     //*************************************************
     @Override
-    public void removeArtifact( int repoType, Object artifact )
+    public boolean removeArtifact( int repoType, Object artifact )
     {
-        repositoryDataService.removeArtifact( repoType, artifact );
+        return repositoryDataService.removeArtifact( repoType, artifact );
     }
 
     //*************************************************
     @Override
-    public void removeArtifact( ArtifactId id )
+    public boolean removeArtifact( ArtifactId id )
     {
-        repositoryDataService.removeArtifact( id);
+        return repositoryDataService.removeArtifact( id);
     }
 
 

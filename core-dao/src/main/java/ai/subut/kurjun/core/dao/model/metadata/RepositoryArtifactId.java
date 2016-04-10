@@ -23,7 +23,7 @@ public class RepositoryArtifactId implements ArtifactId,Serializable
     @Column (name = "context")
     private String context;
 
-    @Column (name = "type")
+    @Transient
     private int type;
 
     @Transient
@@ -134,12 +134,11 @@ public class RepositoryArtifactId implements ArtifactId,Serializable
     }
 
 
-    private String getUniqId()
+    @Override
+    public String getUniqueId()
     {
-        return  context +"." + md5Sum + "." + type;
+        return  context + "." + md5Sum;
     }
-
-
 
 
 
@@ -150,7 +149,6 @@ public class RepositoryArtifactId implements ArtifactId,Serializable
         int result = 1;
         result = prime * result + ( ( md5Sum == null ) ? 0 : md5Sum.hashCode() );
         result = prime * result + ( ( context == null ) ? 0 : context.hashCode() );
-        result = prime * result + type;
 
         return result;
     }
@@ -169,7 +167,7 @@ public class RepositoryArtifactId implements ArtifactId,Serializable
         RepositoryArtifactId other = ( RepositoryArtifactId ) obj;
 
 
-        if ( !getUniqId().equals( other.getUniqId() ) )
+        if ( !getUniqueId().equals( other.getUniqueId() ) )
         {
             return false;
         }

@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.persistence.EntityManagerFactory;
 
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -189,7 +190,7 @@ public class RepositoryDataServiceImpl implements RepositoryDataService
 
     //***************************
     @Override
-    public void removeArtifact( int repoType, Object artifact )
+    public boolean removeArtifact( int repoType, Object artifact )
     {
         try
         {
@@ -205,19 +206,31 @@ public class RepositoryDataServiceImpl implements RepositoryDataService
             {
                 aptDAO.remove( ( AptData ) artifact );
             }
+            else
+            {
+                return false;
+            }
+
+            return true;
 
         }
         catch ( Exception ex )
         {
+            return false;
         }
     }
 
     //***************************
     @Override
-    public void removeArtifact( ArtifactId id )
+    public boolean removeArtifact( ArtifactId id )
     {
         try
         {
+            if( Strings.isNullOrEmpty(id.getMd5Sum()) || Strings.isNullOrEmpty(id.getContext()))
+            {
+                return false;
+            }
+
             if ( id.getType() == ObjectType.TemplateRepo.getId() )
             {
                 templateDAO.remove( templateDAO.find( id ) );
@@ -230,10 +243,17 @@ public class RepositoryDataServiceImpl implements RepositoryDataService
             {
                 aptDAO.remove( aptDAO.find( id ) );
             }
+            else
+            {
+                return false;
+            }
+
+            return true;
 
         }
         catch ( Exception ex )
         {
+            return false;
         }
     }
 
@@ -246,11 +266,11 @@ public class RepositoryDataServiceImpl implements RepositoryDataService
         {
             if ( repoType == ObjectType.TemplateRepo.getId() )
             {
-                return templateDAO.find( id );
+                return templateDAO.findByDetails( id );
             }
             else if ( repoType == ObjectType.RawRepo.getId() )
             {
-                return rawDAO.find( id );
+                return rawDAO.findByDetails( id );
             }
             else if ( repoType == ObjectType.AptRepo.getId() )
             {
@@ -274,29 +294,29 @@ public class RepositoryDataServiceImpl implements RepositoryDataService
         {
             if ( repoData.getType() == ObjectType.TemplateRepo.getId() )
             {
-                List<TemplateData> items = templateDAO.findByRepository( repoData.getContext(), repoData.getType() );
+                List<TemplateData> items = templateDAO.findByRepository( repoData.getContext() );
 
                 if ( !items.isEmpty() )
                 {
-                    return new ArrayList<Object>( items );
+                    return new ArrayList<>( items );
                 }
             }
             else if ( repoData.getType() == ObjectType.RawRepo.getId() )
             {
-                List<RawData> items = rawDAO.findByRepository( repoData.getContext(), repoData.getType() );
+                List<RawData> items = rawDAO.findByRepository( repoData.getContext());
 
                 if ( !items.isEmpty() )
                 {
-                    return new ArrayList<Object>( items );
+                    return new ArrayList<>( items );
                 }
             }
             else if ( repoData.getType() == ObjectType.AptRepo.getId() )
             {
-                List<AptData> items = aptDAO.findByRepository( repoData.getContext(), repoData.getType() );
+                List<AptData> items = aptDAO.findByRepository( repoData.getContext());
 
                 if ( !items.isEmpty() )
                 {
-                    return new ArrayList<Object>( items );
+                    return new ArrayList<>( items );
                 }
             }
         }

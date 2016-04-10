@@ -178,8 +178,11 @@ public class RawManagerServiceImpl implements RawManagerService
             //***** Check permissions (DELETE) *****************
             if ( checkRepoPermissions( userSession,repository , objectId, Permission.Delete ) )
             {
-                relationManager.removeRelationsByTrustObject( objectId, ObjectType.Artifact.getId() );
-                return localPublicRawRepository.delete( id );
+                if(localPublicRawRepository.delete( id ))
+                {
+                    relationManager.removeRelationsByTrustObject( objectId, ObjectType.Artifact.getId() );
+                    return true;
+                }
             }
         }
         catch ( IOException e )
@@ -191,12 +194,13 @@ public class RawManagerServiceImpl implements RawManagerService
 
 
     @Override
-    public SerializableMetadata getInfo( String repository, String md5, String search )
+    public SerializableMetadata getInfo( String repository, String md5, String name, String search )
     {
 
         try
         {
             ArtifactId id = repositoryManager.constructArtifactId( repository, ObjectType.RawRepo.getId(), md5 );
+            id.setArtifactName( name );
             return unifiedRepository.getPackageInfo( id );
         }
         catch ( Exception ex )
@@ -264,7 +268,7 @@ public class RawManagerServiceImpl implements RawManagerService
 
 
     @Override
-    public List<SerializableMetadata> list( UserSession userSession, String repository, String search )
+    public List<SerializableMetadata> list( UserSession userSession, String repository, String node )
     {
         List<SerializableMetadata> result;
         if( Strings.isNullOrEmpty( repository ))
@@ -272,7 +276,7 @@ public class RawManagerServiceImpl implements RawManagerService
             repository = userSession.getUser().getUserName();
         }
 
-        switch ( search )
+        switch ( node )
         {
             //return local list
             case "local":

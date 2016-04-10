@@ -11,6 +11,7 @@ import javax.persistence.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.inject.persist.Transactional;
 
 import ai.subut.kurjun.core.dao.api.DAOException;
@@ -36,7 +37,7 @@ public class RawDAO extends GenericDAOImpl<RawData>
     }
 
 
-    @Transactional
+    //***********************************************
     public RawData find( ArtifactId id ) throws DAOException
     {
         try
@@ -53,16 +54,14 @@ public class RawDAO extends GenericDAOImpl<RawData>
 
 
     //***********************************************
-    @Transactional
-    public List<RawData> findByRepository( String repoContext, int repoType ) throws DAOException
+    public List<RawData> findByRepository( String repoContext ) throws DAOException
     {
         try
         {
             Query qr = getEntityManager().createQuery(
-                    " select e from RawDataEntity e where e.id.context=:repoContext and e.id.type=:repoType",
+                    " select e from RawDataEntity e where e.id.context=:repoContext ",
                     RawDataEntity.class );
             qr.setParameter( "repoContext" ,repoContext );
-            qr.setParameter( "repoType" ,repoType );
 
             List<RawData>  templates = qr.getResultList();
 
@@ -75,6 +74,52 @@ public class RawDAO extends GenericDAOImpl<RawData>
         }
 
         return Collections.emptyList();
+
+    }
+
+
+
+    //***********************************************
+    public RawData findByDetails( ArtifactId id ) throws DAOException
+    {
+        try
+        {
+            String querySTR = "select e from RawDataEntity e where (e.id.md5Sum is not null )";
+
+            if( !Strings.isNullOrEmpty( id.getContext() ))
+                querySTR += " and e.id.context=:repoContext ";
+            if( !Strings.isNullOrEmpty(id.getMd5Sum() ))
+                querySTR += " and e.id.md5Sum=:md5Sum ";
+            if( !Strings.isNullOrEmpty(id.getArtifactName() ))
+                querySTR += " and e.name=:name ";
+            if( !Strings.isNullOrEmpty(id.getVersion() ))
+                querySTR += " and e.version=:version ";
+
+            querySTR += " order by e.version ";
+            Query qr = getEntityManager().createQuery(querySTR,RawDataEntity.class );
+
+            if( !Strings.isNullOrEmpty(id.getContext()))
+                qr.setParameter( "repoContext" ,id.getContext() );
+            if( !Strings.isNullOrEmpty(id.getMd5Sum() ))
+                qr.setParameter( "md5Sum" ,id.getMd5Sum() );
+            if( !Strings.isNullOrEmpty(id.getArtifactName() ))
+                qr.setParameter( "name" ,id.getArtifactName() );
+            if( !Strings.isNullOrEmpty(id.getVersion() ))
+                qr.setParameter( "version" ,id.getVersion() );
+
+            List<RawData>  items = qr.getResultList();
+
+            if(!items.isEmpty())
+            {
+                return items.get( 0 );
+            }
+        }
+        catch ( Exception e )
+        {
+            throw new DAOException( e );
+        }
+
+        return null;
 
     }
 
