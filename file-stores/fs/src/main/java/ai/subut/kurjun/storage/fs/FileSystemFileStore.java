@@ -85,7 +85,7 @@ class FileSystemFileStore implements FileStore
         FileDb fileDb = null;
         try
         {
-            fileDb = new FileDb( makeDbFilePath() );
+            fileDb = new FileDb( makeDbFilePath(), true );
             return fileDb.contains( MAP_NAME, Hex.encodeHexString( md5 ) );
         }
         finally
@@ -101,7 +101,7 @@ class FileSystemFileStore implements FileStore
         FileDb fileDb = null;
         try
         {
-            fileDb = new FileDb( makeDbFilePath() );
+            fileDb = new FileDb( makeDbFilePath(), true );
             String path = fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), String.class );
 
             if ( path != null )
@@ -172,7 +172,7 @@ class FileSystemFileStore implements FileStore
         FileDb fileDb = null;
         try
         {
-            fileDb = new FileDb( makeDbFilePath() );
+            fileDb = new FileDb( makeDbFilePath(), false );
             // check if we already have a file with the calculated md5 checksum, if so just replace the old file
             String existingPath = fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), String.class );
             if ( existingPath != null )
@@ -202,7 +202,7 @@ class FileSystemFileStore implements FileStore
         FileDb fileDb = null;
         try
         {
-            fileDb = new FileDb( makeDbFilePath() );
+            fileDb = new FileDb( makeDbFilePath(), false );
             String path = fileDb.get( MAP_NAME, hexMd5, String.class );
             if ( path != null )
             {
@@ -258,7 +258,7 @@ class FileSystemFileStore implements FileStore
         FileDb fileDb = null;
         try
         {
-            fileDb = new FileDb( makeDbFilePath() );
+            fileDb = new FileDb( makeDbFilePath(), true );
             String path = fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), String.class );
             if ( path != null )
             {

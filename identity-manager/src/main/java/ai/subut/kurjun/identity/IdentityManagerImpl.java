@@ -177,7 +177,7 @@ public class IdentityManagerImpl implements IdentityManager
                 //*************
 
                 //*****************************************
-                LOGGER.info( " ******* Successfully authenticated user:" ,user.getKeyFingerprint() );
+                LOGGER.info( " ******* Successfully authenticated user: {}", user.getKeyFingerprint() );
                 //*****************************************
 
 
@@ -235,7 +235,7 @@ public class IdentityManagerImpl implements IdentityManager
         FileDb fileDb = null;
         try
         {
-            fileDb = fileDbProvider.get();
+            fileDb = fileDbProvider.get(true);
             User user = fileDb.get( DefaultUser.MAP_NAME, fingerprint.toLowerCase(), DefaultUser.class );
 
             return user;
@@ -394,7 +394,7 @@ public class IdentityManagerImpl implements IdentityManager
         FileDb fileDb = null;
         try
         {
-            fileDb = fileDbProvider.get();
+            fileDb = fileDbProvider.get(false);
             fileDb.put( DefaultUser.MAP_NAME, user.getKeyFingerprint().toLowerCase(), user );
         }
         catch ( Exception ex )
@@ -428,7 +428,7 @@ public class IdentityManagerImpl implements IdentityManager
         FileDb fileDb = null;
         try
         {
-            fileDb = fileDbProvider.get();
+            fileDb = fileDbProvider.get(true);
             Map<String, User> map = fileDb.get( DefaultUser.MAP_NAME );
 
             if ( map != null )

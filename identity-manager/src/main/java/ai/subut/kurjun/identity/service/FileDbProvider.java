@@ -10,5 +10,5 @@ import ai.subut.kurjun.db.file.FileDb;
 public interface FileDbProvider
 {
     //*******************************
-    FileDb get();
+    FileDb get( boolean readOnly );
 }

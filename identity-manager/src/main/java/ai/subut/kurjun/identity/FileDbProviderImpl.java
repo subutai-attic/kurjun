@@ -33,11 +33,11 @@ public class FileDbProviderImpl implements FileDbProvider
 
     //*******************************
     @Override
-    public FileDb get()
+    public FileDb get( boolean readOnly )
     {
         try
         {
-            return new FileDb( file );
+            return new FileDb( file, readOnly );
         }
         catch ( IOException ex )
         {

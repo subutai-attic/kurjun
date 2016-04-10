@@ -42,12 +42,12 @@ public class QuotaManagementModule extends AbstractModule
      */
     @Provides
     @Quota
-    public FileDb getFileDb( KurjunProperties kurjunProperties )
+    public FileDb getFileDb( KurjunProperties kurjunProperties, boolean readOnly )
     {
         String file = kurjunProperties.getWithDefault( KurjunConstants.QUOTA_FILEDB_PATH, "./quota.db" );
         try
         {
-            return new FileDb( file );
+            return new FileDb( file, readOnly );
         }
         catch ( IOException ex )
         {

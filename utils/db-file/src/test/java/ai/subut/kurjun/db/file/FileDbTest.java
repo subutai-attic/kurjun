@@ -26,7 +26,7 @@ public class FileDbTest
     @Before
     public void setUp() throws IOException
     {
-        fileDb = new FileDb( temp.newFile().toString() );
+        fileDb = new FileDb( temp.newFile().toString(), false );
         fileDb.put( map, key, value );
     }
 

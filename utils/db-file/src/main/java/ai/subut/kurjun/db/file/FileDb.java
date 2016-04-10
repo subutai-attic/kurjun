@@ -14,6 +14,8 @@ import java.util.Map;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 import org.mapdb.TxMaker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -22,9 +24,13 @@ import org.mapdb.TxMaker;
  */
 public class FileDb implements Closeable
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger( FileDb.class );
+
+    private static Map<String, DB> dbPool = new HashMap<>();
 
     private final File file;
-    protected final TxMaker txMaker;
+//    protected final TxMaker txMaker;
+    protected DB db;
 
 
     /**
@@ -33,14 +39,15 @@ public class FileDb implements Closeable
      * @param dbFile
      * @throws IOException
      */
-    public FileDb( String dbFile ) throws IOException
+    /*public FileDb( String dbFile ) throws IOException
     {
         this( dbFile, false );
     }
-
-
-    FileDb( String dbFile, boolean readOnly ) throws IOException
+    */
+    public FileDb( String dbFile, boolean readOnly ) throws IOException
     {
+        readOnly = false; // we will reuse DB objects, that's why we need them be writable
+
         if ( dbFile == null || dbFile.isEmpty() )
         {
             throw new IllegalArgumentException( "File db path can not be empty" );
@@ -51,32 +58,56 @@ public class FileDb implements Closeable
         Files.createDirectories( path.getParent() );
         this.file = path.toFile();
 
-        DBMaker dbMaker = DBMaker.newFileDB( file );
-
-        if ( readOnly )
+        if ( dbPool.containsKey( dbFile ) )
         {
-            dbMaker.readOnly();
+//            LOGGER.info( "DB for path '{}' already created, return it", dbFile );
+            this.db =  dbPool.get( dbFile );
+            try { this.db.getAll(); }
+            catch ( Throwable e )
+            {
+                LOGGER.warn( "DB for path {} is closed, will reopen it.", dbFile );
+                dbPool.remove( dbFile );
+                this.db = null;
+            }
         }
 
-        // TODO: Check on standalone env of temporary CL swapping
-        // In newer version there is a setter for CL. See: https://github.com/jankotek/mapdb/issues/555
-        // By using this setter CL swapping can be avoided.
-
-        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
-
-        try
+        if ( this.db == null || this.db.isClosed() )
         {
-            Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
+            DBMaker dbMaker = DBMaker.newFileDB( file );
+            dbMaker.closeOnJvmShutdown()
+                   .mmapFileEnableIfSupported()
+                   .snapshotEnable();
 
-            this.txMaker = dbMaker
-                    .closeOnJvmShutdown()
-                    .mmapFileEnableIfSupported()
-                    .snapshotEnable()
-                    .makeTxMaker();
-        }
-        finally
-        {
-            Thread.currentThread().setContextClassLoader( tccl );
+            if ( readOnly )
+            {
+                dbMaker.readOnly();
+            }
+            else
+            {
+                dbMaker.asyncWriteEnable();
+            }
+
+            // TODO: Check on standalone env of temporary CL swapping
+            // In newer version there is a setter for CL. See: https://github.com/jankotek/mapdb/issues/555
+            // By using this setter CL swapping can be avoided.
+
+            ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+            try
+            {
+                Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
+                LOGGER.info( "Opening db for path: " + dbFile );
+//                this.txMaker = dbMaker.makeTxMaker();
+                this.db = dbMaker.makeTxMaker().makeTx();
+                dbPool.put( dbFile, this.db );
+            }
+            catch ( Exception e )
+            {
+                LOGGER.error( "Failed.", e );
+            }
+            finally
+            {
+                Thread.currentThread().setContextClassLoader( tccl );
+            }
         }
     }
 
@@ -106,14 +137,14 @@ public class FileDb implements Closeable
         {
             Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
 
-            DB db = txMaker.makeTx();
+//            DB db = txMaker.makeTx();
             try
             {
                 return checkNameExists( mapName, db ) && db.getHashMap( mapName ).containsKey( key );
             }
             finally
             {
-                db.close();
+//                db.close();
             }
         }
         finally
@@ -137,9 +168,10 @@ public class FileDb implements Closeable
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         try
         {
+//            LOGGER.info( "getting object from map={}, key={}", mapName, key.toString() );
             Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
 
-            DB db = txMaker.makeTx();
+//            DB db = txMaker.makeTx();
             try
             {
                 if ( checkNameExists( mapName, db ) )
@@ -149,7 +181,7 @@ public class FileDb implements Closeable
             }
             finally
             {
-                db.close();
+//                db.close();
             }
         }
         finally
@@ -173,10 +205,11 @@ public class FileDb implements Closeable
         ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         try
         {
+//            LOGGER.info( "getting map for name: {}", mapName );
             Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
 
             Map<K, V> result = new HashMap<>();
-            DB db = txMaker.makeTx();
+//            DB db = txMaker.makeTx();
             try
             {
                 if ( checkNameExists( mapName, db ) )
@@ -187,7 +220,7 @@ public class FileDb implements Closeable
             }
             finally
             {
-                db.close();
+//                db.close();
             }
             return Collections.unmodifiableMap( result );
         }
@@ -214,7 +247,7 @@ public class FileDb implements Closeable
         {
             Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
 
-            DB db = txMaker.makeTx();
+//            DB db = txMaker.makeTx();
             try
             {
                 T put = ( T ) db.getHashMap( mapName ).put( key, value );
@@ -223,7 +256,7 @@ public class FileDb implements Closeable
             }
             finally
             {
-                db.close();
+//                db.close();
             }
         }
         finally
@@ -247,7 +280,7 @@ public class FileDb implements Closeable
         try
         {
             Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
-            DB db = txMaker.makeTx();
+//            DB db = txMaker.makeTx();
             try
             {
                 T removed = ( T ) db.getHashMap( mapName ).remove( key );
@@ -256,7 +289,7 @@ public class FileDb implements Closeable
             }
             finally
             {
-                db.close();
+//                db.close();
             }
         }
         finally
@@ -269,10 +302,10 @@ public class FileDb implements Closeable
     @Override
     public void close() throws IOException
     {
-        if ( txMaker != null )
-        {
-            txMaker.close();
-        }
+//        if ( txMaker != null )
+//        {
+//            txMaker.close();
+//        }
     }
 
 

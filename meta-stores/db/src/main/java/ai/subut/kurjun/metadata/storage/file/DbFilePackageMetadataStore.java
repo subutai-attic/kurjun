@@ -65,7 +65,7 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
         FileDb fileDb = null;
         try
         {
-            fileDb = new FileDb( fileDbPath.toString());
+            fileDb = new FileDb( fileDbPath.toString(), true );
             boolean contains = fileDb.contains( MAP_NAME, id );
 
             return contains;
@@ -88,7 +88,7 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
         try
         {
-            fileDb = new FileDb( fileDbPath.toString() );
+            fileDb = new FileDb( fileDbPath.toString(), true );
             return fileDb.get( MAP_NAME, id, SerializableMetadata.class );
         }
         finally
@@ -113,7 +113,7 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
         try
         {
-            fileDb = new FileDb( fileDbPath.toString() );
+            fileDb = new FileDb( fileDbPath.toString(), true );
             Map<String, SerializableMetadata> map = fileDb.get( MAP_NAME );
             items = map.values();
         }
@@ -145,7 +145,7 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
             try
             {
-                fileDb = new FileDb( fileDbPath.toString() );
+                fileDb = new FileDb( fileDbPath.toString(), false );
                 fileDb.put( MAP_NAME, meta.getId(), meta );
             }
             finally
@@ -167,7 +167,7 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
         try
         {
-            fileDb = new FileDb( fileDbPath.toString() );
+            fileDb = new FileDb( fileDbPath.toString(), false );
 
             return fileDb.remove( MAP_NAME, id ) != null;
         }
@@ -208,7 +208,7 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
         try
         {
-            fileDb = new FileDb( fileDbPath.toString());
+            fileDb = new FileDb( fileDbPath.toString(), true );
             map = fileDb.get( MAP_NAME );
         }
         finally

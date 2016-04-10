@@ -229,7 +229,7 @@ public class RelationManagerImpl implements RelationManager
         {
             if(relation != null)
             {
-                fileDb = fileDbProvider.get();
+                fileDb = fileDbProvider.get(false);
                 fileDb.put( DefaultRelation.MAP_NAME, relation.getId().toLowerCase(), relation );
             }
 
@@ -264,7 +264,7 @@ public class RelationManagerImpl implements RelationManager
         FileDb fileDb = null;
         try
         {
-            fileDb = fileDbProvider.get();
+            fileDb = fileDbProvider.get(true);
             Relation rel = fileDb.get( DefaultRelation.MAP_NAME, relationId.toLowerCase(), DefaultRelation.class );
 
             return rel;
@@ -297,7 +297,7 @@ public class RelationManagerImpl implements RelationManager
         FileDb fileDb = null;
         try
         {
-            fileDb = fileDbProvider.get();
+            fileDb = fileDbProvider.get(true);
             Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
             if ( map != null )
             {
@@ -370,7 +370,7 @@ public class RelationManagerImpl implements RelationManager
         FileDb fileDb = null;
         try
         {
-            fileDb = fileDbProvider.get();
+            fileDb = fileDbProvider.get(true);
             Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
 
             return map.values().stream().filter( r -> r.getTrustObject().equals(trustObject)).collect(Collectors.toList());
@@ -448,7 +448,7 @@ public class RelationManagerImpl implements RelationManager
         FileDb fileDb = null;
         try
         {
-            fileDb = fileDbProvider.get();
+            fileDb = fileDbProvider.get(true);
             Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
 
             return map.values().parallelStream().filter( r -> r.getSource().equals(sourceObject)).collect(Collectors.toList());
@@ -483,7 +483,7 @@ public class RelationManagerImpl implements RelationManager
         FileDb fileDb = null;
         try
         {
-            fileDb = fileDbProvider.get();
+            fileDb = fileDbProvider.get(true);
             Map<String, Relation> map = fileDb.get( DefaultRelation.MAP_NAME );
 
             return map.values().stream().filter( r -> r.getTarget().equals(targetObject)).collect(Collectors.toList());
@@ -518,7 +518,7 @@ public class RelationManagerImpl implements RelationManager
         FileDb fileDb = null;
         try
         {
-            fileDb = fileDbProvider.get();
+            fileDb = fileDbProvider.get(false);
             fileDb.remove( DefaultRelation.MAP_NAME, relationId );
         }
         catch ( Exception ex )

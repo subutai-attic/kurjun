@@ -73,7 +73,7 @@ public class SecurityFilter implements Filter
         }
         catch(Exception ex)
         {
-            LOGGER.error( "Not passed SecurityFilter: "+ex.getMessage() );
+            LOGGER.error( "Not passed SecurityFilter: {}", ex.getMessage() );
             return Results.forbidden().render( "Not allowed" ).text();
         }
 

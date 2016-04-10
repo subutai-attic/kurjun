@@ -48,7 +48,7 @@ public class UserRepoContextStoreImpl implements UserRepoContextStore
 
         try
         {
-            fileDb = new FileDb( repoFile );
+            fileDb = new FileDb( repoFile, false );
             fileDb.put( MAP_NAME_USER_REPO, makeKey( userRepoContext ), userRepoContext );
         }
         finally
@@ -67,7 +67,7 @@ public class UserRepoContextStoreImpl implements UserRepoContextStore
 
         try
         {
-            fileDb = new FileDb( repoFile );
+            fileDb = new FileDb( repoFile, false );
             removed = fileDb.remove( MAP_NAME_USER_REPO, makeKey( userRepoContext ) );
         }
         finally
@@ -86,7 +86,7 @@ public class UserRepoContextStoreImpl implements UserRepoContextStore
 
         try
         {
-            fileDb = new FileDb( repoFile );
+            fileDb = new FileDb( repoFile, true );
             Map<String, UserContext> map = fileDb.get( MAP_NAME_USER_REPO );
 
             return Sets.newConcurrentHashSet( map.values() );
