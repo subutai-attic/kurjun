@@ -194,9 +194,15 @@ public class IdentityManagerImpl implements IdentityManager
 
                 //*************
                 user.setUserToken( uToken );
-                identityDataService.mergeUserToken( uToken );
-                //identityDataService.mergeUser(  user );
+                try
+                {
+                    identityDataService.mergeUserToken( uToken );
+                    //identityDataService.mergeUser(  user );
+                }
+                catch(Exception ignore)
+                {
 
+                }
                 //*****************************************
                 LOGGER.info( " ******* Successfully authenticated user: {}", user.getKeyFingerprint() );
                 //*****************************************

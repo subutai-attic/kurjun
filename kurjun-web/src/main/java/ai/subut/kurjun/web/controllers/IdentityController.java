@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.UUID;
 
 
 @Singleton
@@ -48,7 +49,7 @@ public class IdentityController extends BaseController
         if ( user != null )
         {
             context.getSession().put( SecurityFilter.USER_SESSION, user.getUserToken().getFullToken() );
-            return Results.redirect( context.getContextPath() + "/" );
+            return Results.redirect( context.getContextPath() + "/?rand=" + UUID.randomUUID().toString());
         }
         else
         {
@@ -99,7 +100,7 @@ public class IdentityController extends BaseController
         List<User> users = identityManagerService.getAllUsers();
         User sysOwner = identityManagerService.getSystemOwner();
 
-        return Results.html().template( "views/users.ftl" ).render( "users", users ).render( "sys_owner", sysOwner );
+        return Results.html().template( "views/users.ftl").render( "users", users ).render( "sys_owner", sysOwner );
     }
 
 

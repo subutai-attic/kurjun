@@ -11,8 +11,6 @@ import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import ai.subut.kurjun.metadata.common.subutai.TemplateId;
-import ai.subut.kurjun.metadata.common.utils.IdValidators;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.metadata.template.TemplateData;
@@ -100,11 +98,23 @@ public class RestTemplateController extends BaseController
     }
 
 
-    public Result download( Context context, @Param( "repository" ) String repository, @Param( "md5" ) String md5 )
+    public Result download( Context context, @Param( "id" ) String id, @Param( "repository" ) String repository,
+                            @Param( "md5" ) String md5 )
     {
         Renderable renderable = null;
         try
         {
+            if(!Strings.isNullOrEmpty( id ))
+            {
+                String data[] = id.split( "\\." );
+
+                if(data.length > 1)
+                {
+                    repository = data[0];
+                    md5 = data[1];
+                }
+            }
+
             //*****************************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
             renderable = templateManagerService.renderableTemplate( uSession, repository, md5, false );

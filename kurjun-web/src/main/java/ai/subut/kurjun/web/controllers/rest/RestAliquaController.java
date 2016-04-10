@@ -3,6 +3,7 @@ package ai.subut.kurjun.web.controllers.rest;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -56,9 +57,21 @@ public class RestAliquaController extends BaseController
     }
 
 
-    public Result getFile( Context context, @Param( "repository" ) String repo, @Param( "md5" ) String md5 )
+    public Result getFile( Context context, @Param( "id" ) String id, @Param( "repository" ) String repo,
+                           @Param( "md5" ) String md5 )
     {
-        checkNotNull( md5, "ID cannot be null" );
+
+        if ( !Strings.isNullOrEmpty( id ) )
+        {
+            String data[] = id.split( "\\." );
+
+            if ( data.length > 1 )
+            {
+                repo = data[0];
+                md5 = data[1];
+            }
+        }
+
 
         Renderable renderable = rawManagerService.getFile( repo, md5 );
 

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,9 +61,11 @@ public class AptController extends BaseAptController
         List<SerializableMetadata> serializableMetadataList = aptManagerService.list(uSession, repository, node );
         //********************************************
 
-        return Results.html().template( "views/apts.ftl" ).render( "apts", serializableMetadataList )
+        return Results.html().template( "views/apts.ftl").render( "apts", serializableMetadataList )
                 .render( "repos", aptManagerService.getRepoList() ).render( "sel_repo", repository )
-                      .render( "node", node);
+                      .render( "node", node );
+
+
     }
 
 

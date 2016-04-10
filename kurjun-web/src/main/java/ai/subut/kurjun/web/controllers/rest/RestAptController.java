@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -113,9 +114,19 @@ public class RestAptController extends BaseAptController
     }
 
 
-    public Result download( Context context , @Param("repository") String repo, @Param( "md5" ) String md5 )
+    public Result download( Context context , @Param("id") String id, @Param("repository") String repo, @Param( "md5" ) String md5 )
     {
-        //        checkNotNull( md5, "MD5 cannot be null" );
+
+        if ( !Strings.isNullOrEmpty( id ) )
+        {
+            String data[] = id.split( "\\." );
+
+            if ( data.length > 1 )
+            {
+                repo = data[0];
+                md5 = data[1];
+            }
+        }
 
         //********************************************
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
