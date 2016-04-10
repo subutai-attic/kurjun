@@ -74,22 +74,32 @@ public class RelationManagerServiceImpl implements RelationManagerService
 
     //*************************************
     @Override
-    public void removeRelation( UserSession uSession, Relation relation )
+    public int removeRelation( UserSession uSession, long relationId)
     {
-        User user = uSession.getUser();
+        Relation relation = relationManager.getRelation( relationId );
 
-        if ( user != null && relation != null )
+        if ( relation != null )
         {
-            RelationObject object = relation.getTrustObject();
-            Set<Permission> permissoins = relationManager.getUserPermissions( user, object.getObjectId(), object.getType() );
-            if ( permissoins.contains( Permission.Delete ) && !user.equals( identityManagerService.getPublicUser() ))
+            // ---------- Check permissions ---------------
+            Relation owner = relationManager.getObjectOwner( relation.getTrustObject().getObjectId(), relation.getTrustObject().getType() );
+
+            if(owner != null)
             {
-                relationManager.removeRelation( relation.getId() );
+                String ownerId = owner.getSource().getObjectId();
+
+                if(!uSession.getUser().getKeyFingerprint().equals( ownerId ))
+                {
+                    return ErrorCode.AccessPermissionError.getId();
+                }
             }
-            else
-            {
-                throw new IllegalAccessError( "Access denied" );
-            }
+
+            relationManager.removeRelation( relationId );
+
+            return ErrorCode.Success.getId();
+        }
+        else
+        {
+            return ErrorCode.AccessPermissionError.getId();
         }
     }
 
@@ -101,9 +111,21 @@ public class RelationManagerServiceImpl implements RelationManagerService
     {
         if ( !uSession.getUser().equals( identityManagerService.getPublicUser() ) )
         {
+            // ---------- Check permissions ---------------
+            Relation owner = relationManager.getObjectOwner( trustObjId , trustObjType );
+            if(owner != null)
+            {
+                String ownerId = owner.getSource().getObjectId();
+
+                if(!uSession.getUser().getKeyFingerprint().equals( ownerId ))
+                {
+                    return ErrorCode.AccessPermissionError.getId();
+                }
+            }
+            // ------------------------------------------
+
             RelationObject targetObj = relationManager.createRelationObject( targeObjId ,targetObjType  ) ;
             RelationObject trustObj  = relationManager.createRelationObject( trustObjId ,trustObjType  ) ;
-
 
             Relation rel = relationManager.buildTrustRelation( uSession.getUser(), targetObj, trustObj, permissions );
 
@@ -118,7 +140,7 @@ public class RelationManagerServiceImpl implements RelationManagerService
         }
         else
         {
-            return 2; //Permission Denied
+            return ErrorCode.AccessPermissionError.getId();
         }
     }
 

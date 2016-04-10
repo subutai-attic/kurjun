@@ -2,6 +2,7 @@ package ai.subut.kurjun.web.controllers.rest;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -170,11 +171,10 @@ public class RestTemplateController extends BaseController
         {
             //*****************************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-
-            List<SerializableMetadata> defaultTemplateList = templateManagerService.list( uSession, repo, node, false );
+            List<SerializableMetadata> templateList = templateManagerService.list( uSession, repo, node, false );
             //*****************************************************
 
-            return Results.ok().render( defaultTemplateList ).json();
+            return Results.ok().render( templateList ).json();
         }
         catch ( IOException e )
         {
@@ -184,9 +184,30 @@ public class RestTemplateController extends BaseController
     }
 
 
-    public Result md5()
+    public Result md5(Context context, @Param( "repository" ) String repo, @Param( "node" ) String node )
     {
+        try
+        {
+            //*****************************************************
+            List<String> md5List = new ArrayList<>();
+            UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+            List<SerializableMetadata> templateList = templateManagerService.list( uSession, repo, node, false );
+            //*****************************************************
 
-        return Results.ok().render( templateManagerService.md5() ).text();
+            if(templateList != null)
+            {
+                for(SerializableMetadata data:templateList)
+                {
+                    md5List.add( data.getMd5Sum());
+                }
+            }
+
+            return Results.ok().render( md5List ).json();
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace();
+            throw new InternalServerErrorException( "Error while getting list of artifacts" );
+        }
     }
 }

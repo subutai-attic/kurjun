@@ -16,6 +16,7 @@ import ai.subut.kurjun.web.service.RelationManagerService;
 import ninja.params.Param;
 import ninja.params.Params;
 import ninja.params.PathParam;
+import ninja.session.FlashScope;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,20 +87,6 @@ public class RestRelationController extends BaseController
         }
     }
 
-    /*
-    public Result getRelationsByOwner( @PathParam( "fingerprint" ) String fingerprint )
-    {
-        return Results.ok().json().render( relationManagerService.getTrustRelationsBySource(
-                relationManagerService.toSourceObject( identityManagerService.getUser( fingerprint ) ) ) );
-    }
-
-
-    public Result getRelationsByTarget( @PathParam( "fingerprint" ) String fingerprint )
-    {
-        return Results.ok().json().render( relationManagerService.getTrustRelationsByTarget(
-                relationManagerService.toTargetObject(fingerprint) ) );
-    }
-    */
 
     public Result getRelationsByObject( Context context, @Param( "id" ) String id,
                                         @Param( "name" ) String name, @Param( "version" ) String version,
@@ -110,69 +97,36 @@ public class RestRelationController extends BaseController
         return Results.ok().json().render( rels );
     }
 
-    /*
-    public Result addTrustRelation( @AuthorizedUser UserSession userSession, @Param( "fingerprint" ) String fingerprint,
-                                    @Param( "id" ) String id, @Params( "permission" ) String[] permissions,
-                                    @Param("trust_obj_type") int trustObjType )
+    public Result delete( @PathParam( "id" ) String id, Context context )
     {
-        if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
-        {
-            return Results.notFound();
-        }
-        else
-        {
-            RelationObject owner = relationManagerService.toSourceObject( userSession.getUser() );
-            RelationObject target = relationManagerService.toTargetObject( fingerprint );
-
-            RelationObjectType relObjType = RelationObjectType.RepositoryContent;
-            if ( trustObjType == RelationObjectType.RepositoryTemplate.getId() ) // repository
-            {
-                relObjType = RelationObjectType.RepositoryTemplate;
-            }
-            RelationObject trustObject;// = relationManagerService.toTrustObject(userSession, id, null, null, null, relObjType );
-            trustObject = new DefaultRelationObject();
-            trustObject.setId( id );
-            trustObject.setType( relObjType.getId() );
-
-            Set<Permission> objectPermissions = new HashSet<>();
-            Arrays.asList( permissions ).forEach( p -> objectPermissions.add( Permission.valueOf( p ) ) );
-
-            Set<Permission> userPermissions = relationManagerService.checkUserPermissions( userSession, trustObject.getId(),
-                    trustObject.getType() );
-
-            if ( userPermissions.containsAll( objectPermissions ) )
-            {
-                Relation relation =
-                        relationManagerService.addTrustRelation( owner, target, trustObject, objectPermissions );
-                if ( relation != null )
-                {
-                    return Results.ok().json().render("");
-                }
-                else
-                {
-                    return Results.notFound().json().render( "Failed to save trust relation. Object not found." );
-                }
-            }
-            else {
-                return Results.forbidden().json().render( "You don't have access to this object" );
-            }
-        }
-    }
-    */
-
-    public Result delete( @AuthorizedUser UserSession userSession, @PathParam("id") String id )
-    {
-        Relation relation  = relationManagerService.getRelation( userSession, Long.valueOf( id ) );
         try
         {
-            relationManagerService.removeRelation( userSession, relation );
-            return Results.ok().json().render( "Deleted successfully" );
+            //************************************
+            UserSession userSession = (UserSession ) context.getAttribute( "USER_SESSION" );
+            //************************************
+
+            long relationID = Long.parseLong( id );
+            int result = relationManagerService.removeRelation( userSession, relationID );
+
+            if ( result == 0 )
+            {
+                return Results.ok();
+            }
+            else if ( result == 2 )
+            {
+                return Results.forbidden();
+            }
+            else
+            {
+                return Results.internalServerError();
+            }
         }
         catch ( IllegalAccessError e )
         {
-            return Results.forbidden().json().render( "Access denied" );
+            return Results.internalServerError();
         }
     }
+
 
     public Result change( @AuthorizedUser UserSession userSession, @PathParam( "id" ) String id,
                           @Params( "permission" ) String[] permissions )

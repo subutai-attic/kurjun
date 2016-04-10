@@ -17,7 +17,7 @@ public interface TemplateManagerService extends BaseService
 {
     String DEFAULT_SUBUTAI_CONTEXT = "subutai";
 
-    List<SerializableMetadata> list( UserSession userSession, String repository, String search,
+    List<SerializableMetadata> list( UserSession userSession, String repository, String node,
                                      boolean isKurjunClient ) throws IOException;
 
     /**
@@ -53,8 +53,6 @@ public interface TemplateManagerService extends BaseService
 
     TemplateData getTemplate( UserSession userSession, String repository, String md5, String name, String version,
                               String node );
-
-    String md5();
 
 
     List<String> getRepoList();

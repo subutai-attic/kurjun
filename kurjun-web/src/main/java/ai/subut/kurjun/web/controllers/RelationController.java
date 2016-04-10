@@ -117,7 +117,6 @@ public class RelationController extends BaseController
                 .addTrustRelation( userSession, targetObjId, targetObjType, trustObjId, trustObjType,
                         objectPermissions );
 
-
         if ( result == 0 )
         {
             flashScope.success( "Trust relation added." );
@@ -151,11 +150,23 @@ public class RelationController extends BaseController
     public Result delete( @AuthorizedUser UserSession userSession, @PathParam( "id" ) String id, Context context,
                           FlashScope flashScope )
     {
-        Relation relation  = relationManagerService.getRelation( userSession, Long.valueOf( id ) );
         try
         {
-            relationManagerService.removeRelation( userSession, relation );
-            flashScope.success( "Deleted successfully" );
+            long relationID = Long.parseLong( id );
+            int result = relationManagerService.removeRelation( userSession, relationID );
+
+            if ( result == 0 )
+            {
+                flashScope.success( "Deleted successfully" );
+            }
+            else if ( result == 1 )
+            {
+                flashScope.error( "Internal System error." );
+            }
+            else if ( result == 2 )
+            {
+                flashScope.error( "Access denied. You don't have permissions to this object." );
+            }
         }
         catch ( IllegalAccessError e )
         {

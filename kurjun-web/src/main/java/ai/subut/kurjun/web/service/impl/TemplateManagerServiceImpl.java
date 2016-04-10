@@ -368,12 +368,6 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     }
 
 
-    @Override
-    public String md5()
-    {
-        return getPublicRepository().md5();
-    }
-
 
     private String toId( final String md5, String repo )
     {
@@ -386,11 +380,6 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
         return repositoryFactory.createLocalTemplate( new KurjunContext( repo ) );
     }
 
-
-    private LocalRepository getPublicRepository()
-    {
-        return repositoryFactory.createLocalTemplate( new KurjunContext( "public" ) );
-    }
 
 
     private String makeTemplateName( SerializableMetadata metadata )
