@@ -73,13 +73,14 @@ class RemoteAptRepository extends RemoteRepositoryBase
 
     private static final String MD5_PATH = "/md5";
     private static final String DEB_PATH = "deb";
-    private static final int CONN_TIMEOUT = 3000;
-    private static final int READ_TIMEOUT = 3000;
 
-    private static final int CONN_TIMEOUT_FOR_URL_CHECK = 200;
+    private static final int CONN_TIMEOUT = 5000;
+    private static final int READ_TIMEOUT = 100000;
+    private static final int CONN_TIMEOUT_FOR_URL_CHECK = 500;
+
     private List<SerializableMetadata> remoteIndexChache = new LinkedList<>();
     private String md5Sum = "";
-
+    private String search = "all";
 
     /**
      * Constructs nonlocal repository located by the specified URL.
@@ -89,7 +90,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
     @Inject
     public RemoteAptRepository( @Assisted URL url, WebClientFactory webClientFactory,
                                 ReleaseIndexParser releaseIndexParser, PackagesIndexParser packagesIndexParser,
-                                PackageCache cache )
+                                PackageCache cache, String search )
     {
         this.releaseIndexParser = releaseIndexParser;
         this.packagesIndexParser = packagesIndexParser;
@@ -134,7 +135,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
     public Set<ReleaseFile> getDistributions()
     {
 
-        WebClient webClient = webClientFactory.makeSecure( this, "/" + DEB_PATH +  RELEASE_PATH, null );
+        WebClient webClient = webClientFactory.makeSecure( this, "/" + DEB_PATH + RELEASE_PATH, null );
 
         Response resp = doGet( webClient );
         if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
@@ -223,7 +224,9 @@ class RemoteAptRepository extends RemoteRepositoryBase
     @Override
     public List<SerializableMetadata> listPackages()
     {
-        if ( this.md5Sum.equalsIgnoreCase( getMd5() ) )
+        String md5 = getMd5();
+
+        if ( this.md5Sum.equalsIgnoreCase( md5 ) )
         {
             return this.remoteIndexChache;
         }
@@ -246,6 +249,8 @@ class RemoteAptRepository extends RemoteRepositoryBase
                     }
                 }
             }
+            this.md5Sum = md5;
+            this.remoteIndexChache = result;
         }
         return result;
     }

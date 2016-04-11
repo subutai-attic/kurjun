@@ -71,18 +71,20 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     private String md5Sum = "";
     private List<SerializableMetadata> remoteIndexChache = new LinkedList<>();
 
-    private static final int CONN_TIMEOUT = 3000;
-    private static final int READ_TIMEOUT = 3000;
-    private static final int CONN_TIMEOUT_FOR_URL_CHECK = 200;
+    private static final int CONN_TIMEOUT = 5000;
+    private static final int READ_TIMEOUT = 100000;
+    private static final int CONN_TIMEOUT_FOR_URL_CHECK = 500;
+    private String search = "all";
 
 
     @Inject
     public RemoteRawRepository( PackageCache cache, WebClientFactory webClientFactory, @Assisted( "url" ) String url,
-                                @Assisted @Nullable User identity )
+                                @Assisted @Nullable User identity, String search )
 
     {
         this.webClientFactory = webClientFactory;
         this.cache = cache;
+        this.search = search;
         this.identity = identity;
         try
         {
@@ -122,7 +124,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
                 try
                 {
                     String json = IOUtils.toString( ( InputStream ) resp.getEntity() );
-                    return toObject(json);
+                    return toObject( json );
                 }
                 catch ( IOException ex )
                 {
@@ -142,9 +144,8 @@ public class RemoteRawRepository extends RemoteRepositoryBase
         {
             return cachedStream;
         }
-
-        WebClient webClient =
-                webClientFactory.makeSecure( this, FILE_PATH + GET_PATH, MetadataUtils.makeParamsMap( metadata ) );
+        Map params = MetadataUtils.makeParamsMap( metadata );
+        WebClient webClient = webClientFactory.makeSecure( this, FILE_PATH + GET_PATH, params );
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
@@ -181,12 +182,14 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     @Override
     public List<SerializableMetadata> listPackages()
     {
-        if ( this.md5Sum.equalsIgnoreCase( getMd5() ) )
+        String md5 = getMd5();
+
+        if ( this.md5Sum.equalsIgnoreCase( md5 ) )
         {
             return this.remoteIndexChache;
         }
         Map<String, String> params = makeParamsMap( new RawMetadata() );
-        params.put( "repository", "local" );
+
 
         WebClient webClient = webClientFactory.makeSecure( this, FILE_PATH + LIST_PATH, params );
 
@@ -203,7 +206,9 @@ public class RemoteRawRepository extends RemoteRepositoryBase
                 try
                 {
                     List<String> items = IOUtils.readLines( ( InputStream ) resp.getEntity() );
-                    return toObjectList( items.get( 0 ) );
+                    this.md5Sum = md5;
+                    this.remoteIndexChache = toObjectList( items.get( 0 ) );
+                    return this.remoteIndexChache;
                 }
                 catch ( IOException ex )
                 {
@@ -324,7 +329,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     private Map<String, String> makeParamsMap( Metadata metadata )
     {
         Map<String, String> params = MetadataUtils.makeParamsMap( metadata );
-
+        params.put( "repository", search );
         if ( token != null )
         {
             params.put( "sptoken", token );

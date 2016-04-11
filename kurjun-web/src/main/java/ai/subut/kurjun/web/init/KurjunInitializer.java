@@ -81,13 +81,13 @@ public class KurjunInitializer
                             for ( String s : servers )
                             {
                                 artifactContext.addRemoteTemplateRepository(
-                                        repositoryFactory.createNonLocalTemplate( s, null, "public", null ) );
+                                        repositoryFactory.createNonLocalTemplate( s, null, "public", null, "local" ) );
 
-                                artifactContext
-                                        .addRemoteRawRepositories( repositoryFactory.createNonLocalRaw( s, null ) );
+                                artifactContext.addRemoteRawRepositories(
+                                        repositoryFactory.createNonLocalRaw( s, null, "local" ) );
 
                                 artifactContext.addRemoteAptRepositories(
-                                        repositoryFactory.createNonLocalApt( new URL( s ) ) );
+                                        repositoryFactory.createNonLocalApt( new URL( s ), "local" ) );
                             }
                         }
                     }

@@ -104,23 +104,23 @@ public class RepositoryFactoryImpl implements RepositoryFactory
 
 
     @Override
-    public RemoteRawRepository createNonLocalRaw( String url, User identity )
+    public RemoteRawRepository createNonLocalRaw( String url, User identity, String search )
     {
-        return new RemoteRawRepository( cache, webClientFactory, url, identity );
+        return new RemoteRawRepository( cache, webClientFactory, url, identity, search );
     }
 
 
     @Override
-    public RemoteRepository createNonLocalTemplate( String url, User identity, String kurjunContext, String token )
+    public RemoteRepository createNonLocalTemplate( String url, User identity, String kurjunContext, String token, String search )
     {
-        return new RemoteTemplateRepository( cache, webClientFactory, gson, url, identity, kurjunContext, token );
+        return new RemoteTemplateRepository( cache, webClientFactory, gson, url, identity, kurjunContext, token, search );
     }
 
 
     @Override
-    public RemoteRepository createNonLocalApt( URL url )
+    public RemoteRepository createNonLocalApt( URL url, String search)
     {
-        return new RemoteAptRepository( url, webClientFactory, releaseIndexParser, packagesIndexParser, cache );
+        return new RemoteAptRepository( url, webClientFactory, releaseIndexParser, packagesIndexParser, cache, search );
     }
 
 
