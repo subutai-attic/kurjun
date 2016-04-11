@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.bouncycastle.openpgp.PGPPublicKey;
 
 import org.apache.commons.codec.binary.Hex;

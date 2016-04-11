@@ -140,7 +140,7 @@ public class FileDb implements Closeable
      * @param key key to check association for
      * @return {@code true} if map contains association for the key; {@code false} otherwise
      */
-    public boolean contains( final String mapName, final Object key )
+    public synchronized boolean contains( final String mapName, final Object key )
     {
         return threadLocalExecute( new Fun.Function1<Boolean, DB>() {
             @Override
@@ -160,7 +160,7 @@ public class FileDb implements Closeable
      * @param clazz type of the returned value
      * @return value mapped to supplied key; {@code null} if no value is mapped
      */
-    public <T> T get( String mapName, Object key, Class<T> clazz )
+    public synchronized <T> T get( String mapName, Object key, Class<T> clazz )
     {
         return threadLocalExecute( new Fun.Function1<T, DB>() {
             @Override
@@ -179,7 +179,7 @@ public class FileDb implements Closeable
      * @param mapName name of the map to get
      * @return readonly view of the map
      */
-    public <K, V> Map<K, V> get( String mapName )
+    public synchronized <K, V> Map<K, V> get( String mapName )
     {
         return threadLocalExecute( new Fun.Function1<Map<K,V>, DB>() {
             @Override
@@ -205,7 +205,7 @@ public class FileDb implements Closeable
      * @param value value to be associated with the key
      * @return the previous value associated with key, or null if there was no mapping for key
      */
-    public <T> T put( String mapName, Object key, T value )
+    public synchronized <T> T put( String mapName, Object key, T value )
     {
         return threadLocalExecute( new Fun.Function1<T, DB>() {
             @Override
@@ -226,7 +226,7 @@ public class FileDb implements Closeable
      * @param key key value to remove mapping for
      * @return the previous value associated with key, or null if there was no mapping for key
      */
-    public <T> T remove( String mapName, Object key )
+    public synchronized <T> T remove( String mapName, Object key )
     {
         return threadLocalExecute( new Fun.Function1<T, DB>() {
             @Override

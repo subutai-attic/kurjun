@@ -1,9 +1,6 @@
 package ai.subut.kurjun.model.index;
 
 
-import ai.subut.kurjun.model.index.Checksum;
-
-
 /**
  * A resource, mainly a file, that has one or more checksums associated with it in the release
  * distribution archive.

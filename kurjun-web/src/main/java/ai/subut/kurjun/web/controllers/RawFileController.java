@@ -1,6 +1,9 @@
 package ai.subut.kurjun.web.controllers;
 
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import ai.subut.kurjun.metadata.common.raw.RawMetadata;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.Metadata;
@@ -10,9 +13,6 @@ import ai.subut.kurjun.web.model.KurjunFileItem;
 import ai.subut.kurjun.web.service.RawManagerService;
 import ai.subut.kurjun.web.service.RepositoryService;
 import ai.subut.kurjun.web.utils.Utils;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
 import ninja.Context;
 import ninja.Renderable;
 import ninja.Result;

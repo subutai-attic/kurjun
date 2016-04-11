@@ -1,15 +1,19 @@
 package ai.subut.kurjun.web.conf;
 
 
-import ai.subut.kurjun.model.identity.Relation;
-import ai.subut.kurjun.web.conf.routes.rest.RestRoutes;
-import ai.subut.kurjun.web.controllers.*;
 import com.google.inject.Inject;
+
+import ai.subut.kurjun.web.conf.routes.rest.RestRoutes;
+import ai.subut.kurjun.web.controllers.AptController;
+import ai.subut.kurjun.web.controllers.DownloadController;
+import ai.subut.kurjun.web.controllers.IdentityController;
+import ai.subut.kurjun.web.controllers.RawFileController;
+import ai.subut.kurjun.web.controllers.RelationController;
+import ai.subut.kurjun.web.controllers.RepositoryController;
+import ai.subut.kurjun.web.controllers.TemplateController;
 import ninja.Router;
 import ninja.application.ApplicationRoutes;
 import ninja.utils.NinjaProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**

@@ -1,6 +1,9 @@
 package ai.subut.kurjun.web.filter;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 
@@ -12,8 +15,6 @@ import ninja.FilterChain;
 import ninja.Result;
 import ninja.Results;
 import ninja.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 public class SecurityFilter implements Filter

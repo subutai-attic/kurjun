@@ -7,8 +7,8 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
 
 import ai.subut.kurjun.model.repository.LocalRepository;
-import ai.subut.kurjun.model.repository.RemoteRepository;
 import ai.subut.kurjun.model.repository.PackageType;
+import ai.subut.kurjun.model.repository.RemoteRepository;
 import ai.subut.kurjun.model.repository.UnifiedRepository;
 import ai.subut.kurjun.repo.util.AptIndiceBuilderModule;
 import ai.subut.kurjun.repo.util.http.WebClientModule;

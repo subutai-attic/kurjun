@@ -1,21 +1,22 @@
 package ai.subut.kurjun.web.controllers;
 
 
-import ai.subut.kurjun.model.identity.User;
-import ai.subut.kurjun.web.filter.SecurityFilter;
-import ai.subut.kurjun.web.service.IdentityManagerService;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import ai.subut.kurjun.model.identity.User;
+import ai.subut.kurjun.web.filter.SecurityFilter;
+import ai.subut.kurjun.web.service.IdentityManagerService;
 import ninja.Context;
 import ninja.Result;
 import ninja.Results;
 import ninja.params.Param;
 import ninja.session.FlashScope;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 @Singleton
 public class IdentityController extends BaseController {

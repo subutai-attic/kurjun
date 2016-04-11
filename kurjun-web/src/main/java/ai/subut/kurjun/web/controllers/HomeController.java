@@ -1,16 +1,15 @@
 package ai.subut.kurjun.web.controllers;
 
 
-import ai.subut.kurjun.model.identity.UserSession;
-import ai.subut.kurjun.web.security.AuthorizedUser;
-import ninja.Result;
-import ninja.Results;
-import ninja.session.FlashScope;
-import ninja.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Singleton;
+
+import ninja.Result;
+import ninja.Results;
+import ninja.session.FlashScope;
+import ninja.session.Session;
 
 
 @Singleton

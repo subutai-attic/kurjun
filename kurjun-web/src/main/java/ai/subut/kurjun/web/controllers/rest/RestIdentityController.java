@@ -3,11 +3,6 @@ package ai.subut.kurjun.web.controllers.rest;
 
 import java.util.List;
 
-import ai.subut.kurjun.model.identity.UserSession;
-import ai.subut.kurjun.web.controllers.BaseController;
-import ai.subut.kurjun.web.filter.SecurityFilter;
-import ninja.Context;
-import ninja.session.FlashScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,10 +10,15 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.model.identity.User;
+import ai.subut.kurjun.model.identity.UserSession;
+import ai.subut.kurjun.web.controllers.BaseController;
+import ai.subut.kurjun.web.filter.SecurityFilter;
 import ai.subut.kurjun.web.service.IdentityManagerService;
+import ninja.Context;
 import ninja.Result;
 import ninja.Results;
 import ninja.params.Param;
+import ninja.session.FlashScope;
 
 
 /**

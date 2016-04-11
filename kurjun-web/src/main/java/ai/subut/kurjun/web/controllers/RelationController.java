@@ -1,16 +1,29 @@
 package ai.subut.kurjun.web.controllers;
 
 
-import ai.subut.kurjun.identity.DefaultRelationObject;
-import ai.subut.kurjun.model.identity.*;
-import ai.subut.kurjun.web.controllers.rest.RestIdentityController;
-import ai.subut.kurjun.web.security.AuthorizedUser;
-import ai.subut.kurjun.web.service.IdentityManagerService;
-import ai.subut.kurjun.web.service.RelationManagerService;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import ai.subut.kurjun.identity.DefaultRelationObject;
+import ai.subut.kurjun.model.identity.Permission;
+import ai.subut.kurjun.model.identity.Relation;
+import ai.subut.kurjun.model.identity.RelationObject;
+import ai.subut.kurjun.model.identity.RelationObjectType;
+import ai.subut.kurjun.model.identity.UserSession;
+import ai.subut.kurjun.web.security.AuthorizedUser;
+import ai.subut.kurjun.web.service.IdentityManagerService;
+import ai.subut.kurjun.web.service.RelationManagerService;
 import ai.subut.kurjun.web.service.RepositoryService;
 import ninja.Context;
 import ninja.Result;
@@ -19,19 +32,6 @@ import ninja.params.Param;
 import ninja.params.Params;
 import ninja.params.PathParam;
 import ninja.session.FlashScope;
-import ninja.session.Session;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
 
 
 /**

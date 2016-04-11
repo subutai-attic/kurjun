@@ -7,10 +7,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.model.identity.Permission;
+import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.model.identity.RelationObject;
-import ai.subut.kurjun.model.identity.RelationObjectType;
 import ai.subut.kurjun.model.identity.RelationType;
 
 

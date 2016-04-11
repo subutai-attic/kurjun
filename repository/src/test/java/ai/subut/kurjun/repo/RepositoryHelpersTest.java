@@ -2,7 +2,6 @@ package ai.subut.kurjun.repo;
 
 
 import java.io.IOException;
-import java.net.URL;
 
 import org.junit.Assert;
 import org.junit.Rule;

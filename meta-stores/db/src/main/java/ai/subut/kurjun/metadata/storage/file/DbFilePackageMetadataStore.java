@@ -60,7 +60,7 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
 
     @Override
-    public boolean contains( Object id ) throws IOException
+    public synchronized boolean contains( Object id ) throws IOException
     {
         FileDb fileDb = null;
         try
@@ -82,7 +82,7 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
 
     @Override
-    public SerializableMetadata get( Object id ) throws IOException
+    public synchronized SerializableMetadata get( Object id ) throws IOException
     {
         FileDb fileDb = null;
 
@@ -100,7 +100,7 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
 
     @Override
-    public List<SerializableMetadata> get( String name ) throws IOException
+    public synchronized List<SerializableMetadata> get( String name ) throws IOException
     {
         if ( name == null )
         {
@@ -137,7 +137,7 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
 
     @Override
-    public boolean put( SerializableMetadata meta ) throws IOException
+    public synchronized boolean put( SerializableMetadata meta ) throws IOException
     {
         if ( !contains( meta.getId() ) )
         {
@@ -161,7 +161,7 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
 
     @Override
-    public boolean remove( Object id ) throws IOException
+    public synchronized boolean remove( Object id ) throws IOException
     {
         FileDb fileDb = null;
 
@@ -201,7 +201,7 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
     }
 
 
-    private MetadataListing listPackageMetadata( final String marker ) throws IOException
+    private synchronized MetadataListing listPackageMetadata( final String marker ) throws IOException
     {
         Map<String, SerializableMetadata> map;
         FileDb fileDb = null;

@@ -1,13 +1,15 @@
 package ai.subut.kurjun.security.manager.utils.ssl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.security.KeyStore;
+
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SSLManager
 {

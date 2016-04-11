@@ -80,7 +80,7 @@ class FileSystemFileStore implements FileStore
 
 
     @Override
-    public boolean contains( byte[] md5 ) throws IOException
+    public synchronized boolean contains( byte[] md5 ) throws IOException
     {
         FileDb fileDb = null;
         try
@@ -96,7 +96,7 @@ class FileSystemFileStore implements FileStore
 
 
     @Override
-    public InputStream get( byte[] md5 ) throws IOException
+    public synchronized InputStream get( byte[] md5 ) throws IOException
     {
         FileDb fileDb = null;
         try
@@ -158,7 +158,7 @@ class FileSystemFileStore implements FileStore
 
 
     @Override
-    public byte[] put( String filename, InputStream source ) throws IOException
+    public synchronized byte[] put( String filename, InputStream source ) throws IOException
     {
         Objects.requireNonNull( filename, "Filename" );
 
@@ -196,7 +196,7 @@ class FileSystemFileStore implements FileStore
 
 
     @Override
-    public boolean remove( byte[] md5 ) throws IOException
+    public synchronized boolean remove( byte[] md5 ) throws IOException
     {
         String hexMd5 = Hex.encodeHexString( md5 );
         FileDb fileDb = null;
@@ -253,7 +253,7 @@ class FileSystemFileStore implements FileStore
 
 
     @Override
-    public long sizeOf( byte[] md5 ) throws IOException
+    public synchronized long sizeOf( byte[] md5 ) throws IOException
     {
         FileDb fileDb = null;
         try
