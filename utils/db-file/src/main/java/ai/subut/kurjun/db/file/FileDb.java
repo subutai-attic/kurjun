@@ -7,12 +7,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
+import org.mapdb.Fun;
 import org.mapdb.TxMaker;
 
 
@@ -22,7 +22,7 @@ import org.mapdb.TxMaker;
  */
 public class FileDb implements Closeable
 {
-
+    private final Object lock = new Object();
     private final File file;
     protected final TxMaker txMaker;
 
@@ -30,12 +30,53 @@ public class FileDb implements Closeable
     /**
      * Constructs file based db backed by supplied file.
      *
-     * @param dbFile
+     * @param dbFile the path to the db file to use
      * @throws IOException
      */
     public FileDb( String dbFile ) throws IOException
     {
         this( dbFile, false );
+    }
+
+
+    /**
+     * Executes using the current thread context, and saving then restoring it after
+     * execution.
+     *
+     * @param func the transactional function block to use
+     * @param <T> the data type to take or return from the function
+     * @return the data type to get, replace or remove from the map
+     */
+    private <T> T threadLocalExecute( Fun.Function1<T, DB> func )
+    {
+        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
+
+        /*
+         * Incredibly high costs are incurred when rolling back out of transactions. By
+         * serializing we actually perform a lot better: approximate by 3-4x when
+         * concurrency starts to increase past 3-4 threads. The best thing to do is to
+         * just serialize access to the db and prevent rollbacks all together.
+         *
+         * Soon I will take a different strategy based on how reads work in this picture.
+         * I do not think they need to be syncrhonized however this must be tested
+         * thoroughly before making any presumptions.
+         */
+        try
+        {
+            synchronized ( lock )
+            {
+                return txMaker.execute( func );
+            }
+        }
+        finally
+        {
+            synchronized ( lock )
+            {
+                lock.notifyAll();
+            }
+            Thread.currentThread().setContextClassLoader( tccl );
+        }
     }
 
 
@@ -99,27 +140,14 @@ public class FileDb implements Closeable
      * @param key key to check association for
      * @return {@code true} if map contains association for the key; {@code false} otherwise
      */
-    public boolean contains( String mapName, Object key )
+    public boolean contains( final String mapName, final Object key )
     {
-        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
-        try
-        {
-            Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
-
-            DB db = txMaker.makeTx();
-            try
-            {
+        return threadLocalExecute( new Fun.Function1<Boolean, DB>() {
+            @Override
+            public Boolean run( final DB db ) {
                 return checkNameExists( mapName, db ) && db.getHashMap( mapName ).containsKey( key );
             }
-            finally
-            {
-                db.close();
-            }
-        }
-        finally
-        {
-            Thread.currentThread().setContextClassLoader( tccl );
-        }
+        } );
     }
 
 
@@ -134,29 +162,12 @@ public class FileDb implements Closeable
      */
     public <T> T get( String mapName, Object key, Class<T> clazz )
     {
-        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
-        try
-        {
-            Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
-
-            DB db = txMaker.makeTx();
-            try
-            {
-                if ( checkNameExists( mapName, db ) )
-                {
-                    return ( T ) db.getHashMap( mapName ).get( key );
-                }
+        return threadLocalExecute( new Fun.Function1<T, DB>() {
+            @Override
+            public T run( final DB db ) {
+                return ( T ) db.getHashMap( mapName ).get( key );
             }
-            finally
-            {
-                db.close();
-            }
-        }
-        finally
-        {
-            Thread.currentThread().setContextClassLoader( tccl );
-        }
-        return null;
+        } );
     }
 
 
@@ -170,31 +181,18 @@ public class FileDb implements Closeable
      */
     public <K, V> Map<K, V> get( String mapName )
     {
-        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
-        try
-        {
-            Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
-
-            Map<K, V> result = new HashMap<>();
-            DB db = txMaker.makeTx();
-            try
-            {
+        return threadLocalExecute( new Fun.Function1<Map<K,V>, DB>() {
+            @Override
+            public Map<K, V> run( final DB db ) {
+                Map<K, V> result = new HashMap<>();
                 if ( checkNameExists( mapName, db ) )
                 {
                     Map<K, V> snapshot = ( Map<K, V> ) db.getHashMap( mapName ).snapshot();
                     result.putAll( snapshot );
                 }
+                return result;
             }
-            finally
-            {
-                db.close();
-            }
-            return Collections.unmodifiableMap( result );
-        }
-        finally
-        {
-            Thread.currentThread().setContextClassLoader( tccl );
-        }
+        } );
     }
 
 
@@ -209,27 +207,14 @@ public class FileDb implements Closeable
      */
     public <T> T put( String mapName, Object key, T value )
     {
-        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
-        try
-        {
-            Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
-
-            DB db = txMaker.makeTx();
-            try
+        return threadLocalExecute( new Fun.Function1<T, DB>() {
+            @Override
+            public T run( final DB db )
             {
-                T put = ( T ) db.getHashMap( mapName ).put( key, value );
-                db.commit();
-                return put;
+                Map<Object, T> map = db.getHashMap( mapName );
+                return map.put( key, value );
             }
-            finally
-            {
-                db.close();
-            }
-        }
-        finally
-        {
-            Thread.currentThread().setContextClassLoader( tccl );
-        }
+        });
     }
 
 
@@ -243,26 +228,13 @@ public class FileDb implements Closeable
      */
     public <T> T remove( String mapName, Object key )
     {
-        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
-        try
-        {
-            Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
-            DB db = txMaker.makeTx();
-            try
-            {
-                T removed = ( T ) db.getHashMap( mapName ).remove( key );
-                db.commit();
-                return removed;
+        return threadLocalExecute( new Fun.Function1<T, DB>() {
+            @Override
+            public T run( final DB db ) {
+                Map<Object, T> map = db.getHashMap( mapName );
+                return map.remove( key );
             }
-            finally
-            {
-                db.close();
-            }
-        }
-        finally
-        {
-            Thread.currentThread().setContextClassLoader( tccl );
-        }
+        } );
     }
 
 
