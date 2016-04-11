@@ -65,18 +65,21 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
         FileDb fileDb = null;
         try
         {
-            fileDb = new FileDb( fileDbPath.toString());
+            fileDb = new FileDb( fileDbPath.toString() );
             boolean contains = fileDb.contains( MAP_NAME, id );
 
             return contains;
         }
-        catch(Exception ex)
+        catch ( Exception ex )
         {
-             return false;
+            return false;
         }
         finally
         {
-            if ( fileDb != null ) fileDb.close();
+            if ( fileDb != null )
+            {
+                fileDb.close();
+            }
         }
     }
 
@@ -93,8 +96,10 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
         }
         finally
         {
-            if(fileDb != null)
+            if ( fileDb != null )
+            {
                 fileDb.close();
+            }
         }
     }
 
@@ -119,8 +124,10 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
         }
         finally
         {
-            if(fileDb != null)
+            if ( fileDb != null )
+            {
                 fileDb.close();
+            }
         }
 
 
@@ -150,8 +157,10 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
             }
             finally
             {
-                if(fileDb != null)
+                if ( fileDb != null )
+                {
                     fileDb.close();
+                }
             }
 
             return true;
@@ -171,14 +180,16 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
             return fileDb.remove( MAP_NAME, id ) != null;
         }
-        catch(Exception ex)
+        catch ( Exception ex )
         {
             return false;
         }
         finally
         {
-            if(fileDb != null)
+            if ( fileDb != null )
+            {
                 fileDb.close();
+            }
         }
     }
 
@@ -208,13 +219,15 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
         try
         {
-            fileDb = new FileDb( fileDbPath.toString());
+            fileDb = new FileDb( fileDbPath.toString() );
             map = fileDb.get( MAP_NAME );
         }
         finally
         {
-            if(fileDb != null)
+            if ( fileDb != null )
+            {
                 fileDb.close();
+            }
         }
 
         Collection<SerializableMetadata> items = map.values();

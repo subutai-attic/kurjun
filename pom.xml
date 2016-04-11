@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <parent>
     <groupId>org.sonatype.oss</groupId>
@@ -30,10 +31,10 @@
   </modules>
 
   <description>
-    Kurjun is a configurable Apt Repository that can proxy, mirror or just hold 
+    Kurjun is a configurable Apt Repository that can proxy, mirror or just hold
     its own packages. It can merge together several repositories either as a proxy
     or a mirror. It can dynamically publish verified changes to the repository with
-    the ability to version control, access control, encrypt, verify and audit 
+    the ability to version control, access control, encrypt, verify and audit
     package changes.
   </description>
 
@@ -178,8 +179,7 @@
                     </archive>
         </configuration>-->
       </plugin>
- 
-            
+
       <!--            <plugin>
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
@@ -213,7 +213,7 @@
               </execution>
           </executions>
       </plugin>-->
-            
+
     </plugins>
 
     <pluginManagement>
@@ -290,7 +290,6 @@
       -->
     </profile>
   </profiles>
-
 
   <dependencyManagement>
     <dependencies>
@@ -390,7 +389,7 @@
         <artifactId>guice-multibindings</artifactId>
         <version>${guice.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>org.ops4j</groupId>
         <artifactId>peaberry</artifactId>
@@ -408,7 +407,7 @@
         <artifactId>slf4j-log4j12</artifactId>
         <version>${slf4j.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-java-sdk-s3</artifactId>
@@ -418,7 +417,7 @@
       <dependency>
         <groupId>org.mapdb</groupId>
         <artifactId>mapdb</artifactId>
-        <version>${mapdb.version}</version>
+        <version>3.0.0-M4</version>
       </dependency>
 
       <dependency>
@@ -432,7 +431,7 @@
         <artifactId>mybatis</artifactId>
         <version>${mybatis.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>org.mariadb.jdbc</groupId>
         <artifactId>mariadb-java-client</artifactId>
