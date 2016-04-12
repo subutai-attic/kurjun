@@ -7,4 +7,10 @@ package ai.subut.kurjun.model.metadata.apt;
 public enum Priority
 {
     required, important, standard, optional, extra;
+
+
+    public static Priority getRandom()
+    {
+        return values()[( int ) ( Math.random() * values().length )];
+    }
 }
