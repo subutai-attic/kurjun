@@ -10,6 +10,7 @@ import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.apt.DefaultIndexPackageMetaData;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
 import ai.subut.kurjun.metadata.common.raw.RawMetadata;
+import ai.subut.kurjun.metadata.common.snap.DefaultSnapMetadata;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 
 
@@ -37,6 +38,28 @@ public class KurjunRandomTest
     @Test
     public void testMetadata() throws Exception
     {
+        //        DefaultMetadata defaultMetadata = KurjunRandom.defaultMetadata();
+        //        Assert.assertNotNull( defaultMetadata );
+        //        System.out.println( "defaultMetadata = " + defaultMetadata.serialize() );
+        //
+        //        DefaultIndexPackageMetaData defaultIndexPackageMetaData = KurjunRandom.defaultIndexPackageMetaData();
+        //        Assert.assertNotNull( defaultIndexPackageMetaData );
+        //        System.out.println( "defaultIndexPackageMetaData = " + defaultIndexPackageMetaData.serialize() );
+        //
+        //        DefaultTemplate defaultTemplate = KurjunRandom.defaultTemplate();
+        //        Assert.assertNotNull( defaultTemplate );
+        //        System.out.println( "defaultTemplate = " + defaultTemplate.serialize() );
+        //
+        //        DefaultPackageMetadata defaultPackageMetadata = KurjunRandom.defaultPackageMetadata( null );
+        //        Assert.assertNotNull( defaultPackageMetadata );
+        //        System.out.println( "defaultPackageMetadata = " + defaultPackageMetadata.serialize() );
+        //
+        //        RawMetadata rawMetadata = KurjunRandom.rawMetadata();
+        //        Assert.assertNotNull( rawMetadata );
+        //        System.out.println( "rawMetadata = " + rawMetadata.serialize() );
+
+        RandomMetaData metaData = new RandomMetaData();
+
         DefaultMetadata defaultMetadata = KurjunRandom.defaultMetadata();
         Assert.assertNotNull( defaultMetadata );
         System.out.println( "defaultMetadata = " + defaultMetadata.serialize() );
@@ -45,17 +68,20 @@ public class KurjunRandomTest
         Assert.assertNotNull( defaultIndexPackageMetaData );
         System.out.println( "defaultIndexPackageMetaData = " + defaultIndexPackageMetaData.serialize() );
 
-        DefaultTemplate defaultTemplate = KurjunRandom.defaultTemplate();
+        DefaultTemplate defaultTemplate = metaData.generateTemplateMeta();
         Assert.assertNotNull( defaultTemplate );
         System.out.println( "defaultTemplate = " + defaultTemplate.serialize() );
 
-        DefaultPackageMetadata defaultPackageMetadata = KurjunRandom.defaultPackageMetadata( null );
+        DefaultPackageMetadata defaultPackageMetadata = metaData.generatePackageMetaData();
         Assert.assertNotNull( defaultPackageMetadata );
         System.out.println( "defaultPackageMetadata = " + defaultPackageMetadata.serialize() );
 
-        RawMetadata rawMetadata = KurjunRandom.rawMetadata();
+        RawMetadata rawMetadata = metaData.generateRawMetaData();
         Assert.assertNotNull( rawMetadata );
         System.out.println( "rawMetadata = " + rawMetadata.serialize() );
 
+        DefaultSnapMetadata snapMetadata = metaData.generateSnapMetaData();
+        Assert.assertNotNull( snapMetadata );
+        System.out.println( "rawMetadata = " + snapMetadata.serialize() );
     }
 }

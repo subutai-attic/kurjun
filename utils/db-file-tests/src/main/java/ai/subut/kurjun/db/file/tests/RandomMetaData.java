@@ -102,7 +102,7 @@ public class RandomMetaData
     }
 
 
-    public SnapMetadata generateSnapMetaData()
+    public DefaultSnapMetadata generateSnapMetaData()
     {
         DefaultSnapMetadata snapMetadata = new DefaultSnapMetadata();
 

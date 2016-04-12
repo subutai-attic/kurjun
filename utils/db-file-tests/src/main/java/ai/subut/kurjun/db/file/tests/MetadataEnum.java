@@ -8,6 +8,7 @@ import org.apache.commons.lang.math.RandomUtils;
 import ai.subut.kurjun.metadata.common.apt.DefaultIndexPackageMetaData;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
 import ai.subut.kurjun.metadata.common.raw.RawMetadata;
+import ai.subut.kurjun.metadata.common.snap.DefaultSnapMetadata;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 
@@ -19,7 +20,8 @@ public enum MetadataEnum
 {
     RAW( RawMetadata.class, "rawFiles" ),
     TEMPLATE( DefaultTemplate.class, "subutaiTemplates" ),
-    PACKAGE( DefaultPackageMetadata.class, "aptPackages" );
+    PACKAGE( DefaultPackageMetadata.class, "aptPackages" ),
+    SNAP( DefaultSnapMetadata.class, "snapPackages" );
 
     private final Class<? extends SerializableMetadata> metadataClass;
     private final String mapName;
@@ -41,27 +43,36 @@ public enum MetadataEnum
 
     public Supplier<SerializableMetadata> getSupplier()
     {
-        return new Supplier<SerializableMetadata>() {
+        return new Supplier<SerializableMetadata>()
+        {
             @Override
-            public SerializableMetadata get() {
+            public SerializableMetadata get()
+            {
+                RandomMetaData randomMetaData = new RandomMetaData();
+
                 if ( metadataClass.equals( RawMetadata.class ) )
                 {
-                    return KurjunRandom.rawMetadata();
+                    return randomMetaData.generateRawMetaData();
                 }
 
                 if ( metadataClass.equals( DefaultTemplate.class ) )
                 {
-                    return KurjunRandom.defaultTemplate();
+                    return randomMetaData.generateTemplateMeta();
                 }
 
                 if ( metadataClass.equals( DefaultPackageMetadata.class ) )
                 {
-                    return KurjunRandom.defaultPackageMetadata( null );
+                    return randomMetaData.generatePackageMetaData();
                 }
 
                 if ( metadataClass.equals( DefaultIndexPackageMetaData.class ) )
                 {
                     return KurjunRandom.defaultIndexPackageMetaData();
+                }
+
+                if ( metadataClass.equals( DefaultSnapMetadata.class ) )
+                {
+                    return randomMetaData.generateSnapMetaData();
                 }
 
                 throw new IllegalStateException( "Should not get here." );
@@ -91,7 +102,8 @@ public enum MetadataEnum
     }
 
 
-    public String getMapName() {
+    public String getMapName()
+    {
         return mapName;
     }
 }
