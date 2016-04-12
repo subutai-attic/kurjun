@@ -37,6 +37,10 @@ public class FileDb implements Closeable
     public FileDb( String dbFile ) throws IOException
     {
         createDir( ROOT_DIR );
+        if ( !loaded )
+        {
+            loadMapOfMaps();
+        }
     }
 
 
@@ -153,7 +157,7 @@ public class FileDb implements Closeable
                       ObjectOutputStream objectOutputStream = new ObjectOutputStream( fileOutputStream ) )
                 {
                     objectOutputStream.writeObject( obj );
-
+                    objectOutputStream.flush();
                     Files.move( tmpPath, targetPath, StandardCopyOption.REPLACE_EXISTING );
                 }
             }
@@ -213,12 +217,22 @@ public class FileDb implements Closeable
                             fileInputStream.read( data );
 
                             String str = new String( data, "UTF-8" );
+                            JsonWrapper jsonWrapper = gson.fromJson( str, JsonWrapper.class );
 
-                            //                        map.put( jsonFile.getName(), gson.fromJson( str ) );
+                            Class clazz = Class.forName( jsonWrapper.getClassType() );
+
+                            Object object = gson.fromJson( jsonWrapper.getJsonObject(), clazz );
+                            map.put( jsonFile.getName().split( "\\." )[0], object );
+                        }
+                        catch ( ClassNotFoundException e )
+                        {
+                            e.printStackTrace();
                         }
                     }
+                    mapOfMap.put( file.getName(), map );
                 }
             }
+            loaded = true;
         }
     }
 
