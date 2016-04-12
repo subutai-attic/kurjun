@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -142,15 +143,19 @@ public class FileDb implements Closeable
         {
             try
             {
+                JsonWrapper obj = new JsonWrapper( value.getClass().getName(), MetadataUtils.JSON.toJson( value ) );
+
                 Path targetPath = new File( targetDir ).toPath();
 
                 Path tmpPath = Files.createTempFile( String.valueOf( key ), ".json" );
 
-                FileOutputStream fileOutputStream = new FileOutputStream( tmpPath.toFile() );
+                try ( FileOutputStream fileOutputStream = new FileOutputStream( tmpPath.toFile() );
+                      ObjectOutputStream objectOutputStream = new ObjectOutputStream( fileOutputStream ) )
+                {
+                    objectOutputStream.writeObject( obj );
 
-                fileOutputStream.write( MetadataUtils.JSON.toJson( value ).getBytes() );
-
-                Files.move( tmpPath, targetPath, StandardCopyOption.REPLACE_EXISTING );
+                    Files.move( tmpPath, targetPath, StandardCopyOption.REPLACE_EXISTING );
+                }
             }
             catch ( IOException e )
             {
@@ -162,8 +167,6 @@ public class FileDb implements Closeable
 
     /**
      * Flush flashes content of the Map of Maps to FS
-     *
-     * @return success on successful writes, false otherwise
      */
     private void flush()
     {
@@ -204,12 +207,15 @@ public class FileDb implements Closeable
                     //for each json file convert back to type
                     for ( File jsonFile : jsonFiles )
                     {
-                        FileInputStream fileInputStream = new FileInputStream( jsonFile );
-                        byte[] data = new byte[( int ) jsonFile.length()];
-                        fileInputStream.read( data );
-                        fileInputStream.close();
-                        String str = new String( data, "UTF-8" );
-                        //                    map.put( jsonFile.getName(), gson.fromJson( str ) );
+                        try ( FileInputStream fileInputStream = new FileInputStream( jsonFile ) )
+                        {
+                            byte[] data = new byte[( int ) jsonFile.length()];
+                            fileInputStream.read( data );
+
+                            String str = new String( data, "UTF-8" );
+
+                            //                        map.put( jsonFile.getName(), gson.fromJson( str ) );
+                        }
                     }
                 }
             }
@@ -220,6 +226,7 @@ public class FileDb implements Closeable
     private FilenameFilter filenameFilter()
     {
         FilenameFilter filter = ( dir, name ) -> name.endsWith( ".json" );
+
         return filter;
     }
 }
