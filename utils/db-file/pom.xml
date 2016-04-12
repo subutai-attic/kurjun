@@ -25,6 +25,11 @@
       <groupId>org.mapdb</groupId>
       <artifactId>mapdb</artifactId>
     </dependency>
+    <dependency>
+      <groupId>ai.subut.kurjun</groupId>
+      <artifactId>metadata-common</artifactId>
+      <version>1.0</version>
+    </dependency>
 
   </dependencies>
 

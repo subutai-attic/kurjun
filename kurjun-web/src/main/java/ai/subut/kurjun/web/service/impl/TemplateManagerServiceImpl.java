@@ -420,7 +420,7 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
                 }
             } );
 
-            thread.run();
+            thread.start();
 
             if ( loaded[0] instanceof DefaultTemplate )
             {
