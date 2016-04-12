@@ -182,13 +182,14 @@ public class KurjunRandom
     public static DefaultIndexPackageMetaData defaultIndexPackageMetaData()
     {
         DefaultIndexPackageMetaData defaultIndexPackageMetaData = new DefaultIndexPackageMetaData();
-        defaultPackageMetadata( defaultIndexPackageMetaData );
 
         defaultIndexPackageMetaData.setSize( size() );
         defaultIndexPackageMetaData.setSha1( sha1() );
         defaultIndexPackageMetaData.setSha256( sha256() );
         defaultIndexPackageMetaData.setDescriptionMd5( md5() );
         defaultIndexPackageMetaData.setTag( tag() );
+
+        defaultPackageMetadata( defaultIndexPackageMetaData );
 
         return defaultIndexPackageMetaData;
     }
