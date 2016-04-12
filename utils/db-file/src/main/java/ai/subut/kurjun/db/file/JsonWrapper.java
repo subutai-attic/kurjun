@@ -1,7 +1,10 @@
 package ai.subut.kurjun.db.file;
 
 
-public class JsonWrapper
+import java.io.Serializable;
+
+
+public class JsonWrapper implements Serializable
 {
     private String classType;
 

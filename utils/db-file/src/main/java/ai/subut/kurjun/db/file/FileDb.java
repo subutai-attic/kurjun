@@ -7,10 +7,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,7 +29,7 @@ public class FileDb implements Closeable
 
     Gson gson = new Gson();
 
-    private static final String ROOT_DIR = "/tmp/var/kurjun/";
+    private static final String ROOT_DIR = "/tmp/var/kurjun/storage/";
 
     volatile boolean loaded = false;
 
@@ -37,6 +37,7 @@ public class FileDb implements Closeable
     public FileDb( String dbFile ) throws IOException
     {
         createDir( ROOT_DIR );
+
         if ( !loaded )
         {
             loadMapOfMaps();
@@ -93,6 +94,7 @@ public class FileDb implements Closeable
 
         mapOfMap.put( mapName, map );
         //write to fs
+
         persist( mapName, key, value );
 
         return map.put( key, value );
@@ -140,31 +142,26 @@ public class FileDb implements Closeable
     //persist replacing previous file
     private synchronized void persist( String mapName, Object key, Object value )
     {
-        String targetDir = ROOT_DIR + mapName;
-
+        String targetDir = ROOT_DIR + mapName + "/";
+        System.out.println( "File: " + targetDir );
         //create dir if does not exist
-        if ( createDir( targetDir ) )
+        createDir( targetDir );
+
+        try
         {
-            try
+            JsonWrapper obj = new JsonWrapper( value.getClass().getName(), MetadataUtils.JSON.toJson( value ) );
+            Path tmpPath = Files.createFile( new File( targetDir + key + ".json" ).toPath() );
+
+            try ( FileOutputStream fileOutputStream = new FileOutputStream( tmpPath.toFile() );
+                  ObjectOutputStream objectOutputStream = new ObjectOutputStream( fileOutputStream ) )
             {
-                JsonWrapper obj = new JsonWrapper( value.getClass().getName(), MetadataUtils.JSON.toJson( value ) );
-
-                Path targetPath = new File( targetDir ).toPath();
-
-                Path tmpPath = Files.createTempFile( String.valueOf( key ), ".json" );
-
-                try ( FileOutputStream fileOutputStream = new FileOutputStream( tmpPath.toFile() );
-                      ObjectOutputStream objectOutputStream = new ObjectOutputStream( fileOutputStream ) )
-                {
-                    objectOutputStream.writeObject( obj );
-                    objectOutputStream.flush();
-                    Files.move( tmpPath, targetPath, StandardCopyOption.REPLACE_EXISTING );
-                }
+                objectOutputStream.writeObject( obj );
+                objectOutputStream.flush();
             }
-            catch ( IOException e )
-            {
-                e.printStackTrace();
-            }
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace();
         }
     }
 
@@ -172,6 +169,8 @@ public class FileDb implements Closeable
     /**
      * Flush flashes content of the Map of Maps to FS
      */
+
+
     private void flush()
     {
     }
@@ -211,17 +210,15 @@ public class FileDb implements Closeable
                     //for each json file convert back to type
                     for ( File jsonFile : jsonFiles )
                     {
-                        try ( FileInputStream fileInputStream = new FileInputStream( jsonFile ) )
+                        try ( FileInputStream fileInputStream = new FileInputStream( jsonFile );
+                              ObjectInputStream objectInputStream = new ObjectInputStream( fileInputStream ) )
                         {
-                            byte[] data = new byte[( int ) jsonFile.length()];
-                            fileInputStream.read( data );
-
-                            String str = new String( data, "UTF-8" );
-                            JsonWrapper jsonWrapper = gson.fromJson( str, JsonWrapper.class );
+                            JsonWrapper jsonWrapper = ( JsonWrapper ) objectInputStream.readObject();
 
                             Class clazz = Class.forName( jsonWrapper.getClassType() );
 
                             Object object = gson.fromJson( jsonWrapper.getJsonObject(), clazz );
+                            //filename.json -> filename
                             map.put( jsonFile.getName().split( "\\." )[0], object );
                         }
                         catch ( ClassNotFoundException e )
