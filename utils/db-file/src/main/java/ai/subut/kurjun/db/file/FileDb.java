@@ -4,6 +4,7 @@ package ai.subut.kurjun.db.file;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -31,17 +32,34 @@ public class FileDb implements Closeable
 
     private static final String ROOT_DIR = "/tmp/var/kurjun/storage/";
 
-    volatile boolean loaded = false;
-
 
     public FileDb( String dbFile ) throws IOException
     {
-        createDir( ROOT_DIR );
+        init();
 
-        if ( !loaded )
+        File file = new File( dbFile );
+
+        if ( file.isDirectory() )
         {
-            loadMapOfMaps();
+            loadFromDir( file );
         }
+        else
+        {
+            try
+            {
+                loadJsonFile( file );
+            }
+            catch ( Exception e )
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    private void init()
+    {
+        createDir( ROOT_DIR );
     }
 
 
@@ -72,7 +90,9 @@ public class FileDb implements Closeable
 
         if ( copyMe == null )
         {
-            return null;
+            Map<K, V> map = new HashMap<>();
+            mapOfMap.put( mapName, ( Map<Object, ?> ) map );
+            return map;
         }
 
         Map<K, V> result = new HashMap<>( copyMe.size() );
@@ -143,7 +163,6 @@ public class FileDb implements Closeable
     private synchronized void persist( String mapName, Object key, Object value )
     {
         String targetDir = ROOT_DIR + mapName + "/";
-        System.out.println( "File: " + targetDir );
         //create dir if does not exist
         createDir( targetDir );
 
@@ -203,34 +222,58 @@ public class FileDb implements Closeable
                 //if it is a dir, search of .json files
                 if ( file.isDirectory() )
                 {
-                    //get all json files in that dir
-                    File jsonFiles[] = file.listFiles( filenameFilter() );
-
-                    Map map = new HashMap<>();
-                    //for each json file convert back to type
-                    for ( File jsonFile : jsonFiles )
-                    {
-                        try ( FileInputStream fileInputStream = new FileInputStream( jsonFile );
-                              ObjectInputStream objectInputStream = new ObjectInputStream( fileInputStream ) )
-                        {
-                            JsonWrapper jsonWrapper = ( JsonWrapper ) objectInputStream.readObject();
-
-                            Class clazz = Class.forName( jsonWrapper.getClassType() );
-
-                            Object object = gson.fromJson( jsonWrapper.getJsonObject(), clazz );
-                            //filename.json -> filename
-                            map.put( jsonFile.getName().split( "\\." )[0], object );
-                        }
-                        catch ( ClassNotFoundException e )
-                        {
-                            e.printStackTrace();
-                        }
-                    }
-                    mapOfMap.put( file.getName(), map );
+                    loadFromDir( file );
                 }
             }
-            loaded = true;
         }
+    }
+
+
+    private synchronized void loadFromDir( File file ) throws FileNotFoundException
+    {
+        //get all json files in that dir
+        File jsonFiles[] = file.listFiles( filenameFilter() );
+
+        //for each json file convert back to type
+        for ( File jsonFile : jsonFiles )
+        {
+            try
+            {
+                mapOfMap.put( file.getName(), loadJsonFile( jsonFile ) );
+            }
+            catch ( Exception e )
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    private synchronized Map loadJsonFile( File jsonFile ) throws Exception
+    {
+        Map map = new HashMap<>();
+
+        if ( !jsonFile.getName().endsWith( ".json" ) )
+        {
+            throw new Exception( "File format exception" );
+        }
+
+        try ( FileInputStream fileInputStream = new FileInputStream( jsonFile );
+              ObjectInputStream objectInputStream = new ObjectInputStream( fileInputStream ) )
+        {
+            JsonWrapper jsonWrapper = ( JsonWrapper ) objectInputStream.readObject();
+
+            Class clazz = Class.forName( jsonWrapper.getClassType() );
+
+            Object object = gson.fromJson( jsonWrapper.getJsonObject(), clazz );
+            //filename.json -> filename
+            map.put( jsonFile.getName().split( "\\." )[0], object );
+        }
+        catch ( ClassNotFoundException | IOException e )
+        {
+            e.printStackTrace();
+        }
+        return map;
     }
 
 
