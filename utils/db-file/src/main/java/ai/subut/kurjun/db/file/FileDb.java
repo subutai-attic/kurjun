@@ -127,14 +127,14 @@ public class FileDb implements Closeable
 
         if ( map != null )
         {
-            try
-            {
-                removeJsonFile( mapName, key );
-            }
-            catch ( IOException e )
-            {
-                e.printStackTrace();
-            }
+            //            try
+            //            {
+            //                removeJsonFile( mapName, key );
+            //            }
+            //            catch ( IOException e )
+            //            {
+            //                e.printStackTrace();
+            //            }
             return map.remove( key );
         }
 
@@ -255,7 +255,7 @@ public class FileDb implements Closeable
 
         if ( !jsonFile.getName().endsWith( ".json" ) )
         {
-            throw new Exception( "File format exception" );
+            throw new Exception( "Cannot load file: " + jsonFile.getName() );
         }
 
         try ( FileInputStream fileInputStream = new FileInputStream( jsonFile );
