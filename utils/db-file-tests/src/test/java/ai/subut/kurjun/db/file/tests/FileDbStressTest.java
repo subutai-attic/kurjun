@@ -12,7 +12,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import org.apache.commons.io.FileUtils;
 
@@ -28,6 +30,10 @@ public class FileDbStressTest
     public static final int TOTAL = 10000;
     public static final int CONCURRENCY = 200;
 
+    @Rule
+    public TemporaryFolder temp = new TemporaryFolder();
+
+
     File file;
     FileDb fileDb;
     ExecutorService workers;
@@ -39,16 +45,18 @@ public class FileDbStressTest
     {
         workers = Executors.newFixedThreadPool( CONCURRENCY );
 
-        Properties props = new Properties();
-        props.load( ClassLoader.getSystemResourceAsStream( "test.properties" ) );
-        file = new File( props.getProperty( TARGET_PATH_PROP ), "metadata.db" );
+//        Properties props = new Properties();
+//        props.load( ClassLoader.getSystemResourceAsStream( "test.properties" ) );
+//        file = new File( props.getProperty( TARGET_PATH_PROP ), "metadata.json" );
+//
+//        if ( file.exists() )
+//        {
+//            FileUtils.forceDelete( file );
+//        }
 
-        if ( file.exists() )
-        {
-            FileUtils.forceDelete( file );
-        }
 
-        fileDb = new FileDb( file.getAbsolutePath() );
+//        fileDb = new FileDb( file.getAbsolutePath() );
+        fileDb = new FileDb( "/tmp/var/lib/kurjun/fs/storage/subutaiTemplates" );
     }
 
 
@@ -57,10 +65,10 @@ public class FileDbStressTest
     {
         fileDb.close();
 
-        if ( file.exists() )
-        {
-            FileUtils.forceDelete( file );
-        }
+//        if ( file.exists() )
+//        {
+//            FileUtils.forceDelete( file );
+//        }
     }
 
 

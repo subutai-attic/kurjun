@@ -107,6 +107,7 @@ public class FileDb implements Closeable
 
         if ( map != null )
         {
+            persist( mapName, key, value );
             return map.put( key, value );
         }
 
