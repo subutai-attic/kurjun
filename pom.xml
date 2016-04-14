@@ -93,7 +93,7 @@
     <cxf-rt-frontend-jaxrs.version>3.1.0</cxf-rt-frontend-jaxrs.version>
     <cxf-rt-rs-client.version>3.1.0</cxf-rt-rs-client.version>
     <aws-java-sdk-s3.version>1.10.42</aws-java-sdk-s3.version>
-    <mapdb.version>1.0.8</mapdb.version>
+    <!--<mapdb.version>1.0.8</mapdb.version>-->
     <hikariCp.version>2.4.1</hikariCp.version>
     <mybatis.version>3.3.0</mybatis.version>
     <mariadb-java-client.version>1.2.2</mariadb-java-client.version>
@@ -414,11 +414,11 @@
         <version>${aws-java-sdk-s3.version}</version>
       </dependency>
 
-      <dependency>
-        <groupId>org.mapdb</groupId>
-        <artifactId>mapdb</artifactId>
-        <version>3.0.0-M4</version>
-      </dependency>
+      <!--<dependency>-->
+        <!--<groupId>org.mapdb</groupId>-->
+        <!--<artifactId>mapdb</artifactId>-->
+        <!--<version>3.0.0-M4</version>-->
+      <!--</dependency>-->
 
       <dependency>
         <groupId>com.zaxxer</groupId>

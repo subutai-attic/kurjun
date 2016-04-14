@@ -30,7 +30,7 @@ public class FileDb implements Closeable
 
     Gson gson = new Gson();
 
-    private static final String ROOT_DIR = "/tmp/var/kurjun/storage/";
+    private static final String ROOT_DIR = "/var/lib/kurjun/fs/storage/";
 
 
     public FileDb( String dbFile ) throws IOException
