@@ -37,23 +37,23 @@ public class FileDb implements Closeable
     {
         init();
 
-        File file = new File( dbFile );
-
-        if ( file.isDirectory() )
-        {
-            loadFromDir( file );
-        }
-        else
-        {
-            try
-            {
-                loadJsonFile( file );
-            }
-            catch ( Exception e )
-            {
-                e.printStackTrace();
-            }
-        }
+//        File file = new File( dbFile );
+//
+//        if ( file.isDirectory() )
+//        {
+//            loadFromDir( file );
+//        }
+//        else
+//        {
+//            try
+//            {
+//                loadJsonFile( file );
+//            }
+//            catch ( Exception e )
+//            {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
 
