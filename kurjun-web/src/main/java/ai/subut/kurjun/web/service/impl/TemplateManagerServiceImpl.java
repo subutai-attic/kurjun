@@ -163,25 +163,34 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     {
         List<SerializableMetadata> results;
 
-        switch ( repository )
+        try
         {
-            //return local list
-            case "local":
-                results = localPublicTemplateRepository.listPackages();
-                //return personal repository list
-                break;
-            case "all":
-                results = unifiedTemplateRepository.listPackages();
-                //return unified repo list
-                break;
-            default:
-                results = unifiedTemplateRepository.listPackages();
-                results.addAll(
-                        repositoryFactory.createLocalTemplate( new KurjunContext( repository ) ).listPackages() );
-                break;
-        }
+            switch ( repository )
+            {
+                //return local list
+                case "local":
+                    results = localPublicTemplateRepository.listPackages();
+                    //return personal repository list
+                    break;
+                case "all":
+                    results = unifiedTemplateRepository.listPackages();
+                    //return unified repo list
+                    break;
+                default:
+                    results = unifiedTemplateRepository.listPackages();
+                    results.addAll(
+                            repositoryFactory.createLocalTemplate( new KurjunContext( repository ) ).listPackages() );
+                    break;
+            }
 
-        return results;
+            return results;
+
+        }
+        catch(Exception ex)
+        {
+            LOGGER.error( "***** Error in getTemplateList:" ,ex);
+            return null;
+        }
     }
 
 

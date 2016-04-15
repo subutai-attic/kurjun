@@ -19,11 +19,13 @@
         <div style="margin-left: 200px">
 
             <form method="get" actoin="${contextPath}/">
+                <#if repos??>
                 <label>Show by repo: </label><select name="repo" id="repo-filter">
                     <#list repos as repo >
                         <option value="${repo}" <#if sel_repo==repo >selected</#if> >${repo}</option>
                     </#list>
                 </select>
+                </#if>
             </form>
         </div>
         <table id="templates_tbl" class="b-data-table">

@@ -347,17 +347,24 @@ public class RawManagerServiceImpl implements RawManagerService
     @Override
     public List<SerializableMetadata> list( String repository )
     {
-        switch ( repository )
+        try
         {
-            //return local list
-            case "local":
-                return localPublicRawRepository.listPackages();
-            //return unified repo list
-            case "all":
-                return unifiedRepository.listPackages();
-            //return personal repository list
-            default:
-                return repositoryFactory.createLocalApt( new KurjunContext( repository ) ).listPackages();
+            switch ( repository )
+            {
+                //return local list
+                case "local":
+                    return localPublicRawRepository.listPackages();
+                //return unified repo list
+                case "all":
+                    return unifiedRepository.listPackages();
+                //return personal repository list
+                default:
+                    return repositoryFactory.createLocalApt( new KurjunContext( repository ) ).listPackages();
+            }
+        }
+        catch(Exception ex)
+        {
+            return null;
         }
     }
 

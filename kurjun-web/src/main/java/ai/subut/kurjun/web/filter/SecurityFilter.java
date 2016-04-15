@@ -35,6 +35,17 @@ public class SecurityFilter implements Filter
         {
             Session session = ctx.getSession();
             UserSession uSession = null;
+
+
+            //**********************************************
+            if(ctx.getRequestPath().equals( "/login" ))
+            {
+                session.clear();
+                return filterChain.next( ctx );
+            }
+            //**********************************************
+
+
             String sptoken = ctx.getParameter( USER_TOKEN );
 
             if( Strings.isNullOrEmpty(sptoken))

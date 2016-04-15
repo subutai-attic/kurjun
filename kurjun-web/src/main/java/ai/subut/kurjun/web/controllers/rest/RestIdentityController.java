@@ -1,6 +1,7 @@
 package ai.subut.kurjun.web.controllers.rest;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -37,8 +38,17 @@ public class RestIdentityController extends BaseController
     public Result getUsers()
     {
         List<User> users = identityManagerService.getAllUsers();
+        List<String> userNames = new ArrayList<>();
 
-        return Results.ok().render( users ).json();
+        if(!users.isEmpty())
+        {
+            for(User user: users)
+            {
+                userNames.add( user.getKeyFingerprint());
+            }
+        }
+
+        return Results.ok().render( userNames ).json();
     }
 
 

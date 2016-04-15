@@ -66,7 +66,7 @@ public class TemplateController extends BaseController
             defaultTemplateList = templateManagerService.list( uSession, repo, false );
             //*****************************************************
         }
-        catch ( IOException e )
+        catch ( Exception e )
         {
             flashScope.error( "Failed to get list of templates." );
             LOGGER.error( "Failed to get list of templates: " + e.getMessage() );

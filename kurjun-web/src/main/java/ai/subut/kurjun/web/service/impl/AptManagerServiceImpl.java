@@ -298,23 +298,32 @@ public class AptManagerServiceImpl implements AptManagerService
     {
         List<SerializableMetadata> list;
 
-        switch ( repository )
+        try
         {
-            //return local list
-            case "local":
-                list = localRepository.listPackages();
-                break;
-            //return unified repo list
-            case "all":
-                list = unifiedRepository.listPackages();
-                break;
-            //return personal repository list
-            default:
-                list = repositoryFactory.createLocalApt( new KurjunContext( repository ) ).listPackages();
-                break;
+            switch ( repository )
+            {
+                //return local list
+                case "local":
+                    list = localRepository.listPackages();
+                    break;
+                //return unified repo list
+                case "all":
+                    list = unifiedRepository.listPackages();
+                    break;
+                //return personal repository list
+                default:
+                    list = repositoryFactory.createLocalApt( new KurjunContext( repository ) ).listPackages();
+                    break;
+            }
+
+            return list.stream().map( pkg -> ( DefaultPackageMetadata ) pkg ).collect( Collectors.toList() );
+        }
+        catch(Exception ex)
+        {
+            LOGGER.error( "***** Error in aptgetList:" ,ex);
+            return null;
         }
 
-        return list.stream().map( pkg -> ( DefaultPackageMetadata ) pkg ).collect( Collectors.toList() );
     }
 
 
