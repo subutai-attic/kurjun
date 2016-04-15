@@ -73,9 +73,9 @@ class RemoteAptRepository extends RemoteRepositoryBase
     private static final String MD5_PATH = "/md5";
     private static final String DEB_PATH = "deb";
 
-    private static final int CONN_TIMEOUT = 5000;
-    private static final int READ_TIMEOUT = 100000;
-    private static final int CONN_TIMEOUT_FOR_URL_CHECK = 500;
+    private static final int CONN_TIMEOUT = 10000;
+    private static final int READ_TIMEOUT = 1200000;
+    private static final int CONN_TIMEOUT_FOR_URL_CHECK = 10000;
 
     private List<SerializableMetadata> remoteIndexChache = new LinkedList<>();
     private String md5Sum = "";

@@ -45,7 +45,7 @@ abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepo
 
     protected abstract Logger getLogger();
 
-    
+
     /**
      * Checks if there is a cached package file for the supplied meta data.
      *
@@ -109,6 +109,14 @@ abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepo
         return null;
     }
 
+
+    protected byte[] importTemplate( InputStream is, Metadata metadata )
+    {
+
+        return new byte[0];
+    }
+
+
     protected File getTempFile()
     {
         try
@@ -138,7 +146,9 @@ abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepo
         return !md5.equalsIgnoreCase( getMd5() );
     }
 
-    public abstract  List<SerializableMetadata> getCachedData();
+
+    public abstract List<SerializableMetadata> getCachedData();
+
 
     protected void deleteCache( byte[] md5 )
     {
