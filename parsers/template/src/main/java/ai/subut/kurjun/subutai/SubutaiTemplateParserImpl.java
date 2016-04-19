@@ -74,7 +74,8 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
     }
 
 
-    private SubutaiTemplateMetadata parseConfigFile( InputStream stream, InputStream packagesStream, byte[] md5 ) throws IOException
+    private SubutaiTemplateMetadata parseConfigFile( InputStream stream, InputStream packagesStream, byte[] md5 )
+            throws IOException
     {
         if ( stream == null )
         {
@@ -179,6 +180,7 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
                 return null;
             }
 
+
             @Override
             public Map<String, String> getExtra()
             {
@@ -192,7 +194,7 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
                 skipProperties.add( CONFIG_FILE_CONTENTS_KEY );
                 skipProperties.add( PACKAGES_FILE_CONTENTS_KEY );
 
-                Map< String, String> map = new HashMap<>();
+                Map<String, String> map = new HashMap<>();
                 for ( String key : prop.stringPropertyNames() )
                 {
                     if ( !skipProperties.contains( key ) )
@@ -209,9 +211,22 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
             {
                 return 0;
             }
+
+
+            @Override
+            public String getAlias()
+            {
+                return "";
+            }
+
+
+
+            @Override
+            public long getDateAdded()
+            {
+                return 0;
+            }
         };
     }
-
-
 }
 

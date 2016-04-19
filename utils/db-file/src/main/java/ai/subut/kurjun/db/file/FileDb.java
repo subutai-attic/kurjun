@@ -33,6 +33,7 @@ public class FileDb implements Closeable
     //default value for cache dir
     private String ROOT_DIR = "/tmp/";
 
+
     public FileDb( String dbFile ) throws IOException
     {
         //set root dir for cache metadata
@@ -40,23 +41,24 @@ public class FileDb implements Closeable
 
         init();
 
-        File file = new File( this.ROOT_DIR );
-
-        if ( file.isDirectory() )
-        {
-            loadFromDir( file );
-        }
-        else
-        {
-            try
-            {
-                loadJsonFile( file );
-            }
-            catch ( Exception e )
-            {
-                e.printStackTrace();
-            }
-        }
+        loadMapOfMaps();
+        //        File file = new File( this.ROOT_DIR );
+        //
+        //        if ( file.isDirectory() )
+        //        {
+        //            loadFromDir( file );
+        //        }
+        //        else
+        //        {
+        //            try
+        //            {
+        //                loadJsonFile( file );
+        //            }
+        //            catch ( Exception e )
+        //            {
+        //                e.printStackTrace();
+        //            }
+        //        }
     }
 
 
@@ -214,7 +216,7 @@ public class FileDb implements Closeable
 
     private synchronized void loadMapOfMaps() throws IOException
     {
-        File fileDirectory = new File( ROOT_DIR );
+        File fileDirectory = new File( this.ROOT_DIR );
 
         File[] files = fileDirectory.listFiles();
 
