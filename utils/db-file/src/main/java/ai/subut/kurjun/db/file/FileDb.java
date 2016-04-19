@@ -26,34 +26,37 @@ import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
  */
 public class FileDb implements Closeable
 {
-    private static final Map<String, Map<Object, ?>> mapOfMap = new ConcurrentHashMap<>( 10 );
+    private final Map<String, Map<Object, ?>> mapOfMap = new ConcurrentHashMap<>( 10 );
 
     Gson gson = new Gson();
 
-    private static final String ROOT_DIR = "/var/lib/kurjun/fs/storage/";
-
+    //default value for cache dir
+    private String ROOT_DIR = "/tmp/";
 
     public FileDb( String dbFile ) throws IOException
     {
+        //set root dir for cache metadata
+        this.ROOT_DIR = dbFile;
+
         init();
 
-//        File file = new File( dbFile );
-//
-//        if ( file.isDirectory() )
-//        {
-//            loadFromDir( file );
-//        }
-//        else
-//        {
-//            try
-//            {
-//                loadJsonFile( file );
-//            }
-//            catch ( Exception e )
-//            {
-//                e.printStackTrace();
-//            }
-//        }
+        File file = new File( this.ROOT_DIR );
+
+        if ( file.isDirectory() )
+        {
+            loadFromDir( file );
+        }
+        else
+        {
+            try
+            {
+                loadJsonFile( file );
+            }
+            catch ( Exception e )
+            {
+                e.printStackTrace();
+            }
+        }
     }
 
 
