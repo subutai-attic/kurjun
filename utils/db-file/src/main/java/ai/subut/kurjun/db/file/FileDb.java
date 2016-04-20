@@ -251,7 +251,7 @@ public class FileDb implements Closeable
         {
             try
             {
-                mapOfMap.put( jsonFile.getName().split( "\\." )[0], loadJsonFile( jsonFile ) );
+                mapOfMap.put( file.getName(), loadJsonFile( jsonFile ) );
             }
             catch ( Exception e )
             {

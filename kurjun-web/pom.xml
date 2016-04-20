@@ -24,91 +24,91 @@
   </properties>
 
   <build>
-    <finalName>kurjun</finalName>
-    <plugins>
+    <!--<finalName>kurjun</finalName>-->
+    <!--<plugins>-->
 
-      <!-- Ninja SuperDevMode -->
-      <plugin>
-        <groupId>org.ninjaframework</groupId>
-        <artifactId>ninja-maven-plugin</artifactId>
-        <version>${ninja.version}</version>
-        <configuration>
-          <useDefaultExcludes>true</useDefaultExcludes>
-          <excludes>
-            <exclude>(.*)html$</exclude>
-          </excludes>
-          <context>/kurjun</context>
-        </configuration>
-      </plugin>
+      <!--&lt;!&ndash; Ninja SuperDevMode &ndash;&gt;-->
+      <!--<plugin>-->
+        <!--<groupId>org.ninjaframework</groupId>-->
+        <!--<artifactId>ninja-maven-plugin</artifactId>-->
+        <!--<version>${ninja.version}</version>-->
+        <!--<configuration>-->
+          <!--<useDefaultExcludes>true</useDefaultExcludes>-->
+          <!--<excludes>-->
+            <!--<exclude>(.*)html$</exclude>-->
+          <!--</excludes>-->
+          <!--<context>/kurjun</context>-->
+        <!--</configuration>-->
+      <!--</plugin>-->
 
-      <!-- Needed to debug in SuperDevMode -->
-      <plugin>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-maven-plugin</artifactId>
-        <version>9.3.0.M2</version>
-        <configuration>
-          <webApp>
-            <contextPath>/kurjun</contextPath>
-          </webApp>          <stopKey>stop</stopKey>
-          <stopPort>8889</stopPort>
-          <scanIntervalSeconds>1</scanIntervalSeconds>
-          <reload>automatic</reload>
-          <scanTargetPatterns>
-            <scanTargetPattern>
-              <directory>target/classes</directory>
-              <includes>
-                <include>**/*</include>
-              </includes>
-              <excludes>
-                <exclude>**/*.ftl.html</exclude>
-                <exclude>assets/**</exclude>
-              </excludes>
-            </scanTargetPattern>
-          </scanTargetPatterns>
-          <systemProperties>
-            <systemProperty>
-              <name>ninja.mode</name>
-              <value>dev</value>
-            </systemProperty>
-          </systemProperties>
-        </configuration>
-      </plugin>
+      <!--&lt;!&ndash; Needed to debug in SuperDevMode &ndash;&gt;-->
+      <!--<plugin>-->
+        <!--<groupId>org.eclipse.jetty</groupId>-->
+        <!--<artifactId>jetty-maven-plugin</artifactId>-->
+        <!--<version>9.3.0.M2</version>-->
+        <!--<configuration>-->
+          <!--<webApp>-->
+            <!--<contextPath>/kurjun</contextPath>-->
+          <!--</webApp>          <stopKey>stop</stopKey>-->
+          <!--<stopPort>8889</stopPort>-->
+          <!--<scanIntervalSeconds>1</scanIntervalSeconds>-->
+          <!--<reload>automatic</reload>-->
+          <!--<scanTargetPatterns>-->
+            <!--<scanTargetPattern>-->
+              <!--<directory>target/classes</directory>-->
+              <!--<includes>-->
+                <!--<include>**/*</include>-->
+              <!--</includes>-->
+              <!--<excludes>-->
+                <!--<exclude>**/*.ftl.html</exclude>-->
+                <!--<exclude>assets/**</exclude>-->
+              <!--</excludes>-->
+            <!--</scanTargetPattern>-->
+          <!--</scanTargetPatterns>-->
+          <!--<systemProperties>-->
+            <!--<systemProperty>-->
+              <!--<name>ninja.mode</name>-->
+              <!--<value>dev</value>-->
+            <!--</systemProperty>-->
+          <!--</systemProperties>-->
+        <!--</configuration>-->
+      <!--</plugin>-->
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>2.2</version>
-        <configuration>
-          <createDependencyReducedPom>true</createDependencyReducedPom>
-          <filters>
-            <filter>
-              <artifact>*:*</artifact>
-              <excludes>
-                <exclude>META-INF/*.SF</exclude>
-                <exclude>META-INF/*.DSA</exclude>
-                <exclude>META-INF/*.RSA</exclude>
-              </excludes>
-            </filter>
-          </filters>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <transformers>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>ninja.standalone.NinjaJetty</mainClass>
-                </transformer>
-              </transformers>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
+      <!--<plugin>-->
+        <!--<groupId>org.apache.maven.plugins</groupId>-->
+        <!--<artifactId>maven-shade-plugin</artifactId>-->
+        <!--<version>2.2</version>-->
+        <!--<configuration>-->
+          <!--<createDependencyReducedPom>true</createDependencyReducedPom>-->
+          <!--<filters>-->
+            <!--<filter>-->
+              <!--<artifact>*:*</artifact>-->
+              <!--<excludes>-->
+                <!--<exclude>META-INF/*.SF</exclude>-->
+                <!--<exclude>META-INF/*.DSA</exclude>-->
+                <!--<exclude>META-INF/*.RSA</exclude>-->
+              <!--</excludes>-->
+            <!--</filter>-->
+          <!--</filters>-->
+        <!--</configuration>-->
+        <!--<executions>-->
+          <!--<execution>-->
+            <!--<phase>package</phase>-->
+            <!--<goals>-->
+              <!--<goal>shade</goal>-->
+            <!--</goals>-->
+            <!--<configuration>-->
+              <!--<transformers>-->
+                <!--<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />-->
+                <!--<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">-->
+                  <!--<mainClass>ninja.standalone.NinjaJetty</mainClass>-->
+                <!--</transformer>-->
+              <!--</transformers>-->
+            <!--</configuration>-->
+          <!--</execution>-->
+        <!--</executions>-->
+      <!--</plugin>-->
+    <!--</plugins>-->
 
     <!-- Removing this may cause error reading of configuration file -->
     <resources>
