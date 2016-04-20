@@ -69,12 +69,12 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
             }
             else
             {
-                throw new IllegalStateException( "File not found for metadata" );
+                throw new IllegalStateException( " ***** File not found for metadata" );
             }
         }
         catch ( IOException ex )
         {
-            getLogger().error( "Failed to get package", ex );
+            getLogger().error( " ***** Failed to get package", ex );
         }
         return null;
     }
@@ -98,7 +98,7 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
         }
         catch ( IOException ex )
         {
-            getLogger().error( "Failed to list package in metadata store", ex );
+            getLogger().error( " ***** Failed to list package in metadata store", ex );
         }
         return result;
     }
@@ -195,7 +195,7 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
         }
         catch ( NoSuchAlgorithmException e )
         {
-            e.printStackTrace();
+            getLogger().error( " ***** Error getting MD5", e );
         }
 
         return new byte[0];

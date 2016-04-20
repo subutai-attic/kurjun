@@ -48,10 +48,10 @@
                 <td><a href="${contextPath}/templates/${t.id}/info" class="js-colorbox">${t.name}</a></td>
                 <td>${(owners[t.id]??)?then(owners[t.id],"")}</td>
                 <td>${t.id?split(".")[0]}</td>
-                <td>${t.architecture}</td>
-                <td>${t.parent}</td>
+                <td><#if t.architecture??>${t.architecture}</#if></td>
+                <td><#if t.parent??>${t.parent}</#if></td>
                 <td>${t.version}</td>
-                <td>${t.size}</td>
+                <td><#if t.size??>${t.size}</#if></td>
                 <td><a href="${contextPath}/templates/${t.id}/download" target="_blank">download</a>
                     |  <a href="${contextPath}/relations/by-object?id=${t.id}&obj_type=3" class="js-colorbox">permissions</a>
                     <#if !( isPublic?? && isPublic ) >

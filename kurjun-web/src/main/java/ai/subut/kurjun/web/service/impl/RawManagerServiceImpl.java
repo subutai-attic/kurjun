@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
@@ -16,6 +17,7 @@ import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.raw.RawMetadata;
+import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.model.identity.Permission;
 import ai.subut.kurjun.model.identity.RelationObjectType;
 import ai.subut.kurjun.model.identity.UserSession;
@@ -348,19 +350,23 @@ public class RawManagerServiceImpl implements RawManagerService
     public List<SerializableMetadata> list( String repository )
     {
         try
-        {
+        {   List<SerializableMetadata> results;
+
             switch ( repository )
             {
                 //return local list
                 case "local":
-                    return localPublicRawRepository.listPackages();
+                    results = localPublicRawRepository.listPackages();
                 //return unified repo list
                 case "all":
-                    return unifiedRepository.listPackages();
+                    results = unifiedRepository.listPackages();
                 //return personal repository list
                 default:
-                    return repositoryFactory.createLocalApt( new KurjunContext( repository ) ).listPackages();
+                    results = repositoryFactory.createLocalApt( new KurjunContext( repository ) ).listPackages();
             }
+
+            return results;
+
         }
         catch(Exception ex)
         {

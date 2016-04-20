@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.ar.CompressionType;
+import ai.subut.kurjun.common.ErrorCode;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.subutai.DefaultTemplate;
 import ai.subut.kurjun.metadata.common.subutai.TemplateId;
@@ -184,11 +186,10 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
             }
 
             return results;
-
         }
-        catch(Exception ex)
+        catch ( Exception ex )
         {
-            LOGGER.error( "***** Error in getTemplateList:" ,ex);
+            LOGGER.error( "***** Error in getTemplateList:", ex );
             return null;
         }
     }
@@ -204,38 +205,47 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
             return null;
         }
 
-        // *******CheckRepoOwner ***************
-        relationManagerService
-                .checkRelationOwner( userSession, repository, RelationObjectType.RepositoryTemplate.getId() );
-        //**************************************
-
-        //***** Check permissions (WRITE) *****************
-        if ( checkRepoPermissions( userSession, repository, null, Permission.Write ) )
+        try
         {
-            SubutaiTemplateMetadata metadata = ( SubutaiTemplateMetadata ) getRepo( repository )
-                    .put( inputStream, CompressionType.GZIP, repository );
+            // *******CheckRepoOwner ***************
+            relationManagerService
+                    .checkRelationOwner( userSession, repository, RelationObjectType.RepositoryTemplate.getId() );
+            //**************************************
 
-            if ( metadata != null )
+            //***** Check permissions (WRITE) *****************
+            if ( checkRepoPermissions( userSession, repository, null, Permission.Write ) )
             {
-                if ( metadata.getMd5Sum() != null )
+                SubutaiTemplateMetadata metadata = ( SubutaiTemplateMetadata ) getRepo( repository )
+                        .put( inputStream, CompressionType.GZIP, repository );
+
+                if ( metadata != null )
                 {
+                    if ( metadata.getMd5Sum() != null )
+                    {
 
-                    String templateId = repository + "." + Hex.encodeHexString( metadata.getMd5Sum() );
+                        String templateId = repository + "." + Hex.encodeHexString( metadata.getMd5Sum() );
 
-                    //***** Build Relation ****************
-                    relationManagerService.buildTrustRelation( userSession.getUser(), userSession.getUser(), templateId,
-                            RelationObjectType.RepositoryContent.getId(),
-                            relationManagerService.buildPermissions( 4 ) );
-                    //*************************************
+                        //***** Build Relation ****************
+                        relationManagerService
+                                .buildTrustRelation( userSession.getUser(), userSession.getUser(), templateId,
+                                        RelationObjectType.RepositoryContent.getId(),
+                                        relationManagerService.buildPermissions( 4 ) );
+                        //*************************************
 
-                    return templateId;
+                        return templateId;
+                    }
                 }
-            }
 
-            return null;
+                return null;
+            }
+            else
+            {
+                return null;
+            }
         }
-        else
+        catch ( Exception ex )
         {
+            LOGGER.error( "***** Error in Template upload:", ex );
             return null;
         }
     }
@@ -245,67 +255,81 @@ public class TemplateManagerServiceImpl implements TemplateManagerService
     public String upload( UserSession userSession, final String repository, final File file ) throws IOException
     {
 
-        if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
+        try
         {
-            return null;
-        }
-
-        // *******CheckRepoOwner ***************
-        relationManagerService
-                .checkRelationOwner( userSession, repository, RelationObjectType.RepositoryTemplate.getId() );
-        //**************************************
-
-        //***** Check permissions (WRITE) *****************
-        if ( checkRepoPermissions( userSession, repository, null, Permission.Write ) )
-        {
-            SubutaiTemplateMetadata metadata =
-                    ( SubutaiTemplateMetadata ) getRepo( repository ).put( file, CompressionType.GZIP, repository );
-
-            if ( metadata != null )
+            if ( userSession.getUser().equals( identityManagerService.getPublicUser() ) )
             {
-                if ( metadata.getMd5Sum() != null )
-                {
-                    String templateId = toId( metadata != null ? metadata.getMd5Sum() : new byte[0], repository );
+                return null;
+            }
 
-                    //***** Build Relation ****************
-                    relationManagerService.buildTrustRelation( userSession.getUser(), userSession.getUser(), templateId,
-                            RelationObjectType.RepositoryContent.getId(),
-                            relationManagerService.buildPermissions( 4 ) );
-                    //*************************************
-                    return templateId;
+            // *******CheckRepoOwner ***************
+            relationManagerService
+                    .checkRelationOwner( userSession, repository, RelationObjectType.RepositoryTemplate.getId() );
+            //**************************************
+
+            //***** Check permissions (WRITE) *****************
+            if ( checkRepoPermissions( userSession, repository, null, Permission.Write ) )
+            {
+                SubutaiTemplateMetadata metadata =
+                        ( SubutaiTemplateMetadata ) getRepo( repository ).put( file, CompressionType.GZIP, repository );
+
+                if ( metadata != null )
+                {
+                    if ( metadata.getMd5Sum() != null )
+                    {
+                        String templateId = toId( metadata != null ? metadata.getMd5Sum() : new byte[0], repository );
+
+                        //***** Build Relation ****************
+                        relationManagerService
+                                .buildTrustRelation( userSession.getUser(), userSession.getUser(), templateId,
+                                        RelationObjectType.RepositoryContent.getId(),
+                                        relationManagerService.buildPermissions( 4 ) );
+                        //*************************************
+                        return templateId;
+                    }
                 }
             }
+            return null;
         }
-        return null;
+        catch ( Exception ex )
+        {
+            LOGGER.error( "***** Error in Template upload:", ex );
+            return null;
+        }
     }
 
 
     @Override
     public int delete( UserSession userSession, TemplateId tid ) throws IOException
     {
-        //************ CheckPermissions ************************************
-        if ( checkRepoPermissions( userSession, tid.getOwnerFprint(), tid.get(), Permission.Delete ) )
+        try
         {
-            LocalTemplateRepository _repository = ( LocalTemplateRepository ) getRepo( tid.getOwnerFprint() );
-
-            // remove Relation
-            relationManagerService
-                    .removeRelationsByTrustObject( tid.get(), RelationObjectType.RepositoryContent.getId() );
-
-            boolean success = _repository.delete( tid.get(), Utils.MD5.toByteArray( tid.getMd5() ) );
-
-            if ( success )
+            //************ CheckPermissions ************************************
+            if ( checkRepoPermissions( userSession, tid.getOwnerFprint(), tid.get(), Permission.Delete ) )
             {
-                //succeed
-                return 0;
+                LocalTemplateRepository _repository = ( LocalTemplateRepository ) getRepo( tid.getOwnerFprint() );
+
+                // remove Relation
+                relationManagerService
+                        .removeRelationsByTrustObject( tid.get(), RelationObjectType.RepositoryContent.getId() );
+
+                boolean success = _repository.delete( tid.get(), Utils.MD5.toByteArray( tid.getMd5() ) );
+
+                if ( success )
+                {
+                    return ErrorCode.Success.getId();
+                }
+                return ErrorCode.ObjectNotFound.getId();
             }
-            //not found
-            return 1;
+            else
+            {
+                return ErrorCode.AccessPermissionError.getId();
+            }
         }
-        else
+        catch ( Exception ex )
         {
-            //no permission
-            return 2;
+            LOGGER.error( "***** Error in Template delete:", ex );
+            return ErrorCode.SystemError.getId();
         }
     }
 
