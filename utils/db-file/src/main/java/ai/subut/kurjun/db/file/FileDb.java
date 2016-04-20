@@ -16,6 +16,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.gson.Gson;
 
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
@@ -26,6 +29,8 @@ import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
  */
 public class FileDb implements Closeable
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger( FileDb.class );
+
     private final Map<String, Map<Object, ?>> mapOfMap = new ConcurrentHashMap<>( 10 );
 
     Gson gson = new Gson();
@@ -122,7 +127,7 @@ public class FileDb implements Closeable
             }
             catch ( IOException e )
             {
-                e.printStackTrace();
+                LOGGER.error( "****** Error in FileDb.remove:" ,e);
             }
             return map.remove( key );
         }
@@ -176,7 +181,7 @@ public class FileDb implements Closeable
         }
         catch ( IOException e )
         {
-            e.printStackTrace();
+            LOGGER.error( "****** Error in FileDb.persist:", e);
         }
     }
 
@@ -228,7 +233,7 @@ public class FileDb implements Closeable
                     }
                     catch ( Exception e )
                     {
-                        e.printStackTrace();
+                        LOGGER.error( "****** Error in FileDb.loadMapOfMaps:", e);
                     }
                 }
             }
@@ -250,7 +255,7 @@ public class FileDb implements Closeable
             }
             catch ( Exception e )
             {
-                e.printStackTrace();
+                LOGGER.error( "****** Error in FileDb.loadFromDir:", e );
             }
         }
     }
@@ -278,7 +283,7 @@ public class FileDb implements Closeable
         }
         catch ( ClassNotFoundException | IOException e )
         {
-            e.printStackTrace();
+            LOGGER.error( "****** Error in FileDb.loadJsonFile:", e );
         }
         return map;
     }
