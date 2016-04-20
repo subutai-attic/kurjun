@@ -42,23 +42,6 @@ public class FileDb implements Closeable
         init();
 
         loadMapOfMaps();
-        //        File file = new File( this.ROOT_DIR );
-        //
-        //        if ( file.isDirectory() )
-        //        {
-        //            loadFromDir( file );
-        //        }
-        //        else
-        //        {
-        //            try
-        //            {
-        //                loadJsonFile( file );
-        //            }
-        //            catch ( Exception e )
-        //            {
-        //                e.printStackTrace();
-        //            }
-        //        }
     }
 
 
@@ -175,6 +158,13 @@ public class FileDb implements Closeable
         try
         {
             JsonWrapper obj = new JsonWrapper( value.getClass().getName(), MetadataUtils.JSON.toJson( value ) );
+
+
+            if ( new File( targetDir + key + ".json" ).exists() )
+            {
+                boolean success = new File( targetDir + key + ".json" ).delete();
+            }
+
             Path tmpPath = Files.createFile( new File( targetDir + key + ".json" ).toPath() );
 
             try ( FileOutputStream fileOutputStream = new FileOutputStream( tmpPath.toFile() );
@@ -230,6 +220,17 @@ public class FileDb implements Closeable
                 {
                     loadFromDir( file );
                 }
+                else
+                {
+                    try
+                    {
+                        loadJsonFile( file );
+                    }
+                    catch ( Exception e )
+                    {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }
@@ -245,7 +246,7 @@ public class FileDb implements Closeable
         {
             try
             {
-                mapOfMap.put( file.getName(), loadJsonFile( jsonFile ) );
+                mapOfMap.put( jsonFile.getName().split( "\\." )[0], loadJsonFile( jsonFile ) );
             }
             catch ( Exception e )
             {
