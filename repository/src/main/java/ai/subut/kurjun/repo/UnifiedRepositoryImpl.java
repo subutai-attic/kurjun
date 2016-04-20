@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.index.ReleaseFile;
 import ai.subut.kurjun.model.metadata.Metadata;
@@ -28,6 +31,8 @@ import ai.subut.kurjun.model.repository.UnifiedRepository;
  */
 class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger( UnifiedRepositoryImpl.class );
+
 
     private URL url;
     private final Set<Repository> repositories;

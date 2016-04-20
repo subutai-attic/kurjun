@@ -26,34 +26,22 @@ import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
  */
 public class FileDb implements Closeable
 {
-    private static final Map<String, Map<Object, ?>> mapOfMap = new ConcurrentHashMap<>( 10 );
+    private final Map<String, Map<Object, ?>> mapOfMap = new ConcurrentHashMap<>( 10 );
 
     Gson gson = new Gson();
 
-    private static final String ROOT_DIR = "/var/lib/kurjun/fs/storage/";
+    //default value for cache dir
+    private String ROOT_DIR = "/tmp/";
 
 
     public FileDb( String dbFile ) throws IOException
     {
+        //set root dir for cache metadata
+        this.ROOT_DIR = dbFile;
+
         init();
 
-//        File file = new File( dbFile );
-//
-//        if ( file.isDirectory() )
-//        {
-//            loadFromDir( file );
-//        }
-//        else
-//        {
-//            try
-//            {
-//                loadJsonFile( file );
-//            }
-//            catch ( Exception e )
-//            {
-//                e.printStackTrace();
-//            }
-//        }
+        loadMapOfMaps();
     }
 
 
@@ -170,6 +158,13 @@ public class FileDb implements Closeable
         try
         {
             JsonWrapper obj = new JsonWrapper( value.getClass().getName(), MetadataUtils.JSON.toJson( value ) );
+
+
+            if ( new File( targetDir + key + ".json" ).exists() )
+            {
+                boolean success = new File( targetDir + key + ".json" ).delete();
+            }
+
             Path tmpPath = Files.createFile( new File( targetDir + key + ".json" ).toPath() );
 
             try ( FileOutputStream fileOutputStream = new FileOutputStream( tmpPath.toFile() );
@@ -211,7 +206,7 @@ public class FileDb implements Closeable
 
     private synchronized void loadMapOfMaps() throws IOException
     {
-        File fileDirectory = new File( ROOT_DIR );
+        File fileDirectory = new File( this.ROOT_DIR );
 
         File[] files = fileDirectory.listFiles();
 
@@ -224,6 +219,17 @@ public class FileDb implements Closeable
                 if ( file.isDirectory() )
                 {
                     loadFromDir( file );
+                }
+                else
+                {
+                    try
+                    {
+                        loadJsonFile( file );
+                    }
+                    catch ( Exception e )
+                    {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -240,7 +246,7 @@ public class FileDb implements Closeable
         {
             try
             {
-                mapOfMap.put( file.getName(), loadJsonFile( jsonFile ) );
+                mapOfMap.put( jsonFile.getName().split( "\\." )[0], loadJsonFile( jsonFile ) );
             }
             catch ( Exception e )
             {

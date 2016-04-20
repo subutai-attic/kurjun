@@ -166,6 +166,8 @@ public class MetadataUtils
         m.setPackagesContents( metadata.getPackagesContents() );
         m.setExtra( metadata.getExtra() );
         m.setSize( metadata.getSize() );
+        m.setAlias( metadata.getAlias() );
+        m.setDateAdded( metadata.getDateAdded() );
         return m;
     }
 

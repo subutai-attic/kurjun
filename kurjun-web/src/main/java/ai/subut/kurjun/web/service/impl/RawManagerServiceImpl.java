@@ -8,11 +8,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.ar.CompressionType;
+import ai.subut.kurjun.common.ErrorCode;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.raw.RawMetadata;
@@ -40,6 +44,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Singleton
 public class RawManagerServiceImpl implements RawManagerService
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger( RawManagerServiceImpl.class );
+
     public static final String DEFAULT_RAW_REPO_NAME = "raw";
 
     private RepositoryFactory repositoryFactory;
@@ -123,7 +129,7 @@ public class RawManagerServiceImpl implements RawManagerService
                     }
                     catch ( IOException e )
                     {
-                        e.printStackTrace();
+                        LOGGER.error( " ***** Error on getting Raw file:" ,e);
                     }
                 };
             }
@@ -169,7 +175,7 @@ public class RawManagerServiceImpl implements RawManagerService
                     }
                     catch ( IOException e )
                     {
-                        e.printStackTrace();
+                        LOGGER.error( " ***** Error on getting Raw file:", e );
                     }
                 };
             }
@@ -187,7 +193,7 @@ public class RawManagerServiceImpl implements RawManagerService
 
 
     @Override
-    public boolean delete( UserSession userSession, String repository, final byte[] md5 )
+    public int delete( UserSession userSession, String repository, final byte[] md5 )
     {
         DefaultMetadata defaultMetadata = new DefaultMetadata();
         defaultMetadata.setFingerprint( repository );
@@ -202,14 +208,21 @@ public class RawManagerServiceImpl implements RawManagerService
                 relationManagerService
                         .removeRelationsByTrustObject( objectId, RelationObjectType.RepositoryContent.getId() );
 
-                return localPublicRawRepository.delete( defaultMetadata.getId(), md5 );
+                if(localPublicRawRepository.delete( defaultMetadata.getId(), md5 ))
+                {
+                    return ErrorCode.Success.getId();
+                }
+            }
+            else
+            {
+                return ErrorCode.AccessPermissionError.getId();
             }
         }
-        catch ( IOException e )
+        catch ( Exception e )
         {
-            e.printStackTrace();
+            LOGGER.error( " ***** Error on deleting Raw file:" ,e);
         }
-        return false;
+        return ErrorCode.SystemError.getId();
     }
 
 
@@ -254,9 +267,9 @@ public class RawManagerServiceImpl implements RawManagerService
                 //*************************************
             }
         }
-        catch ( IOException e )
+        catch ( Exception e )
         {
-            e.printStackTrace();
+            LOGGER.error( " ***** Error on uploading Raw file:", e );
         }
         return metadata;
     }
@@ -286,14 +299,15 @@ public class RawManagerServiceImpl implements RawManagerService
                 //*************************************
             }
         }
-        catch ( IOException e )
+        catch ( Exception e )
         {
-            e.printStackTrace();
+            LOGGER.error( " ***** Error on uploading Raw file:", e );
         }
         return metadata;
     }
 
 
+    //*******************************************************************
     @Override
     public Metadata put( UserSession userSession, final File file, final String filename, final String repository )
     {
@@ -325,47 +339,65 @@ public class RawManagerServiceImpl implements RawManagerService
                 //*************************************
             }
         }
-        catch ( IOException e )
+        catch ( Exception e )
         {
-            e.printStackTrace();
+            LOGGER.error( " ***** Error on uploading Raw file:", e );
         }
         return metadata;
     }
 
 
+    //*******************************************************************
     public LocalRawRepository getLocalPublicRawRepository( UserSession userSession, KurjunContext context )
     {
         // *******CheckRepoOwner ***************
-        relationManagerService
-                .checkRelationOwner( userSession, context.getName(), RelationObjectType.RepositoryRaw.getId() );
-        //**************************************
 
-        return repositoryFactory.createLocalRaw( context );
+        try
+        {
+            relationManagerService
+                    .checkRelationOwner( userSession, context.getName(), RelationObjectType.RepositoryRaw.getId() );
+            //**************************************
+
+            return repositoryFactory.createLocalRaw( context );
+        }
+        catch ( Exception e )
+        {
+            LOGGER.error( " ***** Error on getLocalPublicRawRepository:", e );
+        }
+
+        return null;
     }
 
 
+    //*******************************************************************
     @Override
     public List<SerializableMetadata> list( String repository )
     {
         try
-        {
+        {   List<SerializableMetadata> results;
+
             switch ( repository )
             {
                 //return local list
                 case "local":
-                    return localPublicRawRepository.listPackages();
+                    results = localPublicRawRepository.listPackages();
                 //return unified repo list
                 case "all":
-                    return unifiedRepository.listPackages();
+                    results = unifiedRepository.listPackages();
                 //return personal repository list
                 default:
-                    return repositoryFactory.createLocalApt( new KurjunContext( repository ) ).listPackages();
+                    results = repositoryFactory.createLocalApt( new KurjunContext( repository ) ).listPackages();
             }
+
+            return results;
+
         }
-        catch(Exception ex)
+        catch(Exception e)
         {
-            return null;
+            LOGGER.error( " ***** Error on getting all raw files:", e );
         }
+
+        return null;
     }
 
 

@@ -136,9 +136,8 @@ public class RestTemplateController extends BaseController
         }
         catch ( IOException e )
         {
-            e.printStackTrace();
-
-            throw new InternalServerErrorException( "Internal server error." );
+            LOGGER.error( "***** Error in download:", e );
+            return Results.internalServerError().render( "Internal Server Error" ).text();
         }
 
         return new Result( 200 ).render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
@@ -151,28 +150,20 @@ public class RestTemplateController extends BaseController
 
         TemplateId tid = IdValidators.Template.validate( templateId );
 
-        Integer result;
+        //*****************************************************
+        UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+        int result = templateManagerService.delete( uSession, tid );
+        //*****************************************************
 
-        try
-        {
-            //*****************************************************
-            UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            result = templateManagerService.delete( uSession, tid );
-            //*****************************************************
-        }
-        catch ( IOException e )
-        {
-            e.printStackTrace();
 
-            throw new InternalServerErrorException( "Error while deleting artifact" );
-        }
-        switch ( result ){
+        switch ( result )
+        {
             case 0:
                 return Results.ok().render( String.format( "Deleted: %b", result ) ).text();
             case 1:
                 return Results.internalServerError().render("Template was not found").text();
             case 2:
-                return Results.ok().render( "Not allowed" ).text();
+                return Results.forbidden().render( "Not allowed" ).text();
             default:
                 return Results.internalServerError().render("Template was not found").text();
         }
@@ -198,8 +189,8 @@ public class RestTemplateController extends BaseController
         }
         catch ( IOException e )
         {
-            e.printStackTrace();
-            throw new InternalServerErrorException( "Error while getting list of artifacts" );
+            LOGGER.error( "***** Error while getting list of artifacts:", e );
+            return Results.internalServerError().render( "Internal Server Error" ).text();
         }
     }
 

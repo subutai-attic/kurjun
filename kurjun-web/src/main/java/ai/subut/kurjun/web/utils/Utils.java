@@ -22,7 +22,7 @@ public class Utils
         }
 
 
-        public static byte[] toByteArray( String md5 )
+        public static byte[] toByteArray( String md5 ) throws DecoderException
         {
             if ( md5 != null )
             {
@@ -32,14 +32,14 @@ public class Utils
                 }
                 catch ( DecoderException ex )
                 {
-                    ex.printStackTrace();
+                    throw new DecoderException(ex);
                 }
             }
             return null;
         }
 
 
-        public static byte[] streamToByteArray( InputStream inputStream )
+        public static byte[] streamToByteArray( InputStream inputStream ) throws IOException
         {
             try ( DigestInputStream is = new DigestInputStream( inputStream, DigestUtils.getMd5Digest() ) )
             {
@@ -47,13 +47,12 @@ public class Utils
             }
             catch ( IOException e )
             {
-                e.printStackTrace();
+                throw new IOException(e);
             }
-            return null;
         }
 
 
-        public static String streamToMD5String( InputStream inputStream )
+        public static String streamToMD5String( InputStream inputStream ) throws IOException
         {
             try ( DigestInputStream is = new DigestInputStream( inputStream, DigestUtils.getMd5Digest() ) )
             {
@@ -61,9 +60,8 @@ public class Utils
             }
             catch ( IOException e )
             {
-                e.printStackTrace();
+                throw new IOException(e);
             }
-            return null;
         }
     }
 }

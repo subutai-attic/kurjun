@@ -39,7 +39,7 @@ public class RenderableImpl implements Renderable
         }
         catch ( IOException e )
         {
-            e.printStackTrace();
+            //throw new IOException( e );
         }
     }
 }

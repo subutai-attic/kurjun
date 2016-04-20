@@ -19,12 +19,15 @@ public class RawMetadata implements Metadata, SerializableMetadata
     private String name;
     private long size;
     private String fingerprint;
+    private long dateAdded;
+
+    private String alias = "";
+    private String version;
 
 
     public RawMetadata()
     {
     }
-
 
     public RawMetadata( final byte[] md5Sum, final String name, final long size, final String fingerprint )
     {
@@ -32,6 +35,36 @@ public class RawMetadata implements Metadata, SerializableMetadata
         this.name = name;
         this.size = size;
         this.fingerprint = fingerprint;
+    }
+
+
+    public void setVersion( final String version )
+    {
+        this.version = version;
+    }
+
+
+    public long getDateAdded()
+    {
+        return dateAdded;
+    }
+
+
+    public void setDateAdded( final long dateAdded )
+    {
+        this.dateAdded = dateAdded;
+    }
+
+
+    public String getAlias()
+    {
+        return alias;
+    }
+
+
+    public void setAlias( final String alias )
+    {
+        this.alias = alias;
     }
 
 

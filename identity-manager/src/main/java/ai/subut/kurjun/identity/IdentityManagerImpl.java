@@ -446,7 +446,7 @@ public class IdentityManagerImpl implements IdentityManager
         }
         catch ( Exception ex )
         {
-            LOGGER.error( " ***** Error adding user:", ex );
+            LOGGER.error( " ***** Error getting users:", ex );
             return null;
         }
         finally
@@ -472,28 +472,37 @@ public class IdentityManagerImpl implements IdentityManager
     {
         UserToken userToken = new DefaultUserToken();
 
-        if ( Strings.isNullOrEmpty( token ) )
+        try
         {
-            token = UUID.randomUUID().toString();
-        }
-        if ( Strings.isNullOrEmpty( issuer ) )
-        {
-            issuer = "io.subutai";
-        }
-        if ( Strings.isNullOrEmpty( secret ) )
-        {
-            secret = UUID.randomUUID().toString();
-        }
-        if ( validDate == null )
-        {
-            validDate = DateUtils.addMinutes( new Date( System.currentTimeMillis() ), TOKEN_TTL );
-        }
 
-        userToken.setToken( token );
-        userToken.setHashAlgorithm( "HS256" );
-        userToken.setIssuer( issuer );
-        userToken.setSecret( secret );
-        userToken.setValidDate( validDate );
+            if ( Strings.isNullOrEmpty( token ) )
+            {
+                token = UUID.randomUUID().toString();
+            }
+            if ( Strings.isNullOrEmpty( issuer ) )
+            {
+                issuer = "io.subutai";
+            }
+            if ( Strings.isNullOrEmpty( secret ) )
+            {
+                secret = UUID.randomUUID().toString();
+            }
+            if ( validDate == null )
+            {
+                validDate = DateUtils.addMinutes( new Date( System.currentTimeMillis() ), TOKEN_TTL );
+            }
+
+            userToken.setToken( token );
+            userToken.setHashAlgorithm( "HS256" );
+            userToken.setIssuer( issuer );
+            userToken.setSecret( secret );
+            userToken.setValidDate( validDate );
+        }
+        catch ( Exception ex )
+        {
+            LOGGER.error( " ***** Error creating token:", ex );
+            return null;
+        }
 
         return userToken;
     }

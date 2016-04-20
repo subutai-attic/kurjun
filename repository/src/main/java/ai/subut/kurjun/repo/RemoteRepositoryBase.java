@@ -126,7 +126,7 @@ abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepo
         }
         catch ( IOException e )
         {
-            e.printStackTrace();
+            getLogger().error( " ***** Failed to get TempFile", e );
         }
         return null;
     }

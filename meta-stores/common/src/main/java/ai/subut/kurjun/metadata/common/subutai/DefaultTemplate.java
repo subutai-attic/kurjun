@@ -29,6 +29,9 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
     private String packagesContents;
     private String ownerFprint;
     private long size;
+    private long dateAdded;
+    private String alias = "";
+
     private Map<String, String> extra = new HashMap<>();
 
 
@@ -43,6 +46,30 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
         {
             return null;
         }
+    }
+
+
+    public String getAlias()
+    {
+        return alias;
+    }
+
+
+    public void setAlias( final String alias )
+    {
+        this.alias = alias;
+    }
+
+
+    public long getDateAdded()
+    {
+        return dateAdded;
+    }
+
+
+    public void setDateAdded( final long dateAdded )
+    {
+        this.dateAdded = dateAdded;
     }
 
 

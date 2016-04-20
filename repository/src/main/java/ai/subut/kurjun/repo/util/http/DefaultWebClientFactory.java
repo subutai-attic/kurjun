@@ -62,9 +62,8 @@ class DefaultWebClientFactory implements WebClientFactory
         }
         catch ( URISyntaxException | MalformedURLException e )
         {
-            e.printStackTrace();
+            throw new IllegalArgumentException( "Failed to create webclient", e );
         }
-        return null;
     }
 }
 

@@ -1950,8 +1950,7 @@ public class PGPEncryptionUtil
             }
             catch ( GeneralSecurityException gse )
             {
-                gse.printStackTrace();
-                return null;
+                throw new IllegalArgumentException( gse.getMessage() );
             }
         }
     }
