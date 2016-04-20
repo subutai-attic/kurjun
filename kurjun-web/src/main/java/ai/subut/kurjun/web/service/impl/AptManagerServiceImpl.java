@@ -165,7 +165,7 @@ public class AptManagerServiceImpl implements AptManagerService
                 }
                 catch ( IOException e )
                 {
-                    e.printStackTrace();
+                    LOGGER.error( "***** Error in getPackagesIndex:", e );
                 }
             };
         }
@@ -188,7 +188,7 @@ public class AptManagerServiceImpl implements AptManagerService
                 }
                 catch ( IOException e )
                 {
-                    e.printStackTrace();
+                    LOGGER.error( "***** Error in getPackageByFilename:" ,e);
                 }
             };
         }
@@ -221,6 +221,7 @@ public class AptManagerServiceImpl implements AptManagerService
     @Override
     public Renderable getPackage( final byte[] md5 )
     {
+
         DefaultMetadata m = new DefaultMetadata();
         m.setMd5sum( md5 );
 
@@ -244,7 +245,7 @@ public class AptManagerServiceImpl implements AptManagerService
                 }
                 catch ( IOException e )
                 {
-                    e.printStackTrace();
+                    LOGGER.error( "***** Error in getPackage:" ,e);
                 }
             };
         }
@@ -288,7 +289,7 @@ public class AptManagerServiceImpl implements AptManagerService
         }
         catch ( IOException | URISyntaxException e )
         {
-            e.printStackTrace();
+            LOGGER.error( "***** Error uploading deb packge:" ,e);
         }
         return null;
     }

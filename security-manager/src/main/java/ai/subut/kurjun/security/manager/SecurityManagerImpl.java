@@ -1,7 +1,9 @@
 package ai.subut.kurjun.security.manager;
 
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
 
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPublicKey;
@@ -33,7 +35,7 @@ public class SecurityManagerImpl implements SecurityManager
 
     /*******************************************/
     @Override
-    public byte[] calculateMd5( InputStream is )
+    public byte[] calculateMd5( InputStream is ) throws IOException
     {
         return SecurityUtils.calculateMd5( is );
     }
@@ -49,7 +51,7 @@ public class SecurityManagerImpl implements SecurityManager
 
     /*******************************************/
     @Override
-    public String generateSecurePassword( String passwordToHash, String salt )
+    public String generateSecurePassword( String passwordToHash, String salt ) throws NoSuchAlgorithmException
     {
         return SecurityUtils.generateSecurePassword( passwordToHash,salt );
     }

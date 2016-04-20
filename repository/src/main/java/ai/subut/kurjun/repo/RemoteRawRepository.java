@@ -320,7 +320,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
         }
         catch ( Exception e )
         {
-            LOGGER.warn( "Failed to do GET.", e );
+            LOGGER.error( "Failed to do GET.", e );
         }
         return null;
     }
@@ -352,7 +352,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
         }
         catch ( IOException e )
         {
-            e.printStackTrace();
+            getLogger().error( " ***** Failed to get object", e );
         }
         return null;
     }
@@ -370,7 +370,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
         }
         catch ( IOException e )
         {
-            e.printStackTrace();
+            getLogger().error( " ***** Failed to get object list", e );
         }
         return null;
     }

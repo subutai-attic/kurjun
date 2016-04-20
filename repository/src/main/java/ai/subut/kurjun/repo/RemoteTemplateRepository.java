@@ -329,7 +329,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         }
         catch ( Exception e )
         {
-            LOGGER.warn( "Failed to do GET.", e );
+            LOGGER.error( "Failed to do GET.", e );
         }
         return null;
     }
@@ -372,7 +372,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         }
         catch ( IOException e )
         {
-            e.printStackTrace();
+            LOGGER.error( " ***** Failed to convert object", e );
         }
         return null;
     }
@@ -388,7 +388,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         }
         catch ( IOException e )
         {
-            e.printStackTrace();
+            LOGGER.error( " ***** Failed to convert object", e );
         }
         return null;
     }

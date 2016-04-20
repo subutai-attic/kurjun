@@ -136,9 +136,8 @@ public class RestTemplateController extends BaseController
         }
         catch ( IOException e )
         {
-            e.printStackTrace();
-
-            throw new InternalServerErrorException( "Internal server error." );
+            LOGGER.error( "***** Error in download:", e );
+            return Results.internalServerError().render( "Internal Server Error" ).text();
         }
 
         return new Result( 200 ).render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
@@ -190,8 +189,8 @@ public class RestTemplateController extends BaseController
         }
         catch ( IOException e )
         {
-            e.printStackTrace();
-            throw new InternalServerErrorException( "Error while getting list of artifacts" );
+            LOGGER.error( "***** Error while getting list of artifacts:", e );
+            return Results.internalServerError().render( "Internal Server Error" ).text();
         }
     }
 

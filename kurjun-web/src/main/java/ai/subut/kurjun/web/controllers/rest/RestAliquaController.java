@@ -32,16 +32,8 @@ public class RestAliquaController extends BaseController
 
 
     @FileProvider( SubutaiFileHandler.class )
-    public Result upload( Context context, @Param( "file" ) FileItem fileItem,
-                          @Param( "fingerprint" ) String fingerprint,
-                          @Param( "global_kurjun_sptoken" ) String globalKurjunToken )
+    public Result upload( Context context, @Param( "file" ) FileItem fileItem, @Param( "fingerprint" ) String fingerprint)
     {
-        String sptoken = "";
-
-        if ( globalKurjunToken != null )
-        {
-            sptoken = globalKurjunToken;
-        }
 
         //checkNotNull( fileItem, "MD5 cannot be null" );
         if ( fingerprint == null )
@@ -67,29 +59,31 @@ public class RestAliquaController extends BaseController
     }
 
 
-    public Result getFile( Context context, @Param( "id" ) String id,
-                           @Param( "global_kurjun_sptoken" ) String globalKurjunToken )
+    public Result getFile( Context context, @Param( "id" ) String id)
     {
         checkNotNull( id, "ID cannot be null" );
-        String sptoken = "";
 
-        if ( globalKurjunToken != null )
+        try
         {
-            sptoken = globalKurjunToken;
+
+            String[] temp = id.split( "\\." );
+
+            Renderable renderable = null;
+            //temp contains [fprint].[md5]
+            if ( temp.length == 2 )
+            {
+                renderable = rawManagerService.getFile( temp[0], Utils.MD5.toByteArray( temp[1] ) );
+            }
+            if ( renderable != null )
+            {
+                return Results.ok().render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
+            }
+        }
+        catch ( Exception e )
+        {
+
         }
 
-        String[] temp = id.split( "\\." );
-
-        Renderable renderable = null;
-        //temp contains [fprint].[md5]
-        if ( temp.length == 2 )
-        {
-            renderable = rawManagerService.getFile( temp[0], Utils.MD5.toByteArray( temp[1] ) );
-        }
-        if ( renderable != null )
-        {
-            return Results.ok().render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
-        }
         return Results.notFound().render( "File not found" ).text();
     }
 
@@ -99,6 +93,9 @@ public class RestAliquaController extends BaseController
         checkNotNull( id, "ID cannot be null" );
         String[] temp = id.split( "\\." );
         int result = 1;
+
+        try
+        {
 
 
         if ( temp.length == 2 )
@@ -119,6 +116,11 @@ public class RestAliquaController extends BaseController
                 return Results.forbidden().render( "Not allowed" ).text();
             default:
                 return Results.internalServerError().render("Raw file was not found").text();
+        }
+        }
+        catch(Exception ex)
+        {
+            return Results.internalServerError().render("Raw file was not found").text();
         }
     }
 
@@ -142,31 +144,31 @@ public class RestAliquaController extends BaseController
 
 
     public Result info( @Param( "id" ) String id, @Param( "name" ) String name, @Param( "md5" ) String md5,
-                        @Param( "type" ) String type, @Param( "fingerprint" ) String fingerprint,
-                        @Param( "global_kurjun_sptoken" ) String globalKurjunToken )
+                        @Param( "type" ) String type, @Param( "fingerprint" ) String fingerprint)
     {
-        RawMetadata rawMetadata = new RawMetadata();
-        String sptoken = "";
-
-        if ( globalKurjunToken != null )
+        try
         {
-            sptoken = globalKurjunToken;
+            RawMetadata rawMetadata = new RawMetadata();
+
+            if ( fingerprint == null && md5 != null )
+            {
+                fingerprint = "raw";
+            }
+            rawMetadata.setName( name );
+            rawMetadata.setMd5Sum( Utils.MD5.toByteArray( md5 ) );
+            rawMetadata.setFingerprint( fingerprint );
+
+            Metadata metadata = rawManagerService.getInfo( rawMetadata );
+
+            if ( metadata != null )
+            {
+                return Results.ok().render( metadata ).json();
+            }
+        }
+        catch(Exception e)
+        {
         }
 
-        if ( fingerprint == null && md5 != null )
-        {
-            fingerprint = "raw";
-        }
-        rawMetadata.setName( name );
-        rawMetadata.setMd5Sum( Utils.MD5.toByteArray( md5 ) );
-        rawMetadata.setFingerprint( fingerprint );
-
-        Metadata metadata = rawManagerService.getInfo( rawMetadata );
-
-        if ( metadata != null )
-        {
-            return Results.ok().render( metadata ).json();
-        }
         return Results.notFound().render( "Not found" ).text();
     }
 }

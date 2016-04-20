@@ -8,10 +8,12 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import ai.subut.kurjun.common.ErrorCode;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.web.controllers.BaseAptController;
@@ -35,6 +37,8 @@ import ninja.uploads.FileProvider;
 public class RestAptController extends BaseAptController
 {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger( RestAptController.class );
+
     @Inject
     private AptManagerServiceImpl managerService;
 
@@ -49,7 +53,7 @@ public class RestAptController extends BaseAptController
         {
             //********************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            URI uri = managerService.upload(uSession, inputStream );
+            URI uri = managerService.upload( uSession, inputStream );
             //********************************************
 
             return Results.ok().render( uri ).text();
@@ -57,7 +61,8 @@ public class RestAptController extends BaseAptController
     }
 
 
-    public Result release( Context context, @PathParam( "release" ) String release, @PathParam( "repository" ) String repository,
+    public Result release( Context context, @PathParam( "release" ) String release,
+                           @PathParam( "repository" ) String repository,
 
                            @Param( "global_kurjun_sptoken" ) String globalKurjunToken )
     {
@@ -78,13 +83,8 @@ public class RestAptController extends BaseAptController
 
     public Result packageIndexes( Context context, @PathParam( "release" ) String release,
                                   @PathParam( "component" ) String component, @PathParam( "arch" ) String arch,
-                                  @PathParam( "packages" ) String packagesIndex,
-                                  @Param( "global_kurjun_sptoken" ) String globalKurjunToken )
+                                  @PathParam( "packages" ) String packagesIndex )
     {
-        //        checkNotNull( release, "Release cannot be null" );
-        //        checkNotNull( component, "Component cannot be null" );
-        //        checkNotNull( arch, "Arch cannot be null" );
-        //        checkNotNull( packagesIndex, "Package Index cannot be null" );
 
         //********************************************
         Renderable renderable = managerService.getPackagesIndex( release, component, arch, packagesIndex );
@@ -96,8 +96,6 @@ public class RestAptController extends BaseAptController
 
     public Result getPackageByFileName( @PathParam( "filename" ) String filename )
     {
-        //        checkNotNull( filename, "File name cannot be null" );
-
         //********************************************
         Renderable renderable = managerService.getPackageByFilename( filename );
         //********************************************
@@ -106,43 +104,53 @@ public class RestAptController extends BaseAptController
     }
 
 
-    public Result info( @Param( "md5" ) String md5, @Param( "name" ) String name,
-                        @Param( "version" ) String version )
+    public Result info( @Param( "md5" ) String md5, @Param( "name" ) String name, @Param( "version" ) String version )
 
     {
-        //        checkNotNull( md5, "MD5 cannot be null" );
-        //        checkNotNull( name, "Name cannot be null" );
-        //        checkNotNull( version, "Version not found" );
-
-        //********************************************
-        String metadata = managerService.getPackageInfo( Utils.MD5.toByteArray( md5 ), name, version );
-        //********************************************
-
-        if ( metadata != null )
+        try
         {
-            return Results.ok().render( metadata ).text();
+           //********************************************
+            String metadata = managerService.getPackageInfo( Utils.MD5.toByteArray( md5 ), name, version );
+            //********************************************
+
+            if ( metadata != null )
+            {
+                return Results.ok().render( metadata ).text();
+            }
         }
-        return Results.ok().render( "Not found with details provided" );
+        catch ( Exception e )
+        {
+            LOGGER.error( " ****** Failed to get info:", e.getMessage() );
+        }
+
+        return Results.notFound().render( "Not found with details provided" );
     }
 
 
     public Result download( @Param( "md5" ) String md5 )
     {
-        //        checkNotNull( md5, "MD5 cannot be null" );
 
-        //********************************************
-        Renderable renderable = managerService.getPackage( Utils.MD5.toByteArray( md5 ) );
-        //********************************************
-
-        if ( renderable != null )
+        try
         {
-            return Results.ok().render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
+            //********************************************
+            Renderable renderable = managerService.getPackage( Utils.MD5.toByteArray( md5 ) );
+            //********************************************
+
+            if ( renderable != null )
+            {
+                return Results.ok().render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
+            }
         }
+        catch ( Exception e )
+        {
+            LOGGER.error( " ****** Failed to download deb package:", e.getMessage() );
+        }
+
         return Results.text().render( "Not found with MD5: " + md5 );
     }
 
 
-    public Result list(  @Param( "type" ) String type, @Param( "repository" ) String repository )
+    public Result list( @Param( "type" ) String type, @Param( "repository" ) String repository )
     {
         if ( repository == null )
         {
@@ -168,23 +176,29 @@ public class RestAptController extends BaseAptController
 
     public Result delete( Context context, @Param( "md5" ) String md5 )
     {
-        //        checkNotNull( md5, "MD5 cannot be null" );
-
-        //********************************************
-        UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-        int status = managerService.delete( uSession, Utils.MD5.toByteArray( md5 ) );
-        //********************************************
-
-        switch ( status )
+        try
         {
-            case 0:
-                return Results.ok().render( "Package Deleted succesfully !!!").text();
-            case 1:
-                return Results.internalServerError().render( "Internal server error" ).text();
-            case 2:
-                return Results.forbidden().render( "Permission denied" ).text();
-            default:
-                return Results.notFound().render( "Object Not found: " + md5 ).text();
+           //********************************************
+            UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+            int status = managerService.delete( uSession, Utils.MD5.toByteArray( md5 ) );
+            //********************************************
+
+            switch ( status )
+            {
+                case 0:
+                    return Results.ok().render( "Package Deleted succesfully !!!" ).text();
+                case 1:
+                    return Results.internalServerError().render( "Internal server error" ).text();
+                case 2:
+                    return Results.forbidden().render( "Permission denied" ).text();
+                default:
+                    return Results.notFound().render( "Object Not found: " + md5 ).text();
+            }
+        }
+        catch ( Exception e )
+        {
+            LOGGER.error( " ****** Failed to delete deb package:", e.getMessage() );
+            return Results.internalServerError().render( "Internal server error" ).text();
         }
     }
 
