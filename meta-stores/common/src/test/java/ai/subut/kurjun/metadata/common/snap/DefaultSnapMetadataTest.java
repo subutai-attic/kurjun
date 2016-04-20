@@ -10,14 +10,11 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.common.collect.Lists;
-import com.sun.org.apache.xerces.internal.impl.dv.dtd.ListDatatypeValidator;
-import com.sun.org.glassfish.gmbal.ManagedAttribute;
 
 import ai.subut.kurjun.metadata.common.apt.DefaultIndexPackageMetaDataTest;
 import ai.subut.kurjun.model.metadata.snap.Framework;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.when;
 
 
 @RunWith( MockitoJUnitRunner.class )

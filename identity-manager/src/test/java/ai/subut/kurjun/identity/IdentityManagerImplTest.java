@@ -16,14 +16,11 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.cxf.common.i18n.Exception;
 
-import com.sun.org.glassfish.gmbal.ManagedAttribute;
 
 import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.identity.service.FileDbProvider;
-import ai.subut.kurjun.model.identity.Permission;
 import ai.subut.kurjun.model.identity.RelationObject;
 import ai.subut.kurjun.model.identity.User;
 import ai.subut.kurjun.security.manager.service.SecurityManager;

@@ -14,7 +14,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import org.apache.commons.collections.map.HashedMap;
 
-import com.sun.org.glassfish.gmbal.ManagedAttribute;
 
 import ai.subut.kurjun.db.file.FileDb;
 import ai.subut.kurjun.identity.service.FileDbProvider;
@@ -22,7 +21,6 @@ import ai.subut.kurjun.model.identity.Permission;
 import ai.subut.kurjun.model.identity.Relation;
 import ai.subut.kurjun.model.identity.RelationObject;
 import ai.subut.kurjun.model.identity.User;
-import ai.subut.kurjun.security.manager.SecurityManagerImpl;
 import ai.subut.kurjun.security.manager.service.SecurityManager;
 
 import static org.junit.Assert.*;
@@ -330,7 +328,7 @@ public class RelationManagerImplTest
     @Test
     public void getUserPermissions() throws Exception
     {
-        relationManager.getUserPermissions( user,"trustObjectId", 1 );
+        relationManager.getUserPermissions( user, "trustObjectId", 1 );
     }
 
 

@@ -9,16 +9,12 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.common.collect.Lists;
-import com.sun.org.glassfish.gmbal.ManagedAttribute;
 
-import ai.subut.kurjun.metadata.common.MetadataListingImplTest;
 import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.apt.Dependency;
-import ai.subut.kurjun.model.metadata.apt.Priority;
 
 import static org.junit.Assert.*;
 
