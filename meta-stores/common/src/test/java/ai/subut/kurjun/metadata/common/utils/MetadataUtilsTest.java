@@ -5,14 +5,41 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.model.metadata.Metadata;
+import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
 
 
 public class MetadataUtilsTest
 {
+    private MetadataUtils metadataUtils;
+
+    @Mock
+    PackageMetadata packageMetadata;
+
+
+    @Before
+    public void setUp() throws Exception
+    {
+    }
+
+
+    @Test
+    public void testComparator()
+    {
+        metadataUtils.makeVersionComparator();
+    }
+
+
+    @Test
+    public void testSerializablePackageMetadata()
+    {
+//        metadataUtils.serializablePackageMetadata( packageMetadata );
+    }
 
     @Test
     public void testMakeVersionComparator()
@@ -41,6 +68,5 @@ public class MetadataUtilsTest
         Assert.assertEquals( m4.getName(), ls.get( 2 ).getName() );
         Assert.assertEquals( m1.getName(), ls.get( 3 ).getName() );
     }
-
 }
 
