@@ -105,21 +105,30 @@ public class RawFileController extends BaseController
         checkNotNull( id, "ID cannot be null" );
         String[] temp = id.split( "\\." );
 
-        boolean success = false;
+        int status = 1;
 
         if ( temp.length == 2 )
         {
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            success = rawManagerService.delete(uSession, temp[0], Utils.MD5.toByteArray( temp[1] ) );
+            status = rawManagerService.delete(uSession, temp[0], Utils.MD5.toByteArray( temp[1] ) );
         }
 
-        if ( success )
+        switch ( status )
         {
-            flashScope.success("Deleted successfully");
-            return Results.redirect(context.getContextPath()+"/raw-files");
+            case 0:
+                flashScope.success( "Raw file removed successfully" );
+                break;
+            case 1:
+                flashScope.success( "Raw file was not found " );
+                break;
+            case 2:
+                flashScope.success( "Permission denied " );
+                break;
+            default:
+                flashScope.success( "Internal Server error " );
+                break;
         }
 
-        flashScope.error("Failed to delete.");
         return Results.redirect( context.getContextPath()+"/raw-files" );
     }
 

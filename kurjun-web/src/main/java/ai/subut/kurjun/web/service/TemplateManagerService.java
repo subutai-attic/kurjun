@@ -100,7 +100,7 @@ public interface TemplateManagerService extends BaseService
      *
      * @return {@code true} if package successfully deleted; {@code false} otherwise
      */
-    int delete(UserSession userSession, TemplateId templateId ) throws IOException;
+    int delete(UserSession userSession, TemplateId templateId );
 
 
     /**

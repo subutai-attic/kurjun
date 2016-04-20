@@ -11,6 +11,7 @@ import java.util.List;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import ai.subut.kurjun.common.ErrorCode;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.web.controllers.BaseAptController;
@@ -171,14 +172,20 @@ public class RestAptController extends BaseAptController
 
         //********************************************
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-        boolean success = managerService.delete( uSession, Utils.MD5.toByteArray( md5 ) );
+        int status = managerService.delete( uSession, Utils.MD5.toByteArray( md5 ) );
         //********************************************
 
-        if ( success )
+        switch ( status )
         {
-            return Results.ok().render( "Deleted: " + success ).text();
+            case 0:
+                return Results.ok().render( "Package Deleted succesfully !!!").text();
+            case 1:
+                return Results.internalServerError().render( "Internal server error" ).text();
+            case 2:
+                return Results.forbidden().render( "Permission denied" ).text();
+            default:
+                return Results.notFound().render( "Object Not found: " + md5 ).text();
         }
-        return Results.notFound().render( "Not found: " + md5 ).text();
     }
 
 

@@ -22,6 +22,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import ai.subut.kurjun.ar.CompressionType;
+import ai.subut.kurjun.common.ErrorCode;
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
@@ -328,7 +329,7 @@ public class AptManagerServiceImpl implements AptManagerService
 
 
     @Override
-    public boolean delete(UserSession userSession, final byte[] md5 )
+    public int delete(UserSession userSession, final byte[] md5 )
     {
         try
         {
@@ -339,14 +340,21 @@ public class AptManagerServiceImpl implements AptManagerService
                 // remove relation
                 relationManagerService.removeRelationsByTrustObject( id, RelationObjectType.RepositoryContent.getId() );
 
-                return localRepository.delete( md5 );
+                if(localRepository.delete( md5 ))
+                {
+                    return ErrorCode.Success.getId();
+                }
+            }
+            else
+            {
+                return ErrorCode.AccessPermissionError.getId();
             }
         }
-        catch ( IOException ex )
+        catch(Exception ex)
         {
-            ex.printStackTrace();
+            LOGGER.error( "***** Error in apt delete:", ex );
         }
-        return false;
+        return ErrorCode.SystemError.getId();
     }
 
 

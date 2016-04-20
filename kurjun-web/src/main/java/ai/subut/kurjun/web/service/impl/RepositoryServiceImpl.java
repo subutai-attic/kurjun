@@ -27,7 +27,7 @@ public class RepositoryServiceImpl implements RepositoryService
     @Inject
     private RelationManagerService relationManagerService;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( RepositoryService.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( RepositoryServiceImpl.class );
 
     @Override
     public synchronized List<String> getRepositories()

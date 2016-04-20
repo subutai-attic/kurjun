@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import ai.subut.kurjun.common.ErrorCode;
 import ai.subut.kurjun.model.identity.UserSession;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.web.handler.SubutaiFileHandler;
@@ -174,16 +175,25 @@ public class AptController extends BaseAptController
 
         //********************************************
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-        boolean success = aptManagerService.delete(uSession, Utils.MD5.toByteArray( md5 ) );
+        int status =  aptManagerService.delete(uSession, Utils.MD5.toByteArray( md5 ) );
         //********************************************
 
-        if ( success )
+        switch ( status )
         {
-            flashScope.success("Deleted successfully");
-            return Results.redirect(context.getContextPath()+"/apt");
+            case 0:
+                flashScope.success( "Deb package removed successfully" );
+                break;
+            case 1:
+                flashScope.error( "Deb package was not found " );
+                break;
+            case 2:
+                flashScope.error( "Permission denied " );
+                break;
+            default:
+                flashScope.error( "Internal Server error " );
+                break;
         }
 
-        flashScope.error("Failed to delete. Not found: "+md5);
         return Results.redirect(context.getContextPath()+"/apt");
     }
 

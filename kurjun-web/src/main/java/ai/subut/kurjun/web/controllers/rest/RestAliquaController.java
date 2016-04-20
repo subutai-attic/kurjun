@@ -94,33 +94,32 @@ public class RestAliquaController extends BaseController
     }
 
 
-    public Result delete( Context context, @Param( "id" ) String id,
-                          @Param( "global_kurjun_sptoken" ) String globalKurjunToken )
+    public Result delete( Context context, @Param( "id" ) String id )
     {
         checkNotNull( id, "ID cannot be null" );
         String[] temp = id.split( "\\." );
-        String sptoken = "";
+        int result = 1;
 
-        if ( globalKurjunToken != null )
-        {
-            sptoken = globalKurjunToken;
-        }
-        boolean success = false;
 
         if ( temp.length == 2 )
         {
             //********************************************
             UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            success = rawManagerService.delete(uSession, temp[0], Utils.MD5.toByteArray( temp[1] ) );
+            result = rawManagerService.delete(uSession, temp[0], Utils.MD5.toByteArray( temp[1] ) );
             //********************************************
         }
 
-        if ( success )
+        switch ( result )
         {
-            return Results.ok().render( id + " deleted" ).text();
+            case 0:
+                return Results.ok().render( String.format( "Deleted: %b", result ) ).text();
+            case 1:
+                return Results.internalServerError().render("Raw file was not found").text();
+            case 2:
+                return Results.forbidden().render( "Not allowed" ).text();
+            default:
+                return Results.internalServerError().render("Raw file was not found").text();
         }
-
-        return Results.notFound().render( "Not found" ).text();
     }
 
 
