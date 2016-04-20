@@ -127,7 +127,7 @@ public class FileDb implements Closeable
             }
             catch ( IOException e )
             {
-                LOGGER.error( "****** Error in FileDb.remove:" ,e);
+                LOGGER.error( "****** Error in FileDb.remove:", e );
             }
             return map.remove( key );
         }
@@ -181,7 +181,7 @@ public class FileDb implements Closeable
         }
         catch ( IOException e )
         {
-            LOGGER.error( "****** Error in FileDb.persist:", e);
+            LOGGER.error( "****** Error in FileDb.persist:", e );
         }
     }
 
@@ -229,11 +229,11 @@ public class FileDb implements Closeable
                 {
                     try
                     {
-                        loadJsonFile( file );
+                        loadJsonFile( file, new HashMap<>() );
                     }
                     catch ( Exception e )
                     {
-                        LOGGER.error( "****** Error in FileDb.loadMapOfMaps:", e);
+                        LOGGER.error( "****** Error in FileDb.loadMapOfMaps:", e );
                     }
                 }
             }
@@ -246,25 +246,27 @@ public class FileDb implements Closeable
         //get all json files in that dir
         File jsonFiles[] = file.listFiles( filenameFilter() );
 
+        Map map = new HashMap<>();
         //for each json file convert back to type
+
         for ( File jsonFile : jsonFiles )
         {
             try
             {
-                mapOfMap.put( file.getName(), loadJsonFile( jsonFile ) );
+                loadJsonFile( jsonFile, map );
             }
             catch ( Exception e )
             {
                 LOGGER.error( "****** Error in FileDb.loadFromDir:", e );
             }
         }
+
+        mapOfMap.put( file.getName(), map );
     }
 
 
-    private synchronized Map loadJsonFile( File jsonFile ) throws Exception
+    private synchronized Map loadJsonFile( File jsonFile, Map map ) throws Exception
     {
-        Map map = new HashMap<>();
-
         if ( !jsonFile.getName().endsWith( ".json" ) )
         {
             throw new Exception( "Cannot load file: " + jsonFile.getName() );
