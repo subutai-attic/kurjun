@@ -3,101 +3,105 @@ package ai.subut.kurjun.common;
 
 import java.util.Properties;
 
-import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
-import org.apache.commons.configuration.ConfigurationException;
+
+import com.google.inject.Binder;
+
+import ai.subut.kurjun.common.service.KurjunContext;
+
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
 
-@Ignore( "TODO: fix tests and remove ignore" )
+@RunWith( MockitoJUnitRunner.class )
 public class KurjunPropertiesImplTest
 {
+    private KurjunPropertiesImpl kurjunProperties;
 
-    private KurjunPropertiesImpl properties;
+    @Mock
+    Properties properties;
+
+    @Mock
+    KurjunContext kurjunContext;
+
+    @Mock
+    Binder binder;
 
 
     @Before
-    public void setUp() throws ConfigurationException
+    public void setUp() throws Exception
     {
-        properties = new KurjunPropertiesImpl();
-    }
-
-
-    @After
-    public void tearDown() throws Exception
-    {
+        kurjunProperties = new KurjunPropertiesImpl();
     }
 
 
     @Test
-    public void testGet()
+    public void get() throws Exception
     {
-        Assert.assertEquals( "today is sunny", properties.get( "string.value" ) );
-        Assert.assertNull( properties.get( "invalid.key" ) );
+        kurjunProperties.get( "test" );
     }
 
 
     @Test
-    public void testGetWithDefault()
+    public void getWithDefault() throws Exception
     {
-        Assert.assertEquals( "today is funny", properties.getWithDefault( "invalid.key", "today is funny" ) );
+        kurjunProperties.getWithDefault( "test", "test" );
     }
 
 
     @Test
-    @SuppressWarnings( "UnnecessaryBoxing" )
-    public void testGetInteger()
+    public void getInteger() throws Exception
     {
-        Assert.assertEquals( Integer.valueOf( 1234 ), properties.getInteger( "int.value" ) );
-        Assert.assertNull( properties.getInteger( "int.value.invalid" ) );
-        Assert.assertNull( properties.getInteger( "invalid.key" ) );
+        kurjunProperties.getInteger( "test" );
     }
 
 
     @Test
-    @SuppressWarnings( "UnnecessaryBoxing" )
-    public void testGetIntegerWithDefault()
+    public void getIntegerWithDefault() throws Exception
     {
-        Assert.assertEquals( Integer.valueOf( 2233 ), properties.getIntegerWithDefault( "invalid.key", 2233 ) );
-        Assert.assertEquals( Integer.valueOf( 2233 ), properties.getIntegerWithDefault( "int.value.invalid", 2233 ) );
+        kurjunProperties.getIntegerWithDefault( "test", 1 );
     }
 
 
     @Test
-    @SuppressWarnings( "AssertEqualsBetweenInconvertibleTypes" )
-    public void testGetBoolean()
+    public void getBoolean() throws Exception
     {
-        Assert.assertEquals( true, properties.getBoolean( "bool.value.1" ) );
-        Assert.assertEquals( true, properties.getBoolean( "bool.value.2" ) );
-        Assert.assertNull( properties.getBoolean( "bool.value.3" ) );
-        Assert.assertNull( properties.getBoolean( "bool.value.invalid" ) );
-        Assert.assertNull( properties.getBoolean( "invalid.key" ) );
+        kurjunProperties.getBoolean( "test" );
     }
 
 
     @Test
-    @SuppressWarnings( "AssertEqualsBetweenInconvertibleTypes" )
-    public void testGetBooleanWithDefault()
+    public void getBooleanWithDefault() throws Exception
     {
-        Assert.assertEquals( false, properties.getBooleanWithDefault( "invalid.key", false ) );
-        Assert.assertEquals( false, properties.getBooleanWithDefault( "int.value.invalid", false ) );
+        kurjunProperties.getBooleanWithDefault( "test", true );
     }
 
 
     @Test
-    public void testGetContextProperties()
+    public void propertyMap() throws Exception
     {
-        String context = "some-context";
-        Properties p = properties.getContextProperties( context );
-        Assert.assertNotNull( p );
-
-        p.put( "key", "value" );
-        p = properties.getContextProperties( context );
-        Assert.assertEquals( "value", p.getProperty( "key" ) );
+        kurjunProperties.propertyMap();
     }
 
+
+    @Test
+    public void getContextProperties() throws Exception
+    {
+        kurjunProperties.getContextProperties( "test" );
+    }
+
+
+    @Test
+    public void getContextProperties1() throws Exception
+    {
+        when( kurjunContext.getName() ).thenReturn( "test" );
+
+        kurjunProperties.getContextProperties( kurjunContext );
+    }
 }
-
