@@ -7,19 +7,43 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
+import ai.subut.kurjun.ar.Ar;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
+import ai.subut.kurjun.metadata.common.apt.DefaultIndexPackageMetaDataTest;
+import ai.subut.kurjun.model.index.IndexPackageMetaData;
+import ai.subut.kurjun.model.metadata.Architecture;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
+import ai.subut.kurjun.model.metadata.snap.SnapMetadata;
+import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
+
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.when;
 
 
+@RunWith( MockitoJUnitRunner.class )
 public class MetadataUtilsTest
 {
     private MetadataUtils metadataUtils;
 
     @Mock
     PackageMetadata packageMetadata;
+
+    @Mock
+    IndexPackageMetaData indexPackageMetaData;
+
+    @Mock
+    SnapMetadata snapMetadata;
+
+    @Mock
+    SubutaiTemplateMetadata subutaiTemplateMetadata;
+
+    @Mock
+    Metadata metadata;
 
 
     @Before
@@ -38,8 +62,60 @@ public class MetadataUtilsTest
     @Test
     public void testSerializablePackageMetadata()
     {
-//        metadataUtils.serializablePackageMetadata( packageMetadata );
+        // mocks
+        when( packageMetadata.getMd5Sum() ).thenReturn( DefaultIndexPackageMetaDataTest.md5() );
+        when( packageMetadata.getComponent() ).thenReturn( "component" );
+        when( packageMetadata.getFilename() ).thenReturn( "fileName" );
+        when( packageMetadata.getPackage() ).thenReturn( "package" );
+        when( packageMetadata.getVersion() ).thenReturn( "version" );
+        when( packageMetadata.getSource() ).thenReturn( "source" );
+        when( packageMetadata.getMaintainer() ).thenReturn( "maintainer" );
+        when( packageMetadata.getArchitecture() ).thenReturn( Architecture.ALL );
+        when( packageMetadata.getInstalledSize() ).thenReturn( 5 );
+
+
+        metadataUtils.serializablePackageMetadata( packageMetadata );
     }
+
+
+    @Test
+    public void testSerializableIndexPackageMetadata()
+    {
+        assertNotNull( metadataUtils.serializableIndexPackageMetadata( indexPackageMetaData ) );
+    }
+
+
+    @Test
+    public void testSerializableSnapMetadata()
+    {
+        assertNotNull( metadataUtils.serializableSnapMetadata( snapMetadata ) );
+    }
+
+
+    @Test
+    public void testSerializableTemplateMetadata()
+    {
+        assertNotNull( metadataUtils.serializableTemplateMetadata( subutaiTemplateMetadata ) );
+    }
+
+
+    @Test
+    public void testMakeParamsMapMetadataIsNull()
+    {
+        metadataUtils.makeParamsMap( metadata );
+    }
+
+    @Test
+    public void testMakeParams()
+    {
+        when( metadata.getId() ).thenReturn( "test" );
+        when( metadata.getMd5Sum() ).thenReturn( DefaultIndexPackageMetaDataTest.md5() );
+        when( metadata.getName() ).thenReturn( "name" );
+        when( metadata.getVersion() ).thenReturn( "1.0.0" );
+
+        metadataUtils.makeParamsMap( metadata );
+    }
+
 
     @Test
     public void testMakeVersionComparator()
