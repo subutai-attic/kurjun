@@ -16,11 +16,11 @@ import ai.subut.kurjun.quota.QuotaInfoStore;
 
 /**
  * Transfer quota manager.
- *
  */
 public class TransferQuotaManager
 {
     public static final int BUFFER_SIZE = 1024 * 4;
+
 
     @Inject
     private TransferredDataCounterFactory dataCounterFactory;
@@ -49,13 +49,13 @@ public class TransferQuotaManager
 
 
     /**
-     * Copies stream of data from source to output stream. While copying quota threshold is checked by a step of
-     * {@link TransferQuotaManager#BUFFER_SIZE} bytes. If threshold exceeds during the copy operation
-     * {@link QuotaException} is thrown.
+     * Copies stream of data from source to output stream. While copying quota threshold is checked by a step of {@link
+     * TransferQuotaManager#BUFFER_SIZE} bytes. If threshold exceeds during the copy operation {@link QuotaException} is
+     * thrown.
      *
      * @param source source stream of data to be copied (transferred)
      * @param sink sink for the data
-     * @throws IOException
+     *
      * @throws QuotaException if quota threshold is exceeded
      */
     public void copy( InputStream source, OutputStream sink ) throws IOException, QuotaException
@@ -84,6 +84,7 @@ public class TransferQuotaManager
      * When reading next data exceeds the quota threshold an exception is thrown.
      *
      * @param stream stream that is to be managed by quota management
+     *
      * @return wrapper stream that is checked for quota threshold
      */
     public InputStream createManagedStream( InputStream stream )
@@ -98,10 +99,8 @@ public class TransferQuotaManager
 
     /**
      * Gets size of data allowed to transfer at the time of calling this method. Allowed size to transfer is the data
-     * left to reach threshold value.
-     * <p>
-     * Returned value is expected to be used immediately as the transfer quota is bound to time and is subject to be
-     * reset at its time frame.
+     * left to reach threshold value. <p> Returned value is expected to be used immediately as the transfer quota is
+     * bound to time and is subject to be reset at its time frame.
      *
      * @return allowed size that can be transferred at this time
      */
@@ -117,6 +116,7 @@ public class TransferQuotaManager
      * Checks if the supplied data size can be transferred without exceeding quota threshold.
      *
      * @param size data size in bytes
+     *
      * @return {@code true} if transferring supplied data size would not exceed quota threshold; {@code false}
      * otherwise.
      */
@@ -150,5 +150,9 @@ public class TransferQuotaManager
     }
 
 
+    public void setDataCounterFactory( final TransferredDataCounterFactory dataCounterFactory )
+    {
+        this.dataCounterFactory = dataCounterFactory;
+    }
 }
 
