@@ -152,14 +152,20 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     {
         WebClient webClient =
                 webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + INFO_PATH, makeParamsMap( metadata ) );
+
+        LOGGER.debug( "Trying to get package info from remote Kurjun: {} with Id: {}", url, metadata.getId() );
+
         if ( identity != null )
         {
             webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
         }
 
         Response resp = doGet( webClient );
+
         if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
         {
+            LOGGER.debug( "Reading remote template info" );
+
             if ( resp.getEntity() instanceof InputStream )
             {
                 try
@@ -174,6 +180,12 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
                 }
             }
         }
+
+        assert resp != null;
+
+        LOGGER.error( "Did not receive metadata info from remote Kurjun for request: {}, response code: {}",
+                metadata.getId(), resp.getStatus() );
+
         return null;
     }
 
@@ -181,6 +193,8 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     @Override
     public InputStream getPackageStream( Metadata metadata )
     {
+        LOGGER.debug( "Trying to get stream from remote Kurjun: {} with Id: {}", url, metadata.getId() );
+
         InputStream cachedStream = checkCache( metadata );
         if ( cachedStream != null )
         {
@@ -200,6 +214,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
 
         if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
         {
+            LOGGER.debug( "Reading remote template stream" );
             if ( resp.getEntity() instanceof InputStream )
             {
                 InputStream inputStream = ( InputStream ) resp.getEntity();
@@ -222,6 +237,10 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
                 }
             }
         }
+        assert resp != null;
+
+        LOGGER.error( "Could not obtain stream from remote Kurjun for request: {}, response code: {}", metadata.getId(),
+                resp.getStatus() );
         return null;
     }
 
@@ -229,9 +248,14 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     @Override
     public List<SerializableMetadata> listPackages()
     {
+
         String md5 = getMd5();
+
+        LOGGER.debug( "Trying to get latest md5 sum of remote index. Current md5:{},remote md5:{}", this.md5Sum, md5 );
+
         if ( this.md5Sum.equalsIgnoreCase( md5 ) )
         {
+            LOGGER.debug( "Remote index did not change, returning local index cache" );
             return this.remoteIndexChache;
         }
         Map<String, String> params = makeParamsMap( new DefaultMetadata() );
@@ -247,6 +271,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
         Response resp = doGet( webClient );
         if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
         {
+            LOGGER.debug( "Reading remote index cache" );
             if ( resp.getEntity() instanceof InputStream )
             {
                 try
@@ -254,7 +279,11 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
                     List<String> items = IOUtils.readLines( ( InputStream ) resp.getEntity() );
 
                     this.remoteIndexChache = toObjectList( items.get( 0 ) );
+                    LOGGER.debug( "Remote index contains: {} templates", remoteIndexChache.size() );
+
                     this.md5Sum = md5;
+                    LOGGER.debug( "Updating remote md5 sum to :{}", this.md5Sum );
+
                     return this.remoteIndexChache;
                 }
                 catch ( IOException ex )
@@ -263,6 +292,10 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
                 }
             }
         }
+        assert resp != null;
+
+        LOGGER.error( "Could not obtain remote index, returning empty list for remote Kurjun : {} ", url );
+
         return Collections.emptyList();
     }
 
@@ -278,10 +311,11 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
     public String getMd5()
     {
         WebClient webClient = webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + MD5_PATH, null );
-
+        LOGGER.debug( "Getting remote index md5 checksum" );
         Response resp = doGet( webClient );
         if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
         {
+            LOGGER.debug( "Reading remote index md5 checksum" );
             if ( resp.getEntity() instanceof InputStream )
             {
                 try
@@ -298,6 +332,7 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
                 }
             }
         }
+        LOGGER.error( "Failed to fetch remote index md5 checksum" );
         return "";
     }
 
