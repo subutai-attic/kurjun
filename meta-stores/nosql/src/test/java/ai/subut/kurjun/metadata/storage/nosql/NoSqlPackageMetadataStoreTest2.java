@@ -1,42 +1,27 @@
-package ai.subut.kurjun.metadata.storage.sql;
+package ai.subut.kurjun.metadata.storage.nosql;
 
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
-import java.util.UUID;
 
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.commons.codec.digest.DigestUtils;
-
-import ai.subut.kurjun.metadata.common.MetadataListingImpl;
-import ai.subut.kurjun.metadata.common.apt.DefaultDependency;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
-import ai.subut.kurjun.model.metadata.Architecture;
-import ai.subut.kurjun.model.metadata.Metadata;
-import ai.subut.kurjun.model.metadata.MetadataListing;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
-import ai.subut.kurjun.model.metadata.apt.Dependency;
-import ai.subut.kurjun.model.metadata.apt.Priority;
-import ai.subut.kurjun.model.metadata.apt.RelationOperator;
 
 
-public class SqlDbPackageMetadataStoreTest
+public class NoSqlPackageMetadataStoreTest2
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger( SqlDbPackageMetadataStoreTest.class );
-    private static SqlDbPackageMetadataStore store;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( NoSqlPackageMetadataStoreTest2.class );
+    private static NoSqlPackageMetadataStore store;
+    private static CassandraSessionProvider sessionProvider;
 
     private SerializableMetadata meta;
     private List<SerializableMetadata> extraItems;
@@ -44,33 +29,42 @@ public class SqlDbPackageMetadataStoreTest
 
 
     @BeforeClass
-    public static void setUpClass() throws IOException
+    public static void setUpClass()
     {
-        try ( InputStream is = ClassLoader.getSystemResourceAsStream( "conn.properties" ) )
-        {
-            Properties properties = new Properties();
-            properties.load( is );
-            store = new SqlDbPackageMetadataStore( properties );
-        }
-        catch ( Exception ex )
-        {
-            LOGGER.error( "Failed to init SQL DB store", ex );
-        }
+//        Properties prop = new Properties();
+//        try ( InputStream is = ClassLoader.getSystemResourceAsStream( "cassandra.properties" ) )
+//        {
+//            prop.load( is );
+//
+//            String node = prop.getProperty( "test.cassandra.node" );
+//            int port = Integer.parseInt( prop.getProperty( "test.cassandra.port" ) );
+//            sessionProvider = new CassandraSessionProvider( node, port );
+//
+//            KurjunContext defaultContext = new KurjunContext( "" );
+//            store = new NoSqlPackageMetadataStore( sessionProvider, defaultContext );
+//        }
+//        catch ( Exception ex )
+//        {
+//            LOGGER.error( "Failed to initialize Cassandra connection", ex );
+//        }
     }
 
 
     @AfterClass
     public static void tearDownClass() throws IOException
     {
-        ConnectionFactory.getInstance().close();
+//        if ( sessionProvider != null )
+//        {
+//            sessionProvider.close();
+//        }
     }
 
 
     @Before
-    public void setUp() throws IOException, NoSuchAlgorithmException
+    public void setUp() throws IOException
     {
 //        Assume.assumeNotNull( store );
-
+//
 //        meta = createPackageMetadata();
 //        store.put( meta );
 //
@@ -82,14 +76,14 @@ public class SqlDbPackageMetadataStoreTest
     @After
     public void tearDown() throws IOException
     {
-        if ( store != null )
-        {
-            store.remove( meta.getMd5Sum() );
-            for ( SerializableMetadata item : extraItems )
-            {
-                store.remove( item.getMd5Sum() );
-            }
-        }
+//        if ( store != null )
+//        {
+//            store.remove( meta.getMd5Sum() );
+//            for ( SerializableMetadata item : extraItems )
+//            {
+//                store.remove( item.getMd5Sum() );
+//            }
+//        }
     }
 
 
@@ -145,7 +139,7 @@ public class SqlDbPackageMetadataStoreTest
 //        // put twice of the batch size
 //        for ( int i = 0; i < store.batchSize * 2; i++ )
 //        {
-//            DefaultPackageMetadata pm = createPackageMetadata();
+//            SerializableMetadata pm = createPackageMetadata();
 //            store.put( pm );
 //            extraItems.add( pm );
 //        }

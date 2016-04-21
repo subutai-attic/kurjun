@@ -2,217 +2,181 @@ package ai.subut.kurjun.metadata.storage.nosql;
 
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.Iterator;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
-import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
+
+import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Row;
+import com.datastax.driver.core.Session;
+import com.datastax.driver.core.Statement;
 
 import ai.subut.kurjun.common.service.KurjunContext;
-import ai.subut.kurjun.metadata.common.MetadataListingImpl;
-import ai.subut.kurjun.metadata.common.apt.DefaultDependency;
-import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
-import ai.subut.kurjun.model.metadata.Architecture;
-import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.MetadataListing;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
-import ai.subut.kurjun.model.metadata.apt.Dependency;
-import ai.subut.kurjun.model.metadata.apt.Priority;
-import ai.subut.kurjun.model.metadata.apt.RelationOperator;
+
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
+@RunWith( MockitoJUnitRunner.class )
 public class NoSqlPackageMetadataStoreTest
 {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger( NoSqlPackageMetadataStoreTest.class );
-    private static NoSqlPackageMetadataStore store;
-    private static CassandraSessionProvider sessionProvider;
-
-    private SerializableMetadata meta;
-    private List<SerializableMetadata> extraItems;
-    private byte[] otherMd5;
+    private NoSqlPackageMetadataStore metadataStore;
+    private static final byte[] MD5 = { 0, 1, 2, 3, 4, 5 };
 
 
-    @BeforeClass
-    public static void setUpClass()
-    {
-//        Properties prop = new Properties();
-//        try ( InputStream is = ClassLoader.getSystemResourceAsStream( "cassandra.properties" ) )
-//        {
-//            prop.load( is );
-//
-//            String node = prop.getProperty( "test.cassandra.node" );
-//            int port = Integer.parseInt( prop.getProperty( "test.cassandra.port" ) );
-//            sessionProvider = new CassandraSessionProvider( node, port );
-//
-//            KurjunContext defaultContext = new KurjunContext( "" );
-//            store = new NoSqlPackageMetadataStore( sessionProvider, defaultContext );
-//        }
-//        catch ( Exception ex )
-//        {
-//            LOGGER.error( "Failed to initialize Cassandra connection", ex );
-//        }
-    }
+    @Mock
+    CassandraSessionProvider sessionProvider;
 
+    @Mock
+    KurjunContext kurjunContext;
 
-    @AfterClass
-    public static void tearDownClass() throws IOException
-    {
-//        if ( sessionProvider != null )
-//        {
-//            sessionProvider.close();
-//        }
-    }
+    @Mock
+    Session session;
+
+    @Mock
+    Statement statement;
+
+    @Mock
+    ResultSet resultSet;
+
+    @Mock
+    Iterator iterator;
+
+    @Mock
+    Row row;
+
+    @Mock
+    SerializableMetadata serializableMetadata;
+
+    @Mock
+    MetadataListing metadataListing;
 
 
     @Before
-    public void setUp() throws IOException
+    public void setUp() throws Exception
     {
-//        Assume.assumeNotNull( store );
-//
-//        meta = createPackageMetadata();
-//        store.put( meta );
-//
-//        extraItems = new ArrayList<>();
-//        otherMd5 = DigestUtils.md5( "other content" );
-    }
+        // mock
+        when( session.execute( any( Statement.class ) ) ).thenReturn( resultSet );
+        when( sessionProvider.get() ).thenReturn( session );
+        when( kurjunContext.getName() ).thenReturn( "public" );
+        when( resultSet.iterator() ).thenReturn( iterator );
 
 
-    @After
-    public void tearDown() throws IOException
-    {
-//        if ( store != null )
-//        {
-//            store.remove( meta.getMd5Sum() );
-//            for ( SerializableMetadata item : extraItems )
-//            {
-//                store.remove( item.getMd5Sum() );
-//            }
-//        }
+        metadataStore = new NoSqlPackageMetadataStore( sessionProvider, kurjunContext );
     }
 
 
     @Test
-    public void testContains() throws Exception
+    public void notContains() throws Exception
     {
-//        Assert.assertTrue( store.contains( meta.getMd5Sum() ) );
-//        Assert.assertFalse( store.contains( otherMd5 ) );
+        assertFalse( metadataStore.contains( new Object() ) );
+    }
+
+
+    @Test( expected = IOException.class )
+    public void getException() throws Exception
+    {
+        // mock
+        when( iterator.hasNext() ).thenReturn( true );
+        when( iterator.next() ).thenReturn( row );
+        when( row.getString( anyString() ) ).thenReturn( "test" );
+
+        metadataStore.get( "test" );
     }
 
 
     @Test
-    public void testGet() throws Exception
+    public void get() throws Exception
     {
-//        Metadata res = store.get( meta.getMd5Sum() );
-//        Assert.assertEquals( meta, res );
-//        Assert.assertNull( store.get( otherMd5 ) );
-//
-//        // test get by name
-//        List<SerializableMetadata> ls = store.get( meta.getName() );
-//        Assert.assertEquals( 1, ls.size() );
-//        Assert.assertTrue( ls.contains( meta ) );
-//
-//        Assert.assertTrue( store.get( "non-existing-name" ).isEmpty() );
+        // mock
+        when( iterator.hasNext() ).thenReturn( true ).thenReturn( false );
+        when( iterator.next() ).thenReturn( row );
+        when( row.getString( anyString() ) ).thenReturn( Hex.encodeHexString( MD5 ) );
+
+        assertNotNull( metadataStore.get( "test" ) );
     }
 
 
     @Test
-    public void testPut() throws Exception
+    public void getByIdNull() throws Exception
     {
-        // already exists
-//        Assert.assertFalse( store.put( meta ) );
+        assertNull( metadataStore.get( new Object() ) );
     }
 
 
     @Test
-    public void testRemove() throws Exception
+    public void getById() throws Exception
     {
-        // does not exist
-//        Assert.assertFalse( store.remove( otherMd5 ) );
+        // mock
+        when( resultSet.one() ).thenReturn( row );
+        when( row.getString( anyString() ) ).thenReturn( Hex.encodeHexString( MD5 ) );
 
-        // removed first then does not exist anymore
-//        Assert.assertTrue( store.remove( meta.getMd5Sum() ) );
-//        Assert.assertFalse( store.remove( meta.getMd5Sum() ) );
+        assertNotNull( metadataStore.get( new Object() ) );
     }
 
 
     @Test
-    public void testList() throws Exception
+    public void getEmptyList() throws Exception
     {
-//        store.batchSize = 10;
-//
-//        // put twice of the batch size
-//        for ( int i = 0; i < store.batchSize * 2; i++ )
-//        {
-//            SerializableMetadata pm = createPackageMetadata();
-//            store.put( pm );
-//            extraItems.add( pm );
-//        }
-//
-//        MetadataListing ls = store.list();
-//
-//        Assert.assertNotNull( ls );
-//        Assert.assertTrue( ls.isTruncated() );
-//        Assert.assertEquals( store.batchSize, ls.getPackageMetadata().size() );
-//
-//        MetadataListing next = store.listNextBatch( ls );
-//        Assert.assertNotNull( next );
+        assertTrue( metadataStore.get( null ).isEmpty() );
     }
 
 
-    @Test//( expected = IllegalStateException.class )
-    public void testListNextBatchWithInvalidInput() throws Exception
+    @Test
+    public void put() throws Exception
     {
-//        MetadataListingImpl listing = new MetadataListingImpl();
-//        listing.setTruncated( false );
-//
-//        store.listNextBatch( listing );
+        // mock
+        when( serializableMetadata.getId() ).thenReturn( row );
+
+        assertTrue( metadataStore.put( serializableMetadata ) );
     }
 
 
-    @Test//( expected = IllegalStateException.class )
-    public void testListNextBatchWithoutMarker() throws IOException
+    @Test
+    public void remove() throws Exception
     {
-//        store.listNextBatch( new MetadataListingImpl() );
+        assertFalse( metadataStore.remove( serializableMetadata ) );
     }
 
 
-    private DefaultPackageMetadata createPackageMetadata()
+    @Test
+    public void list() throws Exception
     {
-//        DefaultPackageMetadata pm = new DefaultPackageMetadata();
-//        pm.setPackage( "package-name" + UUID.randomUUID().toString() );
-//        pm.setVersion( "1.2.3" );
-//        pm.setArchitecture( Architecture.AMD64 );
-//        pm.setDescription( "Description here" );
-//        pm.setFilename( pm.getPackage() + "-ver-arch.deb" );
-//        pm.setInstalledSize( 1234 );
-//        pm.setMaintainer( "Maintainer" );
-//        pm.setMd5( DigestUtils.md5( pm.getFilename() ) );
-//        pm.setPriority( Priority.important );
-//
-//        DefaultDependency dep = new DefaultDependency();
-//        dep.setPackage( "Package" );
-//        dep.setVersion( "1.0.0" );
-//        dep.setDependencyOperator( RelationOperator.StrictlyLater );
-//
-//        List<Dependency> ls = new ArrayList<>();
-//        ls.add( dep );
-//        pm.setDependencies( ls );
-//
-//        return pm;
-        return null;
+        // mock
+        when( iterator.hasNext() ).thenReturn( true ).thenReturn( false );
+        when( iterator.next() ).thenReturn( row );
+        when( row.getString( SchemaInfo.CHECKSUM_COLUMN ) ).thenReturn( Hex.encodeHexString( MD5 ) );
+
+        assertFalse( metadataStore.list().isTruncated() );
+    }
+
+
+    @Test( expected = IllegalStateException.class )
+    public void listNextBatchIsNotTurnicated() throws Exception
+    {
+        metadataStore.listNextBatch( metadataListing );
+    }
+
+
+    @Test
+    public void listNextBatch() throws Exception
+    {
+        // mock
+        when( metadataListing.isTruncated() ).thenReturn( true );
+        when( metadataListing.getMarker() ).thenReturn( "test" );
+
+        assertNotNull( metadataStore.listNextBatch( metadataListing ) );
     }
 }
-
