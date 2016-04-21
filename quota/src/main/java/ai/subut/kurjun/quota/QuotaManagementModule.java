@@ -44,7 +44,7 @@ public class QuotaManagementModule extends AbstractModule
     @Quota
     public FileDb getFileDb( KurjunProperties kurjunProperties )
     {
-        String file = kurjunProperties.getWithDefault( KurjunConstants.QUOTA_FILEDB_PATH, "./quota.db" );
+        String file = kurjunProperties.getWithDefault( KurjunConstants.QUOTA_FILEDB_PATH, "./quota/" );
         try
         {
             return new FileDb( file );
