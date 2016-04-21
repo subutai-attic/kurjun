@@ -12,7 +12,6 @@ import org.omg.CORBA.portable.InputStream;
 import org.omg.CORBA.portable.OutputStream;
 
 import com.google.inject.ProvisionException;
-import com.sun.org.glassfish.gmbal.ManagedAttribute;
 
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.quota.QuotaInfoStore;

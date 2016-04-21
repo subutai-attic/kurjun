@@ -10,9 +10,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.omg.CORBA.portable.InputStream;
 
-import com.sun.org.glassfish.gmbal.ManagedAttribute;
-
-import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.when;
 
@@ -43,11 +40,11 @@ public class TransferQuotaManagedStreamTest
     }
 
 
-    @Test(expected = IOException.class)
+    @Test( expected = IOException.class )
     public void readException() throws Exception
     {
         // mock
-        when(transferredDataCounter.increment( anyInt() )).thenReturn( Long.MAX_VALUE );
+        when( transferredDataCounter.increment( anyInt() ) ).thenReturn( Long.MAX_VALUE );
 
         managedStream.read();
     }
@@ -56,7 +53,7 @@ public class TransferQuotaManagedStreamTest
     @Test
     public void read2() throws IOException
     {
-        byte[] bytes = {0,1};
-        managedStream.read(bytes,1,2);
+        byte[] bytes = { 0, 1 };
+        managedStream.read( bytes, 1, 2 );
     }
 }

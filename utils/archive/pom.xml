@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -18,7 +19,7 @@
     <osgi.import-package>ai.subut.kurjun.*, !*</osgi.import-package>
     <osgi.embed-dependency>artifactId=commons-compress|xz</osgi.embed-dependency>
     <osgi.embed-transitive>false</osgi.embed-transitive>
-    
+
     <test.pkg.filename>
       apt-transport-https_1.0.9.3ubuntu1_amd64.deb
     </test.pkg.filename>
@@ -46,7 +47,7 @@
       </testResource>
     </testResources>
   </build>
-  
+
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -66,6 +67,12 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <version>${mockito.version}</version>
     </dependency>
 
   </dependencies>
