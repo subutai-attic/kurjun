@@ -70,7 +70,7 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
         FileDb fileDb = null;
         try
         {
-            fileDb = new FileDb( fileDbPath.toString() );
+            fileDb = new FileDb( fileDbPath.toString() + "/" );
             boolean contains = fileDb.contains( MAP_NAME, id );
 
             return contains;
@@ -97,7 +97,7 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
         try
         {
-            fileDb = new FileDb( fileDbPath.toString() );
+            fileDb = new FileDb( fileDbPath.toString() + "/" );
             return fileDb.get( MAP_NAME, id, SerializableMetadata.class );
         }
         catch ( IOException ex )
@@ -129,7 +129,7 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
         try
         {
-            fileDb = new FileDb( fileDbPath.toString() );
+            fileDb = new FileDb( fileDbPath.toString() + "/" );
             Map<String, SerializableMetadata> map = fileDb.get( MAP_NAME );
             items = map.values();
         }
@@ -168,7 +168,7 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
             try
             {
-                fileDb = new FileDb( fileDbPath.toString() );
+                fileDb = new FileDb( fileDbPath.toString() + "/" );
                 fileDb.put( MAP_NAME, meta.getId(), meta );
             }
             catch ( IOException ex )
@@ -197,7 +197,7 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
         try
         {
-            fileDb = new FileDb( fileDbPath.toString() );
+            fileDb = new FileDb( fileDbPath.toString() + "/" );
 
             return fileDb.remove( MAP_NAME, id ) != null;
         }
@@ -241,7 +241,7 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
         try
         {
-            fileDb = new FileDb( fileDbPath.toString() );
+            fileDb = new FileDb( fileDbPath.toString() + "/" );
             map = fileDb.get( MAP_NAME );
         }
         finally

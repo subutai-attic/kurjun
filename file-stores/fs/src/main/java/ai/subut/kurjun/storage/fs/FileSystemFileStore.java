@@ -41,7 +41,7 @@ import ai.subut.kurjun.model.storage.FileStore;
 class FileSystemFileStore implements FileStore
 {
 
-    private static final String FILEDB_NAME = "checksum.db";
+    private static final String FILEDB_NAME = "checksum";
     private static final String MAP_NAME = "checksum-to-filepath";
 
     private Path rootLocation;
@@ -90,7 +90,10 @@ class FileSystemFileStore implements FileStore
         }
         finally
         {
-            if ( fileDb != null ) fileDb.close();
+            if ( fileDb != null )
+            {
+                fileDb.close();
+            }
         }
     }
 
@@ -106,7 +109,7 @@ class FileSystemFileStore implements FileStore
 
             if ( path != null )
             {
-                return new FileInputStream(path);
+                return new FileInputStream( path );
             }
             else
             {
@@ -115,7 +118,10 @@ class FileSystemFileStore implements FileStore
         }
         finally
         {
-            if ( fileDb != null ) fileDb.close();
+            if ( fileDb != null )
+            {
+                fileDb.close();
+            }
         }
     }
 
@@ -188,7 +194,10 @@ class FileSystemFileStore implements FileStore
         }
         finally
         {
-            if ( fileDb != null ) fileDb.close();
+            if ( fileDb != null )
+            {
+                fileDb.close();
+            }
         }
 
         return md5;
@@ -215,7 +224,10 @@ class FileSystemFileStore implements FileStore
         }
         finally
         {
-            if ( fileDb != null ) fileDb.close();
+            if ( fileDb != null )
+            {
+                fileDb.close();
+            }
         }
 
         return false;
@@ -267,7 +279,10 @@ class FileSystemFileStore implements FileStore
         }
         finally
         {
-            if ( fileDb != null ) fileDb.close();
+            if ( fileDb != null )
+            {
+                fileDb.close();
+            }
         }
 
         return 0;
@@ -310,7 +325,7 @@ class FileSystemFileStore implements FileStore
 
     private String makeDbFilePath()
     {
-        return rootLocation.resolve( FILEDB_NAME ).toString();
+        return rootLocation.resolve( FILEDB_NAME ).toString() + "/";
     }
 }
 
