@@ -27,7 +27,7 @@
     <module>karaf</module>
     <module>security-manager</module>
     <module>identity-manager</module>
-    <module>kurjun-web</module>
+    <!--<module>kurjun-web</module>-->
   </modules>
 
   <description>
