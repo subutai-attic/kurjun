@@ -20,7 +20,6 @@ public class RestUtils
     public static final int DEFAULT_MAX_RETRANSMITS = 3;
 
 
-
     //***************************************************
     public enum RequestType
     {
@@ -47,9 +46,11 @@ public class RestUtils
 
         return trustManagers;
     }
+
+
     public TrustManager[] getClientFullTrustManagers()
     {
-        return new TrustManager[] {new NaiveTrustManager()};
+        return new TrustManager[] { new NaiveTrustManager() };
     }
 
 
@@ -68,6 +69,7 @@ public class RestUtils
         httpConduit.setClient( httpClientPolicy );
         return client;
     }
+
 
     //***************************************************
     public static WebClient createTrustedWebClient( String url )
@@ -109,9 +111,4 @@ public class RestUtils
             }
         }
     }
-
-
-
-
-
 }
