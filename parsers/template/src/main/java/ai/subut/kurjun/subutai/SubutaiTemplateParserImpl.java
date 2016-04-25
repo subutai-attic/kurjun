@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -112,7 +111,7 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
             @Override
             public String getId()
             {
-                return Hex.encodeHexString( getMd5Sum() );
+                return getMd5Sum();
             }
 
 
@@ -139,9 +138,9 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
 
 
             @Override
-            public byte[] getMd5Sum()
+            public String getMd5Sum()
             {
-                return ( byte[] ) prop.get( MD5_KEY );
+                return ( String ) prop.get( MD5_KEY );
             }
 
 

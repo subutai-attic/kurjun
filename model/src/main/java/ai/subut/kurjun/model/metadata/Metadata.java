@@ -22,7 +22,7 @@ public interface Metadata
      *
      * @return the md5 checksum of the package file
      */
-    byte[] getMd5Sum();
+    String getMd5Sum();
 
 
     /**
