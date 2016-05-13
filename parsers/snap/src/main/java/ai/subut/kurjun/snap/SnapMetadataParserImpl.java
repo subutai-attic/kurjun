@@ -118,7 +118,7 @@ class SnapMetadataParserImpl implements SnapMetadataParser
 
         if ( md5 != null )
         {
-            m.setMd5Sum( md5 );
+            m.setMd5Sum( new String( md5 ) );
         }
 
         return m;
@@ -132,6 +132,5 @@ class SnapMetadataParserImpl implements SnapMetadataParser
             return DigestUtils.md5( is );
         }
     }
-
 }
 
