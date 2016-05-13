@@ -156,7 +156,7 @@ class PackagesIndexBuilderImpl implements PackagesIndexBuilder
 
         // packages index specific fields
         cf.set( IndexPackageMetaData.FILENAME_FIELD, filenameBuilder.makeFilename( meta ) );
-        cf.set( IndexPackageMetaData.MD5SUM_FIELD, Hex.encodeHexString( meta.getMd5Sum() ) );
+        cf.set( IndexPackageMetaData.MD5SUM_FIELD, Hex.encodeHexString( meta.getMd5Sum().getBytes() ) );
         includeExtraField( cf, meta, IndexPackageMetaData.SHA1_FIELD );
         includeExtraField( cf, meta, IndexPackageMetaData.SHA256_FIELD );
         includeExtraField( cf, meta, IndexPackageMetaData.SIZE_FIELD );

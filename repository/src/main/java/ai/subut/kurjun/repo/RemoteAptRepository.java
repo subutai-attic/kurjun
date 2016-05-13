@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -80,6 +79,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
     private List<SerializableMetadata> remoteIndexChache = new LinkedList<>();
     private String md5Sum = "";
     private String search = "all";
+
 
     /**
      * Constructs nonlocal repository located by the specified URL.
@@ -200,10 +200,10 @@ class RemoteAptRepository extends RemoteRepositoryBase
             {
                 InputStream inputStream = ( InputStream ) resp.getEntity();
 
-                byte[] md5Calculated = cacheStream( inputStream );
+                String md5Calculated = cacheStream( inputStream );
 
                 // compare the requested and received md5 checksums
-                if ( Arrays.equals( pm.getMd5Sum(), md5Calculated ) )
+                if ( md5Calculated.equals( pm.getMd5Sum() ) )
                 {
                     return cache.get( md5Calculated );
                 }
@@ -325,11 +325,11 @@ class RemoteAptRepository extends RemoteRepositoryBase
     }
 
 
-    private SerializableMetadata findByMd5( byte[] md5Sum, List<SerializableMetadata> items )
+    private SerializableMetadata findByMd5( String md5Sum, List<SerializableMetadata> items )
     {
         for ( SerializableMetadata item : items )
         {
-            if ( Arrays.equals( item.getMd5Sum(), md5Sum ) )
+            if ( md5Sum.equals( item.getMd5Sum() ) )
             {
                 return item;
             }
