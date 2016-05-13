@@ -61,8 +61,8 @@ public class DbFilePackageMetadataStoreTest2
     @Test
     public void testContains() throws Exception
     {
-//        Assert.assertTrue( store.contains( meta.getId() ) );
-//        Assert.assertFalse( store.contains( otherId ) );
+        //        Assert.assertTrue( store.contains( meta.getId() ) );
+        //        Assert.assertFalse( store.contains( otherId ) );
     }
 
 
@@ -75,8 +75,8 @@ public class DbFilePackageMetadataStoreTest2
 
         // test get by name
         List<SerializableMetadata> ls = store.get( meta.getName() );
-//        Assert.assertEquals( 1, ls.size() );
-//        Assert.assertTrue( ls.contains( meta ) );
+        //        Assert.assertEquals( 1, ls.size() );
+        //        Assert.assertTrue( ls.contains( meta ) );
 
         Assert.assertTrue( store.get( "non-existing-name" ).isEmpty() );
     }
@@ -86,7 +86,7 @@ public class DbFilePackageMetadataStoreTest2
     public void testPut() throws Exception
     {
         // already exists
-//        Assert.assertFalse( store.put( meta ) );
+        //        Assert.assertFalse( store.put( meta ) );
     }
 
 
@@ -97,8 +97,8 @@ public class DbFilePackageMetadataStoreTest2
         Assert.assertFalse( store.remove( otherId ) );
 
         // removed first then does not exist anymore
-//        Assert.assertTrue( store.remove( meta.getId() ) );
-//        Assert.assertFalse( store.remove( meta.getId() ) );
+        //        Assert.assertTrue( store.remove( meta.getId() ) );
+        //        Assert.assertFalse( store.remove( meta.getId() ) );
     }
 
 
@@ -118,11 +118,11 @@ public class DbFilePackageMetadataStoreTest2
         MetadataListing ls = store.list();
 
         Assert.assertNotNull( ls );
-//        Assert.assertTrue( ls.isTruncated() );
-//        Assert.assertEquals( store.batchSize, ls.getPackageMetadata().size() );
+        //        Assert.assertTrue( ls.isTruncated() );
+        //        Assert.assertEquals( store.batchSize, ls.getPackageMetadata().size() );
 
-//        MetadataListing next = store.listNextBatch( ls );
-//        Assert.assertNotNull( next );
+        //        MetadataListing next = store.listNextBatch( ls );
+        //        Assert.assertNotNull( next );
     }
 
 
@@ -153,7 +153,7 @@ public class DbFilePackageMetadataStoreTest2
         pm.setFilename( pm.getPackage() + "-ver-arch.deb" );
         pm.setInstalledSize( 1234 );
         pm.setMaintainer( "Maintainer" );
-        pm.setMd5( DigestUtils.md5( pm.getFilename() ) );
+        pm.setMd5( new String( DigestUtils.md5( pm.getFilename() ) ) );
         pm.setPriority( Priority.important );
 
         DefaultDependency dep = new DefaultDependency();
@@ -167,7 +167,5 @@ public class DbFilePackageMetadataStoreTest2
 
         return pm;
     }
-
-
 }
 
