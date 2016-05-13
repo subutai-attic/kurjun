@@ -5,9 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -48,39 +46,39 @@ public class MetaDataConfiguration
 
     public static String fingerprint()
     {
-        return Hex.encodeHexString( sha1() );
+        return Hex.encodeHexString( sha1().getBytes() );
     }
 
 
-    private static byte[] hash( String algo )
+    private static String hash( String algo )
     {
         try
         {
             MessageDigest digest = MessageDigest.getInstance( algo );
-            return digest.digest( RandomStringUtils.randomAscii( 100 ).getBytes() );
+            return new String(digest.digest( RandomStringUtils.randomAscii( 100 ).getBytes() ));
         }
         catch ( NoSuchAlgorithmException e )
         {
             e.printStackTrace();
         }
 
-        return new byte[0];
+        return "";
     }
 
 
-    public static byte[] md5()
+    public static String md5()
     {
         return hash( "MD5" );
     }
 
 
-    private static byte[] sha1()
+    private static String sha1()
     {
         return hash( "SHA-1" );
     }
 
 
-    public static byte[] sha256()
+    public static String sha256()
     {
         return hash( "SHA-256" );
     }

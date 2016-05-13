@@ -45,7 +45,7 @@ public class DefaultControlFileParser implements ControlFileParser
             throw new IOException("Failed to parse control file. " + e.getMessage(), e );
         }
 
-        BinaryPackageMetadata metadata = new BinaryPackageMetadata( ( byte[] ) params.get( "md5sum" ),
+        BinaryPackageMetadata metadata = new BinaryPackageMetadata( ( String ) params.get( "md5sum" ),
                                                                     ( String ) params.get( "filename" ), control );
 
         return MetadataUtils.serializablePackageMetadata( metadata );

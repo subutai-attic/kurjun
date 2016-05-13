@@ -22,14 +22,14 @@ public class KurjunRandomTest
     @Test
     public void testHashing() throws Exception
     {
-        byte[] hash = KurjunRandom.md5();
-        System.out.println( "md5 = " + Hex.encodeHexString( hash ) );
+        String hash = KurjunRandom.md5();
+        System.out.println( "md5 = " + Hex.encodeHexString( hash.getBytes() ) );
 
         hash = KurjunRandom.sha1();
-        System.out.println( "sha1 = " + Hex.encodeHexString( hash ) );
+        System.out.println( "sha1 = " + Hex.encodeHexString( hash.getBytes() ) );
 
         hash = KurjunRandom.sha256();
-        System.out.println( "sha256 = " + Hex.encodeHexString( hash ) );
+        System.out.println( "sha256 = " + Hex.encodeHexString( hash.getBytes() ) );
 
         System.out.println( "fingerprint = " + KurjunRandom.fingerprint() );
     }

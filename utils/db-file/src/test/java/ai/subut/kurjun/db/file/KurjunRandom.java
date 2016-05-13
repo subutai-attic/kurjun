@@ -27,38 +27,39 @@ public class KurjunRandom
 {
     public static String fingerprint()
     {
-        return Hex.encodeHexString( sha1() );
+        return Hex.encodeHexString( sha1().getBytes() );
     }
 
 
-    private static byte[] hash( String algo )
+    private static String hash( String algo )
     {
         try
         {
             MessageDigest digest = MessageDigest.getInstance( algo );
-            return digest.digest( RandomStringUtils.randomAscii( 100 ).getBytes() );
+            return new String( digest.digest( RandomStringUtils.randomAscii( 100 ).getBytes() ) );
         }
         catch ( NoSuchAlgorithmException e )
         {
             e.printStackTrace();
         }
 
-        return new byte[0];
+        return "";
     }
 
 
-    public static byte[] md5() {
+    public static String md5()
+    {
         return hash( "MD5" );
     }
 
 
-    public static byte[] sha1()
+    public static String sha1()
     {
         return hash( "SHA-1" );
     }
 
 
-    public static byte[] sha256()
+    public static String sha256()
     {
         return hash( "SHA-256" );
     }
@@ -84,29 +85,30 @@ public class KurjunRandom
 
     /**
      * Generates a random alphaNumeric name between 8 and 32 characters.
+     *
      * @return random name
      */
     public static String name()
     {
-        return RandomStringUtils.randomAlphanumeric( randomInt( 8, 32 )  );
+        return RandomStringUtils.randomAlphanumeric( randomInt( 8, 32 ) );
     }
 
 
     public static long size()
     {
-        return Math.abs( RandomUtils.nextLong() ) ;
+        return Math.abs( RandomUtils.nextLong() );
     }
 
 
     /**
      * Returns a random major, minor, micro version randomly.
+     *
      * @return version string
      */
     public static String version()
     {
-        return String.valueOf( randomInt( 0, 100 ) )
-                + '.' + String.valueOf( randomInt( 0, 100 ) )
-                + '.' + String.valueOf( randomInt( 0, 100 ) );
+        return String.valueOf( randomInt( 0, 100 ) ) + '.' + String.valueOf( randomInt( 0, 100 ) ) + '.' + String
+                .valueOf( randomInt( 0, 100 ) );
     }
 
 
@@ -128,7 +130,7 @@ public class KurjunRandom
     }
 
 
-    public static Map<String,String> extra()
+    public static Map<String, String> extra()
     {
         return Collections.emptyMap();
     }
@@ -195,7 +197,8 @@ public class KurjunRandom
     }
 
 
-    public static DefaultPackageMetadata defaultPackageMetadata( DefaultIndexPackageMetaData defaultIndexPackageMetaData )
+    public static DefaultPackageMetadata defaultPackageMetadata(
+            DefaultIndexPackageMetaData defaultIndexPackageMetaData )
     {
         DefaultPackageMetadata defaultPackageMetadata;
 
