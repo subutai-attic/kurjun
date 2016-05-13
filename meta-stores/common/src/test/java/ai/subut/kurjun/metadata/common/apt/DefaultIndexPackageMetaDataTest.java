@@ -16,7 +16,7 @@ import com.google.common.collect.Lists;
 
 import ai.subut.kurjun.model.index.TagItem;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 
 @RunWith( MockitoJUnitRunner.class )
@@ -24,7 +24,6 @@ public class DefaultIndexPackageMetaDataTest
 {
     private DefaultIndexPackageMetaData packageMetaData;
     private List<TagItem> tag;
-
 
 
     @Before
@@ -39,7 +38,6 @@ public class DefaultIndexPackageMetaDataTest
         packageMetaData.setSize( 555555 );
         packageMetaData.setDescriptionMd5( md5() );
         packageMetaData.setTag( tag );
-
     }
 
 
@@ -78,35 +76,35 @@ public class DefaultIndexPackageMetaDataTest
     }
 
 
-    private static byte[] hash( String algo )
+    private static String hash( String algo )
     {
         try
         {
             MessageDigest digest = MessageDigest.getInstance( algo );
-            return digest.digest( RandomStringUtils.randomAscii( 100 ).getBytes() );
+            return new String( digest.digest( RandomStringUtils.randomAscii( 100 ).getBytes() ) );
         }
         catch ( NoSuchAlgorithmException e )
         {
             e.printStackTrace();
         }
 
-        return new byte[0];
+        return "";
     }
 
 
-    public static byte[] SHA1()
+    public static String SHA1()
     {
         return hash( "SHA-1" );
     }
 
 
-    public static byte[] SHA256()
+    public static String SHA256()
     {
         return hash( "SHA-256" );
     }
 
 
-    public static byte[] md5()
+    public static String md5()
     {
         return hash( "MD5" );
     }

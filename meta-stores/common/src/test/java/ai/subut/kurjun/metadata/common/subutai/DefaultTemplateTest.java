@@ -10,7 +10,8 @@ import org.junit.Test;
 import ai.subut.kurjun.metadata.common.apt.DefaultIndexPackageMetaDataTest;
 import ai.subut.kurjun.model.metadata.Architecture;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 
 public class DefaultTemplateTest
@@ -24,7 +25,7 @@ public class DefaultTemplateTest
     {
         defaultTemplate = new DefaultTemplate();
 
-        defaultTemplate.setId( "FCCF494471A9E89AB05C6BCED48E74E18333EBA3", DefaultIndexPackageMetaDataTest.md5() );
+        defaultTemplate.setId( "FCCF494471A9E89AB05C6BCED48E74E18333EBA3", new String( DefaultIndexPackageMetaDataTest.md5() ) );
         defaultTemplate.setName( "name" );
         defaultTemplate.setVersion( "1.0.0" );
         defaultTemplate.setMd5Sum( DefaultIndexPackageMetaDataTest.md5() );

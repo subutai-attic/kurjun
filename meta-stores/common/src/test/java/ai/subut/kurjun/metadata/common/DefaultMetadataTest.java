@@ -11,7 +11,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import org.apache.commons.lang.RandomStringUtils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 
 @RunWith( MockitoJUnitRunner.class )
@@ -93,23 +94,23 @@ public class DefaultMetadataTest
     }
 
 
-    private static byte[] hash( String algo )
+    private static String hash( String algo )
     {
         try
         {
             MessageDigest digest = MessageDigest.getInstance( algo );
-            return digest.digest( RandomStringUtils.randomAscii( 100 ).getBytes() );
+            return new String(digest.digest( RandomStringUtils.randomAscii( 100 ).getBytes() ));
         }
         catch ( NoSuchAlgorithmException e )
         {
             e.printStackTrace();
         }
 
-        return new byte[0];
+        return "";
     }
 
 
-    public static byte[] md5()
+    public static String md5()
     {
         return hash( "MD5" );
     }

@@ -11,7 +11,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import ai.subut.kurjun.ar.Ar;
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.apt.DefaultIndexPackageMetaDataTest;
 import ai.subut.kurjun.model.index.IndexPackageMetaData;
@@ -104,6 +103,7 @@ public class MetadataUtilsTest
     {
         metadataUtils.makeParamsMap( metadata );
     }
+
 
     @Test
     public void testMakeParams()

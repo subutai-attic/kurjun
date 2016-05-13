@@ -29,9 +29,9 @@ public class DefaultIndexPackageMetaData extends DefaultPackageMetadata implemen
     }
 
 
-    public void setSha1( byte[] sha1 )
+    public void setSha1( String sha1 )
     {
-        this.sha1 = sha1;
+        this.sha1 = sha1.getBytes();
     }
 
 
@@ -42,9 +42,9 @@ public class DefaultIndexPackageMetaData extends DefaultPackageMetadata implemen
     }
 
 
-    public void setSha256( byte[] sha256 )
+    public void setSha256( String sha256 )
     {
-        this.sha256 = sha256;
+        this.sha256 = sha256.getBytes();
     }
 
 
@@ -68,9 +68,9 @@ public class DefaultIndexPackageMetaData extends DefaultPackageMetadata implemen
     }
 
 
-    public void setDescriptionMd5( byte[] descriptionMd5 )
+    public void setDescriptionMd5( String descriptionMd5 )
     {
-        this.descriptionMd5 = descriptionMd5;
+        this.descriptionMd5 = descriptionMd5.getBytes();
     }
 
 
