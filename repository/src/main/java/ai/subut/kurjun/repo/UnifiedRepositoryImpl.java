@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -91,10 +90,9 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
     @Override
     public SerializableMetadata getPackageInfo( Metadata metadata )
     {
-        Iterator<Repository> it = getAllRepositories().iterator();
-        while ( it.hasNext() )
+        for ( final Repository repository : getAllRepositories() )
         {
-            SerializableMetadata m = it.next().getPackageInfo( metadata );
+            SerializableMetadata m = repository.getPackageInfo( metadata );
             if ( m != null )
             {
                 return m;

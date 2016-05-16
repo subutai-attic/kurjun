@@ -281,7 +281,25 @@ public class FileDb implements Closeable
 
             Object object = gson.fromJson( jsonWrapper.getJsonObject(), clazz );
             //filename.json -> filename
-            map.put( jsonFile.getName().split( "\\." )[0], object );
+            String[] parsedName = jsonFile.getName().split( "\\." );
+            if ( parsedName.length == 3 )
+            {
+                //                Map subMap = ( Map ) map.get( parsedName[0] );
+                //                if ( subMap == null )
+                //                {
+                //                    subMap = new HashMap<>();
+                //                }
+                //                subMap.put( parsedName[1], object );
+                map.put( parsedName[1], object );
+            }
+            else if ( parsedName.length == 2 )
+            {
+                map.put( parsedName[0], object );
+            }
+            else
+            {
+                map.put( jsonFile.getName(), object );
+            }
         }
         catch ( ClassNotFoundException | IOException e )
         {

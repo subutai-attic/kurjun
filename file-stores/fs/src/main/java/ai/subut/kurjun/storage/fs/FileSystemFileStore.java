@@ -86,7 +86,7 @@ class FileSystemFileStore implements FileStore
         try
         {
             fileDb = new FileDb( makeDbFilePath() );
-            return fileDb.contains( MAP_NAME, Hex.encodeHexString( md5.getBytes() ) );
+            return fileDb.contains( MAP_NAME, md5 );
         }
         finally
         {
@@ -105,7 +105,7 @@ class FileSystemFileStore implements FileStore
         try
         {
             fileDb = new FileDb( makeDbFilePath() );
-            String path = fileDb.get( MAP_NAME, Hex.encodeHexString( md5.getBytes() ), String.class );
+            String path = fileDb.get( MAP_NAME, md5, String.class );
 
             if ( path != null )
             {
@@ -200,7 +200,7 @@ class FileSystemFileStore implements FileStore
             }
         }
 
-        return new String( md5 );
+        return Hex.encodeHexString( md5 );
     }
 
 

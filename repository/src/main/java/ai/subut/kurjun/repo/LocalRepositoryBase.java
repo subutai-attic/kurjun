@@ -34,9 +34,9 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
         PackageMetadataStore metadataStore = getMetadataStore();
         try
         {
-            if ( metadata.getId() != null || metadata.getMd5Sum() != null )
+            if ( metadata.getMd5Sum() != null )
             {
-                return metadataStore.get( metadata.getId() != null ? metadata.getId() : metadata.getMd5Sum() );
+                return metadataStore.get( ( Object ) metadata.getMd5Sum() );
             }
             if ( metadata.getName() != null )
             {
