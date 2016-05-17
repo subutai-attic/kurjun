@@ -44,20 +44,20 @@ public class RawFileController extends BaseController
             repository = "all";
         }
 
-        return Results.html().template("views/raw-files.ftl").render( "files", rawManagerService.list( repository ) );
+        return Results.html().template( "views/raw-files.ftl" ).render( "files", rawManagerService.list( repository ) );
     }
 
 
     @FileProvider( SubutaiFileHandler.class )
-    public Result upload(Context context, @Param( "file" ) FileItem fileItem, FlashScope flashScope )
+    public Result upload( Context context, @Param( "file" ) FileItem fileItem, FlashScope flashScope )
     {
-        UserSession userSession = (UserSession) context.getAttribute(SecurityFilter.USER_SESSION);
+        UserSession userSession = ( UserSession ) context.getAttribute( SecurityFilter.USER_SESSION );
         String fingerprint = "raw";
 
         //checkNotNull( fileItem, "MD5 cannot be null" );
         //if ( userSession != null && userSession.getUser() != null )
         //{
-          //  fingerprint = userSession.getUser().getKeyFingerprint();
+        //  fingerprint = userSession.getUser().getKeyFingerprint();
         //}
 
         KurjunFileItem kurjunFileItem = ( KurjunFileItem ) fileItem;
@@ -65,18 +65,20 @@ public class RawFileController extends BaseController
         Metadata metadata;
 
         UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-        metadata = rawManagerService.put(userSession, kurjunFileItem.getFile(), kurjunFileItem.getFileName(), fingerprint );
+        metadata = rawManagerService
+                .put( userSession, kurjunFileItem.getFile(), kurjunFileItem.getFileName(), fingerprint );
 
         if ( metadata != null )
         {
-            flashScope.success("Uploaded successfully");
+            flashScope.success( "Uploaded successfully" );
         }
-        else {
+        else
+        {
 
-            flashScope.error("Failed to upload.");
+            flashScope.error( "Failed to upload." );
         }
 
-        return Results.redirect(context.getContextPath()+"/raw-files");
+        return Results.redirect( context.getContextPath() + "/raw-files" );
     }
 
 
@@ -84,43 +86,69 @@ public class RawFileController extends BaseController
     {
         checkNotNull( id, "ID cannot be null" );
 
-        String[] temp = id.split( "\\." );
+        try
+        {
 
-        Renderable renderable = null;
-        //temp contains [fprint].[md5]
-        if ( temp.length == 2 )
-        {
-            renderable = rawManagerService.getFile( temp[0], Utils.MD5.toByteArray( temp[1] ) );
+            String[] temp = id.split( "\\." );
+
+            Renderable renderable = null;
+            //temp contains [fprint].[md5]
+            if ( temp.length == 2 )
+            {
+                renderable = rawManagerService.getFile( temp[0], Utils.MD5.toByteArray( temp[1] ) );
+            }
+            if ( renderable != null )
+            {
+                return Results.ok().render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
+            }
         }
-        if ( renderable != null )
+        catch ( Exception e )
         {
-            return Results.ok().render( renderable ).supportedContentType( Result.APPLICATION_OCTET_STREAM );
+
         }
+
         return Results.text().render( "File not found" );
     }
 
 
     public Result delete( Context context, @PathParam( "id" ) String id, FlashScope flashScope )
     {
-        checkNotNull( id, "ID cannot be null" );
-        String[] temp = id.split( "\\." );
 
-        boolean success = false;
-
-        if ( temp.length == 2 )
+        try
         {
-            UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
-            success = rawManagerService.delete(uSession, temp[0], Utils.MD5.toByteArray( temp[1] ) );
+            checkNotNull( id, "ID cannot be null" );
+            String[] temp = id.split( "\\." );
+
+            int status = 1;
+
+            if ( temp.length == 2 )
+            {
+                UserSession uSession = ( UserSession ) context.getAttribute( "USER_SESSION" );
+                status = rawManagerService.delete( uSession, temp[0], Utils.MD5.toByteArray( temp[1] ) );
+            }
+
+            switch ( status )
+            {
+                case 0:
+                    flashScope.success( "Raw file removed successfully" );
+                    break;
+                case 1:
+                    flashScope.success( "Raw file was not found " );
+                    break;
+                case 2:
+                    flashScope.success( "Permission denied " );
+                    break;
+                default:
+                    flashScope.success( "Internal Server error " );
+                    break;
+            }
+        }
+        catch ( Exception e )
+        {
+
         }
 
-        if ( success )
-        {
-            flashScope.success("Deleted successfully");
-            return Results.redirect(context.getContextPath()+"/raw-files");
-        }
-
-        flashScope.error("Failed to delete.");
-        return Results.redirect( context.getContextPath()+"/raw-files" );
+        return Results.redirect( context.getContextPath() + "/raw-files" );
     }
 
 
@@ -135,19 +163,28 @@ public class RawFileController extends BaseController
     {
         RawMetadata rawMetadata = new RawMetadata();
 
-        if ( fingerprint == null && md5 != null )
+        try
         {
-            fingerprint = "raw";
+
+
+            if ( fingerprint == null && md5 != null )
+            {
+                fingerprint = "raw";
+            }
+            rawMetadata.setName( name );
+            rawMetadata.setMd5Sum( Utils.MD5.toByteArray( md5 ) );
+            rawMetadata.setFingerprint( fingerprint );
+
+            Metadata metadata = rawManagerService.getInfo( rawMetadata );
+
+            if ( metadata != null )
+            {
+                return Results.ok().render( metadata ).json();
+            }
         }
-        rawMetadata.setName( name );
-        rawMetadata.setMd5Sum( Utils.MD5.toByteArray( md5 ) );
-        rawMetadata.setFingerprint( fingerprint );
-
-        Metadata metadata = rawManagerService.getInfo( rawMetadata );
-
-        if ( metadata != null )
+        catch(Exception e)
         {
-            return Results.ok().render( metadata ).json();
+
         }
         return Results.notFound().render( "Not found" ).text();
     }

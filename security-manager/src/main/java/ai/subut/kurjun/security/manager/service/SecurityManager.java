@@ -1,7 +1,9 @@
 package ai.subut.kurjun.security.manager.service;
 
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
 
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPublicKey;
@@ -19,13 +21,13 @@ public interface SecurityManager
      * @param is
      * @return md5 checksum, or <code>null</code> if exception occurred
      */
-    byte[] calculateMd5( InputStream is );
+    byte[] calculateMd5( InputStream is ) throws IOException;
 
 
     String generateUUIDRandom();
 
 
-    String generateSecurePassword( String passwordToHash, String salt );
+    String generateSecurePassword( String passwordToHash, String salt ) throws NoSuchAlgorithmException;
 
 
     PGPPublicKey readPGPKey( InputStream input ) throws PGPException;

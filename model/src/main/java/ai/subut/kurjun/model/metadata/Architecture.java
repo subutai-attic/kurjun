@@ -15,9 +15,6 @@ public enum Architecture
      * Gets architecture by name. This method does case-insensitive matching for architecture enum items. This method is
      * preferred to {@link Enum#valueOf(java.lang.Class, java.lang.String)} because in most of the places arch fields
      * are in lower case whereas enum items are defined in upper case.
-     *
-     * @param arch
-     * @return
      */
     public static Architecture getByValue( String arch )
     {
@@ -29,6 +26,12 @@ public enum Architecture
             }
         }
         return null;
+    }
+
+
+    public static Architecture getRandom()
+    {
+        return values()[( int ) ( Math.random() * values().length )];
     }
 
 

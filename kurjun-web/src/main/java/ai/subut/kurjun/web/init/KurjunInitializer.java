@@ -95,7 +95,7 @@ public class KurjunInitializer
             }
             catch ( IOException e )
             {
-                e.printStackTrace();
+                LOGGER.error( "***** Error in remoteRepositories:", e );
             }
         }
 

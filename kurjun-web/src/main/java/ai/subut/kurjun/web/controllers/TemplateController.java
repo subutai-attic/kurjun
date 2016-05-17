@@ -66,7 +66,7 @@ public class TemplateController extends BaseController
             defaultTemplateList = templateManagerService.list( uSession, repo, false );
             //*****************************************************
         }
-        catch ( IOException e )
+        catch ( Exception e )
         {
             flashScope.error( "Failed to get list of templates." );
             LOGGER.error( "Failed to get list of templates: " + e.getMessage() );
@@ -220,6 +220,7 @@ public class TemplateController extends BaseController
                     break;
                 case 1:
                     flashScope.success( "Template was not found " );
+                    break;
                 case 2:
                     flashScope.success( "Permission denied " );
                     break;

@@ -22,6 +22,7 @@ public class SecurityUtils
     private static String ByteArrayToString(byte[] bytes)
     {
         StringBuilder sb = new StringBuilder();
+
         for(int i=0; i< bytes.length ;i++)
         {
             sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
@@ -64,7 +65,7 @@ public class SecurityUtils
 
     /* *************************************************
      */
-    public static String generateHash(String item)
+    public static String generateHash(String item) throws NoSuchAlgorithmException
     {
         String generatedPassword = null;
         try
@@ -76,7 +77,7 @@ public class SecurityUtils
         }
         catch (NoSuchAlgorithmException e)
         {
-            e.printStackTrace();
+            throw new NoSuchAlgorithmException(e);
         }
 
         return generatedPassword;
@@ -85,7 +86,7 @@ public class SecurityUtils
 
     /* *************************************************
      */
-    public static String generateSecurePassword( String passwordToHash, String salt )
+    public static String generateSecurePassword( String passwordToHash, String salt ) throws NoSuchAlgorithmException
     {
         String generatedPassword = null;
         try
@@ -98,7 +99,7 @@ public class SecurityUtils
         }
         catch ( NoSuchAlgorithmException e )
         {
-            e.printStackTrace();
+            throw new NoSuchAlgorithmException(e);
         }
         return generatedPassword;
     }
@@ -122,7 +123,7 @@ public class SecurityUtils
      * @param is
      * @return md5 checksum, or <code>null</code> if exception occurred
      */
-    public static byte[] calculateMd5( InputStream is )
+    public static byte[] calculateMd5( InputStream is ) throws IOException
     {
         byte[] md5 = null;
         try
@@ -131,6 +132,7 @@ public class SecurityUtils
         }
         catch ( IOException e )
         {
+            throw new IOException(e);
         }
         return md5;
     }

@@ -79,26 +79,15 @@ public class IndexPackageMetadataImpl implements IndexPackageMetaData
     @Override
     public String getId()
     {
-        return Hex.encodeHexString( getMd5Sum() );
+        return getMd5Sum();
     }
 
 
     @Override
-    public byte[] getMd5Sum()
+    public String getMd5Sum()
     {
         String md5 = controlFile.get( IndexPackageMetaData.MD5SUM_FIELD );
-        if ( md5 != null )
-        {
-            try
-            {
-                return Hex.decodeHex( md5.toCharArray() );
-            }
-            catch ( DecoderException ex )
-            {
-                LOGGER.error( "Invalid MD5 checksum", ex );
-            }
-        }
-        return null;
+        return md5;
     }
 
 
@@ -326,6 +315,5 @@ public class IndexPackageMetadataImpl implements IndexPackageMetaData
     {
         return controlFile.toString( PackageIndexFieldsParser.FIELDS );
     }
-
 }
 

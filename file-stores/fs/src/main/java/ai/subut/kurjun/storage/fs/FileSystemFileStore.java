@@ -41,7 +41,7 @@ import ai.subut.kurjun.model.storage.FileStore;
 class FileSystemFileStore implements FileStore
 {
 
-    private static final String FILEDB_NAME = "checksum.db";
+    private static final String FILEDB_NAME = "checksum";
     private static final String MAP_NAME = "checksum-to-filepath";
 
     private Path rootLocation;
@@ -80,33 +80,36 @@ class FileSystemFileStore implements FileStore
 
 
     @Override
-    public synchronized boolean contains( byte[] md5 ) throws IOException
+    public synchronized boolean contains( String md5 ) throws IOException
     {
         FileDb fileDb = null;
         try
         {
             fileDb = new FileDb( makeDbFilePath() );
-            return fileDb.contains( MAP_NAME, Hex.encodeHexString( md5 ) );
+            return fileDb.contains( MAP_NAME, md5 );
         }
         finally
         {
-            if ( fileDb != null ) fileDb.close();
+            if ( fileDb != null )
+            {
+                fileDb.close();
+            }
         }
     }
 
 
     @Override
-    public synchronized InputStream get( byte[] md5 ) throws IOException
+    public synchronized InputStream get( String md5 ) throws IOException
     {
         FileDb fileDb = null;
         try
         {
             fileDb = new FileDb( makeDbFilePath() );
-            String path = fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), String.class );
+            String path = fileDb.get( MAP_NAME, md5, String.class );
 
             if ( path != null )
             {
-                return new FileInputStream(path);
+                return new FileInputStream( path );
             }
             else
             {
@@ -115,13 +118,16 @@ class FileSystemFileStore implements FileStore
         }
         finally
         {
-            if ( fileDb != null ) fileDb.close();
+            if ( fileDb != null )
+            {
+                fileDb.close();
+            }
         }
     }
 
 
     @Override
-    public boolean get( byte[] md5, File target ) throws IOException
+    public boolean get( String md5, File target ) throws IOException
     {
         try ( InputStream is = get( md5 ) )
         {
@@ -136,7 +142,7 @@ class FileSystemFileStore implements FileStore
 
 
     @Override
-    public byte[] put( File source ) throws IOException
+    public String put( File source ) throws IOException
     {
         try ( InputStream is = new FileInputStream( source ) )
         {
@@ -147,7 +153,7 @@ class FileSystemFileStore implements FileStore
 
 
     @Override
-    public byte[] put( URL source ) throws IOException
+    public String put( URL source ) throws IOException
     {
         try ( InputStream is = source.openStream() )
         {
@@ -158,7 +164,7 @@ class FileSystemFileStore implements FileStore
 
 
     @Override
-    public synchronized byte[] put( String filename, InputStream source ) throws IOException
+    public synchronized String put( String filename, InputStream source ) throws IOException
     {
         Objects.requireNonNull( filename, "Filename" );
 
@@ -188,17 +194,20 @@ class FileSystemFileStore implements FileStore
         }
         finally
         {
-            if ( fileDb != null ) fileDb.close();
+            if ( fileDb != null )
+            {
+                fileDb.close();
+            }
         }
 
-        return md5;
+        return Hex.encodeHexString( md5 );
     }
 
 
     @Override
-    public synchronized boolean remove( byte[] md5 ) throws IOException
+    public synchronized boolean remove( String md5 ) throws IOException
     {
-        String hexMd5 = Hex.encodeHexString( md5 );
+        String hexMd5 = Hex.encodeHexString( md5.getBytes() );
         FileDb fileDb = null;
         try
         {
@@ -215,7 +224,10 @@ class FileSystemFileStore implements FileStore
         }
         finally
         {
-            if ( fileDb != null ) fileDb.close();
+            if ( fileDb != null )
+            {
+                fileDb.close();
+            }
         }
 
         return false;
@@ -253,13 +265,13 @@ class FileSystemFileStore implements FileStore
 
 
     @Override
-    public synchronized long sizeOf( byte[] md5 ) throws IOException
+    public synchronized long sizeOf( String md5 ) throws IOException
     {
         FileDb fileDb = null;
         try
         {
             fileDb = new FileDb( makeDbFilePath() );
-            String path = fileDb.get( MAP_NAME, Hex.encodeHexString( md5 ), String.class );
+            String path = fileDb.get( MAP_NAME, Hex.encodeHexString( md5.getBytes() ), String.class );
             if ( path != null )
             {
                 return Files.size( Paths.get( path ) );
@@ -267,7 +279,10 @@ class FileSystemFileStore implements FileStore
         }
         finally
         {
-            if ( fileDb != null ) fileDb.close();
+            if ( fileDb != null )
+            {
+                fileDb.close();
+            }
         }
 
         return 0;
@@ -310,7 +325,7 @@ class FileSystemFileStore implements FileStore
 
     private String makeDbFilePath()
     {
-        return rootLocation.resolve( FILEDB_NAME ).toString();
+        return rootLocation.resolve( FILEDB_NAME ).toString() + "/";
     }
 }
 

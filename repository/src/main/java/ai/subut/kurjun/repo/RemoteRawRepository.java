@@ -7,7 +7,6 @@ import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,7 +15,6 @@ import java.util.Set;
 
 import javax.ws.rs.core.Response;
 
-import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +25,7 @@ import org.apache.cxf.transport.http.HTTPConduit;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
@@ -71,9 +70,9 @@ public class RemoteRawRepository extends RemoteRepositoryBase
     private String md5Sum = "";
     private List<SerializableMetadata> remoteIndexChache = new LinkedList<>();
 
-    private static final int CONN_TIMEOUT = 5000;
-    private static final int READ_TIMEOUT = 100000;
-    private static final int CONN_TIMEOUT_FOR_URL_CHECK = 500;
+    private static final int CONN_TIMEOUT = 10000;
+    private static final int READ_TIMEOUT = 1200000;
+    private static final int CONN_TIMEOUT_FOR_URL_CHECK = 10000;
     private String search = "all";
 
 
@@ -158,10 +157,10 @@ public class RemoteRawRepository extends RemoteRepositoryBase
             {
                 InputStream inputStream = ( InputStream ) resp.getEntity();
 
-                byte[] md5Calculated = cacheStream( inputStream );
+                String md5Calculated = cacheStream( inputStream );
 
                 // compare the requested and received md5 checksums
-                if ( Arrays.equals( metadata.getMd5Sum(), md5Calculated ) )
+                if ( !Strings.isNullOrEmpty( metadata.getMd5Sum() ) && metadata.getMd5Sum().equals( md5Calculated ) )
                 {
                     return cache.get( md5Calculated );
                 }
@@ -170,8 +169,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
                     deleteCache( md5Calculated );
 
                     LOGGER.error( "Md5 checksum mismatch after getting the package from remote host. "
-                                    + "Requested with md5={}, name={}", Hex.toHexString( metadata.getMd5Sum() ),
-                            metadata.getName() );
+                            + "Requested with md5={}, name={}", metadata.getMd5Sum(), metadata.getName() );
                 }
             }
         }
@@ -320,7 +318,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
         }
         catch ( Exception e )
         {
-            LOGGER.warn( "Failed to do GET.", e );
+            LOGGER.error( "Failed to do GET.", e );
         }
         return null;
     }
@@ -352,7 +350,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
         }
         catch ( IOException e )
         {
-            e.printStackTrace();
+            getLogger().error( " ***** Failed to get object", e );
         }
         return null;
     }
@@ -370,7 +368,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
         }
         catch ( IOException e )
         {
-            e.printStackTrace();
+            getLogger().error( " ***** Failed to get object list", e );
         }
         return null;
     }

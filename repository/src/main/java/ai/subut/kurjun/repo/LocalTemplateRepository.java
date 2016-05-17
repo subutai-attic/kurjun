@@ -7,12 +7,12 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
@@ -88,8 +88,8 @@ public class LocalTemplateRepository extends LocalRepositoryBase
             Files.copy( is, temp.toPath(), StandardCopyOption.REPLACE_EXISTING );
             SubutaiTemplateMetadata meta = templateParser.parseTemplate( temp );
 
-            byte[] md5 = fileStore.put( temp );
-            if ( Arrays.equals( md5, meta.getMd5Sum() ) )
+            String md5 = fileStore.put( temp );
+            if ( !Strings.isNullOrEmpty( md5 ) && md5.equals( meta.getMd5Sum() ) )
             {
                 metadataStore.put( MetadataUtils.serializableTemplateMetadata( meta ) );
             }
@@ -121,8 +121,8 @@ public class LocalTemplateRepository extends LocalRepositoryBase
             Files.copy( is, temp.toPath(), StandardCopyOption.REPLACE_EXISTING );
             SubutaiTemplateMetadata meta = templateParser.parseTemplate( temp );
 
-            byte[] md5 = fileStore.put( temp );
-            if ( Arrays.equals( md5, meta.getMd5Sum() ) )
+            String md5 = fileStore.put( temp );
+            if ( !Strings.isNullOrEmpty( md5 ) && md5.equals( meta.getMd5Sum() ) )
             {
                 DefaultTemplate dt = MetadataUtils.serializableTemplateMetadata( meta );
                 dt.setSize( temp.length() );
@@ -152,9 +152,9 @@ public class LocalTemplateRepository extends LocalRepositoryBase
 
         try
         {
-            byte[] md5 = fileStore.put( file );
+            String md5 = fileStore.put( file );
 
-            if ( Arrays.equals( md5, meta.getMd5Sum() ) )
+            if ( !Strings.isNullOrEmpty( md5 ) && md5.equals( meta.getMd5Sum() ) )
             {
                 DefaultTemplate dt = MetadataUtils.serializableTemplateMetadata( meta );
                 dt.setSize( file.length() );

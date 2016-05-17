@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.codec.binary.Hex;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -106,10 +104,10 @@ public class MetadataUtils
         DefaultIndexPackageMetaData result = new DefaultIndexPackageMetaData();
         copyPackageMetadata( meta, result );
 
-        result.setSha1( meta.getSHA1() );
-        result.setSha256( meta.getSHA256() );
+        result.setSha1( new String( meta.getSHA1() ) );
+        result.setSha256( new String( meta.getSHA256() ) );
         result.setSize( meta.getSize() );
-        result.setDescriptionMd5( meta.getDescriptionMd5() );
+        result.setDescriptionMd5( new String( meta.getDescriptionMd5() ) );
         result.setTag( meta.getTag() );
 
         return result;
@@ -166,6 +164,8 @@ public class MetadataUtils
         m.setPackagesContents( metadata.getPackagesContents() );
         m.setExtra( metadata.getExtra() );
         m.setSize( metadata.getSize() );
+        m.setAlias( metadata.getAlias() );
+        m.setDateAdded( metadata.getDateAdded() );
         return m;
     }
 
@@ -179,7 +179,7 @@ public class MetadataUtils
         }
         if ( metadata.getMd5Sum() != null )
         {
-            params.put( "md5", Hex.encodeHexString( metadata.getMd5Sum() ) );
+            params.put( "md5", metadata.getMd5Sum() );
         }
         if ( metadata.getName() != null )
         {

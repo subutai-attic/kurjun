@@ -71,7 +71,7 @@ public interface IndexPackageMetaData extends PackageMetadata
      * @return the MD5 checksum for the package file
      */
     @Override
-    byte[] getMd5Sum();
+    String getMd5Sum();
 
 
     /**

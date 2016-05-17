@@ -9,7 +9,6 @@ import ai.subut.kurjun.model.metadata.Metadata;
 
 /**
  * Interface for Subutai template meta data.
- *
  */
 public interface SubutaiTemplateMetadata extends Metadata
 {
@@ -56,6 +55,7 @@ public interface SubutaiTemplateMetadata extends Metadata
 
     /**
      * Gets template's owner fingerprint
+     *
      * @return owner
      */
     String getOwnerFprint();
@@ -66,11 +66,22 @@ public interface SubutaiTemplateMetadata extends Metadata
      *
      * @return map of property values
      */
-    Map< String, String> getExtra();
+    Map<String, String> getExtra();
 
     /**
      * Gets the the size of the package in bytes
+     *
      * @return long size
-     * */
+     */
     long getSize();
+
+    /**
+     * Gets alias name of the template
+     */
+    String getAlias();
+
+    /**
+     * Gets the date added in millis
+     */
+    long getDateAdded();
 }

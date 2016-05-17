@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -74,7 +73,8 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
     }
 
 
-    private SubutaiTemplateMetadata parseConfigFile( InputStream stream, InputStream packagesStream, byte[] md5 ) throws IOException
+    private SubutaiTemplateMetadata parseConfigFile( InputStream stream, InputStream packagesStream, byte[] md5 )
+            throws IOException
     {
         if ( stream == null )
         {
@@ -111,7 +111,7 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
             @Override
             public String getId()
             {
-                return Hex.encodeHexString( getMd5Sum() );
+                return getMd5Sum();
             }
 
 
@@ -138,9 +138,9 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
 
 
             @Override
-            public byte[] getMd5Sum()
+            public String getMd5Sum()
             {
-                return ( byte[] ) prop.get( MD5_KEY );
+                return ( String ) prop.get( MD5_KEY );
             }
 
 
@@ -179,6 +179,7 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
                 return null;
             }
 
+
             @Override
             public Map<String, String> getExtra()
             {
@@ -192,7 +193,7 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
                 skipProperties.add( CONFIG_FILE_CONTENTS_KEY );
                 skipProperties.add( PACKAGES_FILE_CONTENTS_KEY );
 
-                Map< String, String> map = new HashMap<>();
+                Map<String, String> map = new HashMap<>();
                 for ( String key : prop.stringPropertyNames() )
                 {
                     if ( !skipProperties.contains( key ) )
@@ -209,9 +210,22 @@ class SubutaiTemplateParserImpl implements SubutaiTemplateParser
             {
                 return 0;
             }
+
+
+            @Override
+            public String getAlias()
+            {
+                return "";
+            }
+
+
+
+            @Override
+            public long getDateAdded()
+            {
+                return 0;
+            }
         };
     }
-
-
 }
 

@@ -1,10 +1,6 @@
 package ai.subut.kurjun.metadata.common.raw;
 
 
-import java.util.Arrays;
-
-import org.apache.commons.codec.binary.Hex;
-
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
@@ -15,10 +11,14 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
  */
 public class RawMetadata implements Metadata, SerializableMetadata
 {
-    private byte[] md5Sum;
+    private String md5Sum;
     private String name;
     private long size;
     private String fingerprint;
+    private long dateAdded;
+
+    private String alias = "";
+    private String version;
 
 
     public RawMetadata()
@@ -26,12 +26,42 @@ public class RawMetadata implements Metadata, SerializableMetadata
     }
 
 
-    public RawMetadata( final byte[] md5Sum, final String name, final long size, final String fingerprint )
+    public RawMetadata( final String md5Sum, final String name, final long size, final String fingerprint )
     {
         this.md5Sum = md5Sum;
         this.name = name;
         this.size = size;
         this.fingerprint = fingerprint;
+    }
+
+
+    public void setVersion( final String version )
+    {
+        this.version = version;
+    }
+
+
+    public long getDateAdded()
+    {
+        return dateAdded;
+    }
+
+
+    public void setDateAdded( final long dateAdded )
+    {
+        this.dateAdded = dateAdded;
+    }
+
+
+    public String getAlias()
+    {
+        return alias;
+    }
+
+
+    public void setAlias( final String alias )
+    {
+        this.alias = alias;
     }
 
 
@@ -55,20 +85,20 @@ public class RawMetadata implements Metadata, SerializableMetadata
             return null;
         }
 
-        return fingerprint + "." + Hex.encodeHexString( md5Sum );
+        return fingerprint + "." + md5Sum;
     }
 
 
     @Override
-    public byte[] getMd5Sum()
+    public String getMd5Sum()
     {
-        return md5Sum != null ? Arrays.copyOf( md5Sum, md5Sum.length ) : null;
+        return md5Sum;
     }
 
 
-    public void setMd5Sum( byte[] md5Sum )
+    public void setMd5Sum( String md5Sum )
     {
-        this.md5Sum = md5Sum != null ? Arrays.copyOf( md5Sum, md5Sum.length ) : null;
+        this.md5Sum = md5Sum;
     }
 
 
@@ -129,7 +159,7 @@ public class RawMetadata implements Metadata, SerializableMetadata
         {
             return false;
         }
-        if ( !Arrays.equals( md5Sum, that.md5Sum ) )
+        if ( md5Sum.equalsIgnoreCase( that.getMd5Sum() ) )
         {
             return false;
         }
@@ -144,7 +174,7 @@ public class RawMetadata implements Metadata, SerializableMetadata
     @Override
     public int hashCode()
     {
-        int result = Arrays.hashCode( md5Sum );
+        int result = md5Sum.hashCode();
         result = 31 * result + ( name != null ? name.hashCode() : 0 );
         result = 31 * result + ( int ) ( size ^ ( size >>> 32 ) );
         result = 31 * result + ( fingerprint != null ? fingerprint.hashCode() : 0 );

@@ -26,7 +26,7 @@ public interface TemplateManagerService extends BaseService
      *
      * @return JSON encoded meta data
      */
-    SerializableMetadata getTemplate(UserSession userSession, byte[] md5 ) throws IOException;
+    SerializableMetadata getTemplate(UserSession userSession, String md5 ) throws IOException;
 
     /**
      * Gets the list of remote repo urls
@@ -45,7 +45,7 @@ public interface TemplateManagerService extends BaseService
      *
      * @return input stream to read package data
      */
-    InputStream getTemplateData(UserSession userSession, String repository, byte[] md5, boolean isKurjunClient ) throws IOException;
+    InputStream getTemplateData(UserSession userSession, String repository, String md5, boolean isKurjunClient ) throws IOException;
 
 
     /**
@@ -59,7 +59,7 @@ public interface TemplateManagerService extends BaseService
     List<SerializableMetadata> list(UserSession userSession, String repository, boolean isKurjunClient ) throws IOException;
 
 
-    List<Map<String, Object>> getSharedTemplateInfos( byte[] md5, String templateOwner ) throws IOException;
+    List<Map<String, Object>> getSharedTemplateInfos( String md5, String templateOwner ) throws IOException;
 
 
     List<Map<String, Object>> listAsSimple( String repository ) throws IOException;
@@ -100,7 +100,7 @@ public interface TemplateManagerService extends BaseService
      *
      * @return {@code true} if package successfully deleted; {@code false} otherwise
      */
-    int delete(UserSession userSession, TemplateId templateId ) throws IOException;
+    int delete(UserSession userSession, TemplateId templateId );
 
 
     /**

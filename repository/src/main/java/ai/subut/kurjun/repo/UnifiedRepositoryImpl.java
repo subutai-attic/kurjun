@@ -5,11 +5,13 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.index.ReleaseFile;
@@ -28,6 +30,8 @@ import ai.subut.kurjun.model.repository.UnifiedRepository;
  */
 class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger( UnifiedRepositoryImpl.class );
+
 
     private URL url;
     private final Set<Repository> repositories;
@@ -86,10 +90,9 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
     @Override
     public SerializableMetadata getPackageInfo( Metadata metadata )
     {
-        Iterator<Repository> it = getAllRepositories().iterator();
-        while ( it.hasNext() )
+        for ( final Repository repository : getAllRepositories() )
         {
-            SerializableMetadata m = it.next().getPackageInfo( metadata );
+            SerializableMetadata m = repository.getPackageInfo( metadata );
             if ( m != null )
             {
                 return m;

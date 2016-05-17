@@ -45,7 +45,7 @@ abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepo
 
     protected abstract Logger getLogger();
 
-    
+
     /**
      * Checks if there is a cached package file for the supplied meta data.
      *
@@ -86,7 +86,7 @@ abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepo
      *
      * @see RemoteRepositoryBase#checkCache(ai.subut.kurjun.model.metadata.Metadata)
      */
-    protected byte[] cacheStream( InputStream is )
+    protected String cacheStream( InputStream is )
     {
         Path target = null;
         try
@@ -109,6 +109,14 @@ abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepo
         return null;
     }
 
+
+    protected byte[] importTemplate( InputStream is, Metadata metadata )
+    {
+
+        return new byte[0];
+    }
+
+
     protected File getTempFile()
     {
         try
@@ -118,13 +126,13 @@ abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepo
         }
         catch ( IOException e )
         {
-            e.printStackTrace();
+            getLogger().error( " ***** Failed to get TempFile", e );
         }
         return null;
     }
 
 
-    protected byte[] put( File file )
+    protected String put( File file )
     {
         return packageCache.put( file );
     }
@@ -138,18 +146,20 @@ abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepo
         return !md5.equalsIgnoreCase( getMd5() );
     }
 
-    public abstract  List<SerializableMetadata> getCachedData();
 
-    protected void deleteCache( byte[] md5 )
+    public abstract List<SerializableMetadata> getCachedData();
+
+
+    protected void deleteCache( String md5 )
     {
         boolean deleted = packageCache.delete( md5 );
         if ( deleted )
         {
-            getLogger().debug( "Package with md5 {} deleted from the cache", Hex.encodeHexString( md5 ) );
+            getLogger().debug( "Package with md5 {} deleted from the cache", Hex.encodeHexString( md5.getBytes() ) );
         }
         else
         {
-            getLogger().debug( "Package with md5 {} cannot be found in the cache", Hex.encodeHexString( md5 ) );
+            getLogger().debug( "Package with md5 {} cannot be found in the cache", Hex.encodeHexString( md5.getBytes() ) );
         }
     }
 }

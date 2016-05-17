@@ -8,12 +8,12 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
@@ -32,7 +32,6 @@ import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 /**
  * Local snap repository implementation.
- *
  */
 class LocalSnapRepository extends LocalRepositoryBase
 {
@@ -46,10 +45,8 @@ class LocalSnapRepository extends LocalRepositoryBase
 
 
     @Inject
-    public LocalSnapRepository( PackageMetadataStoreFactory metadataStoreFactory,
-                                FileStoreFactory fileStoreFactory,
-                                SnapMetadataParser metadataParser,
-                                @Assisted KurjunContext context )
+    public LocalSnapRepository( PackageMetadataStoreFactory metadataStoreFactory, FileStoreFactory fileStoreFactory,
+                                SnapMetadataParser metadataParser, @Assisted KurjunContext context )
     {
         this.metadataStoreFactory = metadataStoreFactory;
         this.fileStoreFactory = fileStoreFactory;
@@ -92,8 +89,8 @@ class LocalSnapRepository extends LocalRepositoryBase
             Files.copy( is, temp, StandardCopyOption.REPLACE_EXISTING );
             SnapMetadata meta = metadataParser.parse( temp.toFile() );
 
-            byte[] md5 = fileStore.put( temp.toFile() );
-            if ( Arrays.equals( md5, meta.getMd5Sum() ) )
+            String md5 = fileStore.put( temp.toFile() );
+            if ( !Strings.isNullOrEmpty( md5 ) && md5.equals( meta.getMd5Sum() ) )
             {
                 metadataStore.put( MetadataUtils.serializableSnapMetadata( meta ) );
             }

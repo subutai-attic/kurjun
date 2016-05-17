@@ -41,7 +41,7 @@ public class PackageCache
     }
 
 
-    public boolean contains( byte[] md5 )
+    public boolean contains( String md5 )
     {
         try
         {
@@ -55,7 +55,7 @@ public class PackageCache
     }
     
     
-    public boolean delete( byte[] md5 )
+    public boolean delete( String md5 )
     {
         try
         {
@@ -68,7 +68,7 @@ public class PackageCache
         }
     }
 
-    public InputStream get( byte[] md5 )
+    public InputStream get( String md5 )
     {
         try
         {
@@ -82,7 +82,7 @@ public class PackageCache
     }
 
 
-    public byte[] put( File file )
+    public String put( File file )
     {
         try
         {

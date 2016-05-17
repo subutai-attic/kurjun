@@ -22,47 +22,64 @@ import ai.subut.kurjun.web.service.RepositoryService;
 public class RepositoryServiceImpl implements RepositoryService
 {
 
-
     @Inject KurjunProperties kurjunProperties;
 
     @Inject
     private RelationManagerService relationManagerService;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( RepositoryService.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( RepositoryServiceImpl.class );
 
     @Override
     public synchronized List<String> getRepositories()
     {
-        String fileDbDirectory = kurjunProperties.get( DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME );
-
-        File fileDirectory = new File( fileDbDirectory );
-        File[] files = fileDirectory.listFiles();
-
-        List<String> results = new ArrayList<>();
-
-        for ( File file : files )
+        try
         {
-            if ( file.isDirectory() )
+            String fileDbDirectory = kurjunProperties.get( DbFilePackageMetadataStoreModule.DB_FILE_LOCATION_NAME );
+
+            File fileDirectory = new File( fileDbDirectory );
+            File[] files = fileDirectory.listFiles();
+
+            List<String> results = new ArrayList<>();
+
+            for ( File file : files )
             {
-                results.add( file.getName() );
+                if ( file.isDirectory() )
+                {
+                    results.add( file.getName() );
+                }
             }
+
+            results.remove( AptManagerServiceImpl.REPO_NAME );
+            results.remove( RawManagerServiceImpl.DEFAULT_RAW_REPO_NAME );
+
+            return results;
+
         }
-
-        results.remove( AptManagerServiceImpl.REPO_NAME );
-        results.remove( RawManagerServiceImpl.DEFAULT_RAW_REPO_NAME );
-
-        return results;
+        catch(Exception ex)
+        {
+            LOGGER.error( "**** Error in getRepositories:" ,ex);
+            return null;
+        }
     }
+
 
     @Override
     public List<String> getRepositoryList()
     {
-        List<String> repoList = new ArrayList<>();
-        relationManagerService.getAllRelations().parallelStream().filter(
-                r -> RelationObjectType.RepositoryContent.getId() == r.getTrustObject().getType()
-        ).forEach( r -> repoList.add( r.getTrustObject().getId() ));
+        try
+        {
+            List<String> repoList = new ArrayList<>();
+            relationManagerService.getAllRelations().parallelStream().filter(
+                    r -> RelationObjectType.RepositoryContent.getId() == r.getTrustObject().getType()
+            ).forEach( r -> repoList.add( r.getTrustObject().getId() ));
 
-        return repoList;
+            return repoList;
+        }
+        catch(Exception ex)
+        {
+            LOGGER.error( "**** Error in getRepositoryList:" ,ex);
+            return null;
+        }
     }
 
 

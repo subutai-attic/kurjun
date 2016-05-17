@@ -23,12 +23,12 @@ import ai.subut.kurjun.storage.factory.FileStoreFactory;
 
 /**
  * Disk quota manager.
- *
  */
 public class DiskQuotaManager
 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger( DiskQuotaManager.class );
+
 
     @Inject
     private FileStoreFactory fileStoreFactory;
@@ -62,7 +62,6 @@ public class DiskQuotaManager
      * Checks if the underlying file store has already exceed allowed quota.
      *
      * @return {@code true} if quota is exceeded; {@code false} otherwise
-     * @throws IOException
      */
     public boolean isFull() throws IOException
     {
@@ -75,8 +74,8 @@ public class DiskQuotaManager
      * Checks if the underlying file store can accept supplied size of data without exceeding quota.
      *
      * @param size size of data to be added
+     *
      * @return {@code true} if the file store can take the given size of data; {@code false} otherwise
-     * @throws IOException
      */
     public boolean isAllowed( long size ) throws IOException
     {
@@ -89,7 +88,6 @@ public class DiskQuotaManager
      * Gets current size of the underlying file store.
      *
      * @return size in bytes
-     * @throws IOException
      */
     public long getCurrentSize() throws IOException
     {
@@ -104,8 +102,9 @@ public class DiskQuotaManager
      * becomes known that data amount received will exceed the quota, {@link QuotaException} is thrown.
      *
      * @param is data steam to copy and check if it would exceed the quota threshold
+     *
      * @return path to temporary file where data stream is dumped
-     * @throws IOException
+     *
      * @throws QuotaException if data size exceeds quota threshold
      */
     public Path copyStream( InputStream is ) throws IOException, QuotaException
@@ -142,5 +141,9 @@ public class DiskQuotaManager
     }
 
 
+    public void setFileStoreFactory( final FileStoreFactory fileStoreFactory )
+    {
+        this.fileStoreFactory = fileStoreFactory;
+    }
 }
 

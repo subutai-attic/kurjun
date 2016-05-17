@@ -271,7 +271,7 @@ class SqlDbPackageMetadataStore implements PackageMetadataStore
         byte[] md5 = Hex.decodeHex( md5hex.toCharArray() );
 
         DefaultMetadata meta = new DefaultMetadata();
-        meta.setMd5sum( md5 );
+        meta.setMd5sum( new String( md5 ) );
         meta.setName( current.getString( SqlStatements.NAME_COLUMN ) );
         meta.setVersion( current.getString( SqlStatements.VERSION_COLUMN ) );
         meta.setSerialized( current.getString( SqlStatements.DATA_COLUMN ) );

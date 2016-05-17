@@ -19,7 +19,8 @@ import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
 /**
  * Default At implementation.
  */
-public class DefaultAr implements Ar {
+public class DefaultAr implements Ar
+{
     public static final int BUFFER_SIZE = 4096;
     private static final Logger LOG = LoggerFactory.getLogger( DefaultAr.class );
 
@@ -41,7 +42,8 @@ public class DefaultAr implements Ar {
 
         try ( ArArchiveInputStream in = new ArArchiveInputStream( new FileInputStream( file ) ) )
         {
-            while ( ( entry = in.getNextArEntry() ) != null ) {
+            while ( ( entry = in.getNextArEntry() ) != null )
+            {
                 LOG.debug( "Entry {} added to list.", entry.getName() );
                 list.add( entry );
             }
@@ -63,12 +65,12 @@ public class DefaultAr implements Ar {
 
 
     /**
-     * A utility function which uses a buffer to write out input stream contents to
-     * a file in temporary file storage from the current position of the stream.
+     * A utility function which uses a buffer to write out input stream contents to a file in temporary file storage
+     * from the current position of the stream.
      */
     public void extractFromStream( File outFile, InputStream in, long size, int bufferSize ) throws IOException
     {
-        byte[] buffer = new byte[ bufferSize ];
+        byte[] buffer = new byte[bufferSize];
         int readAmount;
 
         try ( FileOutputStream out = new FileOutputStream( outFile ) )

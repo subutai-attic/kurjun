@@ -20,10 +20,10 @@
   </properties>
 
   <dependencies>
-
     <dependency>
-      <groupId>org.mapdb</groupId>
-      <artifactId>mapdb</artifactId>
+      <groupId>ai.subut.kurjun</groupId>
+      <artifactId>metadata-common</artifactId>
+      <version>1.0</version>
     </dependency>
 
   </dependencies>

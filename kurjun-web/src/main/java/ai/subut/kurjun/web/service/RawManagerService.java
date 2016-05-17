@@ -18,7 +18,7 @@ public interface RawManagerService extends BaseService
 
     Renderable getFile( byte[] md5, boolean isKurjun );
 
-    boolean delete(UserSession userSession, String repository, byte[] md5 );
+    int delete(UserSession userSession, String repository, byte[] md5 );
 
     Renderable getFile( String name );
 

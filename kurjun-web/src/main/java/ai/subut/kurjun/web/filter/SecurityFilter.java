@@ -35,6 +35,17 @@ public class SecurityFilter implements Filter
         {
             Session session = ctx.getSession();
             UserSession uSession = null;
+
+
+            //**********************************************
+            if(ctx.getRequestPath().equals( "/login" ))
+            {
+                session.clear();
+                return filterChain.next( ctx );
+            }
+            //**********************************************
+
+
             String sptoken = ctx.getParameter( USER_TOKEN );
 
             if( Strings.isNullOrEmpty(sptoken))
@@ -74,7 +85,7 @@ public class SecurityFilter implements Filter
         }
         catch(Exception ex)
         {
-            LOGGER.error( "Not passed SecurityFilter: "+ex.getMessage() );
+            LOGGER.error( "Not passed SecurityFilter: ",ex);
             return Results.forbidden().render( "Not allowed" ).text();
         }
 

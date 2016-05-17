@@ -1,11 +1,8 @@
 package ai.subut.kurjun.metadata.common.subutai;
 
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.codec.binary.Hex;
 
 import ai.subut.kurjun.metadata.common.utils.MetadataUtils;
 import ai.subut.kurjun.model.metadata.Architecture;
@@ -19,7 +16,7 @@ import ai.subut.kurjun.model.metadata.template.SubutaiTemplateMetadata;
 public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMetadata
 {
 
-    private byte[] md5Sum;
+    private String md5Sum;
     private String name;
     private String version;
     private String parent;
@@ -29,6 +26,9 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
     private String packagesContents;
     private String ownerFprint;
     private long size;
+    private long dateAdded;
+    private String alias = "";
+
     private Map<String, String> extra = new HashMap<>();
 
 
@@ -37,7 +37,7 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
     {
         if ( ownerFprint != null && md5Sum != null )
         {
-            return new TemplateId( ownerFprint, Hex.encodeHexString( md5Sum ) ).get();
+            return new TemplateId( ownerFprint, md5Sum ).get();
         }
         else
         {
@@ -46,7 +46,31 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
     }
 
 
-    public void setId( String ownerFprint, byte[] md5Sum )
+    public String getAlias()
+    {
+        return alias;
+    }
+
+
+    public void setAlias( final String alias )
+    {
+        this.alias = alias;
+    }
+
+
+    public long getDateAdded()
+    {
+        return dateAdded;
+    }
+
+
+    public void setDateAdded( final long dateAdded )
+    {
+        this.dateAdded = dateAdded;
+    }
+
+
+    public void setId( String ownerFprint, String md5Sum )
     {
         this.ownerFprint = ownerFprint;
         this.md5Sum = md5Sum;
@@ -54,15 +78,15 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
 
 
     @Override
-    public byte[] getMd5Sum()
+    public String getMd5Sum()
     {
-        return md5Sum != null ? Arrays.copyOf( md5Sum, md5Sum.length ) : null;
+        return md5Sum;
     }
 
 
-    public void setMd5Sum( byte[] md5Sum )
+    public void setMd5Sum( String md5Sum )
     {
-        this.md5Sum = md5Sum != null ? Arrays.copyOf( md5Sum, md5Sum.length ) : null;
+        this.md5Sum = md5Sum;
     }
 
 
@@ -207,7 +231,7 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
     public int hashCode()
     {
         int hash = 3;
-        hash = 17 * hash + Arrays.hashCode( this.md5Sum );
+        hash = 17 * hash + md5Sum.hashCode();
         return hash;
     }
 
@@ -218,7 +242,7 @@ public class DefaultTemplate implements SubutaiTemplateMetadata, SerializableMet
         if ( obj instanceof DefaultTemplate )
         {
             DefaultTemplate other = ( DefaultTemplate ) obj;
-            return Arrays.equals( this.md5Sum, other.md5Sum );
+            return this.md5Sum.equalsIgnoreCase( other.md5Sum );
         }
         return false;
     }

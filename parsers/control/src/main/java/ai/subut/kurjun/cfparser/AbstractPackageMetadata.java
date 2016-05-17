@@ -1,14 +1,11 @@
 package ai.subut.kurjun.cfparser;
 
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.vafer.jdeb.debian.ControlFile;
-
-import org.apache.commons.codec.binary.Hex;
 
 import ai.subut.kurjun.model.metadata.apt.Dependency;
 import ai.subut.kurjun.model.metadata.apt.PackageMetadata;
@@ -24,18 +21,18 @@ public abstract class AbstractPackageMetadata implements PackageMetadata
     protected ControlFile controlFile;
     private final DependencyParser parser = new DependencyParser();
     private final Map<String, List<Dependency>> depCache = new HashMap<>();
-    private final byte[] md5;
+    private String md5;
     private final String filename;
 
 
-    AbstractPackageMetadata( byte[] md5, String filename, ControlFile controlFile )
+    AbstractPackageMetadata( String md5, String filename, ControlFile controlFile )
     {
         checkNotNull( md5, "The md5 sum for the Debian package must not be null" );
         checkNotNull( filename, "The filename for the Debian package must not be null" );
         checkNotNull( controlFile, "The control file argument cannot be null." );
 
         // copy it so no one can fuck with the value later
-        this.md5 = Arrays.copyOf( md5, md5.length );
+        this.md5 = md5;
         this.filename = filename;
         this.controlFile = controlFile;
     }
@@ -78,10 +75,10 @@ public abstract class AbstractPackageMetadata implements PackageMetadata
      * @return the md5 sum of the Debian package
      */
     @Override
-    public byte[] getMd5Sum()
+    public String getMd5Sum()
     {
-        // again give back a copy so no one can fuck with it
-        return Arrays.copyOf( md5, md5.length );
+
+        return this.md5;
     }
 
 
@@ -89,7 +86,7 @@ public abstract class AbstractPackageMetadata implements PackageMetadata
     public Object getId()
     {
         // For package metadatas the unique identifier is its md5sum
-        return Hex.encodeHexString( getMd5Sum() );
+        return md5;
     }
 
 

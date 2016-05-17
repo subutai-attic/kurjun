@@ -24,7 +24,7 @@ public interface AptManagerService extends BaseService
 
     List<SerializableMetadata> list(String repository);
 
-    boolean delete(UserSession userSession, byte[] md5 ) throws IOException;
+    int delete(UserSession userSession, byte[] md5 ) throws IOException;
 
     boolean isCompressionTypeSupported( String packagesIndex );
 

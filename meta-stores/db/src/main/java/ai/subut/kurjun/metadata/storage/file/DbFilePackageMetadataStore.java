@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 import com.google.inject.ProvisionException;
 import com.google.inject.assistedinject.Assisted;
@@ -27,6 +30,8 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
 
 class DbFilePackageMetadataStore implements PackageMetadataStore
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger( DbFilePackageMetadataStore.class );
+
     private static final String MAP_NAME = "checksum-to-metadata";
 
     int batchSize = 1000;
@@ -65,13 +70,14 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
         FileDb fileDb = null;
         try
         {
-            fileDb = new FileDb( fileDbPath.toString() );
+            fileDb = new FileDb( fileDbPath.toString() + "/" );
             boolean contains = fileDb.contains( MAP_NAME, id );
 
             return contains;
         }
         catch ( Exception ex )
         {
+            LOGGER.error( " ******* Error in DbFilePackageMetadataStore.contains:",ex );
             return false;
         }
         finally
@@ -91,8 +97,13 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
         try
         {
-            fileDb = new FileDb( fileDbPath.toString() );
+            fileDb = new FileDb( fileDbPath.toString() + "/" );
             return fileDb.get( MAP_NAME, id, SerializableMetadata.class );
+        }
+        catch ( IOException ex )
+        {
+            LOGGER.error( " ******* Error in DbFilePackageMetadataStore.get:",ex );
+            throw new IOException( ex );
         }
         finally
         {
@@ -118,9 +129,14 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
         try
         {
-            fileDb = new FileDb( fileDbPath.toString() );
+            fileDb = new FileDb( fileDbPath.toString() + "/" );
             Map<String, SerializableMetadata> map = fileDb.get( MAP_NAME );
             items = map.values();
+        }
+        catch ( IOException ex )
+        {
+            LOGGER.error( " ******* Error in DbFilePackageMetadataStore.get:",ex );
+            throw new IOException( ex );
         }
         finally
         {
@@ -152,8 +168,13 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
             try
             {
-                fileDb = new FileDb( fileDbPath.toString() );
+                fileDb = new FileDb( fileDbPath.toString() + "/" );
                 fileDb.put( MAP_NAME, meta.getId(), meta );
+            }
+            catch ( IOException ex )
+            {
+                LOGGER.error( " ******* Error in DbFilePackageMetadataStore.put:",ex );
+                throw new IOException( ex );
             }
             finally
             {
@@ -176,12 +197,13 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
         try
         {
-            fileDb = new FileDb( fileDbPath.toString() );
+            fileDb = new FileDb( fileDbPath.toString() + "/" );
 
             return fileDb.remove( MAP_NAME, id ) != null;
         }
         catch ( Exception ex )
         {
+            LOGGER.error( " ******* Error in DbFilePackageMetadataStore.remove:",ex );
             return false;
         }
         finally
@@ -219,7 +241,7 @@ class DbFilePackageMetadataStore implements PackageMetadataStore
 
         try
         {
-            fileDb = new FileDb( fileDbPath.toString() );
+            fileDb = new FileDb( fileDbPath.toString() + "/" );
             map = fileDb.get( MAP_NAME );
         }
         finally
