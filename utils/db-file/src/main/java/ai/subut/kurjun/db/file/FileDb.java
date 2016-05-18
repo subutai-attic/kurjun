@@ -35,6 +35,9 @@ public class FileDb implements Closeable
 
     Gson gson = new Gson();
 
+    // to make osgi or other frameworks compatible
+    private ClassLoader classLoader;
+
     //default value for cache dir
     private String ROOT_DIR = "/tmp/";
 
@@ -43,6 +46,18 @@ public class FileDb implements Closeable
     {
         //set root dir for cache metadata
         this.ROOT_DIR = dbFile;
+
+        init();
+
+        loadMapOfMaps();
+    }
+
+
+    public FileDb( String dbFile, ClassLoader classLoader ) throws IOException
+    {
+        //set root dir for cache metadata
+        this.ROOT_DIR = dbFile;
+        this.classLoader = classLoader;
 
         init();
 
@@ -156,7 +171,7 @@ public class FileDb implements Closeable
     //persist replacing previous file
     private synchronized void persist( String mapName, Object key, Object value )
     {
-        String targetDir = ROOT_DIR + mapName + "/";
+        String targetDir = ROOT_DIR + "/" + mapName + "/";
         //create dir if does not exist
         createDir( targetDir );
 
@@ -277,11 +292,20 @@ public class FileDb implements Closeable
         {
             JsonWrapper jsonWrapper = ( JsonWrapper ) objectInputStream.readObject();
 
-            Class clazz = Class.forName( jsonWrapper.getClassType() );
+            Class clazz = null;
+            if ( classLoader != null )
+            {
+                clazz = classLoader.loadClass( jsonWrapper.getClassType() );
+            }
+            else
+            {
+                clazz = Class.forName( jsonWrapper.getClassType() );
+            }
 
             Object object = gson.fromJson( jsonWrapper.getJsonObject(), clazz );
             //filename.json -> filename
-            String[] parsedName = jsonFile.getName().split( "\\." );
+            String filename = jsonFile.getName();
+            String[] parsedName = filename.split( "\\." );
             if ( parsedName.length == 3 )
             {
                 //                Map subMap = ( Map ) map.get( parsedName[0] );
@@ -298,7 +322,8 @@ public class FileDb implements Closeable
             }
             else
             {
-                map.put( jsonFile.getName(), object );
+                //omit file extension `.json`
+                map.put( filename.substring( 0, filename.length() - 5 ), object );
             }
         }
         catch ( ClassNotFoundException | IOException e )
