@@ -153,7 +153,7 @@ public class FileDb implements Closeable
 
     private synchronized void removeJsonFile( String mapName, Object key ) throws IOException
     {
-        String targetDir = ROOT_DIR + mapName + String.valueOf( key ) + ".json";
+        String targetDir = ROOT_DIR + "/" + mapName + "/" + String.valueOf( key ) + ".json";
 
         Path path = new File( targetDir ).toPath();
 
