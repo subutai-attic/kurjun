@@ -3,6 +3,7 @@ package ai.subut.kurjun.model.repository;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -17,6 +18,11 @@ import ai.subut.kurjun.model.metadata.SerializableMetadata;
  */
 public interface Repository
 {
+    public interface PackageProgressListener
+    {
+        public void writeBytes(ByteBuffer byteBuffer);
+    }
+
     /**
      * An unique identifier of this repository
      * @return UUID value 
@@ -89,12 +95,12 @@ public interface Repository
 
     /**
      * Gets package info identified by supplied meta data. Refer to
-     * {@link Repository#getPackageStream(ai.subut.kurjun.model.metadata.Metadata)} for more info about package
+     * {@link Repository#getPackageStream} for more info about package
      * identification.
      *
      * @param metadata meta data used to lookup for package
      * @return package meta data if found; {@code null} otherwise
-     * @see Repository#getPackageStream(ai.subut.kurjun.model.metadata.Metadata)
+     * @see Repository#getPackageStream
      */
     SerializableMetadata getPackageInfo( Metadata metadata );
 
@@ -112,7 +118,7 @@ public interface Repository
      * @return package stream if found; {@code null} otherwise
      * @see Repository#getPackageInfo(ai.subut.kurjun.model.metadata.Metadata)
      */
-    InputStream getPackageStream( Metadata metadata );
+    InputStream getPackageStream( Metadata metadata, PackageProgressListener progressListener );
 
 
     /**
