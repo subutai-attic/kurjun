@@ -1,6 +1,7 @@
 package ai.subut.kurjun.repo;
 
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
@@ -52,7 +53,7 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
 
 
     @Override
-    public InputStream getPackageStream( Metadata metadata )
+    public InputStream getPackageStream( Metadata metadata, PackageProgressListener progressListener )
     {
         SerializableMetadata m = getPackageInfo( metadata );
         if ( m == null )
@@ -64,7 +65,9 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
             FileStore fileStore = getFileStore();
             if ( fileStore.contains( m.getMd5Sum() ) )
             {
-                return fileStore.get( m.getMd5Sum() );
+                BufferedInputStream is = new BufferedInputStream( fileStore.get( m.getMd5Sum() ) );
+                getPackageStream( is, progressListener );
+                return is;
             }
             else
             {
