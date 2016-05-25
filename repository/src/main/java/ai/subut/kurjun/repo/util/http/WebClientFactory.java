@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Map;
 
 import org.apache.cxf.jaxrs.client.WebClient;
@@ -42,6 +43,11 @@ public interface WebClientFactory
     WebClient make( RemoteRepository remoteRepository, String path, Map<String, String> queryParams );
 
     WebClient makeSecure( RemoteRepository remoteRepository, String path, Map<String, String> queryParams );
+
+    URLConnection openSecureConnection( final RemoteRepository remoteRepository, final String path,
+                                        final Map<String, String> queryParams );
+
+
     /**
      * Builds a URL to the supplied remote repository with supplied path and query parameters.
      *
