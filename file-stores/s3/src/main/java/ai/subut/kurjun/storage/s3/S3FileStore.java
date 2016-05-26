@@ -99,8 +99,7 @@ class S3FileStore implements FileStore
     @Override
     public boolean contains( String md5 ) throws IOException
     {
-        String hex = Hex.encodeHexString( md5.getBytes() );
-        String key = makeKey( hex );
+        String key = makeKey( md5 );
 
         ListObjectsRequest lor = new ListObjectsRequest();
         lor.setBucketName( bucketName );
@@ -133,9 +132,8 @@ class S3FileStore implements FileStore
     public InputStream get( String md5 ) throws IOException
     {
         Objects.requireNonNull( md5, "Checksum" );
-        String hex = Hex.encodeHexString( md5.getBytes() );
 
-        GetObjectRequest gor = new GetObjectRequest( bucketName, makeKey( hex ) );
+        GetObjectRequest gor = new GetObjectRequest( bucketName, makeKey( md5 ) );
         try
         {
             S3Object obj = s3client.getObject( gor );
@@ -242,10 +240,9 @@ class S3FileStore implements FileStore
     public boolean remove( String md5 ) throws IOException
     {
         Objects.requireNonNull( md5, "Checksum" );
-        String hex = Hex.encodeHexString( md5.getBytes() );
         if ( contains( md5 ) )
         {
-            DeleteObjectRequest dor = new DeleteObjectRequest( bucketName, makeKey( hex ) );
+            DeleteObjectRequest dor = new DeleteObjectRequest( bucketName, makeKey( md5 ) );
             s3client.deleteObject( dor );
             return true;
         }
@@ -286,11 +283,9 @@ class S3FileStore implements FileStore
     @Override
     public long sizeOf( String md5 ) throws IOException
     {
-        String hex = Hex.encodeHexString( md5.getBytes() );
-
         ListObjectsRequest lor = new ListObjectsRequest();
         lor.setBucketName( bucketName );
-        lor.setPrefix( makeKey( hex ) );
+        lor.setPrefix( makeKey( md5 ) );
 
         // here we list items by supplied md5 digest value which is a uniquely identifying parameter
         // so there is no checks if listing is truncated or not. The listing can have one value or any.
