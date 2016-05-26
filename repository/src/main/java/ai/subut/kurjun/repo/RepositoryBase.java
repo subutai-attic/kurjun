@@ -6,7 +6,10 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.UUID;
+
+import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import ai.subut.kurjun.common.service.KurjunContext;
 import ai.subut.kurjun.model.repository.Protocol;
@@ -73,18 +76,23 @@ abstract class RepositoryBase implements Repository
         throw new IllegalStateException( "Unsupported protocol: " + protocol );
     }
 
-    public void getPackageStream( InputStream bis, PackageProgressListener progressListener ) throws IOException
+    public ByteArrayOutputStream getPackageStream( InputStream is, PackageProgressListener progressListener ) throws IOException
     {
-//        bis.mark( bis.available() );
-
         ByteBuffer byteBuffer = ByteBuffer.allocate( 8192 );
-        ReadableByteChannel rbc = Channels.newChannel( bis );
+        ReadableByteChannel rbc = Channels.newChannel( is );
         int bytesRead = rbc.read( byteBuffer );
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        WritableByteChannel wbc = Channels.newChannel( baos );
 
         while ( bytesRead > 0 )
         {
             //limit is set to current position and position is set to zero
             byteBuffer.flip();
+            ByteBuffer duplicate = byteBuffer.duplicate();
+            while ( duplicate.hasRemaining() )
+            {
+                wbc.write( duplicate );
+            }
             if ( progressListener != null )
             {
                 progressListener.writeBytes( byteBuffer );
@@ -92,7 +100,7 @@ abstract class RepositoryBase implements Repository
             byteBuffer.clear();
             bytesRead = rbc.read( byteBuffer );
         }
-//        bis.reset();
+        return baos;
     }
 
 

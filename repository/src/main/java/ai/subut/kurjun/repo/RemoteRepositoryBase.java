@@ -15,7 +15,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import com.google.inject.Inject;
@@ -199,11 +198,11 @@ public abstract class RemoteRepositoryBase extends RepositoryBase implements Rem
         boolean deleted = packageCache.delete( md5 );
         if ( deleted )
         {
-            getLogger().debug( "Package with md5 {} deleted from the cache", Hex.encodeHexString( md5.getBytes() ) );
+            getLogger().debug( "Package with md5 {} deleted from the cache", md5 );
         }
         else
         {
-            getLogger().debug( "Package with md5 {} cannot be found in the cache", Hex.encodeHexString( md5.getBytes() ) );
+            getLogger().debug( "Package with md5 {} cannot be found in the cache", md5 );
         }
     }
 }
