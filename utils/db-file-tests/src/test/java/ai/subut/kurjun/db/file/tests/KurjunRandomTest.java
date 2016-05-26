@@ -4,8 +4,6 @@ package ai.subut.kurjun.db.file.tests;
 import org.junit.Assert;
 import org.junit.Test;
 
-import org.apache.commons.codec.binary.Hex;
-
 import ai.subut.kurjun.metadata.common.DefaultMetadata;
 import ai.subut.kurjun.metadata.common.apt.DefaultIndexPackageMetaData;
 import ai.subut.kurjun.metadata.common.apt.DefaultPackageMetadata;
@@ -23,13 +21,13 @@ public class KurjunRandomTest
     public void testHashing() throws Exception
     {
         String hash = KurjunRandom.md5();
-        System.out.println( "md5 = " + Hex.encodeHexString( hash.getBytes() ) );
+        System.out.println( "md5 = " + hash );
 
         hash = KurjunRandom.sha1();
-        System.out.println( "sha1 = " + Hex.encodeHexString( hash.getBytes() ) );
+        System.out.println( "sha1 = " + hash );
 
         hash = KurjunRandom.sha256();
-        System.out.println( "sha256 = " + Hex.encodeHexString( hash.getBytes() ) );
+        System.out.println( "sha256 = " + hash );
 
         System.out.println( "fingerprint = " + KurjunRandom.fingerprint() );
     }

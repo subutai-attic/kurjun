@@ -1,12 +1,14 @@
 package ai.subut.kurjun.repo;
 
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.http.HTTPConduit;
 
@@ -189,57 +192,102 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
 
 
     @Override
-    public InputStream getPackageStream( Metadata metadata )
+    public InputStream getPackageStream( Metadata metadata, PackageProgressListener progressListener )
     {
-        LOGGER.debug( "Trying to get stream from remote Kurjun: {} with Id: {}", url, metadata.getId() );
-
-        InputStream cachedStream = checkCache( metadata );
-        if ( cachedStream != null )
+        try
         {
-            return cachedStream;
-        }
+            LOGGER.debug( "Trying to get stream from remote Kurjun: {} with Id: {}", url, metadata.getId() );
 
-        WebClient webClient =
-                webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + GET_PATH, makeParamsMap( metadata ) );
-        webClient.header( "Accept", "application/octet-stream" );
-
-        if ( identity != null )
-        {
-            webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
-        }
-
-        Response resp = doGet( webClient );
-
-        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
-        {
-            LOGGER.debug( "Reading remote template stream" );
-            if ( resp.getEntity() instanceof InputStream )
+            InputStream cachedStream = checkCache( metadata );
+            if ( cachedStream != null )
             {
-                InputStream inputStream = ( InputStream ) resp.getEntity();
+                //                BufferedInputStream is = new BufferedInputStream( cachedStream );
+                getPackageStream( cachedStream, progressListener );
+                return cachedStream;
+            }
 
-                String md5Calculated = cacheStream( inputStream );
+            URLConnection conn = webClientFactory.openSecureConnection( this, TEMPLATE_PATH + "/" + GET_PATH, makeParamsMap( metadata ) );
+            LOGGER.info( "Downloading template file {}", conn.getURL() );
+            if ( identity != null )
+            {
+                conn.setRequestProperty( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
+            }
 
-                // compare the requested and received md5 checksums
-                if ( md5Calculated.equals( metadata.getMd5Sum() ) )
-                {
-                    return cache.get( md5Calculated );
-                }
-                else
-                {
-                    deleteCache( md5Calculated );
+            ByteArrayOutputStream barrout = getPackageStream( conn, progressListener );
+            InputStream inputStream = new ByteArrayInputStream( barrout.toByteArray() );
 
-                    LOGGER.error( "Md5 checksum mismatch after getting the package from remote host. "
-                                    + "Requested with md5={}, name={}, version={}", metadata.getMd5Sum(), metadata
-                            .getName(),
-                            metadata.getVersion() );
-                }
+            String md5Calculated = cacheStream( inputStream );
+
+            // compare the requested and received md5 checksums
+            if ( md5Calculated.equals( metadata.getMd5Sum() ) )
+            {
+                return cache.get( md5Calculated );
+            }
+            else
+            {
+                deleteCache( md5Calculated );
+
+                LOGGER.error( "Md5 checksum mismatch after getting the package from remote host. "
+                                + "Requested with md5={}, name={}, version={}", metadata.getMd5Sum(), metadata
+                                .getName(),
+                        metadata.getVersion() );
             }
         }
-        assert resp != null;
-
-        LOGGER.error( "Could not obtain stream from remote Kurjun for request: {}, response code: {}", metadata.getId(),
-                resp.getStatus() );
+        catch(IOException e)
+        {
+            LOGGER.error( "Did not receive metadata info from remote Kurjun for request: " + metadata.getId(), e);
+        }
         return null;
+
+//        LOGGER.debug( "Trying to get stream from remote Kurjun: {} with Id: {}", url, metadata.getId() );
+//
+//        InputStream cachedStream = checkCache( metadata );
+//        if ( cachedStream != null )
+//        {
+//            return cachedStream;
+//        }
+//
+//        WebClient webClient =
+//                webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + GET_PATH, makeParamsMap( metadata ) );
+//        webClient.header( "Accept", "application/octet-stream" );
+//
+//        if ( identity != null )
+//        {
+//            webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
+//        }
+//
+//        Response resp = doGet( webClient );
+//
+//        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
+//        {
+//            LOGGER.debug( "Reading remote template stream" );
+//            if ( resp.getEntity() instanceof InputStream )
+//            {
+//                InputStream inputStream = ( InputStream ) resp.getEntity();
+//
+//                String md5Calculated = cacheStream( inputStream );
+//
+//                // compare the requested and received md5 checksums
+//                if ( md5Calculated.equals( metadata.getMd5Sum() ) )
+//                {
+//                    return cache.get( md5Calculated );
+//                }
+//                else
+//                {
+//                    deleteCache( md5Calculated );
+//
+//                    LOGGER.error( "Md5 checksum mismatch after getting the package from remote host. "
+//                                    + "Requested with md5={}, name={}, version={}", metadata.getMd5Sum(), metadata
+//                            .getName(),
+//                            metadata.getVersion() );
+//                }
+//            }
+//        }
+//        assert resp != null;
+//
+//        LOGGER.error( "Could not obtain stream from remote Kurjun for request: {}, response code: {}", metadata.getId(),
+//                resp.getStatus() );
+//        return null;
     }
 
 

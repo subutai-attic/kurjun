@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.math.RandomUtils;
 
@@ -27,7 +26,7 @@ public class KurjunRandom
 {
     public static String fingerprint()
     {
-        return Hex.encodeHexString( sha1().getBytes() );
+        return sha1();
     }
 
 

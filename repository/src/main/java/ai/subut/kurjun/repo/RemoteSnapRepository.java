@@ -1,10 +1,12 @@
 package ai.subut.kurjun.repo;
 
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.cxf.jaxrs.client.WebClient;
 
 import com.google.common.base.Strings;
@@ -134,46 +137,86 @@ class RemoteSnapRepository extends RemoteRepositoryBase
 
 
     @Override
-    public InputStream getPackageStream( Metadata metadata )
+    public InputStream getPackageStream( Metadata metadata, PackageProgressListener progressListener )
     {
-        InputStream cachedStream = checkCache( metadata );
-        if ( cachedStream != null )
+        try
         {
-            return cachedStream;
-        }
-
-        WebClient webClient = webClientFactory.makeSecure( this, GET_PATH, MetadataUtils.makeParamsMap( metadata ) );
-        if ( identity != null )
-        {
-            webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
-        }
-
-        Response resp = webClient.get();
-        if ( resp.getStatus() == Response.Status.OK.getStatusCode() )
-        {
-            if ( resp.getEntity() instanceof InputStream )
+            InputStream cachedStream = checkCache( metadata );
+            if ( cachedStream != null )
             {
-                InputStream inputStream = ( InputStream ) resp.getEntity();
-
-                String md5Calculated = cacheStream( inputStream );
-
-                // compare the requested and received md5 checksums
-                if ( !Strings.isNullOrEmpty( metadata.getMd5Sum() ) && metadata.getMd5Sum().equals( md5Calculated ) )
-                {
-                    return cache.get( md5Calculated );
-                }
-                else
-                {
-                    deleteCache( md5Calculated );
-
-                    LOGGER.error( "Md5 checksum mismatch after getting the package from remote host. "
-                                    + "Requested with md5={}, name={}, version={}", metadata.getMd5Sum(), metadata
-                            .getName(),
-                            metadata.getVersion() );
-                }
+                //                BufferedInputStream is = new BufferedInputStream( cachedStream );
+                getPackageStream( cachedStream, progressListener );
+                return cachedStream;
             }
+
+            URLConnection conn = webClientFactory.openSecureConnection( this, GET_PATH, MetadataUtils.makeParamsMap( metadata ) );
+            LOGGER.info( "Downloading snap file {}", conn.getURL() );
+            ByteArrayOutputStream barrout = getPackageStream( conn, progressListener );
+            InputStream is = new ByteArrayInputStream( barrout.toByteArray() );
+
+            String md5Calculated = cacheStream( is );
+
+            // compare the requested and received md5 checksums
+            if ( !Strings.isNullOrEmpty( metadata.getMd5Sum() ) && metadata.getMd5Sum().equals( md5Calculated ) )
+            {
+                return cache.get( md5Calculated );
+            }
+            else
+            {
+                deleteCache( md5Calculated );
+
+                LOGGER.error( "Md5 checksum mismatch after getting the package from remote host. "
+                                + "Requested with md5={}, name={}, version={}", metadata.getMd5Sum(), metadata
+                                .getName(),
+                        metadata.getVersion() );
+            }
+
+            return is;
+        }
+        catch ( IOException e )
+        {
+            LOGGER.error( "Failed to read response data", e );
         }
         return null;
+
+//        InputStream cachedStream = checkCache( metadata );
+//        if ( cachedStream != null )
+//        {
+//            return cachedStream;
+//        }
+//
+//        WebClient webClient = webClientFactory.makeSecure( this, GET_PATH, MetadataUtils.makeParamsMap( metadata ) );
+//        if ( identity != null )
+//        {
+//            webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
+//        }
+//
+//        Response resp = webClient.get();
+//        if ( resp.getStatus() == Response.Status.OK.getStatusCode() )
+//        {
+//            if ( resp.getEntity() instanceof InputStream )
+//            {
+//                InputStream inputStream = ( InputStream ) resp.getEntity();
+//
+//                String md5Calculated = cacheStream( inputStream );
+//
+//                // compare the requested and received md5 checksums
+//                if ( !Strings.isNullOrEmpty( metadata.getMd5Sum() ) && metadata.getMd5Sum().equals( md5Calculated ) )
+//                {
+//                    return cache.get( md5Calculated );
+//                }
+//                else
+//                {
+//                    deleteCache( md5Calculated );
+//
+//                    LOGGER.error( "Md5 checksum mismatch after getting the package from remote host. "
+//                                    + "Requested with md5={}, name={}, version={}", metadata.getMd5Sum(), metadata
+//                            .getName(),
+//                            metadata.getVersion() );
+//                }
+//            }
+//        }
+//        return null;
     }
 
 

@@ -163,7 +163,7 @@ class LocalAptRepositoryWrapper extends RepositoryBase implements LocalRepositor
 
 
     @Override
-    public InputStream getPackageStream( Metadata metadata )
+    public InputStream getPackageStream( Metadata metadata, PackageProgressListener progressListener  )
     {
         throw new UnsupportedOperationException( "Not supported yet." );
     }

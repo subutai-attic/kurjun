@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.math.RandomUtils;
 
@@ -46,7 +45,7 @@ public class MetaDataConfiguration
 
     public static String fingerprint()
     {
-        return Hex.encodeHexString( sha1().getBytes() );
+        return sha1();
     }
 
 

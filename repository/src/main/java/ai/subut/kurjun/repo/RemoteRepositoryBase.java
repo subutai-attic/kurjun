@@ -4,6 +4,10 @@ package ai.subut.kurjun.repo;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLConnection;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -11,7 +15,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 
-import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import com.google.inject.Inject;
 
@@ -26,7 +30,7 @@ import ai.subut.kurjun.repo.cache.PackageCache;
 /**
  * Base abstract class for non-local repositories. Common operations to non-local repositories should go here.
  */
-abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepository
+public abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepository
 {
 
     @Inject
@@ -71,6 +75,45 @@ abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepo
             }
         }
         return null;
+    }
+
+
+    /**
+     * Opens stream to remote server and gets data in chunks, at the same time writes bytes to listener
+     * @param conn - remote server connection
+     * @param progressListener - progress listener
+     * @return - collected byte array output stream
+     * @throws IOException
+     */
+    public ByteArrayOutputStream getPackageStream(URLConnection conn, PackageProgressListener progressListener)
+            throws IOException
+    {
+        ReadableByteChannel rbc = Channels.newChannel( conn.getInputStream() );
+
+        ByteBuffer byteBuffer = ByteBuffer.allocate( 8192 );
+
+        int bytesRead = rbc.read( byteBuffer );
+        ByteArrayOutputStream barrout = new ByteArrayOutputStream();
+
+        while ( bytesRead > 0 )
+        {
+            //limit is set to current position and position is set to zero
+            byteBuffer.flip();
+            if ( progressListener != null )
+            {
+                ByteBuffer copy = byteBuffer.duplicate();
+                progressListener.writeBytes( copy );
+            }
+
+            while ( byteBuffer.hasRemaining() )
+            {
+                barrout.write( byteBuffer.get() );
+            }
+
+            byteBuffer.clear();
+            bytesRead = rbc.read( byteBuffer );
+        }
+        return barrout;
     }
 
 
@@ -155,11 +198,11 @@ abstract class RemoteRepositoryBase extends RepositoryBase implements RemoteRepo
         boolean deleted = packageCache.delete( md5 );
         if ( deleted )
         {
-            getLogger().debug( "Package with md5 {} deleted from the cache", Hex.encodeHexString( md5.getBytes() ) );
+            getLogger().debug( "Package with md5 {} deleted from the cache", md5 );
         }
         else
         {
-            getLogger().debug( "Package with md5 {} cannot be found in the cache", Hex.encodeHexString( md5.getBytes() ) );
+            getLogger().debug( "Package with md5 {} cannot be found in the cache", md5 );
         }
     }
 }

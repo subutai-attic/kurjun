@@ -1,6 +1,7 @@
 package ai.subut.kurjun.repo;
 
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
@@ -11,6 +12,7 @@ import java.util.List;
 import org.slf4j.Logger;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import ai.subut.kurjun.ar.CompressionType;
 import ai.subut.kurjun.model.metadata.Metadata;
@@ -52,7 +54,7 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
 
 
     @Override
-    public InputStream getPackageStream( Metadata metadata )
+    public InputStream getPackageStream( Metadata metadata, PackageProgressListener progressListener )
     {
         SerializableMetadata m = getPackageInfo( metadata );
         if ( m == null )
@@ -64,7 +66,9 @@ abstract class LocalRepositoryBase extends RepositoryBase implements LocalReposi
             FileStore fileStore = getFileStore();
             if ( fileStore.contains( m.getMd5Sum() ) )
             {
-                return fileStore.get( m.getMd5Sum() );
+                InputStream is = fileStore.get( m.getMd5Sum() );
+                ByteArrayOutputStream baos = getPackageStream( is, progressListener );
+                return new ByteArrayInputStream( baos.toByteArray() );
             }
             else
             {

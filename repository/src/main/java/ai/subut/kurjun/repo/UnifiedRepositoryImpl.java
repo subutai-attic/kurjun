@@ -103,11 +103,11 @@ class UnifiedRepositoryImpl extends RepositoryBase implements UnifiedRepository
 
 
     @Override
-    public InputStream getPackageStream( Metadata metadata )
+    public InputStream getPackageStream( Metadata metadata, PackageProgressListener progressListener )
     {
         for ( final Repository repository : getAllRepositories() )
         {
-            InputStream is = repository.getPackageStream( metadata );
+            InputStream is = repository.getPackageStream( metadata,progressListener );
             if ( is != null )
             {
                 return is;

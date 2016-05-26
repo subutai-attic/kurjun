@@ -1,10 +1,12 @@
 package ai.subut.kurjun.repo;
 
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.http.HTTPConduit;
 
@@ -175,7 +178,7 @@ class RemoteAptRepository extends RemoteRepositoryBase
 
 
     @Override
-    public InputStream getPackageStream( Metadata metadata )
+    public InputStream getPackageStream( Metadata metadata, PackageProgressListener progressListener  )
     {
         SerializableMetadata m = getPackageInfo( metadata );
         if ( m == null )
@@ -183,39 +186,68 @@ class RemoteAptRepository extends RemoteRepositoryBase
             return null;
         }
 
-        InputStream cachedStream = checkCache( m );
-        if ( cachedStream != null )
+        try
         {
-            return cachedStream;
-        }
-
-        DefaultPackageMetadata pm = gson.fromJson( m.serialize(), DefaultPackageMetadata.class );
-
-        WebClient webClient = webClientFactory.makeSecure( this, "/" + DEB_PATH + "/" + pm.getFilename(), null );
-
-        Response resp = doGet( webClient );
-        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
-        {
-            if ( resp.getEntity() instanceof InputStream )
+            InputStream cachedStream = checkCache( m );
+            if ( cachedStream != null )
             {
-                InputStream inputStream = ( InputStream ) resp.getEntity();
+//                BufferedInputStream is = new BufferedInputStream( cachedStream );
+                getPackageStream( cachedStream, progressListener );
+                return cachedStream;
+            }
 
-                String md5Calculated = cacheStream( inputStream );
+            DefaultPackageMetadata pm = gson.fromJson( m.serialize(), DefaultPackageMetadata.class );
+            URLConnection conn = webClientFactory.openSecureConnection( this, "/" + DEB_PATH + "/" + pm.getFilename(),
+                    null );
+            LOGGER.info( "Downloading apt file {}", conn.getURL() );
+            ByteArrayOutputStream barrout = getPackageStream( conn, progressListener );
+            InputStream inputStream = new ByteArrayInputStream( barrout.toByteArray() );
 
-                // compare the requested and received md5 checksums
-                if ( md5Calculated.equals( pm.getMd5Sum() ) )
-                {
-                    return cache.get( md5Calculated );
-                }
-                else
-                {
-                    deleteCache( md5Calculated );
+            String md5Calculated = cacheStream( inputStream );
 
-                    LOGGER.error( "Md5 checksum mismatch after getting the package {} from remote host",
-                            pm.getFilename() );
-                }
+            // compare the requested and received md5 checksums
+            if ( md5Calculated.equals( pm.getMd5Sum() ) )
+            {
+                return cache.get( md5Calculated );
+            }
+            else
+            {
+                deleteCache( md5Calculated );
+
+                LOGGER.error( "Md5 checksum mismatch after getting the package {} from remote host",
+                        pm.getFilename() );
             }
         }
+        catch ( IOException e )
+        {
+            LOGGER.error("Error downloading apt file", e);
+        }
+
+//        WebClient webClient = webClientFactory.makeSecure( this, "/" + DEB_PATH + "/" + pm.getFilename(), null );
+//
+//        Response resp = doGet( webClient );
+//        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
+//        {
+//            if ( resp.getEntity() instanceof InputStream )
+//            {
+//                InputStream inputStream = ( InputStream ) resp.getEntity();
+//
+//                String md5Calculated = cacheStream( inputStream );
+//
+//                // compare the requested and received md5 checksums
+//                if ( md5Calculated.equals( pm.getMd5Sum() ) )
+//                {
+//                    return cache.get( md5Calculated );
+//                }
+//                else
+//                {
+//                    deleteCache( md5Calculated );
+//
+//                    LOGGER.error( "Md5 checksum mismatch after getting the package {} from remote host",
+//                            pm.getFilename() );
+//                }
+//            }
+//        }
         return null;
     }
 
