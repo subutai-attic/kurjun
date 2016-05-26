@@ -80,12 +80,12 @@ public class RawMetadata implements Metadata, SerializableMetadata
     @Override
     public Object getId()
     {
-        if ( md5Sum == null || fingerprint == null )
+        if ( md5Sum == null )
         {
             return null;
         }
 
-        return fingerprint + "." + md5Sum;
+        return md5Sum;
     }
 
 

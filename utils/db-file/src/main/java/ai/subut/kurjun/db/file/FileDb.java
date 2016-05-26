@@ -308,12 +308,6 @@ public class FileDb implements Closeable
             String[] parsedName = filename.split( "\\." );
             if ( parsedName.length == 3 )
             {
-                //                Map subMap = ( Map ) map.get( parsedName[0] );
-                //                if ( subMap == null )
-                //                {
-                //                    subMap = new HashMap<>();
-                //                }
-                //                subMap.put( parsedName[1], object );
                 map.put( parsedName[1], object );
             }
             else if ( parsedName.length == 2 )

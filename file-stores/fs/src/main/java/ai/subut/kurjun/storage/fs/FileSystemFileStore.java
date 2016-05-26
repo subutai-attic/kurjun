@@ -207,18 +207,17 @@ class FileSystemFileStore implements FileStore
     @Override
     public synchronized boolean remove( String md5 ) throws IOException
     {
-        String hexMd5 = Hex.encodeHexString( md5.getBytes() );
         FileDb fileDb = null;
         try
         {
             fileDb = new FileDb( makeDbFilePath() );
-            String path = fileDb.get( MAP_NAME, hexMd5, String.class );
+            String path = fileDb.get( MAP_NAME, md5, String.class );
             if ( path != null )
             {
                 Path p = Paths.get( path );
                 Files.deleteIfExists( p );
                 deleteDirIfEmpty( p.getParent() );
-                fileDb.remove( MAP_NAME, hexMd5 );
+                fileDb.remove( MAP_NAME, md5 );
                 return true;
             }
         }
@@ -271,7 +270,7 @@ class FileSystemFileStore implements FileStore
         try
         {
             fileDb = new FileDb( makeDbFilePath() );
-            String path = fileDb.get( MAP_NAME, Hex.encodeHexString( md5.getBytes() ), String.class );
+            String path = fileDb.get( MAP_NAME, md5, String.class );
             if ( path != null )
             {
                 return Files.size( Paths.get( path ) );
