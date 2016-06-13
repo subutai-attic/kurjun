@@ -20,7 +20,11 @@ public interface Repository
 {
     public interface PackageProgressListener
     {
+        String downloadFileId();
+
         public void writeBytes(ByteBuffer byteBuffer);
+
+        long getSize();
     }
 
     /**
