@@ -182,39 +182,6 @@ public class RemoteRawRepository extends RemoteRepositoryBase
             LOGGER.error( "Failed to read response data", e );
         }
         return null;
-
-
-//        Map params = MetadataUtils.makeParamsMap( metadata );
-//        WebClient webClient = webClientFactory.makeSecure( this, FILE_PATH + GET_PATH, params );
-//        if ( identity != null )
-//        {
-//            webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
-//        }
-//
-//        Response resp = doGet( webClient );
-//        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
-//        {
-//            if ( resp.getEntity() instanceof InputStream )
-//            {
-//                InputStream inputStream = ( InputStream ) resp.getEntity();
-//
-//                String md5Calculated = cacheStream( inputStream );
-//
-//                // compare the requested and received md5 checksums
-//                if ( !Strings.isNullOrEmpty( metadata.getMd5Sum() ) && metadata.getMd5Sum().equals( md5Calculated ) )
-//                {
-//                    return cache.get( md5Calculated );
-//                }
-//                else
-//                {
-//                    deleteCache( md5Calculated );
-//
-//                    LOGGER.error( "Md5 checksum mismatch after getting the package from remote host. "
-//                            + "Requested with md5={}, name={}", metadata.getMd5Sum(), metadata.getName() );
-//                }
-//            }
-//        }
-//        return null;
     }
 
 
@@ -391,7 +358,7 @@ public class RemoteRawRepository extends RemoteRepositoryBase
         }
         catch ( IOException e )
         {
-            getLogger().error( " ***** Failed to get object", e );
+            getLogger().error( " ***** Failed to get object {}", e.getMessage() );
         }
         return null;
     }
