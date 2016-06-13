@@ -26,6 +26,7 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.http.HTTPConduit;
 
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
@@ -46,7 +47,6 @@ import ai.subut.kurjun.model.metadata.Metadata;
 import ai.subut.kurjun.model.metadata.SerializableMetadata;
 import ai.subut.kurjun.model.repository.RemoteRepository;
 import ai.subut.kurjun.repo.cache.PackageCache;
-import ai.subut.kurjun.repo.util.PathBuilder;
 import ai.subut.kurjun.repo.util.http.WebClientFactory;
 import ai.subut.kurjun.riparser.service.ReleaseIndexParser;
 
@@ -228,35 +228,64 @@ class RemoteAptRepository extends RemoteRepositoryBase
     @Override
     public List<SerializableMetadata> listPackages()
     {
-        String md5 = getMd5();
 
-        if ( this.md5Sum.equalsIgnoreCase( md5 ) )
+        // TODO: 6/13/16 Add support for different repositories depending on distribution support,
+        // binaries, versions (latest, nightly, etc...) all these parameters should allow user to pull available
+        // packages from repo
+
+//        String md5 = getMd5();
+//
+//        if ( this.md5Sum.equalsIgnoreCase( md5 ) )
+//        {
+//            return this.remoteIndexChache;
+//        }
+
+        WebClient webClient = webClientFactory.makeSecure( this, "/Packages", null );
+
+        Response resp = doGet( webClient );
+        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode()
+                && resp.getEntity() instanceof InputStream )
         {
-            return this.remoteIndexChache;
-        }
-
-        List<SerializableMetadata> result = new LinkedList<>();
-        Set<ReleaseFile> distributions = getDistributions();
-
-        if ( distributions != null )
-        {
-            for ( ReleaseFile distr : distributions )
+            try ( InputStream is = ( InputStream ) resp.getEntity() )
             {
-                PathBuilder pb = PathBuilder.instance().setRelease( distr );
-                for ( String component : distr.getComponents() )
+                List<IndexPackageMetaData> items = packagesIndexParser.parse( is, CompressionType.NONE, "main" );
+
+                List<SerializableMetadata> result = new ArrayList<>( items.size() );
+                for ( IndexPackageMetaData item : items )
                 {
-                    for ( Architecture arch : distr.getArchitectures() )
-                    {
-                        String path = pb.setResource( makePackagesIndexResource( component, arch ) ).build();
-                        List<SerializableMetadata> items = fetchPackagesMetadata( path, component );
-                        result.addAll( items );
-                    }
+                    result.add( MetadataUtils.serializableIndexPackageMetadata( item ) );
                 }
+                return result;
             }
-            this.md5Sum = md5;
-            this.remoteIndexChache = result;
+            catch ( IOException ex )
+            {
+                LOGGER.error( "Invalid packages index at {}", webClient.getCurrentURI(), ex );
+            }
         }
-        return result;
+        return Lists.newArrayList();
+
+//        List<SerializableMetadata> result = new LinkedList<>();
+//        Set<ReleaseFile> distributions = getDistributions();
+//
+//        if ( distributions != null )
+//        {
+//            for ( ReleaseFile distr : distributions )
+//            {
+//                PathBuilder pb = PathBuilder.instance().setRelease( distr );
+//                for ( String component : distr.getComponents() )
+//                {
+//                    for ( Architecture arch : distr.getArchitectures() )
+//                    {
+//                        String path = pb.setResource( makePackagesIndexResource( component, arch ) ).build();
+//                        List<SerializableMetadata> items = fetchPackagesMetadata( path, component );
+//                        result.addAll( items );
+//                    }
+//                }
+//            }
+//            this.md5Sum = md5;
+//            this.remoteIndexChache = result;
+//        }
+//        return result;
     }
 
 

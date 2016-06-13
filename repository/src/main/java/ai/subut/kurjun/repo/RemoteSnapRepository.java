@@ -178,45 +178,6 @@ class RemoteSnapRepository extends RemoteRepositoryBase
             LOGGER.error( "Failed to read response data", e );
         }
         return null;
-
-//        InputStream cachedStream = checkCache( metadata );
-//        if ( cachedStream != null )
-//        {
-//            return cachedStream;
-//        }
-//
-//        WebClient webClient = webClientFactory.makeSecure( this, GET_PATH, MetadataUtils.makeParamsMap( metadata ) );
-//        if ( identity != null )
-//        {
-//            webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
-//        }
-//
-//        Response resp = webClient.get();
-//        if ( resp.getStatus() == Response.Status.OK.getStatusCode() )
-//        {
-//            if ( resp.getEntity() instanceof InputStream )
-//            {
-//                InputStream inputStream = ( InputStream ) resp.getEntity();
-//
-//                String md5Calculated = cacheStream( inputStream );
-//
-//                // compare the requested and received md5 checksums
-//                if ( !Strings.isNullOrEmpty( metadata.getMd5Sum() ) && metadata.getMd5Sum().equals( md5Calculated ) )
-//                {
-//                    return cache.get( md5Calculated );
-//                }
-//                else
-//                {
-//                    deleteCache( md5Calculated );
-//
-//                    LOGGER.error( "Md5 checksum mismatch after getting the package from remote host. "
-//                                    + "Requested with md5={}, name={}, version={}", metadata.getMd5Sum(), metadata
-//                            .getName(),
-//                            metadata.getVersion() );
-//                }
-//            }
-//        }
-//        return null;
     }
 
 

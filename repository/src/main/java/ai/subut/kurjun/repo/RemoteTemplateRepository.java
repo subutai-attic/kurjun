@@ -238,56 +238,6 @@ class RemoteTemplateRepository extends RemoteRepositoryBase
             LOGGER.error( "Did not receive metadata info from remote Kurjun for request: " + metadata.getId(), e);
         }
         return null;
-
-//        LOGGER.debug( "Trying to get stream from remote Kurjun: {} with Id: {}", url, metadata.getId() );
-//
-//        InputStream cachedStream = checkCache( metadata );
-//        if ( cachedStream != null )
-//        {
-//            return cachedStream;
-//        }
-//
-//        WebClient webClient =
-//                webClientFactory.makeSecure( this, TEMPLATE_PATH + "/" + GET_PATH, makeParamsMap( metadata ) );
-//        webClient.header( "Accept", "application/octet-stream" );
-//
-//        if ( identity != null )
-//        {
-//            webClient.header( KurjunConstants.HTTP_HEADER_FINGERPRINT, identity.getKeyFingerprint() );
-//        }
-//
-//        Response resp = doGet( webClient );
-//
-//        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
-//        {
-//            LOGGER.debug( "Reading remote template stream" );
-//            if ( resp.getEntity() instanceof InputStream )
-//            {
-//                InputStream inputStream = ( InputStream ) resp.getEntity();
-//
-//                String md5Calculated = cacheStream( inputStream );
-//
-//                // compare the requested and received md5 checksums
-//                if ( md5Calculated.equals( metadata.getMd5Sum() ) )
-//                {
-//                    return cache.get( md5Calculated );
-//                }
-//                else
-//                {
-//                    deleteCache( md5Calculated );
-//
-//                    LOGGER.error( "Md5 checksum mismatch after getting the package from remote host. "
-//                                    + "Requested with md5={}, name={}, version={}", metadata.getMd5Sum(), metadata
-//                            .getName(),
-//                            metadata.getVersion() );
-//                }
-//            }
-//        }
-//        assert resp != null;
-//
-//        LOGGER.error( "Could not obtain stream from remote Kurjun for request: {}, response code: {}", metadata.getId(),
-//                resp.getStatus() );
-//        return null;
     }
 
 
