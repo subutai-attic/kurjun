@@ -191,7 +191,6 @@ class RemoteAptRepository extends RemoteRepositoryBase
             InputStream cachedStream = checkCache( m );
             if ( cachedStream != null )
             {
-//                BufferedInputStream is = new BufferedInputStream( cachedStream );
                 getPackageStream( cachedStream, progressListener );
                 return cachedStream;
             }
@@ -222,32 +221,6 @@ class RemoteAptRepository extends RemoteRepositoryBase
         {
             LOGGER.error("Error downloading apt file", e);
         }
-
-//        WebClient webClient = webClientFactory.makeSecure( this, "/" + DEB_PATH + "/" + pm.getFilename(), null );
-//
-//        Response resp = doGet( webClient );
-//        if ( resp != null && resp.getStatus() == Response.Status.OK.getStatusCode() )
-//        {
-//            if ( resp.getEntity() instanceof InputStream )
-//            {
-//                InputStream inputStream = ( InputStream ) resp.getEntity();
-//
-//                String md5Calculated = cacheStream( inputStream );
-//
-//                // compare the requested and received md5 checksums
-//                if ( md5Calculated.equals( pm.getMd5Sum() ) )
-//                {
-//                    return cache.get( md5Calculated );
-//                }
-//                else
-//                {
-//                    deleteCache( md5Calculated );
-//
-//                    LOGGER.error( "Md5 checksum mismatch after getting the package {} from remote host",
-//                            pm.getFilename() );
-//                }
-//            }
-//        }
         return null;
     }
 
