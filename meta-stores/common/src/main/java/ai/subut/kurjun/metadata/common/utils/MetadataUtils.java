@@ -104,10 +104,19 @@ public class MetadataUtils
         DefaultIndexPackageMetaData result = new DefaultIndexPackageMetaData();
         copyPackageMetadata( meta, result );
 
-        result.setSha1( new String( meta.getSHA1() ) );
-        result.setSha256( new String( meta.getSHA256() ) );
+        if ( meta.getSHA1() != null )
+        {
+            result.setSha1( new String( meta.getSHA1() ) );
+        }
+        if ( meta.getSHA256() != null )
+        {
+            result.setSha256( new String( meta.getSHA256() ) );
+        }
+        if ( meta.getDescriptionMd5() != null )
+        {
+            result.setDescriptionMd5( new String( meta.getDescriptionMd5() ) );
+        }
         result.setSize( meta.getSize() );
-        result.setDescriptionMd5( new String( meta.getDescriptionMd5() ) );
         result.setTag( meta.getTag() );
 
         return result;

@@ -283,7 +283,7 @@ public class IndexPackageMetadataImpl implements IndexPackageMetaData
             }
             catch ( MalformedURLException ex )
             {
-                LOGGER.error( "Invalid homepage URL", ex );
+                LOGGER.error( "Invalid homepage URL: {} {}", getFilename(), ex.getMessage() );
             }
         }
         return null;
